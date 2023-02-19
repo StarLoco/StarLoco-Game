@@ -2108,18 +2108,6 @@ public class CommandAdmin extends AdminUser {
 
             final GameMap map = this.getPlayer().getCurMap();
             switch(name) {
-                case "DUBG":
-                    Config.DUBG = !Config.DUBG;
-                    this.sendSuccessMessage("DUBG : " + (Config.DUBG ? "open" : "closed"));
-                    break;
-                case "SURVIVAL":
-                    Config.SURVIVAL = !Config.SURVIVAL;
-                    this.sendSuccessMessage("Survival : " + (Config.SURVIVAL ? "open" : "closed"));
-                    break;
-                case "DUNGEONS":
-                    Config.DUNGEONS = !Config.DUNGEONS;
-                    this.sendSuccessMessage("Dungeons : " + (Config.DUNGEONS ? "open" : "closed"));
-                    break;
                 case "SELLER":
                     map.noSellers = value == -1 ? !map.noSellers : value == 1;
                     if(map.noSellers)

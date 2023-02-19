@@ -17,7 +17,7 @@ public class Logging {
     }
 
     public void initialize() {
-        if (!new File("Logs").exists()) new File("Logs/").mkdir();
+        if (!new File("logs").exists()) new File("logs/").mkdir();
     }
 
     public void stop() {

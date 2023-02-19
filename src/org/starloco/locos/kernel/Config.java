@@ -8,12 +8,10 @@ import java.util.Properties;
 
 public class Config {
 
-    public static boolean DUBG = false, SURVIVAL = false, DUNGEONS = false;
-
     public static final long startTime = System.currentTimeMillis();
     public static boolean isRunning = false, isSaving = false,
             encryption, debug, logs, subscription, autoReboot, resetLimit, maxPets,
-            allZaap, allEmotes, modeChristmas, modeHalloween, modeHeroic, modeEvent;
+            allZaap, allEmotes, allowMulePvp, modeChristmas, modeHalloween, modeHeroic, modeEvent;
 
     public static GameServer gameServer;
     public static ExchangeClient exchangeClient;
@@ -25,7 +23,7 @@ public class Config {
 
     //network
     public static String gameIp, exchangeIp, version, gameServerKey, startMessage;
-    public static int gameServerId, gamePort, exchangePort, startMap, startCell, limitByIp, timeBetweenEvent;
+    public static int gameServerId, gamePort, exchangePort, startMap, startCell, startKamas, startLevel, limitByIp, timeBetweenEvent;
     public static short rateXp, rateDrop, rateHonor, rateJob, rateKamas, rateFm;
 
     public static void verify(String name) {
@@ -89,6 +87,8 @@ public class Config {
             Config.rateJob = Short.parseShort(properties.getProperty(Params.RATE_JOB.toString())); i++;
             Config.rateFm = Short.parseShort(properties.getProperty(Params.RATE_FM.toString())); i++;
             Config.startMessage = properties.getProperty(Params.START_MESSAGE.toString()); i++;
+            Config.startLevel = Integer.parseInt(properties.getProperty(Params.START_LEVEL.toString())); i++;
+            Config.startKamas = Integer.parseInt(properties.getProperty(Params.START_KAMAS.toString())); i++;
             Config.startMap = Integer.parseInt(properties.getProperty(Params.START_MAP.toString())); i++;
             Config.startCell = Integer.parseInt(properties.getProperty(Params.START_CELL.toString())); i++;
             Config.limitByIp = Integer.parseInt(properties.getProperty(Params.LIMIT_BY_IP.toString())); i++;
@@ -98,6 +98,7 @@ public class Config {
             Config.maxPets = Boolean.parseBoolean(properties.getProperty(Params.MAX_PETS.toString())); i++;
             Config.allZaap = Boolean.parseBoolean(properties.getProperty(Params.ALL_ZAAP.toString())); i++;
             Config.allEmotes = Boolean.parseBoolean(properties.getProperty(Params.ALL_EMOTES.toString())); i++;
+            Config.allowMulePvp = Boolean.parseBoolean(properties.getProperty(Params.ALLOW_MULE_PVP.toString())); i++;
             Constant.TIME_BY_TURN = Integer.parseInt(properties.getProperty(Params.TIME_BY_TURN.toString())) * 1000; i++;
             Config.modeChristmas = Boolean.parseBoolean(properties.getProperty(Params.MODE_CHRISTMAS.toString())); i++;
             Config.modeHalloween = Boolean.parseBoolean(properties.getProperty(Params.MODE_HALLOWEEN.toString())); i++;
@@ -174,16 +175,19 @@ public class Config {
                 .append(Params.RATE_KAMAS).append(" 1\n")
                 .append(Params.RATE_JOB).append(" 1\n")
                 .append(Params.RATE_FM).append(" 1\n")
-                .append(Params.START_MESSAGE).append(" 1\n")
-                .append(Params.START_MAP).append(" 1\n")
-                .append(Params.START_CELL).append(" 1\n")
-                .append(Params.LIMIT_BY_IP).append(" 1\n")
+                .append(Params.START_MESSAGE).append(" \n")
+                .append(Params.START_LEVEL).append(" 1\n")
+                .append(Params.START_KAMAS).append(" 0\n")
+                .append(Params.START_MAP).append(" -1\n")
+                .append(Params.START_CELL).append(" -1\n")
+                .append(Params.LIMIT_BY_IP).append(" 8\n")
                 .append(Params.SUBSCRIPTION).append(" true\n")
                 .append(Params.AUTO_REBOOT).append(" false\n")
                 .append(Params.RESET_LIMIT).append(" true\n")
                 .append(Params.MAX_PETS).append(" false\n")
                 .append(Params.ALL_ZAAP).append(" false\n")
                 .append(Params.ALL_EMOTES).append(" false\n")
+                .append(Params.ALLOW_MULE_PVP).append(" false\n")
                 .append(Params.TIME_BY_TURN).append(" 30\n")
                 .append(Params.MODE_CHRISTMAS).append(" false\n")
                 .append(Params.MODE_HALLOWEEN).append(" false\n")
@@ -232,6 +236,8 @@ public class Config {
         RATE_KAMAS("system.server.game.rate.kamas"),
         RATE_FM("system.server.game.rate.fm"),
         START_MESSAGE("system.server.game.start.message"),
+        START_KAMAS("system.server.game.start.kamas"),
+        START_LEVEL("system.server.game.start.level"),
         START_MAP("system.server.game.start.map"),
         START_CELL("system.server.game.start.cell"),
         LIMIT_BY_IP("system.server.game.limitByIp"),
@@ -244,6 +250,7 @@ public class Config {
         MAX_PETS("system.server.game.maxPets"),
         ALL_ZAAP("system.server.game.allZaap"),
         ALL_EMOTES("system.server.game.allEmotes"),
+        ALLOW_MULE_PVP("system.server.game.allowMulePvp"),
         TIME_BY_TURN("system.server.game.timeByTurn"),
         MODE_CHRISTMAS("system.server.game.mode.christmas"),
         MODE_HALLOWEEN("system.server.game.mode.halloween"),

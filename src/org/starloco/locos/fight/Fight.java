@@ -5136,7 +5136,7 @@ public class Fight {
 
                         if (this.getType() == Constant.FIGHT_TYPE_AGRESSION) {
                             if (getInit1().getPlayer().getAlignment() != 0 && getInit0().getPlayer().getAlignment() != 0) {
-                                if (getInit1().getPlayer().getAccount().getCurrentIp().compareTo(getInit0().getPlayer().getAccount().getCurrentIp()) != 0 || Main.allowMulePvp)
+                                if (getInit1().getPlayer().getAccount().getCurrentIp().compareTo(getInit0().getPlayer().getAccount().getCurrentIp()) != 0 || Config.allowMulePvp)
                                     winH = Formulas.calculHonorWin(winners, loosers, i, false);
                                 if (player.getDeshonor() > 0)
                                     winD = -1;
@@ -5268,7 +5268,7 @@ public class Fight {
                     int winD = 0;
                     if (this.getType() == Constant.FIGHT_TYPE_AGRESSION) {
                         if (getInit1().getPlayer().getAlignment() != 0 && getInit0().getPlayer().getAlignment() != 0)
-                            if (getInit1().getPlayer().getAccount().getCurrentIp().compareTo(getInit0().getPlayer().getAccount().getCurrentIp()) != 0 || Main.allowMulePvp)
+                            if (getInit1().getPlayer().getAccount().getCurrentIp().compareTo(getInit0().getPlayer().getAccount().getCurrentIp()) != 0 || Config.allowMulePvp)
                                 winH = Formulas.calculHonorWin(winners, loosers, i, false);
 
                         if (player == null)

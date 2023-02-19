@@ -211,13 +211,15 @@ public class DatabaseManager {
         while(statements.hasNext()) {
             Statement statement = statements.next();
             try {
-                if (statement.getResultSet() != null && statement.getResultSet().isClosed()) {
-                    statement.close();
-                    statement.getConnection().close();
+                if(!statement.isClosed()) {
+                    if (statement.getResultSet() != null && statement.getResultSet().isClosed()) {
+                        statement.close();
+                        statement.getConnection().close();
+                    } else if (statement.getResultSet() == null) {
+                        statement.close();
+                        statement.getConnection().close();
+                    }
                     statements.remove();
-                } else if (statement.getResultSet() == null) {
-                    statement.close();
-                    statement.getConnection().close();
                 }
             } catch(Exception e) {
                 e.printStackTrace();

@@ -36,8 +36,6 @@ public class Main {
     public static final List<Runnable> runnables = new LinkedList<>();
 
     public static short angels = 0, demons  = 0;
-    public static boolean allowMulePvp = false;
-    public static int startLevel = 1, startKamas = 0;
     public static boolean mapAsBlocked = false, fightAsBlocked = false, tradeAsBlocked = false;
 
     public static void main(String[] args) throws SQLException {

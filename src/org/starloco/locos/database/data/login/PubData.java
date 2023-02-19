@@ -4,7 +4,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.lang.NotImplementedException;
 import org.starloco.locos.database.data.FunctionDAO;
 import org.starloco.locos.game.scheduler.entity.WorldPub;
-import org.starloco.locos.kernel.Main;
+import org.starloco.locos.kernel.Config;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -18,16 +18,16 @@ public class PubData extends FunctionDAO<Object> {
 
     @Override
     public void loadFully() {
-        /*ResultSet result = null;
+        ResultSet result = null;
         try {
-            result = getData("SELECT * FROM " + getTableName() + " WHERE `server` = " + Main.serverId );
+            result = getData("SELECT * FROM " + getTableName() + " WHERE `server` = " + Config.gameServerId);
             while (result.next())
-                WorldPub.add(result.getString("data"));
+                WorldPub.pubs.add(result.getString("data"));
         } catch (SQLException e) {
             super.sendError(e);
         } finally {
             close(result);
-        }*/
+        }
     }
 
     @Override

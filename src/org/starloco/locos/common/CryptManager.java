@@ -1,16 +1,11 @@
 package org.starloco.locos.common;
 
-import com.sun.jndi.toolkit.url.Uri;
-import it.unimi.dsi.fastutil.shorts.Short2ShortAVLTreeMap;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.starloco.locos.area.map.CellCacheImpl;
 import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.area.map.GameMap;
 
 import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.net.URLDecoder;
 import java.util.*;
 
@@ -191,27 +186,7 @@ public class CryptManager {
 
                 cells.add(new GameCase(map, cellId, walkable, los, obj));
 
-            }/*
-            for (int f = 0; f < data.length(); f += 10) {
-                short id = (short) (f / 10);
-                String mapData = data.substring(f, f + 10);
-                List<Byte> cellInfos = new ArrayList<>();
-
-                for (int i = 0; i < mapData.length(); i++)
-                    cellInfos.add((byte) getIntByHashedValue(mapData.charAt(i)));
-
-                int walkable = ((cellInfos.get(2) & 56) >> 3);
-
-                boolean los = (cellInfos.get(0) & 1) != 0;
-                if(map.getId() == 11095) los = true;
-                if(los) losCells.add(id);
-
-                int layerObject2 = ((cellInfos.get(0) & 2) << 12) + ((cellInfos.get(7) & 1) << 12) + (cellInfos.get(8) << 6) + cellInfos.get(9);
-                boolean layerObject2Interactive = ((cellInfos.get(7) & 2) >> 1) != 0;
-                int object = (layerObject2Interactive && sniffed == 0 ? layerObject2 : -1);
-
-                cells.add(new GameCase(map, id, (walkable != 0 && !mapData.equalsIgnoreCase("bhGaeaaaaa") && !mapData.equalsIgnoreCase("Hhaaeaaaaa")), los, object));
-            }*/
+            }
             CellCacheImpl cache = new CellCacheImpl(losCells, map.getW(), map.getH());
             map.setCellCache(cache);
         } catch (Exception e) {

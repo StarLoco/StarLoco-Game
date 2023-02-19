@@ -481,9 +481,9 @@ public class Player {
             return null;
         if (sexe < 0 || sexe > 1)
             return null;
-        Player player = new Player(-1, name, -1, sexe, classe, color1, color2, color3, Main.startKamas, ((Main.startLevel - 1)), ((Main.startLevel - 1) * 5), 10000, Main.startLevel,
-                World.world.getPersoXpMin(Main.startLevel), 100, Integer.parseInt(classe
-                + "" + sexe), (byte) 0, compte.getId(), new HashMap<Integer, Integer>(), (byte) 1, (byte) 0, (byte) 0, "*#%!pi$:?",
+        Player player = new Player(-1, name, -1, sexe, classe, color1, color2, color3, Config.startKamas, ((Config.startLevel - 1)), ((Config.startLevel - 1) * 5), 10000, Config.startLevel,
+                World.world.getPersoXpMin(Config.startLevel), 100, Integer.parseInt(classe
+                + "" + sexe), (byte) 0, compte.getId(), new HashMap<>(), (byte) 1, (byte) 0, (byte) 0, "*#%!pi$:?",
                 (Config.startMap > 0 ? (short) Config.startMap : Constant.getStartMap(classe)),
                 (Config.startCell > 0 ? (short) Config.startCell : Constant.getStartCell(classe)),
                 //(short)6824,
@@ -1750,9 +1750,7 @@ public class Player {
         World.world.showPrismes(this);
         //Actualisation dans la DB
         ((AccountData) DatabaseManager.get(AccountData.class)).updateLastConnection(account);
-        if (!Config.startMessage.equals("")) {//Si le motd est notifi�
-            SocketManager.GAME_SEND_MESSAGE(this, this.getLang().trans("client.player.onjoingame.startmessage"));
-        }
+        SocketManager.GAME_SEND_MESSAGE(this, Config.startMessage.isEmpty() ? this.getLang().trans("client.player.onjoingame.startmessage") : Config.startMessage);
         for (GameObject object : this.objects.values()) {
             if (object.getTemplate().getType() == Constant.ITEM_TYPE_FAMILIER) {
                 PetEntry p = World.world.getPetsEntry(object.getGuid());
