@@ -6,6 +6,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
 
 /**
@@ -19,7 +21,7 @@ public enum  LangEnum {
     PORTUGUESE("pt");
 
     private final String flag;
-    private final Map<String,Object> result;
+    private Map<String,Object> result;
 
     LangEnum(String flag) {
         this.flag = flag;
@@ -31,8 +33,10 @@ public enum  LangEnum {
     }
 
     public String trans(String key, Object... str) {
-        if(this.result == null)
+        if(this.result == null) {
+            result = loadYAML(flag + "_" + flag.toUpperCase() + ".yaml");
             return key + " result null";
+        }
         String sentence = (String) this.result.get(key);
         if(sentence == null)
             return key + " not found";
@@ -44,15 +48,7 @@ public enum  LangEnum {
         return sentence;
     }
 
-
     private static Map<String, Object> loadYAML(String fileName) {
-        try {
-            InputStream ios = new FileInputStream(new File("lang/translation/" + fileName));
-            return (Map<String, Object>) new Yaml().load(ios);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        return null;
+        return (Map<String, Object>) new Yaml().load(LangEnum.class.getResourceAsStream("translation/" + fileName));
     }
-
 }
