@@ -11,6 +11,7 @@ import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.Config;
 import org.starloco.locos.kernel.Constant;
 import org.starloco.locos.kernel.Logging;
+import org.starloco.locos.lang.LangEnum;
 import org.starloco.locos.object.GameObject;
 import org.starloco.locos.util.TimerWaiter;
 
@@ -404,8 +405,7 @@ public class CommandPlayer {
     }
 
     private static boolean commandHelp(Player player, String msg) {
-        player.send("DCK" + player.getId());
-        player.send("DQ25000|25001;25002;25003");
+        player.sendMessage(player.getLang().trans("command.commandplayer.default"));
         ExchangeAction<Integer> exchangeAction = new ExchangeAction<>(ExchangeAction.TALKING_WITH, player.getId());
         player.setExchangeAction(exchangeAction);
         return true;
