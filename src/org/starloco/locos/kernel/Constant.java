@@ -3,7 +3,6 @@ package org.starloco.locos.kernel;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
 import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.client.Player;
@@ -484,6 +483,7 @@ public class Constant {
             case 7:
                 return 207;
             case 8:
+            case 13:
                 return 282;
             case 9:
                 return 368;
@@ -493,54 +493,38 @@ public class Constant {
                 return 197;
             case 12:
                 return 384;
-            case 13:
-                return 282;
         }
         return pos;
     }
 
     public static short getStartMap(int classID) {
-        short pos = 10298;
         switch (classID) {
+            default:
             case Constant.CLASS_FECA:
-                pos = 10300;
-                break;
+                return 10300;
             case Constant.CLASS_OSAMODAS:
-                pos = 10284;
-                break;
+                return 10284;
             case Constant.CLASS_ENUTROF:
-                pos = 10299;
-                break;
+                return 10299;
             case Constant.CLASS_SRAM:
-                pos = 10285;
-                break;
+                return 10285;
             case Constant.CLASS_XELOR:
-                pos = 10298;
-                break;
+                return 10298;
             case Constant.CLASS_ECAFLIP:
-                pos = 10276;
-                break;
+                return 10276;
             case Constant.CLASS_ENIRIPSA:
-                pos = 10283;
-                break;
+                return 10283;
             case Constant.CLASS_IOP:
-                pos = 10294;
-                break;
+                return 10294;
             case Constant.CLASS_CRA:
-                pos = 10292;
-                break;
+                return 10292;
             case Constant.CLASS_SADIDA:
-                pos = 10279;
-                break;
+                return 10279;
             case Constant.CLASS_SACRIEUR:
-                pos = 10296;
-                break;
+                return 10296;
             case Constant.CLASS_PANDAWA:
-                pos = 10289;
-                break;
+                return 10289;
         }
-
-        return pos;
     }
 
     public static int getStartCell(int classID) {
