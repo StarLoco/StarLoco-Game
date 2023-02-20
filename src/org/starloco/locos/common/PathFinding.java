@@ -1446,7 +1446,7 @@ public class PathFinding {
             dir = 'c';
         int consideredCell = cellID1, compteur = 0;
         while (consideredCell != -1 && compteur < 100) {
-            consideredCell = GetCaseIDFromDirrection(consideredCell, dir, map, true);
+            consideredCell = GetCaseIDFromDirrection(consideredCell, dir, map, false);
             if (consideredCell == cellID2)
                 return toReturn;
             toReturn.add(consideredCell);
