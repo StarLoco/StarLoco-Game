@@ -181,7 +181,7 @@ public class Config {
                 .append(Params.START_MAP).append(" -1\n")
                 .append(Params.START_CELL).append(" -1\n")
                 .append(Params.LIMIT_BY_IP).append(" 8\n")
-                .append(Params.SUBSCRIPTION).append(" true\n")
+                .append(Params.SUBSCRIPTION).append(" false\n")
                 .append(Params.AUTO_REBOOT).append(" false\n")
                 .append(Params.RESET_LIMIT).append(" true\n")
                 .append(Params.MAX_PETS).append(" false\n")
