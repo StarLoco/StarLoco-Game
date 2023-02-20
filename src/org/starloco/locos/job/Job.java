@@ -6,10 +6,10 @@ import java.util.Map;
 
 public class Job {
 
-    private int id;
-    private ArrayList<Integer> tools = new ArrayList<>();
-    private Map<Integer, ArrayList<Integer>> crafts = new HashMap<>();
-    private Map<Integer, ArrayList<Integer>> skills = new HashMap<>();
+    private final int id;
+    private final ArrayList<Integer> tools = new ArrayList<>();
+    private final Map<Integer, ArrayList<Integer>> crafts = new HashMap<>();
+    private final Map<Integer, ArrayList<Integer>> skills = new HashMap<>();
 
     public Job(int id, String tools, String crafts, String skills) {
         this.id = id;
@@ -35,7 +35,7 @@ public class Job {
                 }
             }
         }
-        if (!skills.isEmpty() || !skills.equals("")) {
+        if (!skills.equals("")) {
             for (String arg0 : skills.split("\\|")) {
                 String io = arg0.split(";")[0], skill = arg0.split(";")[1];
                 ArrayList<Integer> list = new ArrayList<>();
