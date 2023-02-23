@@ -3792,7 +3792,6 @@ public class SpellEffect implements Cloneable {
 
 				if (fight.getFighterByGameOrder() == cible) {
 					fight.setCurFighterPa(fight.getCurFighterPa() - value);
-					SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, Constant.STATS_REM_PA, cible.getId() + "", cible.getId() + ",-" + value);
 				}
 
 				if (cible.getMob() != null)
