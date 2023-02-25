@@ -1900,6 +1900,12 @@ public class Fight {
                 return;
             }
         }
+
+        if(current.hasBuff(140)) {
+            this.endTurn(false, current);
+            return;
+        }
+
         if(current.getPlayer() != null ) {
             Party party = current.getPlayer().getParty();
             Party.MasterOption option;
