@@ -4309,27 +4309,21 @@ public class SpellEffect implements Cloneable {
 		caster.setState(300, turns + 1);
 	}
 
-	private void applyEffect_320(Fight fight, ArrayList<Fighter> cibles) {
-		int value = 1;
-		try {
-			value = Integer.parseInt(args.split(";")[0]);
-		} catch (NumberFormatException e) {
-			e.printStackTrace();
-		}
-		int num = 0;
-		for (Fighter target : cibles) {
+	private void applyEffect_320(Fight fight, ArrayList<Fighter> targets) {
+		int total = 0;
+		for (Fighter target : targets) {
 			target.addBuff(Constant.STATS_REM_PO, value, turns, true, spell, args, caster, this);
-			SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, Constant.STATS_REM_PO, caster.getId()
-					+ "", target.getId() + "," + value + "," + turns);
-			num += value;
+			SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, Constant.STATS_REM_PO, caster.getId() + "", target.getId() + "," + value + "," + turns);
+			total += value;
 		}
-		if (num != 0) {
-			SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, Constant.STATS_ADD_PO, caster.getId()
-					+ "", caster.getId() + "," + num + "," + turns);
-			caster.addBuff(Constant.STATS_ADD_PO, num, 0, true, spell, args, caster, this);
-			//Gain de PO pendant le tour de jeu
-			if (caster.canPlay())
-				caster.getTotalStats().addOneStat(Constant.STATS_ADD_PO, num);
+
+		if (total != 0) {
+			caster.addBuff(Constant.STATS_ADD_PO, total, turns, true, spell, args, caster, this);
+			SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, Constant.STATS_ADD_PO, caster.getId() + "", caster.getId() + "," + total + "," + turns);
+
+			if (caster.canPlay()) {
+				caster.getTotalStats().addOneStat(Constant.STATS_ADD_PO, total);
+			}
 		}
 	}
 
