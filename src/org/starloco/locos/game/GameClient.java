@@ -6,7 +6,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
 
-import org.starloco.locos.object.ShopObject;
 import org.starloco.locos.util.Pair;
 import org.apache.mina.core.session.IoSession;
 import org.starloco.locos.area.Area;
@@ -77,7 +76,7 @@ import org.starloco.locos.other.Dopeul;
 import org.starloco.locos.quest.Quest;
 import org.starloco.locos.quest.QuestPlayer;
 import org.starloco.locos.quest.QuestObjective;
-import org.starloco.locos.util.NameGenerator;
+import org.starloco.locos.util.generator.NameGenerator;
 import org.starloco.locos.util.TimerWaiter;
 
 public class GameClient {
