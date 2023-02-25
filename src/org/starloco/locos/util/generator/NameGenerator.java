@@ -1,37 +1,38 @@
-package org.starloco.locos.util;
+package org.starloco.locos.util.generator;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Objects;
 
 /**
  * This class is released under GNU general public license
- *
+
  * Description: This class generates random names from syllables, and provides programmer a
  * simple way to set a group of rules for generator to avoid unpronounceable and bizarre names.
- *
+
  * SYLLABLE FILE REQUIREMENTS/FORMAT:
  * 1) all syllables are separated by line break.
  * 2) Syllable should not contain or begin with whitespace, as this character is ignored and only first part of the syllable is read.
  * 3) + and - characters are used to set rules, and using them in other way, may result in unpredictable results.
  * 4) Empty lines are ignored.
- *
+
  * SYLLABLE CLASSIFICATION:
- * Name is usually composed from 3 different class of syllables, which include prefix, middle part and suffix.
+ * Name is usually composed of 3 different class of syllables, which include prefix, middle part and suffix.
  * To declare syllable as a prefix in the file, insert "-" as a first character of the line.
  * To declare syllable as a suffix in the file, insert "+" as a first character of the line.
  * everything else is read as a middle part.
- *
+
  * NUMBER OF SYLLABLES:
  * Names may have any positive number of syllables. In case of 2 syllables, name will be composed from prefix and suffix.
  * In case of 1 syllable, name will be chosen from amongst the prefixes.
  * In case of 3 and more syllables, name will begin with prefix, is filled with middle parts and ended with suffix.
- *
+
  * ASSIGNING RULES:
  * I included a way to set 4 kind of rules for every syllable. To add rules to the syllables, write them right after the
  * syllable and SEPARATE WITH WHITESPACE. (example: "aad +v -c"). The order of rules is not important.
- *
+
  * RULES:
  * 1) +v means that next syllable must definitely begin with a Vowel.
  * 2) +c means that next syllable must definitely begin with a consonant.
@@ -40,10 +41,9 @@ import java.util.ArrayList;
  * So, our example: "aad +v -c" means that "aad" can only be after consonant and next syllable must begin with Vowel.
  * Beware of creating logical mistakes, like providing only syllables ending with consonants, but expecting only Vowels, which will be detected
  * and RuntimeException will be thrown.
- *
+
  * TO START:
  * Create a new NameGenerator object, provide the syllable file, and create names using compose() method.
- *
  *
  */
 public class NameGenerator {
@@ -57,48 +57,26 @@ public class NameGenerator {
     final private static char[] Vowels = {'a', 'e', 'i', 'o', 'u', 'é', 'è', 'à', 'ù', 'y'};
     final private static char[] consonants = {'b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p', 'q', 'r', 's', 't', 'v', 'w', 'x', 'y'};
 
-    private String fileName;
-
     /**
      * Create new random name generator object. refresh() is automatically called.
      * @param fileName insert file name, where syllables are located
-     * @throws IOException
      */
     public NameGenerator(String fileName) {
-        this.fileName = fileName;
         try {
-            refresh();
+            refresh(fileName);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     /**
-     * Change the file. refresh() is automatically called during the process.
-     * @param fileName insert the file name, where syllables are located.
-     * @throws IOException
-     */
-    public void changeFile(String fileName) throws IOException{
-        if(fileName == null) throw new IOException("File name cannot be null");
-        this.fileName = fileName;
-        refresh();
-    }
-
-    /**
      * Refresh names from file. No need to call that method, if you are not changing the file during the operation of program, as this method
      * is called every time file name is changed or new NameGenerator object created.
-     * @throws IOException
      */
-    public void refresh() throws IOException {
-
-        FileReader input = null;
-        BufferedReader bufRead;
-        String line;
-
-        input = new FileReader(fileName);
-
-        bufRead = new BufferedReader(input);
-        line="";
+    public void refresh(String fileName) throws IOException {
+        InputStreamReader input = new InputStreamReader(Objects.requireNonNull(NameGenerator.class.getResourceAsStream(fileName)));
+        BufferedReader bufRead = new BufferedReader(input);
+        String line = "";
 
         while(line != null){
             line = bufRead.readLine();
@@ -121,49 +99,45 @@ public class NameGenerator {
         return s.substring(0,1).toUpperCase().concat(s.substring(1));
     }
 
-    private boolean containsConsFirst(ArrayList<String> array){
-        for(String s: array){
-            if(consonantFirst(s)) return true;
-        }
-        return false;
+    private boolean doesNotContainsConsFirst(ArrayList<String> array){
+        for(String s: array)
+            if(consonantFirst(s))
+                return false;
+        return true;
     }
 
-    private boolean containsVocFirst(ArrayList<String> array){
-        for(String s: array){
-            if(VowelFirst(s)) return true;
-        }
-        return false;
+    private boolean doesNotContainsVocFirst(ArrayList<String> array){
+        for(String s: array)
+            if(VowelFirst(s))
+                return false;
+        return true;
     }
 
-    private boolean allowCons(ArrayList<String> array){
-        for(String s: array){
-            if(hatesPreviousVowels(s) || !hatesPreviousConsonants(s)) return true;
-        }
-        return false;
+    private boolean disallowCons(ArrayList<String> array){
+        for(String s: array)
+            if(hatesPreviousVowels(s) || !hatesPreviousConsonants(s))
+                return false;
+        return true;
     }
 
-    private boolean allowVocs(ArrayList<String> array){
-        for(String s: array){
-            if(hatesPreviousConsonants(s) || !hatesPreviousVowels(s)) return true;
-        }
-        return false;
+    private boolean disallowVocs(ArrayList<String> array){
+        for(String s: array)
+            if(hatesPreviousConsonants(s) || !hatesPreviousVowels(s))
+                return false;
+        return true;
     }
 
     private boolean expectsVowel(String s){
-        if(s.substring(1).contains("+v")) return true;
-        else return false;
+        return s.substring(1).contains("+v");
     }
     private boolean expectsConsonant(String s){
-        if(s.substring(1).contains("+c")) return true;
-        else return false;
+        return s.substring(1).contains("+c");
     }
     private boolean hatesPreviousVowels(String s){
-        if(s.substring(1).contains("-c")) return true;
-        else return false;
+        return s.substring(1).contains("-c");
     }
     private boolean hatesPreviousConsonants(String s){
-        if(s.substring(1).contains("-v")) return true;
-        else return false;
+        return s.substring(1).contains("-v");
     }
 
     private String pureSyl(String s){
@@ -188,7 +162,6 @@ public class NameGenerator {
         return (String.copyValueOf(consonants).contains(String.valueOf(s.charAt(s.length()-1)).toLowerCase()));
     }
 
-
     /**
      * Compose a new name.
      * @param syls The number of syllables used in name.
@@ -197,7 +170,7 @@ public class NameGenerator {
      */
     public String compose(int syls){
         if(syls > 2 && mid.size() == 0) throw new RuntimeException("You are trying to create a name with more than 3 parts, which requires middle parts, " +
-                "which you have none in the file "+fileName+". You should add some. Every word, which doesn't have + or - for a prefix is counted as a middle part.");
+                "which you have none in the file. You should add some. Every word, which doesn't have + or - for a prefix is counted as a middle part.");
         if(pre.size() == 0) throw new RuntimeException("You have no prefixes to begin creating a name. add some and use \"-\" prefix, to identify it as a prefix for a name. (example: -asd)");
         if(sur.size() == 0) throw new RuntimeException("You have no suffixes to end a name. add some and use \"+\" prefix, to identify it as a suffix for a name. (example: +asd)");
         if(syls < 1) throw new RuntimeException("compose(int syls) can't have less than 1 syllable");
@@ -212,36 +185,36 @@ public class NameGenerator {
         if(syls > 2){
             if(expectsVowel(pre.get(a))){
                 expecting = 1;
-                if(!containsVocFirst(mid)) throw new RuntimeException("Expecting \"middle\" part starting with Vowel, " +
+                if(doesNotContainsVocFirst(mid)) throw new RuntimeException("Expecting \"middle\" part starting with Vowel, " +
                         "but there is none. You should add one, or remove requirement for one.. ");
             }
             if(expectsConsonant(pre.get(a))){
                 expecting = 2;
-                if(!containsConsFirst(mid)) throw new RuntimeException("Expecting \"middle\" part starting with consonant, " +
+                if(doesNotContainsConsFirst(mid)) throw new RuntimeException("Expecting \"middle\" part starting with consonant, " +
                         "but there is none. You should add one, or remove requirement for one.. ");
             }
         }
         else{
             if(expectsVowel(pre.get(a))){
                 expecting = 1;
-                if(!containsVocFirst(sur)) throw new RuntimeException("Expecting \"suffix\" part starting with Vowel, " +
+                if(doesNotContainsVocFirst(sur)) throw new RuntimeException("Expecting \"suffix\" part starting with Vowel, " +
                         "but there is none. You should add one, or remove requirement for one.. ");
             }
             if(expectsConsonant(pre.get(a))){
                 expecting = 2;
-                if(!containsConsFirst(sur)) throw new RuntimeException("Expecting \"suffix\" part starting with consonant, " +
+                if(doesNotContainsConsFirst(sur)) throw new RuntimeException("Expecting \"suffix\" part starting with consonant, " +
                         "but there is none. You should add one, or remove requirement for one.. ");
             }
         }
-        if(VowelLast(pureSyl(pre.get(a))) && !allowVocs(mid)) throw new RuntimeException("Expecting \"middle\" part that allows last character of prefix to be a Vowel, " +
+        if(VowelLast(pureSyl(pre.get(a))) && disallowVocs(mid)) throw new RuntimeException("Expecting \"middle\" part that allows last character of prefix to be a Vowel, " +
                 "but there is none. You should add one, or remove requirements that cannot be fulfilled.. the prefix used, was : \""+pre.get(a)+"\", which" +
                 "means there should be a part available, that has \"-v\" requirement or no requirements for previous syllables at all.");
 
-        if(consonantLast(pureSyl(pre.get(a))) && !allowCons(mid)) throw new RuntimeException("Expecting \"middle\" part that allows last character of prefix to be a consonant, " +
+        if(consonantLast(pureSyl(pre.get(a))) && disallowCons(mid)) throw new RuntimeException("Expecting \"middle\" part that allows last character of prefix to be a consonant, " +
                 "but there is none. You should add one, or remove requirements that cannot be fulfilled.. the prefix used, was : \""+pre.get(a)+"\", which" +
                 "means there should be a part available, that has \"-c\" requirement or no requirements for previous syllables at all.");
 
-        int b[] = new int[syls];
+        int[] b = new int[syls];
         for(int i = 0; i<b.length-2; i++){
 
             do{
@@ -254,31 +227,31 @@ public class NameGenerator {
             expecting = 0;
             if(expectsVowel(mid.get(b[i]))){
                 expecting = 1;
-                if(i < b.length-3 && !containsVocFirst(mid)) throw new RuntimeException("Expecting \"middle\" part starting with Vowel, " +
+                if(i < b.length-3 && doesNotContainsVocFirst(mid)) throw new RuntimeException("Expecting \"middle\" part starting with Vowel, " +
                         "but there is none. You should add one, or remove requirement for one.. ");
-                if(i == b.length-3 && !containsVocFirst(sur)) throw new RuntimeException("Expecting \"suffix\" part starting with Vowel, " +
+                if(i == b.length-3 && doesNotContainsVocFirst(sur)) throw new RuntimeException("Expecting \"suffix\" part starting with Vowel, " +
                         "but there is none. You should add one, or remove requirement for one.. ");
             }
             if(expectsConsonant(mid.get(b[i]))){
                 expecting = 2;
-                if(i < b.length-3 && !containsConsFirst(mid)) throw new RuntimeException("Expecting \"middle\" part starting with consonant, " +
+                if(i < b.length-3 && doesNotContainsConsFirst(mid)) throw new RuntimeException("Expecting \"middle\" part starting with consonant, " +
                         "but there is none. You should add one, or remove requirement for one.. ");
-                if(i == b.length-3 && !containsConsFirst(sur)) throw new RuntimeException("Expecting \"suffix\" part starting with consonant, " +
+                if(i == b.length-3 && doesNotContainsConsFirst(sur)) throw new RuntimeException("Expecting \"suffix\" part starting with consonant, " +
                         "but there is none. You should add one, or remove requirement for one.. ");
             }
-            if(VowelLast(pureSyl(mid.get(b[i]))) && !allowVocs(mid) && syls > 3) throw new RuntimeException("Expecting \"middle\" part that allows last character of last syllable to be a Vowel, " +
+            if(VowelLast(pureSyl(mid.get(b[i]))) && disallowVocs(mid) && syls > 3) throw new RuntimeException("Expecting \"middle\" part that allows last character of last syllable to be a Vowel, " +
                     "but there is none. You should add one, or remove requirements that cannot be fulfilled.. the part used, was : \""+mid.get(b[i])+"\", which " +
                     "means there should be a part available, that has \"-v\" requirement or no requirements for previous syllables at all.");
 
-            if(consonantLast(pureSyl(mid.get(b[i]))) && !allowCons(mid) && syls > 3) throw new RuntimeException("Expecting \"middle\" part that allows last character of last syllable to be a consonant, " +
+            if(consonantLast(pureSyl(mid.get(b[i]))) && disallowCons(mid) && syls > 3) throw new RuntimeException("Expecting \"middle\" part that allows last character of last syllable to be a consonant, " +
                     "but there is none. You should add one, or remove requirements that cannot be fulfilled.. the part used, was : \""+mid.get(b[i])+"\", which " +
                     "means there should be a part available, that has \"-c\" requirement or no requirements for previous syllables at all.");
             if(i == b.length-3){
-                if(VowelLast(pureSyl(mid.get(b[i]))) && !allowVocs(sur)) throw new RuntimeException("Expecting \"suffix\" part that allows last character of last syllable to be a Vowel, " +
+                if(VowelLast(pureSyl(mid.get(b[i]))) && disallowVocs(sur)) throw new RuntimeException("Expecting \"suffix\" part that allows last character of last syllable to be a Vowel, " +
                         "but there is none. You should add one, or remove requirements that cannot be fulfilled.. the part used, was : \""+mid.get(b[i])+"\", which " +
                         "means there should be a suffix available, that has \"-v\" requirement or no requirements for previous syllables at all.");
 
-                if(consonantLast(pureSyl(mid.get(b[i]))) && !allowCons(sur)) throw new RuntimeException("Expecting \"suffix\" part that allows last character of last syllable to be a consonant, " +
+                if(consonantLast(pureSyl(mid.get(b[i]))) && disallowCons(sur)) throw new RuntimeException("Expecting \"suffix\" part that allows last character of last syllable to be a consonant, " +
                         "but there is none. You should add one, or remove requirements that cannot be fulfilled.. the part used, was : \""+mid.get(b[i])+"\", which " +
                         "means there should be a suffix available, that has \"-c\" requirement or no requirements for previous syllables at all.");
             }
