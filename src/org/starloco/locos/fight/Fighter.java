@@ -471,10 +471,9 @@ public class Fighter implements Comparable<Fighter> {
             duration += 1;
             effect.setTurn(duration);
             switch(spellID) {
+                case 138: // Mot de silence
                 case 170: // Fleche d'immo
                 case 114: // Rekop
-                case 89:
-                case 101:// Roulette
                     if(effect.getEffectID() == 140) // Passer le tour
                         break;
                     duration--;
