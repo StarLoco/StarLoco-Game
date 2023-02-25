@@ -770,7 +770,7 @@ public class SpellEffect implements Cloneable {
 				applyEffect_782(cibles, fight);
 				break;
 			case 783://Pousse jusqu'a la case visé
-				applyEffect_783(cibles, fight);
+				applyEffect_783(fight);
 				break;
 			case 784://Raulebaque
 				applyEffect_784(cibles, fight);
@@ -4606,50 +4606,42 @@ public class SpellEffect implements Cloneable {
 		}
 	}
 
-	private void applyEffect_783(ArrayList<Fighter> cibles, Fight fight) {
-		//Pousse jusqu'a la case visée
-		GameCase ccase = caster.getCell();
-		//On calcule l'orientation entre les 2 cases
-		char dir = PathFinding.getDirBetweenTwoCase(ccase.getId(), cell.getId(), fight.getMap(), true);
-		//On calcule l'id de la case a coté du lanceur dans la direction obtenue
-		int tcellID = PathFinding.GetCaseIDFromDirrection(ccase.getId(), dir, fight.getMap(), true);
-		//on prend la case corespondante
-		GameCase tcase = fight.getMap().getCase(tcellID);
+	private void applyEffect_783(Fight fight) {
+		GameCase casterCell = caster.getCell();
+		char dir = PathFinding.getDirBetweenTwoCase(casterCell.getId(), cell.getId(), fight.getMap(), true);
+		int targetCellId = PathFinding.GetCaseIDFromDirrection(casterCell.getId(), dir, fight.getMap(), true);
+		GameCase targetCell = fight.getMap().getCase(targetCellId);
 
-		if (tcase == null)
+		if (targetCell == null || targetCell.getFighters().isEmpty())
 			return;
-		//S'il n'y a personne sur la case, on arrete
-		if (tcase.getFighters().isEmpty())
+
+		Fighter target = targetCell.getFirstFighter();
+
+		if(target.haveState(Constant.ETAT_ENRACINE))
 			return;
-		//On prend le Fighter ciblé
-		Fighter target = tcase.getFirstFighter();
-		//On verifie qu'il peut aller sur la case ciblé en ligne droite
-		int c1 = tcellID, limite = 0;
 		if (target.getMob() != null)
 			for (int i : Constant.STATIC_INVOCATIONS)
 				if (i == target.getMob().getTemplate().getId())
 					return;
 
-		while (true) {
-			if (PathFinding.GetCaseIDFromDirrection(c1, dir, fight.getMap(), true) == cell.getId())
-				break;
-			if (PathFinding.GetCaseIDFromDirrection(c1, dir, fight.getMap(), true) == -1)
+		int limit = 0;
+		while (PathFinding.GetCaseIDFromDirrection(targetCellId, dir, fight.getMap(), true) != cell.getId()) {
+			if (PathFinding.GetCaseIDFromDirrection(targetCellId, dir, fight.getMap(), true) == -1)
 				return;
-			c1 = PathFinding.GetCaseIDFromDirrection(c1, dir, fight.getMap(), true);
-			limite++;
-			if (limite > 50)
+			targetCellId = PathFinding.GetCaseIDFromDirrection(targetCellId, dir, fight.getMap(), true);
+			limit++;
+			if (limit > 50)
 				return;
 		}
-		GameCase newCell = PathFinding.checkIfCanPushEntity(fight, ccase.getId(), cell.getId(), dir);
 
-		if (newCell != null)
-			cell = newCell;
+		GameCase newCell = PathFinding.checkIfCanPushEntity(fight, casterCell.getId(), cell.getId(), dir);
+		if (newCell != null) cell = newCell;
 
 		target.getCell().getFighters().clear();
 		target.setCell(cell);
 		target.getCell().addFighter(target);
 
-		SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 5, caster.getId() + "", target.getId() + "," + cell.getId());
+		SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 5, String.valueOf(caster.getId()), target.getId() + "," + cell.getId());
 		TimerWaiter.addNext(() -> this.checkTraps(fight, target), 750, TimeUnit.MILLISECONDS);
 	}
 
