@@ -140,10 +140,26 @@ public class SpellEffect implements Cloneable {
 						}
 						if(newCellId == 0) continue;
 
-						target.getCell().getFighters().clear();
+						GameCase cacheCell = target.getCell();
+						cacheCell.getFighters().clear();
+
 						target.setCell(fight.getMap().getCase(newCellId));
 						target.getCell().addFighter(target);
 						SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 5, target.getId() + "", target.getId() + "," + newCellId);
+
+						Fighter holding = target.getIsHolding();
+						if(holding != null) {
+							holding.setState(Constant.ETAT_PORTE, 0);
+							target.setState(Constant.ETAT_PORTEUR, 0);
+							holding.setHoldedBy(null);
+							target.setIsHolding(null);
+							holding.setCell(cacheCell);
+							cacheCell.addFighter(holding);
+							SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 950, target.getId() + "", target.getId() + "," + Constant.ETAT_PORTEUR + ",0");
+							SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 950, holding.getId() + "", holding.getId() + "," + Constant.ETAT_PORTE + ",0");
+							SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 51, target.getId() + "", cacheCell.getId() + "");
+						}
+
 						this.checkTraps(fight, target);
 						if (exCase != newCellId)
 							finalDommage = 0;
@@ -408,7 +424,7 @@ public class SpellEffect implements Cloneable {
 				applyEffect_8(cibles, fight);
 				break;
 			case 9://Esquive une attaque en reculant de 1 case
-				applyEffect_9(cibles, fight);
+				applyEffect_9(cibles);
 				break;
 			case 50://Porter
 				applyEffect_50(fight);
@@ -1062,8 +1078,8 @@ public class SpellEffect implements Cloneable {
 		SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 4, caster.getId() + "", caster.getId() + "," + exTarget.getId());
 	}
 
-	private void applyEffect_9(ArrayList<Fighter> cibles, Fight fight) {
-		for (Fighter target : cibles) {
+	private void applyEffect_9(ArrayList<Fighter> targets) {
+		for (Fighter target : targets) {
 			target.addBuff(effectID, value, turns, true, spell, args, caster, this);
 		}
 	}
