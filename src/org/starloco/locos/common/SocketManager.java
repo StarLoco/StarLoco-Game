@@ -9,7 +9,7 @@ import org.starloco.locos.client.Player;
 import org.starloco.locos.client.other.Party;
 import org.starloco.locos.entity.Collector;
 import org.starloco.locos.entity.Prism;
-import org.starloco.locos.entity.monster.Monster.MobGroup;
+import org.starloco.locos.entity.monster.MonsterGroup;
 import org.starloco.locos.entity.mount.Mount;
 import org.starloco.locos.entity.npc.Npc;
 import org.starloco.locos.fight.Fight;
@@ -21,7 +21,6 @@ import org.starloco.locos.hdv.HdvEntry;
 import org.starloco.locos.job.JobStat;
 import org.starloco.locos.kernel.Config;
 import org.starloco.locos.kernel.Constant;
-import org.starloco.locos.kernel.Main;
 import org.starloco.locos.object.GameObject;
 import org.starloco.locos.object.ObjectSet;
 import org.starloco.locos.object.ObjectTemplate;
@@ -31,7 +30,6 @@ import org.starloco.locos.quest.Quest;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map.Entry;
 import java.util.Objects;
 
@@ -466,7 +464,7 @@ public class SocketManager {
     }
 
     public static void GAME_SEND_MAP_MOBS_GM_PACKET(GameMap map,
-                                                    MobGroup current_Mobs) {
+                                                    MonsterGroup current_Mobs) {
         String packet = "GM|";
         packet += current_Mobs.parseGM(); // Un par un comme sa lors du respawn :)
         for (Player z : map.getPlayers())

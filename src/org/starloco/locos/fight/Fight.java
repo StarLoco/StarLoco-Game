@@ -25,6 +25,8 @@ import org.starloco.locos.database.data.login.PlayerData;
 import org.starloco.locos.dynamic.FormuleOfficiel;
 import org.starloco.locos.entity.Collector;
 import org.starloco.locos.entity.Prism;
+import org.starloco.locos.entity.monster.MonsterGrade;
+import org.starloco.locos.entity.monster.MonsterGroup;
 import org.starloco.locos.entity.monster.Monster;
 import org.starloco.locos.entity.monster.boss.Bandit;
 import org.starloco.locos.entity.mount.Mount;
@@ -87,7 +89,7 @@ public class Fight {
     private boolean finish = false;
     private boolean collectorProtect = false;
     private String curAction = "";
-    private Monster.MobGroup mobGroup;
+    private MonsterGroup monsterGroup;
     private Collector collector;
     private Prism prism;
     private GameMap map, mapOld;
@@ -99,7 +101,7 @@ public class Fight {
     private String defenders = "";
     private int trainerWinner = -1;
     private int nextId = -100;
-    private Monster.MobGroup mobGroup2;
+    private MonsterGroup monsterGroup2;
 
     public Fight(int type, int id, GameMap map, Player perso, Player init2) {
         launchTime = System.currentTimeMillis();
@@ -177,7 +179,7 @@ public class Fight {
         setState(Constant.FIGHT_STATE_PLACE);
     }
 
-    public Fight(int id, GameMap map, Monster.MobGroup group1, Monster.MobGroup group2) {
+    public Fight(int id, GameMap map, MonsterGroup group1, MonsterGroup group2) {
         launchTime = System.currentTimeMillis();
         setCheckTimer(true);
         setMobGroup(group1);
@@ -187,13 +189,13 @@ public class Fight {
         setMap(map.getMapCopy());
         setMapOld(map);
 
-        for (Entry<Integer, Monster.MobGrade> entry : group1.getMobs().entrySet()) {
+        for (Entry<Integer, MonsterGrade> entry : group1.getMobs().entrySet()) {
             entry.getValue().setInFightID(entry.getKey());
             Fighter mob = new Fighter(this, entry.getValue());
             getTeam0().put(entry.getKey(), mob);
         }
 
-        for (Entry<Integer, Monster.MobGrade> entry : group2.getMobs().entrySet()) {
+        for (Entry<Integer, MonsterGrade> entry : group2.getMobs().entrySet()) {
             entry.getValue().setInFightID(entry.getKey());
             Fighter mob = new Fighter(this, entry.getValue());
             getTeam1().put(entry.getKey(), mob);
@@ -255,7 +257,7 @@ public class Fight {
         this.startFight();
     }
 
-    public Fight(int id, GameMap map, Player perso, Monster.MobGroup group) {
+    public Fight(int id, GameMap map, Player perso, MonsterGroup group) {
         launchTime = System.currentTimeMillis();
         setCheckTimer(true);
         setMobGroup(group);
@@ -266,7 +268,7 @@ public class Fight {
         setMapOld(map);
         setInit0(new Fighter(this, perso));
         getTeam0().put(perso.getId(), getInit0());
-        for (Entry<Integer, Monster.MobGrade> entry : group.getMobs().entrySet()) {
+        for (Entry<Integer, MonsterGrade> entry : group.getMobs().entrySet()) {
             entry.getValue().setInFightID(entry.getKey());
             Fighter mob = new Fighter(this, entry.getValue());
             getTeam1().put(entry.getKey(), mob);
@@ -330,7 +332,7 @@ public class Fight {
         setState(Constant.FIGHT_STATE_PLACE);
     }
 
-    public Fight(int id, GameMap map, Player perso, Monster.MobGroup group, int type) {
+    public Fight(int id, GameMap map, Player perso, MonsterGroup group, int type) {
         launchTime = System.currentTimeMillis();
         setMobGroup(group);
         setType(type); // (0: D�fie) 4: Pvm (1:PVP) (5:Perco)
@@ -340,7 +342,7 @@ public class Fight {
         demorph(perso);
         setInit0(new Fighter(this, perso));
         getTeam0().put(perso.getId(), getInit0());
-        for (Entry<Integer, Monster.MobGrade> entry : group.getMobs().entrySet()) {
+        for (Entry<Integer, MonsterGrade> entry : group.getMobs().entrySet()) {
             entry.getValue().setInFightID(entry.getKey());
             Fighter mob = new Fighter(this, entry.getValue());
             getTeam1().put(entry.getKey(), mob);
@@ -703,7 +705,7 @@ public class Fight {
                         fight.init0.getId(), fight.init1.getId(), fight.init0.getPlayer().getCurCell().getId(), "0;" + fight.init0.getPlayer().getAlignment(), fight.init1.getPlayer().getCurCell().getId(), "0;" + fight.init1.getPlayer().getAlignment());
             } else if (fight.type == Constant.FIGHT_TYPE_PVM) {
                 SocketManager.GAME_SEND_GAME_ADDFLAG_PACKET_TO_PLAYER(player, fight.init0.getPlayer().getCurMap(), 4,
-                        fight.init0.getId(), fight.mobGroup.getId(), (fight.init0.getPlayer().getCurCell().getId() + 1), "0;-1", fight.mobGroup.getCellId(), "1;-1");
+                        fight.init0.getId(), fight.monsterGroup.getId(), (fight.init0.getPlayer().getCurCell().getId() + 1), "0;-1", fight.monsterGroup.getCellId(), "1;-1");
             } else if (fight.type == Constant.FIGHT_TYPE_PVT) {
                 SocketManager.GAME_SEND_GAME_ADDFLAG_PACKET_TO_PLAYER(player, fight.init0.getPlayer().getCurMap(), 5,
                         fight.init0.getId(), fight.collector.getId(), (fight.init0.getPlayer().getCurCell().getId() + 1), "0;-1", fight.collector.getCell(), "3;-1");
@@ -999,12 +1001,12 @@ public class Fight {
         this.curAction = curAction;
     }
 
-    Monster.MobGroup getMobGroup() {
-        return mobGroup;
+    MonsterGroup getMobGroup() {
+        return monsterGroup;
     }
 
-    void setMobGroup(Monster.MobGroup mobGroup) {
-        this.mobGroup = mobGroup;
+    void setMobGroup(MonsterGroup monsterGroup) {
+        this.monsterGroup = monsterGroup;
     }
 
     Collector getCollector() {
@@ -3494,8 +3496,8 @@ public class Fight {
                 groupData = groupData + ";";
             a++;
         }
-        setMobGroup(new Monster.MobGroup(getMapOld().nextObjectId, this.map, getInit0().getPlayer().getCurCell().getId(), groupData));
-        for (Entry<Integer, Monster.MobGrade> entry : getMobGroup().getMobs().entrySet()) {
+        setMobGroup(new MonsterGroup(getMapOld().nextObjectId, this.map, getInit0().getPlayer().getCurCell().getId(), groupData));
+        for (Entry<Integer, MonsterGrade> entry : getMobGroup().getMobs().entrySet()) {
             entry.getValue().setInFightID(entry.getKey());
             getTeam1().put(entry.getKey(), new Fighter(this, entry.getValue()));
         }
@@ -3748,7 +3750,7 @@ public class Fight {
 
     private boolean verifyStillInFight()// Return true si au moins un joueur est encore dans le combat
     {
-        if(this.mobGroup2 != null) return false;
+        if(this.monsterGroup2 != null) return false;
         for (Fighter f : getTeam0().values()) {
             if (f.isCollector())
                 return false;
@@ -4764,7 +4766,7 @@ public class Fight {
                         break;
                     case Constant.FIGHT_TYPE_PVM:
                         try {
-                            final Monster.MobGroup group = this.getMobGroup();
+                            final MonsterGroup group = this.getMobGroup();
 
                             if (team) { // Players have loose the fight, mob win the fight
                                 objects = new ArrayList<>();
@@ -4862,7 +4864,7 @@ public class Fight {
                         }
                     } else {
                         ArrayList<Drop> temporary3 = new ArrayList<>(dropsPlayers);
-                        if(this.getType() == Constant.FIGHT_TYPE_PVM && this.mobGroup != null && this.mobGroup.getMobs().size() > 1 && Formulas.getRandomValue(0, 100) >= 98) {
+                        if(this.getType() == Constant.FIGHT_TYPE_PVM && this.monsterGroup != null && this.monsterGroup.getMobs().size() > 1 && Formulas.getRandomValue(0, 100) >= 98) {
                             List<ObjectTemplate> templates = World.world.getEtherealWeapons(i.isInvocation() ? i.getInvocator().getLvl() : i.getLvl());
                             if(templates.size() > 0) {
                                 ObjectTemplate template = templates.get(templates.size() - 1);
@@ -5115,7 +5117,7 @@ public class Fight {
                         }, 1000);
                         if (this.getType() == Constant.FIGHT_TYPE_DOPEUL) {
                             for (Fighter F : loosers) {
-                                Monster.MobGrade mob = F.getMob();
+                                MonsterGrade mob = F.getMob();
                                 Monster m = mob.getTemplate();
                                 if (m == null)
                                     continue;
@@ -5139,7 +5141,7 @@ public class Fight {
                         if (this.getType() == Constant.FIGHT_TYPE_PVM && player != null) {
                             int bouftou = 0, tofu = 0;
 
-                            for (Monster.MobGrade mob : getMobGroup().getMobs().values()) {
+                            for (MonsterGrade mob : getMobGroup().getMobs().values()) {
                                 switch (mob.getTemplate().getId()) {
                                     case 793:
                                         bouftou++;
@@ -5149,7 +5151,7 @@ public class Fight {
                                         break;
                                     case 289:
                                         if (player.getCurMap().getSubArea().getId() == 211)
-                                            Monster.MobGroup.MAITRE_CORBAC.repop(player.getCurMap().getId());
+                                            MonsterGroup.MAITRE_CORBAC.repop(player.getCurMap().getId());
                                         break;
                                 }
                             }
@@ -5789,7 +5791,7 @@ public class Fight {
         return list;
     }
 
-    public void setMobGroup2(Monster.MobGroup mobGroup2) {
-        this.mobGroup2 = mobGroup2;
+    public void setMobGroup2(MonsterGroup monsterGroup2) {
+        this.monsterGroup2 = monsterGroup2;
     }
 }

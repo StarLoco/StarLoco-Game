@@ -17,8 +17,8 @@ import org.starloco.locos.database.data.game.*;
 import org.starloco.locos.database.data.login.*;
 import org.starloco.locos.entity.Collector;
 import org.starloco.locos.entity.monster.Monster;
-import org.starloco.locos.entity.monster.Monster.MobGrade;
-import org.starloco.locos.entity.monster.Monster.MobGroup;
+import org.starloco.locos.entity.monster.MonsterGrade;
+import org.starloco.locos.entity.monster.MonsterGroup;
 import org.starloco.locos.entity.mount.Mount;
 import org.starloco.locos.entity.npc.Npc;
 import org.starloco.locos.entity.npc.NpcTemplate;
@@ -1639,7 +1639,7 @@ public class CommandAdmin extends AdminUser {
             }
             mess = "Liste des groupes de monstres :";
             this.sendMessage(mess);
-            for (Entry<Integer, MobGroup> entry : map.getMobGroups().entrySet()) {
+            for (Entry<Integer, MonsterGroup> entry : map.getMobGroups().entrySet()) {
                 mess = entry.getKey() + " | " + entry.getValue().getCellId()
                         + " | " + entry.getValue().getAlignement() + " | "
                         + entry.getValue().getMobs().size();
@@ -2015,11 +2015,11 @@ public class CommandAdmin extends AdminUser {
                     String group1 = infos[2], group2 = infos[3];
                     GameCase cell = this.getPlayer().getCurCell();
                     GameMap map = this.getPlayer().getCurMap();
-                    MobGroup mg1 = map.spawnGroupOnCommand(cell.getId() - map.getW(), group1, true);
-                    MobGroup mg2 = map.spawnGroupOnCommand(cell.getId() - map.getW() + 1, group2, true);
-                    Map<Integer, MobGrade> hashMap = new HashMap<>();
+                    MonsterGroup mg1 = map.spawnGroupOnCommand(cell.getId() - map.getW(), group1, true);
+                    MonsterGroup mg2 = map.spawnGroupOnCommand(cell.getId() - map.getW() + 1, group2, true);
+                    Map<Integer, MonsterGrade> hashMap = new HashMap<>();
                     int guid = -20;
-                    for(MobGrade f : new ArrayList<>(mg2.getMobs().values())) {
+                    for(MonsterGrade f : new ArrayList<>(mg2.getMobs().values())) {
                         hashMap.put(guid, f);
                         guid--;
                     }
@@ -2432,8 +2432,8 @@ public class CommandAdmin extends AdminUser {
                 Monster monster = World.world.getMonstre(id);
 
 
-                for (MobGrade mobGrade : monster.getGrades().values())
-                    line += monster.getId() + "," + mobGrade.getLevel() + "|";
+                for (MonsterGrade monsterGrade : monster.getGrades().values())
+                    line += monster.getId() + "," + monsterGrade.getLevel() + "|";
             }
             this.sendMessage(line);
             return;

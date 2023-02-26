@@ -15,6 +15,8 @@ import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.database.DatabaseManager;
 import org.starloco.locos.database.data.game.NpcQuestionData;
 import org.starloco.locos.database.data.login.PlayerData;
+import org.starloco.locos.entity.monster.MonsterGrade;
+import org.starloco.locos.entity.monster.MonsterGroup;
 import org.starloco.locos.entity.monster.Monster;
 import org.starloco.locos.entity.npc.Npc;
 import org.starloco.locos.entity.npc.NpcQuestion;
@@ -224,7 +226,7 @@ public class Action {
                     q.applyQuest(player);
                 }
                 String grp = IDmob + "," + LVLmob + "," + LVLmob + ";";
-                Monster.MobGroup MG = new Monster.MobGroup(player.getCurMap().nextObjectId, map, player.getCurCell().getId(), grp);
+                MonsterGroup MG = new MonsterGroup(player.getCurMap().nextObjectId, map, player.getCurCell().getId(), grp);
                 player.getCurMap().startFigthVersusDopeuls(player, MG);
                 break;
             case -5://Apprendre un sort
@@ -931,7 +933,7 @@ public class Action {
                     }
                     if (ValidMobGroup.isEmpty())
                         return true;
-                    Monster.MobGroup group = new Monster.MobGroup(player.getCurMap().nextObjectId, map, player.getCurCell().getId(), ValidMobGroup);
+                    MonsterGroup group = new MonsterGroup(player.getCurMap().nextObjectId, map, player.getCurCell().getId(), ValidMobGroup);
                     player.getCurMap().startFightVersusMonstres(player, group); // Si bug startfight, voir "//Respawn d'un groupe fix" dans fight.java
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -1260,7 +1262,7 @@ public class Action {
                     }
                     if (ValidMobGroup1.isEmpty())
                         return true;
-                    Monster.MobGroup group = new Monster.MobGroup(player.getCurMap().nextObjectId, map, player.getCurCell().getId(), ValidMobGroup1);
+                    MonsterGroup group = new MonsterGroup(player.getCurMap().nextObjectId, map, player.getCurCell().getId(), ValidMobGroup1);
                     player.getCurMap().startFightVersusProtectors(player, group);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -2012,7 +2014,7 @@ public class Action {
                         }
                         if (ValidMobGroup2.isEmpty())
                             return true;
-                        Monster.MobGroup group = new Monster.MobGroup(player.getCurMap().nextObjectId, player.getCurMap(), player.getCurCell().getId(), ValidMobGroup2);
+                        MonsterGroup group = new MonsterGroup(player.getCurMap().nextObjectId, player.getCurMap(), player.getCurCell().getId(), ValidMobGroup2);
                         player.getCurMap().startFightVersusMonstres(player, group);// Si bug startfight, voir "//Respawn d'un groupe fix" dans fight.java
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -2945,7 +2947,7 @@ public class Action {
 
             case 524://R�ponse Maitre corbac
                 if(client == null) return true;
-                int qID = Monster.MobGroup.MAITRE_CORBAC.check();
+                int qID = MonsterGroup.MAITRE_CORBAC.check();
                 NpcQuestion quest = World.world.getNPCQuestion(qID);
                 if (quest == null) {
                     SocketManager.GAME_SEND_END_DIALOG_PACKET(client);
@@ -2956,11 +2958,11 @@ public class Action {
                 return false;
 
             case 525://EndFight Action Maitre Corbac
-                Monster.MobGroup group = player.hasMobGroup();
+                MonsterGroup group = player.hasMobGroup();
 
                 split = args.split(";");
 
-                for (Monster.MobGrade mb : group.getMobs().values()) {
+                for (MonsterGrade mb : group.getMobs().values()) {
                     switch (mb.getTemplate().getId()) {
                         case 289:
                             player.teleport((short) 9604, 403);
@@ -3710,10 +3712,10 @@ public class Action {
                     Monster petitChef = World.world.getMonstre(984);
                     if (petitChef == null)
                         return true;
-                    Monster.MobGrade mg = petitChef.getGradeByLevel(10);
+                    MonsterGrade mg = petitChef.getGradeByLevel(10);
                     if (mg == null)
                         return true;
-                    Monster.MobGroup _mg = new Monster.MobGroup(player.getCurMap().nextObjectId, player.getCurMap(), player.getCurCell().getId(), petitChef.getId() + "," + mg.getLevel() + "," + mg.getLevel() + ";");
+                    MonsterGroup _mg = new MonsterGroup(player.getCurMap().nextObjectId, player.getCurMap(), player.getCurCell().getId(), petitChef.getId() + "," + mg.getLevel() + "," + mg.getLevel() + ";");
                     player.getCurMap().startFightVersusMonstres(player, _mg);// Si bug startfight, voir "//Respawn d'un groupe fix" dans fight.java
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -4070,7 +4072,7 @@ public class Action {
                         if (player.hasItemTemplate(item, 1, false)) {
                             String groupe = monstre + "," + grade + "," + grade
                                     + ";";
-                            Monster.MobGroup Mgroupe = new Monster.MobGroup(player.getCurMap().nextObjectId, player.getCurMap(), player.getCurCell().getId(), groupe);
+                            MonsterGroup Mgroupe = new MonsterGroup(player.getCurMap().nextObjectId, player.getCurMap(), player.getCurCell().getId(), groupe);
                             player.getCurMap().startFightVersusMonstres(player, Mgroupe); // Si bug startfight, voir "//Respawn d'un groupe fix" dans fight.java
                         }
                     }

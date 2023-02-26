@@ -8,7 +8,7 @@ import org.starloco.locos.common.PathFinding;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.entity.Collector;
 import org.starloco.locos.entity.Prism;
-import org.starloco.locos.entity.monster.Monster;
+import org.starloco.locos.entity.monster.MonsterGrade;
 import org.starloco.locos.fight.spells.LaunchedSpell;
 import org.starloco.locos.fight.spells.Spell;
 import org.starloco.locos.fight.spells.SpellEffect;
@@ -31,7 +31,7 @@ public class Fighter implements Comparable<Fighter> {
     private boolean canPlay = false;
     private Fight fight;
     private int type = 0;                                // 1 : Personnage, 2 : Mob, 5 : Perco
-    private Monster.MobGrade mob = null;
+    private MonsterGrade mob = null;
     private Player perso = null;
     private Player _double = null;
     private Collector collector = null;
@@ -59,7 +59,7 @@ public class Fighter implements Comparable<Fighter> {
     private ArrayList<LaunchedSpell> launchedSpell = new ArrayList<>();
     public World.Couple<Byte, Long> killedBy;
 
-    public Fighter(Fight f, Monster.MobGrade mob) {
+    public Fighter(Fight f, MonsterGrade mob) {
         setId(mob.getInFightID());
         this.fight = f;
         this.type = 2;
@@ -131,7 +131,7 @@ public class Fighter implements Comparable<Fighter> {
         return this.type;
     }
 
-    public Monster.MobGrade getMob() {
+    public MonsterGrade getMob() {
         if (this.type == 2)
             return this.mob;
         return null;

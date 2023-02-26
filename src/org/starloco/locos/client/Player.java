@@ -24,7 +24,7 @@ import org.starloco.locos.database.data.login.PlayerData;
 import org.starloco.locos.dynamic.Start;
 import org.starloco.locos.entity.Collector;
 import org.starloco.locos.entity.Prism;
-import org.starloco.locos.entity.monster.Monster;
+import org.starloco.locos.entity.monster.MonsterGroup;
 import org.starloco.locos.entity.mount.Mount;
 import org.starloco.locos.entity.pet.Pet;
 import org.starloco.locos.entity.pet.PetEntry;
@@ -170,7 +170,7 @@ public class Player {
     //Fight end
     private int hasEndFight = -1;
     private Action endFightAction;
-    private Monster.MobGroup hasMobGroup = null;
+    private MonsterGroup hasMonsterGroup = null;
     //Item classe
     private ArrayList<Integer> objectsClass = new ArrayList<Integer>();
     private Map<Integer, World.Couple<Integer, Integer>> objectsClassSpell = new HashMap<>();
@@ -4670,14 +4670,14 @@ public class Player {
         return hasEndFight;
     }
 
-    public Monster.MobGroup hasMobGroup() {
-        return hasMobGroup;
+    public MonsterGroup hasMobGroup() {
+        return hasMonsterGroup;
     }
 
-    public void setNeededEndFight(int hasEndFight, Monster.MobGroup group) {
+    public void setNeededEndFight(int hasEndFight, MonsterGroup group) {
         this.endFightAction = null;
         this.hasEndFight = hasEndFight;
-        this.hasMobGroup = group;
+        this.hasMonsterGroup = group;
     }
 
     public void setNeededEndFightAction(Action endFightAction) {

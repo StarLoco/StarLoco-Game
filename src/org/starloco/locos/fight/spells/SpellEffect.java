@@ -6,7 +6,7 @@ import org.starloco.locos.common.Formulas;
 import org.starloco.locos.common.PathFinding;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.entity.monster.Monster;
-import org.starloco.locos.entity.monster.Monster.MobGrade;
+import org.starloco.locos.entity.monster.MonsterGrade;
 import org.starloco.locos.fight.Fight;
 import org.starloco.locos.fight.Fighter;
 import org.starloco.locos.fight.spells.Spell.SortStats;
@@ -3852,7 +3852,7 @@ public class SpellEffect implements Cloneable {
 			e.printStackTrace();
 		}
 
-		MobGrade MG = null;
+		MonsterGrade MG = null;
 		Monster monster = World.world.getMonstre(id);
 		if(monster == null) return;
 		try {
@@ -3870,8 +3870,7 @@ public class SpellEffect implements Cloneable {
 			return;
 
 		MG.setInFightID(fight.getNextLowerFighterGuid());
-		if (caster.getPlayer() != null)
-			MG.changeStatsByInvocator(caster); // Augmenter les statistiques uniquement pour les invocations de personnages
+		MG.setStatsInvocations(caster, id); // Augmenter les statistiques uniquement pour les invocations de personnages
 		Fighter F = new Fighter(fight, MG);
 		F.setTeam(caster.getTeam());
 		F.setInvocator(caster);
@@ -3939,28 +3938,27 @@ public class SpellEffect implements Cloneable {
 			e.printStackTrace();
 		}
 
-		MobGrade mobGrade;
+		MonsterGrade monsterGrade;
 
 		try {
-			mobGrade = World.world.getMonstre(monster).getGradeByLevel(level).getCopy();
+			monsterGrade = World.world.getMonstre(monster).getGradeByLevel(level).getCopy();
 		} catch (Exception e) {
 			e.printStackTrace();
 			return;
 		}
 
-		if (monster == -1 || level == -1 || mobGrade == null)
+		if (monster == -1 || level == -1 || monsterGrade == null)
 			return;
-		if (monster == 556 && this.caster.getPlayer() != null)
-			mobGrade.changeStatsByInvocator(this.caster);
+		monsterGrade.setStatsInvocations(this.caster, monster);
 
 		int id = fight.getNextLowerFighterGuid();
-		mobGrade.setInFightID(id);
+		monsterGrade.setInFightID(id);
 
-		Fighter fighter = new Fighter(fight, mobGrade);
+		Fighter fighter = new Fighter(fight, monsterGrade);
 
 		if (monster == 282 && this.caster.getPlayer() != null) {
 			float factor = (1.0F + (caster.getLvl()) / 100.0F);
-			fighter.setPdvMax(Math.round(mobGrade.getPdvMax() * factor));
+			fighter.setPdvMax(Math.round(monsterGrade.getPdvMax() * factor));
 			fighter.setPdv(fighter.getPdvMax());
 		}
 		fighter.setTeam(this.caster.getTeam());

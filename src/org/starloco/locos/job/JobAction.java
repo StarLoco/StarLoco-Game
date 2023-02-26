@@ -6,7 +6,7 @@ import org.starloco.locos.client.Player;
 import org.starloco.locos.common.Formulas;
 import org.starloco.locos.common.PathFinding;
 import org.starloco.locos.common.SocketManager;
-import org.starloco.locos.entity.monster.Monster;
+import org.starloco.locos.entity.monster.MonsterGroup;
 import org.starloco.locos.fight.spells.SpellEffect;
 import org.starloco.locos.game.GameClient;
 import org.starloco.locos.game.action.ExchangeAction;
@@ -205,7 +205,7 @@ public class JobAction {
                 for (int[] protector : JobConstant.JOB_PROTECTORS) {
                     if (tID == protector[1]) {
                         int monsterLvl = JobConstant.getProtectorLvl(player.getLevel());
-                        player.getCurMap().startFightVersusProtectors(player, new Monster.MobGroup(player.getCurMap().nextObjectId, player.getCurMap(), cell.getId(), protector[0] + "," + monsterLvl + "," + monsterLvl));
+                        player.getCurMap().startFightVersusProtectors(player, new MonsterGroup(player.getCurMap().nextObjectId, player.getCurMap(), cell.getId(), protector[0] + "," + monsterLvl + "," + monsterLvl));
                         player.getCurMap().nextObjectId--;
                         break;
                     }

@@ -10,7 +10,7 @@ import org.starloco.locos.auction.AuctionManager;
 import org.starloco.locos.database.DatabaseManager;
 import org.starloco.locos.database.data.game.HeroicMobsGroupsData;
 import org.starloco.locos.database.data.login.ServerData;
-import org.starloco.locos.entity.monster.Monster;
+import org.starloco.locos.entity.monster.MonsterGroup;
 import org.starloco.locos.entity.mount.Mount;
 import org.starloco.locos.event.EventManager;
 import org.starloco.locos.exchange.ExchangeClient;
@@ -143,7 +143,7 @@ public class Main {
         ((HeroicMobsGroupsData) DatabaseManager.get(HeroicMobsGroupsData.class)).deleteAllFix();
 
         for (GameMap map : World.world.getMaps()) {
-            for (Monster.MobGroup group : map.getMobGroups().values()) {
+            for (MonsterGroup group : map.getMobGroups().values()) {
                 if (!group.isFix())
                     ((HeroicMobsGroupsData) DatabaseManager.get(HeroicMobsGroupsData.class)).insert(map.getId(), group);
                 else

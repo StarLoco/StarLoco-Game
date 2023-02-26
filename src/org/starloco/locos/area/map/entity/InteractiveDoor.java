@@ -5,7 +5,7 @@ import com.singularsys.jep.JepException;
 import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.client.Player;
-import org.starloco.locos.entity.monster.Monster;
+import org.starloco.locos.entity.monster.MonsterGroup;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.game.world.World.Couple;
 import org.starloco.locos.object.GameObject;
@@ -255,9 +255,9 @@ public class InteractiveDoor {
 
         private static String parseMGC(Player player, String request) {
             String[] data = request.split("==")[1].split("-");
-            for(Monster.MobGroup mobGroup : player.getCurMap().getMobGroups().values())
+            for(MonsterGroup monsterGroup : player.getCurMap().getMobGroups().values())
                 for(String id : data)
-                    if (mobGroup.getCellId() == Short.parseShort(id))
+                    if (monsterGroup.getCellId() == Short.parseShort(id))
                         return "1==1";
             return "1==0";
         }
