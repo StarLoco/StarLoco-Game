@@ -45,7 +45,6 @@ import org.starloco.locos.guild.Guild;
 import org.starloco.locos.job.JobConstant;
 import org.starloco.locos.kernel.Config;
 import org.starloco.locos.kernel.Constant;
-import org.starloco.locos.kernel.Main;
 import org.starloco.locos.object.GameObject;
 import org.starloco.locos.object.ObjectTemplate;
 import org.starloco.locos.object.entity.SoulStone;
@@ -72,8 +71,8 @@ public class Fight {
     private ArrayList<GameCase> start1 = new ArrayList<>();
     private final Map<Integer, Challenge> allChallenges = new HashMap<>();
     private final Map<Integer, GameCase> rholBack = new HashMap<>();
-    private final List<Glyph> allGlyphs = new ArrayList<>();
-    private final List<Trap> allTraps = new ArrayList<>();
+    private final List<Glyph> glyphs = new ArrayList<>();
+    private final List<Trap> traps = new ArrayList<>();
     private List<Fighter> orderPlaying = new ArrayList<>();
     private final ArrayList<Fighter> capturer = new ArrayList<>(8);
     private final ArrayList<Fighter> trainer = new ArrayList<>(8);
@@ -861,12 +860,35 @@ public class Fight {
         return rholBack;
     }
 
-    public List<Glyph> getAllGlyphs() {
-        return allGlyphs;
+    public List<Glyph> getGlyphs() {
+        return glyphs;
     }
 
-    public List<Trap> getAllTraps() {
-        return allTraps;
+    public List<Trap> getTraps() {
+        return traps;
+    }
+
+    public void checkTraps(Fighter fighter) {
+        final short[] nbr = {0};
+        List<Trap> traps = this.traps.stream().filter(trap -> trap.getSpell() != 73).collect(Collectors.toList());
+        traps.addAll(this.traps.stream().filter(trap -> trap.getSpell() == 73).collect(Collectors.toList()));
+        this.recursiveCheckTrap(traps, 0, traps.size(), fighter, nbr);
+    }
+
+    private void recursiveCheckTrap(List<Trap> traps, int i, int size, Fighter fighter, short[] nbr) {
+        if(i < size) {
+            final Trap trap = traps.get(i);
+            int time = 0;
+
+            if (trap != null && PathFinding.getDistanceBetween(this.getMap(), trap.getCell().getId(), fighter.getCell().getId()) <= trap.getSize()) {
+                trap.onTraped(fighter);
+                time = 750 + nbr[0] * 300;
+                nbr[0]++;
+                if (this.getState() == Constant.FIGHT_STATE_FINISHED)
+                    return;
+            }
+            TimerWaiter.addNext(() -> recursiveCheckTrap(traps, i + 1, size, fighter, nbr), time);
+        }
     }
 
     ArrayList<Fighter> getCapturer() {
@@ -1862,12 +1884,12 @@ public class Fight {
         this.turn = new Turn(this, current);
 
         // Gestion des glyphes
-        ArrayList<Glyph> glyphs = new ArrayList<>(this.getAllGlyphs());// Copie du tableau
+        ArrayList<Glyph> glyphs = new ArrayList<>(this.getGlyphs());// Copie du tableau
 
         for (Glyph glyph : glyphs) {
             if (glyph.getCaster().getId() == current.getId()) {
                 if (glyph.decrementDuration() == 0) {
-                    getAllGlyphs().remove(glyph);
+                    getGlyphs().remove(glyph);
                     glyph.disappear();
                     continue;
                 }
@@ -2007,7 +2029,7 @@ public class Fight {
             SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(this, 7, 100, SE.getCaster().getId() + "", current.getId() + "," + dgt);
         }
 
-        for (Glyph g : new ArrayList<>(getAllGlyphs())) {
+        for (Glyph g : new ArrayList<>(getGlyphs())) {
             if (getState() >= Constant.FIGHT_STATE_FINISHED)
                 return;
             // Si dans le glyphe
@@ -2323,7 +2345,7 @@ public class Fight {
                     c.getValue().challengeSpecLoose(p);
             }
         }
-        for(Glyph glyph : this.getAllGlyphs()) {
+        for(Glyph glyph : this.getGlyphs()) {
             SocketManager.GAME_SEND_GA_PACKET(this, p, 999, glyph.getCaster().getId() + "",
                     "GDZ+" + glyph.getCell().getId() + ";" + glyph.getSize() + ";" + glyph.getColor());
             SocketManager.GAME_SEND_GA_PACKET(this, p, 999, glyph.getCaster().getId() + "",
@@ -2800,7 +2822,7 @@ public class Fight {
         if(cell != null) {
             for (SpellEffect effect : spell.getEffects()) {
                 if (effect.getEffectID() == 400) {
-                    for (Trap trap : this.getAllTraps()) {
+                    for (Trap trap : this.getTraps()) {
                         if (trap.getCell().getId() == cell.getId()) {
                             if(caster.getPlayer() != null)
                                 caster.getPlayer().send("Im1229");
@@ -3117,7 +3139,8 @@ public class Fight {
         if (fighter.getPlayer() == null) {
             SocketManager.GAME_SEND_GAMEACTION_TO_FIGHT(this, 7, this.getCurAction());
             this.setCurAction("");
-            new ArrayList<>(this.getAllTraps()).stream().filter(Objects::nonNull).filter(trap -> PathFinding.getDistanceBetween(getMap(), trap.getCell().getId(), current.getCell().getId()) <= trap.getSize()).forEach(trap -> trap.onTraped(current));
+            this.checkTraps(current);
+            //new ArrayList<>(this.getTraps()).stream().filter(Objects::nonNull).filter(trap -> PathFinding.getDistanceBetween(getMap(), trap.getCell().getId(), current.getCell().getId()) <= trap.getSize()).forEach(trap -> trap.onTraped(current));
             return true;
         }
 
@@ -3303,15 +3326,15 @@ public class Fight {
         if ((getType() == Constant.FIGHT_TYPE_PVM || getType() == Constant.FIGHT_TYPE_DOPEUL) && getAllChallenges().size() > 0)
             this.getAllChallenges().values().stream().filter(Objects::nonNull).forEach(challenge -> challenge.onMobDie(target, casterFinal));
 
-        new ArrayList<>(this.getAllGlyphs()).stream().filter(glyph -> glyph.getCaster().getId() == target.getId()).forEach(glyph -> {
+        new ArrayList<>(this.getGlyphs()).stream().filter(glyph -> glyph.getCaster().getId() == target.getId()).forEach(glyph -> {
             SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(this, 7, 999, casterFinal.getId() + "", "GDZ-" + glyph.getCell().getId() + ";" + glyph.getSize() + ";" + glyph.getColor());
             SocketManager.GAME_SEND_GDC_PACKET_TO_FIGHT(this, 7, glyph.getCell().getId());
-            this.getAllGlyphs().remove(glyph);
+            this.getGlyphs().remove(glyph);
         });
 
-        new ArrayList<>(this.getAllTraps()).stream().filter(trap -> trap.getCaster().getId() == target.getId()).forEach(trap -> {
+        new ArrayList<>(this.getTraps()).stream().filter(trap -> trap.getCaster().getId() == target.getId()).forEach(trap -> {
             trap.desappear();
-            this.getAllTraps().remove(trap);
+            this.traps.remove(trap);
         });
 
         if(target.getId() == caster.getId()) {
@@ -3592,16 +3615,15 @@ public class Fight {
             ArrayList<Fighter> all = new ArrayList<>();
             all.addAll(this.getTeam0().values());
             all.addAll(this.getTeam1().values());
-            all.stream().filter(fighter -> fighter != null && (fighter.isHide())).forEach(f1 -> {
-                SpellEffect effect = f1.getBuff(150);
-                if(effect != null) {
-                    SocketManager.GAME_SEND_GA_PACKET(this, player, 150, effect.getCaster().getId() + "", f1.getId() + "," + effect.getTurn());
+            all.stream().filter(Objects::nonNull).forEach(f1 -> {
+                for(SpellEffect effect : f1.getFightBuff()) {
+                    this.sendBuffPacket(f1, effect, Collections.singletonList(target), player);
                 }
             });
-            for(Trap trap : this.getAllTraps())
+            for(Trap trap : this.getTraps())
                 if(trap.getCaster().getTeam() == target.getTeam())
                     trap.refresh(target);
-            for(Glyph glyph : this.getAllGlyphs()) {
+            for(Glyph glyph : this.getGlyphs()) {
                 SocketManager.GAME_SEND_GA_PACKET(this, target.getPlayer(), 999, glyph.getCaster().getId() + "",
                         "GDZ+" + glyph.getCell().getId() + ";" + glyph.getSize() + ";" + glyph.getColor());
                 SocketManager.GAME_SEND_GA_PACKET(this, target.getPlayer(), 999, glyph.getCaster().getId() + "",
@@ -3609,6 +3631,88 @@ public class Fight {
             }
         }
         return true;
+    }
+
+    public void sendBuffPacket(Fighter target, SpellEffect effect, List<Fighter> receivers, Player reconnectedPlayer) {
+        final StringBuilder packet = new StringBuilder();
+        packet.append("GIE").append(effect.getEffectID()).append(";").append(target.getId()).append(";");
+
+        switch(effect.getEffectID()) {
+            case 106://Renvoie de sort
+                packet.append("-1;").append(effect.getValue()).append(";10;;");
+                break;
+            case 950://Etat
+                int value = Integer.parseInt(effect.getArgs().split(";")[2]);
+                packet.append(value).append(";;").append(value).append(";;");
+                break;
+            case 79://Chance éca
+                value = Integer.parseInt(effect.getArgs().split(";")[0]);
+                String valMax = effect.getArgs().split(";")[1];
+                String chance = effect.getArgs().split(";")[2];
+                packet.append(value).append(";").append(valMax).append(";").append(chance).append(";;");
+                break;
+            case 606:
+            case 607:
+            case 608:
+            case 609:
+            case 611:
+                // de X sur Y tours
+                String jet = effect.getArgs().split(";")[5];
+                int min = Formulas.getMinJet(jet);
+                int max = Formulas.getMaxJet(jet);
+                packet.append(min).append(";").append(max).append(";").append(max).append(";;");
+                break;
+            case 788://Fait apparaitre message le temps de buff sacri Chatiment de X sur Y tours
+                value = Integer.parseInt(effect.getArgs().split(";")[1]);
+                String valMax2 = effect.getArgs().split(";")[2];
+                if (Integer.parseInt(effect.getArgs().split(";")[0]) == 108)
+                    return;
+                packet.append(valMax2).append(";").append(valMax2).append(";").append(valMax2).append(";;");
+                break;
+            case 91://Su�otement : vol eau
+            case 92://vol terre
+            case 93://vol air
+            case 94://vol feu
+            case 95://vol neutre
+            case 96://dom eau
+            case 97://dom terre
+            case 98://Poison insidieux : dom air
+            case 99://dom feu
+            case 100://dom neutre : Fl�che Empoisonn�e, Tout ou rien
+            case 107://Mot d'�pine (2�3), Contre(3)
+                //case 108://Mot de R�g�n�ration, Tout ou rien
+            case 114://Multiplie les dommages
+            case 165://Ma�trises
+            case 781://MAX
+            case 782://MIN
+                value = Integer.parseInt(effect.getArgs().split(";")[0]);
+                String valMax1 = effect.getArgs().split(";")[1];
+                if (valMax1.compareTo("-1") == 0 || effect.getSpell() == 82 || effect.getSpell() == 94)
+                    packet.append(value).append(";;;;");
+                else if (valMax1.compareTo("-1") != 0)
+                    packet.append(value).append(";").append(valMax1).append(";;;");
+                break;
+            default:
+                packet.append(effect.getValue()).append(";;;;");
+                break;
+        }
+
+        int duration = effect.getTurn() == -1 ? 999 : effect.getTurn();
+        if(reconnectedPlayer != null) {
+            if(target.getPlayer() == reconnectedPlayer)
+                duration++;
+            if(effect.getEffectID() == 150) {
+                SocketManager.GAME_SEND_GA_PACKET(this, reconnectedPlayer, 150, String.valueOf(effect.getCaster().getId()), target.getId() + "," + effect.getTurn());
+            }
+        }
+
+        packet.append(duration).append(";").append(effect.getSpell());
+
+        for(Fighter fighter : receivers) {
+            if(fighter != null && fighter.getPlayer() != null) {
+                fighter.getPlayer().send(packet.toString());
+            }
+        }
     }
 
     public void verifIfAllReady() {
@@ -4177,13 +4281,7 @@ public class Fight {
             final Fighter fighter = getFighterByPerso(player);
             final int currentCell = fighter.getCell().getId();
 
-
-            for (Trap trap : new ArrayList<>(this.getAllTraps())) {
-                if (PathFinding.getDistanceBetween(this.getMap(), trap.getCell().getId(), currentCell) <= trap.getSize())
-                    trap.onTraped(fighter);
-                if (this.getState() == Constant.FIGHT_STATE_FINISHED)
-                    break;
-            }
+            this.checkTraps(fighter);
         }
 
         this.setCurAction("");

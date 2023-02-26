@@ -437,151 +437,51 @@ public class Fighter implements Comparable<Fighter> {
         return false;
     }
 
-    public void addBuff(int id, int val, int duration, boolean debuff, int spellID, String args, Fighter caster, SpellEffect effect) {
-        if(this.mob != null)
-            for(int id1 : Constant.STATIC_INVOCATIONS)
-                if (id1 != 2750 && id1 == this.mob.getTemplate().getId())
-                    return;
+    public void addBuff(int effectId, int value, int duration, boolean debuff, int spellId, String args, Fighter caster) {
+        SpellEffect effect = new SpellEffect(effectId, value, duration, duration, debuff, caster, args, spellId);
 
-        switch(spellID) {
-            case 1099:
-                if(this.mob != null && this.mob.getTemplate().getId() == 423)
+        if(this.mob != null) {
+            if(this.mob.getTemplate().getId() == 423 && spellId == 1099)
+                return;
+            for (int id : Constant.STATIC_INVOCATIONS) {
+                if (id != 2750 && id == this.mob.getTemplate().getId()) {
                     return;
-                break;
-            case 99:case 5:case 20:case 127: case 89:case 126:case 115:case 192: case 4:case 1:case 6:
-            case 14:case 18:case 7: case 284:case 197:case 704:case 168:case 45: case 159:case 171:case 167:case 511:case 513:
+                }
+            }
+        }
+
+        switch(spellId) {
+            case 99:case 5:case 20:case 127: case 89:case 126:case 115:case 192: case 4:case 1:case 6: case 14:case 18:
+            case 7: case 284:case 197:case 704:case 168:case 45: case 159:case 171:case 167:case 511: case 513:
             case 686: case 701: // Sort pandawa (etat)
             case 431:case 433:case 437:case 443:case 441: // Chatiment
                 debuff = true;
                 break;
         }
-
-        if(id == 606 || id == 607 || id == 608 || id == 609 || id == 611 || id == 125 || id == 114) debuff = true;
-        else if(id == 293) debuff = false;
-
-        switch(spellID) {
-            // Feca spells shields
-            case 1: case 4: case 5: case 6: case 7: case 14: case 18: case 20: case 422:
-                if(this.getId() != caster.getId())
-                    duration++;
+        switch(effectId) {
+            case 606: case 607: case 608: case 609: case 611: case 125: case 114:
+                debuff = true;
+                break;
+            case 293:
+                debuff = false;
                 break;
         }
-        //Si c'est le jouer actif qui s'autoBuff, on ajoute 1 a la durée
-        if(effect != null && this.getId() == caster.getId() && id != 84 && id != 950 && spellID != 446) {
-            duration += 1;
-            effect.setTurn(duration);
-            switch(spellID) {
-                case 138: // Mot de silence
-                case 170: // Fleche d'immo
-                case 114: // Rekop
-                    if(effect.getEffectID() == 140) // Passer le tour
-                        break;
-                    duration--;
-                    break;
-            }
-        }
-        // Cas infini
-        if(this.mob != null && duration == 0) duration = -1;
-        this.fightBuffs.add(new SpellEffect(id,val,duration,duration,debuff,caster,args,spellID));
 
+        // If current player is buffing himself, we add 1 to the duration
+        //if(this.getId() == caster.getId() && effectId != 84 && effectId != 950 && spellId != 446) {
+            //effect.setTurn(duration + 1);
+        //}
+
+        // Infinity case
+        if(this.mob != null && duration == 0)
+            duration = -1;
+
+        this.fightBuffs.add(effect);
 
         if(Config.debug)
-            System.out.println("- Ajout du Buff "+id+" sur le personnage fighter ("+this.getId()+") val : "+val+" duration : "+duration+" debuff : "+debuff+" spellid : "+spellID+" args : "+args+" !");
-        switch(spellID) {
-            // Feca spells shields
-            case 1: case 4: case 5: case 6: case 7: case 14: case 18: case 20: case 422:
-                if(this.getId() != caster.getId())
-                    duration--;
-                break;
-        }
-        if(id != 950 && spellID != 446) {
-            switch (spellID) {
-                case 170: // Fleche d'immo
-                case 114: // Rekop
-                case 89:// Devouement
-                case 101:// Roulette
-                    if(effect != null) effect.setTurn(duration);
-                    if (duration != 0) duration--;
-                    break;
-                default:
-                    if (this.getId() == caster.getId())
-                        duration--;
-            }
-        }
+            System.out.println("Add buff " + effectId + " on fighter " + this.getId() + " with value: " + value + ", duration: " + duration + ", debuff: " + debuff + ", spellId: " + spellId + ", args: " + args);
 
-        switch(id) {
-            case 106://Renvoie de sort
-                SocketManager.GAME_SEND_FIGHT_GIE_TO_FIGHT(this.fight, 7, id, getId(), -1, val+"", "10", "", duration, spellID);
-                break;
-            case 950://Etat
-                val = effect != null ? Integer.parseInt(effect.getArgs().split(";")[2]) : -1;
-                SocketManager.GAME_SEND_FIGHT_GIE_TO_FIGHT(this.fight, 7, id, getId(), val, "", val + "", "", duration, spellID);
-                break;
-
-            case 79://Chance éca
-                val = Integer.parseInt(args.split(";")[0]);
-                String valMax = args.split(";")[1];
-                String chance = args.split(";")[2];
-                SocketManager.GAME_SEND_FIGHT_GIE_TO_FIGHT(this.fight, 7, id, getId(), val, valMax, chance, "", duration, spellID);
-                break;
-
-            case 606:
-            case 607:
-            case 608:
-            case 609:
-            case 611:
-                // de X sur Y tours
-                String jet = args.split(";")[5];
-                int min = Formulas.getMinJet(jet);
-                int max = Formulas.getMaxJet(jet);
-                SocketManager.GAME_SEND_FIGHT_GIE_TO_FIGHT(this.fight, 7, id, getId(), min, "" + max, "" + max, "", duration,spellID);
-                break;
-
-            case 788://Fait apparaitre message le temps de buff sacri Chatiment de X sur Y tours
-                val = Integer.parseInt(args.split(";")[1]);
-                String valMax2 = args.split(";")[2];
-                if(Integer.parseInt(args.split(";")[0]) == 108)
-                    return;
-                SocketManager.GAME_SEND_FIGHT_GIE_TO_FIGHT(this.fight, 7, id, getId(), val, ""+val, ""+valMax2, "", duration, spellID);
-                break;
-
-            case 91://Su�otement : vol eau
-			case 92://vol terre
-			case 93://vol air
-			case 94://vol feu
-			case 95://vol neutre
-			case 96://dom eau
-			case 97://dom terre
-			case 98://Poison insidieux : dom air
-			case 99://dom feu
-			case 100://dom neutre : Fl�che Empoisonn�e, Tout ou rien
-			case 107://Mot d'�pine (2�3), Contre(3)
-			//case 108://Mot de R�g�n�ration, Tout ou rien
-			case 114://Multiplie les dommages
-			case 165://Ma�trises
-			case 781://MAX
-			case 782://MIN
-                val = Integer.parseInt(args.split(";")[0]);
-                String valMax1 = args.split(";")[1];
-                if(valMax1.compareTo("-1") == 0 || spellID == 82 || spellID == 94)
-                    SocketManager.GAME_SEND_FIGHT_GIE_TO_FIGHT(this.fight, 7, id, getId(), val, "", "", "", duration, spellID);
-                else if(valMax1.compareTo("-1") != 0)
-                    SocketManager.GAME_SEND_FIGHT_GIE_TO_FIGHT(this.fight, 7, id, getId(), val, valMax1, "", "", duration, spellID);
-                break;
-
-            case 85:
-            case 86:
-            case 87:
-            case 88:
-            case 89:
-                val = Integer.parseInt(args.split(";")[0]);
-                SocketManager.GAME_SEND_FIGHT_GIE_TO_FIGHT(this.fight, 7, id, getId(), val, "", "", "", duration, spellID);
-                break;
-
-            default:
-                SocketManager.GAME_SEND_FIGHT_GIE_TO_FIGHT(this.fight, 7, id, getId(), val, "", "", "", duration == -1 ? 999 : duration, spellID);
-                break;
-        }
+        fight.sendBuffPacket(this, effect, fight.getFighters(7), null);
     }
 
     public void debuff(SpellEffect effect) {
@@ -636,7 +536,7 @@ public class Fighter implements Comparable<Fighter> {
             this.fightBuffs.clear();
             TimerWaiter.addNext(() -> array.stream().filter(Objects::nonNull)
                     .forEach(spellEffect -> this.addBuff(spellEffect.getEffectID(), spellEffect.getValue(),
-                            spellEffect.getTurn(), spellEffect.isDebuffabe(), spellEffect.getSpell(), spellEffect.getArgs(), this, spellEffect)), 1000);
+                            spellEffect.getTurn(), spellEffect.isDebuffabe(), spellEffect.getSpell(), spellEffect.getArgs(), this)), 1000);
         }
 
         if (this.perso != null && !this.hasLeft) // Envoie les stats au joueurs

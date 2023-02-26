@@ -81,8 +81,8 @@ public class IA18 extends AbstractIA {
 
         if (attack != 0) {
             this.ok = true;
-            this.fight.getAllGlyphs().stream().filter(entry -> entry.getCell().getId() == this.fighter.getCell().getId()).forEach(entry -> {
-                this.fighter.addBuff(128, 1, 1, true, 1072, "", this.fighter,  null);
+            this.fight.getGlyphs().stream().filter(entry -> entry.getCell().getId() == this.fighter.getCell().getId()).forEach(entry -> {
+                this.fighter.addBuff(128, 1, 1, true, 1072, "", this.fighter);
                 SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(this.fight, 7, 78, this.fighter.getId() + "", this.fighter.getId() + "," + "" + "," + 1);
             });
         }

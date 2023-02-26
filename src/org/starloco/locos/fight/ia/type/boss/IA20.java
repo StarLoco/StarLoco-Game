@@ -57,7 +57,7 @@ public class IA20 extends AbstractIA  {
 
     private List<Integer> getGlyphCells() {
         List<Integer> cells = new ArrayList<>();
-        cells.addAll(this.fight.getAllGlyphs()
+        cells.addAll(this.fight.getGlyphs()
                 .stream().filter(glyph -> glyph != null && glyph.getCaster().getId() == this.fighter.getId())
                 .map(glyph -> glyph.getCell().getId()).collect(Collectors.toList()));
         return cells;

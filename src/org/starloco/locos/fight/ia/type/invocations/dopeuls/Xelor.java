@@ -25,15 +25,18 @@ public class Xelor extends AbstractEasyIA {
                 Spell.SortStats spell = get().findSpell(fighter, 94);
                 Fighter friend = fighter.getInvocator();
                 if(fight.canLaunchSpell(fighter, spell, friend.getCell())) {
-                    if (get().moveToAttack(fight, fighter, friend, spell))
+                    if (get().moveToAttack(fight, fighter, friend, spell)) {
                         setNextParams(0, 4, 1500);
-                    else if (get().tryCastSpell(fight, fighter, fighter, spell.getSpellID()) == 0)
+                    } else if (get().tryCastSpell(fight, fighter, friend, spell.getSpellID()) == 0 || get().tryCastSpell(fight, fighter, fighter, spell.getSpellID()) == 0) {
                         this.time = 1500;
+                    }
                 }
                 break;
             case 2: // Démotivation
                 Fighter target = get().getNearestEnnemy(fight, fighter, true);
-                if (get().tryCastSpell(fight, fighter, target, 87) == 0)
+                if(get().moveToAttack(fight, fighter, target, get().findSpell(fighter, 87)))
+                    setNextParams(1, 3, 1500);
+                else if (get().tryCastSpell(fight, fighter, target, 87) == 0)
                     this.time = 1500;
                 break;
             case 3: // Aiguille
