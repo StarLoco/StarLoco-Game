@@ -279,6 +279,10 @@ public class Constant {
     public static final int STATS_ADD_SOIN = 178;
     public static final int STATS_REM_SOIN = 179;
     public static final int STATS_CREATURE = 182;
+    public static final int STATS_ADD_RES_M = 183;
+    public static final int STATS_ADD_RES_P = 184;
+    public static final int STATS_REM_PERDOM = 186;
+    public static final int STATS_REM_SUM = 187;
     public static final int STATS_ADD_RP_TER = 210;
     public static final int STATS_ADD_RP_EAU = 211;
     public static final int STATS_ADD_RP_AIR = 212;

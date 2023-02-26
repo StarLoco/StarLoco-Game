@@ -6,6 +6,7 @@ import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.fight.Fight;
 import org.starloco.locos.fight.Fighter;
+import org.starloco.locos.fight.spells.ResEffectInfo;
 import org.starloco.locos.fight.spells.SpellEffect;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.game.world.World.Couple;
@@ -540,7 +541,28 @@ public class Formulas {
                 10 * (Math.abs(map2.getX() - map1.getX()) + Math.abs(map2.getY() - map1.getY()) - 1);
     }
 
-    private static int getArmorResist(Fighter target, int statID) {
+    public static int applyResistancesOnDamage(int elementID, int damage, Fighter target, boolean addPVPRes) {
+        ResEffectInfo resInfo = ResEffectInfo.forElement(elementID);
+
+        int resF = target.getTotalStats().getEffect(resInfo.getFixedElem()) + target.getTotalStats().getEffect(resInfo.getFixed());
+        int resP = target.getTotalStats().getEffect(resInfo.getPercentElem());
+
+        if (addPVPRes) {
+            resF += target.getTotalStats().get(resInfo.getFixedElemPvP());
+            resP += target.getTotalStats().get(resInfo.getPercentElemPvP());
+        }
+
+        if (target.getPlayer() != null) {
+            // CAP 50% Players
+            resP = Math.min(resP, 50);
+        }
+        // Apply to damage
+        damage -= resF;
+        damage *= (1 - resP / 100D);
+        return damage;
+    }
+
+    public static int getArmorResist(Fighter target, int statID) {
         int armor = 0;
         for (SpellEffect SE : target.getBuffsByEffectID(265)) {
             Fighter fighter;

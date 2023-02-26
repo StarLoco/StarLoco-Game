@@ -185,16 +185,13 @@ public class SpellEffect implements Cloneable {
 						break;
 
 					case 107://renvoie Dom
-						if(this.spell == 66 || spell == 71 ||spell == 196 || spell == 213 || spell == 181 || spell == 200)
+						if(this.spell == 66 || spell == 71 ||spell == 196 || spell == 181 || spell == 200 || target.getId() == caster.getId())
 							break;
-						if (target.getId() == caster.getId()) break;
 
-						if (caster.hasBuff(765))//sacrifice
-						{
-							if (caster.getBuff(765) != null && !caster.getBuff(765).getCaster().isDead()) {
-								buff.applyEffect_765B(fight, caster);
-								caster = caster.getBuff(765).getCaster();
-							}
+						if (caster.hasBuff(765) && caster.getBuff(765) != null && !caster.getBuff(765).getCaster().isDead()) {
+							// Sacrifice
+							buff.applyEffect_765B(fight, caster);
+							caster = caster.getBuff(765).getCaster();
 						}
 
 						String[] args = buff.getArgs().split(";");
@@ -209,24 +206,34 @@ public class SpellEffect implements Cloneable {
 						} catch (Exception e) {
 							return finalDommage;
 						}
-						if (renvoie > finalDommage) renvoie = finalDommage;
-						//finalDommage = calculFinalDommage(fight, target, caster, statID, returns, false, false, -1);
-						finalDommage -= renvoie;
 
-						if (caster.hasBuff(105)) {
-							renvoie = renvoie - caster.getBuff(105).getValue();//Immu
-							SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 105, caster.getId() + "", target.getId() + "," + caster.getBuff(105).getValue());
-							if(renvoie < 0) renvoie = 0;
-							SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 107, "-1", target.getId() + "," + renvoie);
-						} else {
-							SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 107, "-1", target.getId() + "," + renvoie);
-							if (renvoie > 0) {
-								if (renvoie > caster.getPdv()) renvoie = caster.getPdv();
-								caster.removePdv(caster, renvoie);
+						renvoie = Math.min(renvoie, finalDommage);
+						finalDommage -= renvoie;
+						SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 107, "-1", target.getId() + "," + renvoie);
+
+						renvoie = Formulas.applyResistancesOnDamage(elementId, renvoie, caster, true);
+						renvoie = Math.min(renvoie, caster.getPdv());
+						finalDommage = Math.max(0, finalDommage);
+						renvoie -= Formulas.getArmorResist(caster, -1);
+
+						if (caster.hasBuff(149)) {
+							if (caster.getBuff(149).spell == 197) {
+								renvoie = 0;
 							}
-							if (finalDommage < 0) finalDommage = 0;
-							SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 100, caster.getId() + "", caster.getId() + ",-" + renvoie);
 						}
+						if (caster.hasBuff(105)) {
+							renvoie = renvoie - caster.getBuff(105).getValue(); // Immunité
+							SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 105, caster.getId() + "", target.getId() + "," + caster.getBuff(105).getValue());
+						}
+						if (renvoie < 0) {
+							renvoie = 0;
+						}
+						if (renvoie > 0) {
+							if (renvoie > caster.getPdv()) renvoie = caster.getPdv();
+							caster.removePdv(caster, renvoie);
+							target.removePdvMax(renvoie / 10);
+						}
+						SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 100, caster.getId() + "", caster.getId() + ",-" + renvoie);
 						break;
 					case 606://Chatiment (acncien)
 						int stat = buff.getValue();
