@@ -3568,8 +3568,7 @@ public class Fight {
 
         if (target == null || this.getState() == Constant.FIGHT_STATE_FINISHED)
             return false;
-        /*if (getState() == Constant.FIGHT_STATE_INIT)
-            return false;*/
+
         target.Reconnect();
 
         SocketManager.GAME_SEND_Im_PACKET_TO_FIGHT(this, 7, "1184;" + target.getPacketsName());
@@ -3701,10 +3700,15 @@ public class Fight {
 
         int duration = effect.getTurn() == -1 ? 999 : effect.getTurn();
         if(reconnectedPlayer != null) {
-            if(target.getPlayer() == reconnectedPlayer)
-                duration++;
+            String param = null;
+            if(effect.getEffectID() == 149) {
+                param = target.getId() + "," + target.getDefaultGfx() + "," + effect.getValue() + "," + effect.getTurn();
+            }
             if(effect.getEffectID() == 150) {
-                SocketManager.GAME_SEND_GA_PACKET(this, reconnectedPlayer, 150, String.valueOf(effect.getCaster().getId()), target.getId() + "," + effect.getTurn());
+                param = target.getId() + "," + effect.getTurn();
+            }
+            if(param != null) {
+                SocketManager.GAME_SEND_GA_PACKET(this, reconnectedPlayer, effect.getEffectID(), String.valueOf(effect.getCaster().getId()), param);
             }
         }
 

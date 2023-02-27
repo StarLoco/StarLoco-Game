@@ -437,18 +437,18 @@ public class Fighter implements Comparable<Fighter> {
         return false;
     }
 
-    public void addBuff(int id, int val, int duration, boolean debuff, int spellID, String args, Fighter caster) {
+    public SpellEffect addBuff(int id, int val, int duration, boolean debuff, int spellID, String args, Fighter caster, boolean sendGA) {
         SpellEffect effect = new SpellEffect(id,val, duration,debuff,caster,args,spellID);
 
         if(this.mob != null)
             for(int id1 : Constant.STATIC_INVOCATIONS)
                 if (id1 != 2750 && id1 == this.mob.getTemplate().getId())
-                    return;
+                    return effect;
 
         switch(spellID) {
             case 1099:
                 if(this.mob != null && this.mob.getTemplate().getId() == 423)
-                    return;
+                    return effect;
                 break;
             case 99:case 5:case 20:case 127: case 89:case 126:case 115:case 192: case 4:case 1:case 6:
             case 14:case 18:case 7: case 284:case 197:case 704:case 168:case 45: case 159:case 171:case 167:case 511:case 513:
@@ -475,8 +475,6 @@ public class Fighter implements Comparable<Fighter> {
                 case 138: // Mot de silence
                 case 170: // Fleche d'immo
                 case 114: // Rekop
-                    //if(effect.getEffectID() == 140) // Passer le tour
-                    //    break;
                     duration--;
                     break;
             }
@@ -513,7 +511,11 @@ public class Fighter implements Comparable<Fighter> {
             }
         }
 
+        if(sendGA) {
+            SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, effect.getEffectID(), String.valueOf(caster.getId()), this.getId() + "," + effect.getValue() + "," + effect.getTurn());
+        }
         fight.sendBuffPacket(this, effect, fight.getFighters(7), null, duration);
+        return effect;
     }
 
 
@@ -617,7 +619,7 @@ public class Fighter implements Comparable<Fighter> {
             this.fightBuffs.clear();
             TimerWaiter.addNext(() -> array.stream().filter(Objects::nonNull)
                     .forEach(spellEffect -> this.addBuff(spellEffect.getEffectID(), spellEffect.getValue(),
-                            spellEffect.getTurn(), spellEffect.isDebuffabe(), spellEffect.getSpell(), spellEffect.getArgs(), this)), 1000);
+                            spellEffect.getTurn(), spellEffect.isDebuffabe(), spellEffect.getSpell(), spellEffect.getArgs(), this, false)), 1000);
         }
 
         if (this.perso != null && !this.hasLeft) // Envoie les stats au joueurs
