@@ -1140,32 +1140,28 @@ public class SpellEffect implements Cloneable {
 		fight.checkTraps(target);
 	}
 
-	private void applyEffect_77(ArrayList<Fighter> cibles, Fight fight) {
-		int value = 1;
-		try {
-			value = Integer.parseInt(args.split(";")[0]);
-		} catch (NumberFormatException e) {
-			e.printStackTrace();
-		}
-		int num = 0;
-		for (Fighter target : cibles) {
-			int val = Formulas.getPointsLost('m', value, caster, target);
+	private void applyEffect_77(ArrayList<Fighter> targets, Fight fight) {
+		int total = 0;
 
-			if (val < value)
-				SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 309, caster.getId() + "", target.getId() + "," + (value - val));
-			if (val < 1)
+		for (Fighter target : targets) {
+			int value = Formulas.getRandomJet(caster, target, jet);
+			int pointsLost = Formulas.getPointsLost('a', value, caster, target);
+
+			if (pointsLost < value)
+				SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 309, caster.getId() + "", target.getId() + "," + (value - pointsLost));
+			if (pointsLost < 1)
 				continue;
 
-			target.addBuff(Constant.STATS_REM_PM, val, turns == 0 ? 1 : turns, true, spell, args, caster);
-			SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, Constant.STATS_REM_PM, caster.getId() + "", target.getId() + ",-" + val + "," + turns);
-			num += val;
+			target.addBuff(Constant.STATS_REM_PM, pointsLost, turns == 0 ? 1 : turns, true, spell, args, caster);
+			SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, Constant.STATS_REM_PM, caster.getId() + "", target.getId() + ",-" + pointsLost + "," + turns);
+			total += pointsLost;
 		}
-		if (num != 0) {
-			SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, Constant.STATS_ADD_PM, caster.getId() + "", caster.getId() + "," + num + "," + turns);
-			caster.addBuff(Constant.STATS_ADD_PM, num, turns, true, spell, args, caster);
+		if (total != 0) {
+			SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, Constant.STATS_ADD_PM, caster.getId() + "", caster.getId() + "," + total + "," + turns);
+			caster.addBuff(Constant.STATS_ADD_PM, total, turns, true, spell, args, caster);
 			//Gain de PM pendant le tour de jeu
 			if (caster.canPlay())
-				caster.setCurPm(fight, num);
+				caster.setCurPm(fight, total);
 		}
 	}
 
@@ -1279,32 +1275,30 @@ public class SpellEffect implements Cloneable {
 		}
 	}
 
-	private void applyEffect_84(ArrayList<Fighter> cibles, Fight fight) {
-		int value = 1;
-		try {
-			value = Integer.parseInt(args.split(";")[0]);
-		} catch (NumberFormatException e) {
-			e.printStackTrace();
-		}
-		int num = 0;
-		for (Fighter target : cibles) {
-			int val = Formulas.getPointsLost('a', value, caster, target);
-			if (val < value)
-				SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 308, caster.getId() + "", target.getId() + "," + (value - val));
+	private void applyEffect_84(ArrayList<Fighter> targets, Fight fight) {
+		int total = 0;
 
-			if (val < 1)
+		for (Fighter target : targets) {
+			int value = Formulas.getRandomJet(caster, target, jet);
+			int pointsLost = Formulas.getPointsLost('a', value, caster, target);
+
+			if (pointsLost < value)
+				SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 308, caster.getId() + "", target.getId() + "," + (value - pointsLost));
+			if (pointsLost < 1)
 				continue;
 
-			target.addBuff(Constant.STATS_REM_PA, val, turns == 0 ? 1 : turns, true, spell, args, caster);
-			SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, Constant.STATS_REM_PA, caster.getId() + "", target.getId() + ",-" + val + "," + turns);
-			num += val;
+			target.addBuff(Constant.STATS_REM_PA, pointsLost, turns == 0 ? 1 : turns, true, spell, args, caster);
+			SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, Constant.STATS_REM_PA, caster.getId() + "", target.getId() + ",-" + pointsLost + "," + turns);
+			total += pointsLost;
 		}
-		if (num != 0) {
-			SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, Constant.STATS_ADD_PA, caster.getId() + "", caster.getId() + "," + num + "," + turns);
-			caster.addBuff(Constant.STATS_ADD_PA, num, 0, true, spell, args, caster);
-			//Gain de PA pendant le tour de jeu
-			if (caster.canPlay())
-				caster.setCurPa(fight, num);
+
+		if (total != 0) {
+			SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, Constant.STATS_ADD_PA, caster.getId() + "", caster.getId() + "," + total + "," + turns);
+			caster.addBuff(Constant.STATS_ADD_PA, total, 0, true, spell, args, caster);
+
+			if (caster.canPlay()) {
+				caster.setCurPa(fight, total);
+			}
 		}
 	}
 

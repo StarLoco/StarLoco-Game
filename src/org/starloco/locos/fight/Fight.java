@@ -5732,8 +5732,8 @@ public class Fight {
     public void cast(Fighter fighter, Runnable runnable, SortStats SS) {
         Fighter current = this.getFighterByGameOrder();
         if (current != null && fighter != null && current.getId() == fighter.getId()) {
-            if (this.turn != null && System.currentTimeMillis() - this.turn.getStartTime() >= 31_000) {
-                if(System.currentTimeMillis() - this.turn.getStartTime() >= 35_000) this.endTurn(false);
+            if (this.turn != null && System.currentTimeMillis() - this.turn.getStartTime() >= Constant.TIME_BY_TURN) {
+                if(System.currentTimeMillis() - this.turn.getStartTime() >= Constant.TIME_BY_TURN) this.endTurn(false);
                 return;
             }
             SocketManager.GAME_SEND_GAS_PACKET_TO_FIGHT(this, 7, fighter.getId());
