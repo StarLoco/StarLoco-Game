@@ -4296,7 +4296,7 @@ public class SpellEffect implements Cloneable {
 
 		if (total != 0) {
 			caster.addBuff(Constant.STATS_ADD_PO, total, turns, true, spell, args, caster);
-			SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, Constant.STATS_ADD_PO, caster.getId() + "", caster.getId() + "," + total + "," + turns);
+			SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, Constant.STATS_ADD_PO, caster.getId() + "", caster.getId() + "," + total + "," + (turns + 1));
 
 			if (caster.canPlay()) {
 				caster.getTotalStats().addOneStat(Constant.STATS_ADD_PO, total);

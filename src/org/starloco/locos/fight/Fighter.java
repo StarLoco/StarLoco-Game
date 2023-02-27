@@ -471,7 +471,6 @@ public class Fighter implements Comparable<Fighter> {
         //Si c'est le jouer actif qui s'autoBuff, on ajoute 1 a la durée
         if(this.getId() == caster.getId() && id != 84 && id != 950 && spellID != 446) {
             duration += 1;
-            effect.setTurn(duration);
             switch(spellID) {
                 case 138: // Mot de silence
                 case 170: // Fleche d'immo
@@ -485,6 +484,8 @@ public class Fighter implements Comparable<Fighter> {
         // Cas infini
         if(this.mob != null && duration == 0)
             duration = -1;
+
+        effect.setTurn(duration);
         this.fightBuffs.add(effect);
 
 
