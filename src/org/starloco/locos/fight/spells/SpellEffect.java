@@ -4239,12 +4239,20 @@ public class SpellEffect implements Cloneable {
 	}
 
 	private void applyEffect_780(Fight fight) {
-		Fighter target = null;
+		Fighter target = null, targetPlayer = null;
 
-		for (Fighter fighter : fight.getDeadList().values())
-			if (!fighter.hasLeft() && fighter.getTeam() == caster.getTeam())
+		for (Fighter fighter : fight.getDeadList().values()) {
+			if (!fighter.hasLeft() && fighter.getTeam() == caster.getTeam()) {
+				if(fighter.getPlayer() != null)
+					targetPlayer = fighter;
 				target = fighter;
-		if (target == null) return;
+			}
+		}
+
+		if(targetPlayer != null)
+			target = targetPlayer;
+		if (target == null)
+			return;
 
 		target.setInvocator(caster);
 		fight.addFighterInTeam(target, target.getTeam());
