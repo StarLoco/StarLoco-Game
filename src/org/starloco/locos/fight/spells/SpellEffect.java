@@ -48,7 +48,7 @@ public class SpellEffect implements Cloneable {
 		}
 	}
 
-	public SpellEffect(int id, int value2, int aduration, int turns2, boolean debuff, Fighter aCaster, String args2, int aspell) {
+	public SpellEffect(int id, int value2, int turns2, boolean debuff, Fighter aCaster, String args2, int aspell) {
 		effectID = id;
 		value = value2;
 		turns = turns2;

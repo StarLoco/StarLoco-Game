@@ -3619,7 +3619,7 @@ public class Fight {
             all.addAll(this.getTeam1().values());
             all.stream().filter(Objects::nonNull).forEach(f1 -> {
                 for(SpellEffect effect : f1.getFightBuff()) {
-                    this.sendBuffPacket(f1, effect, Collections.singletonList(target), player);
+                    this.sendBuffPacket(f1, effect, Collections.singletonList(target), player, -999);
                 }
             });
             for(Trap trap : this.getTraps())
@@ -3635,7 +3635,7 @@ public class Fight {
         return true;
     }
 
-    public void sendBuffPacket(Fighter target, SpellEffect effect, List<Fighter> receivers, Player reconnectedPlayer) {
+    public void sendBuffPacket(Fighter target, SpellEffect effect, List<Fighter> receivers, Player reconnectedPlayer, int clientDuration) {
         final StringBuilder packet = new StringBuilder();
         packet.append("GIE").append(effect.getEffectID()).append(";").append(target.getId()).append(";");
 
@@ -3708,7 +3708,7 @@ public class Fight {
             }
         }
 
-        packet.append(duration).append(";").append(effect.getSpell());
+        packet.append(clientDuration == -999 ? duration : clientDuration).append(";").append(effect.getSpell());
 
         for(Fighter fighter : receivers) {
             if(fighter != null && fighter.getPlayer() != null) {

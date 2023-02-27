@@ -437,7 +437,87 @@ public class Fighter implements Comparable<Fighter> {
         return false;
     }
 
-    public void addBuff(int effectId, int value, int duration, boolean debuff, int spellId, String args, Fighter caster) {
+    public void addBuff(int id, int val, int duration, boolean debuff, int spellID, String args, Fighter caster) {
+        SpellEffect effect = new SpellEffect(id,val, duration,debuff,caster,args,spellID);
+
+        if(this.mob != null)
+            for(int id1 : Constant.STATIC_INVOCATIONS)
+                if (id1 != 2750 && id1 == this.mob.getTemplate().getId())
+                    return;
+
+        switch(spellID) {
+            case 1099:
+                if(this.mob != null && this.mob.getTemplate().getId() == 423)
+                    return;
+                break;
+            case 99:case 5:case 20:case 127: case 89:case 126:case 115:case 192: case 4:case 1:case 6:
+            case 14:case 18:case 7: case 284:case 197:case 704:case 168:case 45: case 159:case 171:case 167:case 511:case 513:
+            case 686: case 701: // Sort pandawa (etat)
+            case 431:case 433:case 437:case 443:case 441: // Chatiment
+                debuff = true;
+                break;
+        }
+
+        if(id == 606 || id == 607 || id == 608 || id == 609 || id == 611 || id == 125 || id == 114) debuff = true;
+        else if(id == 293) debuff = false;
+
+        switch(spellID) {
+            // Feca spells shields
+            case 1: case 4: case 5: case 6: case 7: case 14: case 18: case 20: case 422:
+                if(this.getId() != caster.getId())
+                    duration++;
+                break;
+        }
+        //Si c'est le jouer actif qui s'autoBuff, on ajoute 1 a la durée
+        if(this.getId() == caster.getId() && id != 84 && id != 950 && spellID != 446) {
+            duration += 1;
+            effect.setTurn(duration);
+            switch(spellID) {
+                case 138: // Mot de silence
+                case 170: // Fleche d'immo
+                case 114: // Rekop
+                    //if(effect.getEffectID() == 140) // Passer le tour
+                    //    break;
+                    duration--;
+                    break;
+            }
+        }
+        // Cas infini
+        if(this.mob != null && duration == 0)
+            duration = -1;
+        this.fightBuffs.add(effect);
+
+
+        if(Config.debug)
+            System.out.println("- Ajout du Buff "+id+" sur le personnage fighter ("+this.getId()+") val : "+val+" duration : "+duration+" debuff : "+debuff+" spellid : "+spellID+" args : "+args+" !");
+        switch(spellID) {
+            // Feca spells shields
+            case 1: case 4: case 5: case 6: case 7: case 14: case 18: case 20: case 422:
+                if(this.getId() != caster.getId())
+                    duration--;
+                break;
+        }
+        if(id != 950 && spellID != 446) {
+            switch (spellID) {
+                case 170: // Fleche d'immo
+                case 114: // Rekop
+                case 89:// Devouement
+                case 101:// Roulette
+                    //if(effect != null) effect.setTurn(duration);
+                    if (duration != 0)
+                        duration--;
+                    break;
+                default:
+                    if (this.getId() == caster.getId())
+                        duration--;
+            }
+        }
+
+        fight.sendBuffPacket(this, effect, fight.getFighters(7), null, duration);
+    }
+
+
+    /*public void addBuff(int effectId, int value, int duration, boolean debuff, int spellId, String args, Fighter caster) {
         SpellEffect effect = new SpellEffect(effectId, value, duration, duration, debuff, caster, args, spellId);
 
         if(this.mob != null) {
@@ -483,6 +563,7 @@ public class Fighter implements Comparable<Fighter> {
 
         fight.sendBuffPacket(this, effect, fight.getFighters(7), null);
     }
+*/
 
     public void debuff(SpellEffect effect) {
         Iterator<SpellEffect> it = this.fightBuffs.iterator();
