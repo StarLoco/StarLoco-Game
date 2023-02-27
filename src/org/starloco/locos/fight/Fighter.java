@@ -501,7 +501,6 @@ public class Fighter implements Comparable<Fighter> {
             switch (spellID) {
                 case 170: // Fleche d'immo
                 case 114: // Rekop
-                case 89:// Devouement
                 case 101:// Roulette
                     //if(effect != null) effect.setTurn(duration);
                     if (duration != 0)
