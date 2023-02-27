@@ -501,7 +501,6 @@ public class Fighter implements Comparable<Fighter> {
                 case 170: // Fleche d'immo
                 case 114: // Rekop
                 case 101:// Roulette
-                    //if(effect != null) effect.setTurn(duration);
                     if (duration != 0)
                         duration--;
                     break;
@@ -517,55 +516,6 @@ public class Fighter implements Comparable<Fighter> {
         fight.sendBuffPacket(this, effect, fight.getFighters(7), null, duration);
         return effect;
     }
-
-
-    /*public void addBuff(int effectId, int value, int duration, boolean debuff, int spellId, String args, Fighter caster) {
-        SpellEffect effect = new SpellEffect(effectId, value, duration, duration, debuff, caster, args, spellId);
-
-        if(this.mob != null) {
-            if(this.mob.getTemplate().getId() == 423 && spellId == 1099)
-                return;
-            for (int id : Constant.STATIC_INVOCATIONS) {
-                if (id != 2750 && id == this.mob.getTemplate().getId()) {
-                    return;
-                }
-            }
-        }
-
-        switch(spellId) {
-            case 99:case 5:case 20:case 127: case 89:case 126:case 115:case 192: case 4:case 1:case 6: case 14:case 18:
-            case 7: case 284:case 197:case 704:case 168:case 45: case 159:case 171:case 167:case 511: case 513:
-            case 686: case 701: // Sort pandawa (etat)
-            case 431:case 433:case 437:case 443:case 441: // Chatiment
-                debuff = true;
-                break;
-        }
-        switch(effectId) {
-            case 606: case 607: case 608: case 609: case 611: case 125: case 114:
-                debuff = true;
-                break;
-            case 293:
-                debuff = false;
-                break;
-        }
-
-        // If current player is buffing himself, we add 1 to the duration
-        //if(this.getId() == caster.getId() && effectId != 84 && effectId != 950 && spellId != 446) {
-            //effect.setTurn(duration + 1);
-        //}
-
-        // Infinity case
-        if(this.mob != null && duration == 0)
-            duration = -1;
-
-        this.fightBuffs.add(effect);
-
-        if(Config.debug)
-            System.out.println("Add buff " + effectId + " on fighter " + this.getId() + " with value: " + value + ", duration: " + duration + ", debuff: " + debuff + ", spellId: " + spellId + ", args: " + args);
-
-        fight.sendBuffPacket(this, effect, fight.getFighters(7), null);
-    }
-*/
 
     public void debuff(SpellEffect effect) {
         Iterator<SpellEffect> it = this.fightBuffs.iterator();
@@ -586,31 +536,33 @@ public class Fighter implements Comparable<Fighter> {
                     continue;
             }
 
-            if (spellEffect.isDebuffabe()) it.remove();
-            //On envoie les Packets si besoin
-            if(effect.getCaster() == this) {
-                switch (spellEffect.getEffectID()) {
-                    case Constant.STATS_ADD_PA:
-                    case Constant.STATS_ADD_PA2:
-                        SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(this.fight, 7, 101, getId() + "", getId() + ",-" + spellEffect.getValue());
-                        this.setCurPa(this.fight, this.getCurPa(fight) - spellEffect.getValue());
-                        break;
-                    case Constant.STATS_ADD_PM:
-                    case Constant.STATS_ADD_PM2:
-                        SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(this.fight, 7, 127, getId() + "", getId() + ",-" + spellEffect.getValue());
-                        this.setCurPm(this.fight, this.getCurPm(fight) - spellEffect.getValue());
-                        break;
-                    case Constant.STATS_REM_PA:
-                    case Constant.STATS_REM_PA2: // Pa non esquivable
-                        SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(this.fight, 7, 111, getId() + "", getId() + "," + spellEffect.getValue());
-                        this.setCurPa(this.fight, this.getCurPa(fight) + spellEffect.getValue());
-                        break;
+            if (spellEffect.isDebuffabe()) {
+                it.remove();
 
-                    case Constant.STATS_REM_PM:
-                    case Constant.STATS_REM_PM2: // Pm non esquivable (picole)
-                        SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(this.fight, 7, 128, getId() + "", getId() + "," + spellEffect.getValue());
-                        this.setCurPm(this.fight, this.getCurPm(fight) + spellEffect.getValue());
-                        break;
+                if (effect.getCaster() == this) {
+                    switch (spellEffect.getEffectID()) {
+                        case Constant.STATS_ADD_PA:
+                        case Constant.STATS_ADD_PA2:
+                            SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(this.fight, 7, 101, getId() + "", getId() + ",-" + spellEffect.getValue());
+                            this.setCurPa(this.fight, this.getCurPa(fight) - spellEffect.getValue());
+                            break;
+                        case Constant.STATS_ADD_PM:
+                        case Constant.STATS_ADD_PM2:
+                            SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(this.fight, 7, 127, getId() + "", getId() + ",-" + spellEffect.getValue());
+                            this.setCurPm(this.fight, this.getCurPm(fight) - spellEffect.getValue());
+                            break;
+                        //case Constant.STATS_REM_PA:
+                        case Constant.STATS_REM_PA2: // Pa non esquivable
+                            SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(this.fight, 7, 111, getId() + "", getId() + "," + spellEffect.getValue());
+                            this.setCurPa(this.fight, this.getCurPa(fight) + spellEffect.getValue());
+                            break;
+
+                        //case Constant.STATS_REM_PM:
+                        case Constant.STATS_REM_PM2: // Pm non esquivable (picole)
+                            SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(this.fight, 7, 128, getId() + "", getId() + "," + spellEffect.getValue());
+                            this.setCurPm(this.fight, this.getCurPm(fight) + spellEffect.getValue());
+                            break;
+                    }
                 }
             }
         }

@@ -1152,13 +1152,12 @@ public class SpellEffect implements Cloneable {
 			if (pointsLost < 1)
 				continue;
 
-			target.addBuff(Constant.STATS_REM_PM, pointsLost, turns == 0 ? 1 : turns, true, spell, args, caster, false);
+			target.addBuff(Constant.STATS_REM_PM, pointsLost, turns == 0 ? 1 : turns, false, spell, args, caster, false);
 			SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, Constant.STATS_REM_PM, caster.getId() + "", target.getId() + ",-" + pointsLost + "," + turns);
 			total += pointsLost;
 		}
 		if (total != 0) {
-			SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, Constant.STATS_ADD_PM, caster.getId() + "", caster.getId() + "," + total + "," + turns);
-			caster.addBuff(Constant.STATS_ADD_PM, total, turns, true, spell, args, caster, false);
+			caster.addBuff(Constant.STATS_ADD_PM, total, turns, true, spell, args, caster, true);
 			//Gain de PM pendant le tour de jeu
 			if (caster.canPlay())
 				caster.setCurPm(fight, total);
@@ -1280,7 +1279,7 @@ public class SpellEffect implements Cloneable {
 			if (pointsLost < 1)
 				continue;
 
-			target.addBuff(Constant.STATS_REM_PA, pointsLost, turns == 0 ? 1 : turns, true, spell, args, caster, false);
+			target.addBuff(Constant.STATS_REM_PA, pointsLost, turns == 0 ? 1 : turns, false, spell, args, caster, false);
 			SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, Constant.STATS_REM_PA, caster.getId() + "", target.getId() + ",-" + pointsLost + "," + turns);
 			total += pointsLost;
 		}
