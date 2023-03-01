@@ -2592,11 +2592,9 @@ public class Fight {
                     try {
                         if (getState() != Constant.FIGHT_STATE_ACTIVE)
                             break;
-
                         if (this.getType() != Constant.FIGHT_TYPE_CHALLENGE && this.getAllChallenges().size() > 0) {
                             this.getAllChallenges().values().stream().filter(Objects::nonNull).forEach(challenge -> challenge.onFightersAttacked(targets, caster, SE, -1, false));
                         }
-                        SE.setTurn(0);
                         SE.applyToFight(this, caster, targets, true);
                     } catch (Exception e) {
                         e.printStackTrace();

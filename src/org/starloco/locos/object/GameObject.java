@@ -220,7 +220,7 @@ public class GameObject {
                     boolean follow2 = true;
                     for (int a : Constant.ARMES_EFFECT_IDS) {
                         if (a == id) {
-                            Effects.add(new SpellEffect(id, stats[1] + ";" + stats[2] + ";-1;-1;0;" + stats[4], 0, -1));
+                            Effects.add(new SpellEffect(id, stats[1] + ";" + stats[2] + ";-1;0;0;" + stats[4], 0, -1));
                             follow2 = false;
                         }
                     }

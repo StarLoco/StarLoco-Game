@@ -81,241 +81,244 @@ public class SpellEffect implements Cloneable {
 		for (int id : Constant.ON_HIT_BUFFS) {
 			final List<SpellEffect> effects = target.getBuffsByEffectID(id);
 
-			switch (id) {
-				case 114:
-					for(SpellEffect effect : effects) {
-						if (effect.spell == 521) {
-							finalDommage = finalDommage * 2;
-						}
-					}
-					continue;
-				case 107: // Damage return
-					int totalDamageReturn = 0;
-
-					for(SpellEffect effect : effects) {
-						if (this.spell == 66 || spell == 71 || spell == 196 || spell == 181 || spell == 200 || target.getId() == caster.getId())
-							break;
-						if (caster.hasBuff(765) && caster.getBuff(765) != null && !caster.getBuff(765).getCaster().isDead()) {
-							// Sacrifice
-							effect.applyEffect_765B(fight, caster);
-							caster = caster.getBuff(765).getCaster();
-						}
-
-						String[] args = effect.getArgs().split(";");
-						float factor = 1 + (target.getTotalStats().getEffect(Constant.STATS_ADD_SAGE) / 100.0f);
-						int damageReturn;
-						try {
-							if (Integer.parseInt(args[1]) != -1) {
-								damageReturn = (int) (factor * Formulas.getRandomValue(Integer.parseInt(args[0]), Integer.parseInt(args[1])));
-							} else {
-								damageReturn = (int) (factor * Integer.parseInt(args[0]));
+			if (!effects.isEmpty()) {
+				switch (id) {
+					case 114:
+						for (SpellEffect effect : effects) {
+							if (effect.spell == 521) {
+								finalDommage = finalDommage * 2;
 							}
-						} catch (Exception e) {
-							return finalDommage;
 						}
+						continue;
+					case 107: // Damage return
+						int totalDamageReturn = 0;
 
-						damageReturn = Math.min(damageReturn, finalDommage);
-						finalDommage -= damageReturn;
-
-						damageReturn = Formulas.applyResistancesOnDamage(elementId, damageReturn, caster, true);
-						damageReturn = Math.min(damageReturn, caster.getPdv());
-						finalDommage = Math.max(0, finalDommage);
-						damageReturn -= Formulas.getArmorResist(caster, -1);
-
-						if (caster.hasBuff(149) && caster.getBuff(149).spell == 197) {
-							damageReturn = 0;
-						}
-						if (caster.hasBuff(105)) { // Immunity
-							damageReturn = damageReturn - caster.getBuff(105).getValue();
-						}
-						if (damageReturn < 0) {
-							damageReturn = 0;
-						}
-						if (damageReturn > 0) {
-							if (damageReturn > caster.getPdv()) damageReturn = caster.getPdv();
-							caster.removePdv(caster, damageReturn);
-							target.removePdvMax(damageReturn / 10);
-							totalDamageReturn += damageReturn;
-						}
-					}
-
-					if(caster.hasBuff(105)) { // Immunity
-						SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 105, String.valueOf(caster.getId()), target.getId() + "," + caster.getBuff(105).getValue());
-					}
-					SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 107, "-1", target.getId() + "," + totalDamageReturn);
-					SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 100, String.valueOf(caster.getId()), caster.getId() + ",-" + totalDamageReturn);
-					continue;
-				default:
-					for (SpellEffect buff : effects) {
-						switch (id) {
-							case 138:
-								if (buff.getSpell() == 1039) {
-									int stats = 0;
-									if (elementId == Constant.ELEMENT_AIR)
-										stats = 217;
-									else if (elementId == Constant.ELEMENT_EAU)
-										stats = 216;
-									else if (elementId == Constant.ELEMENT_FEU)
-										stats = 218;
-									else if (elementId == Constant.ELEMENT_NEUTRE)
-										stats = 219;
-									else if (elementId == Constant.ELEMENT_TERRE)
-										stats = 215;
-									SpellEffect b = target.getBuff(stats);
-									if(b != null) {
-										int val = b.getValue();
-										int turns = b.getTurn();
-										int duration = b.getTurn();
-										String args = b.getArgs();
-										for (int i : Constant.getOppositeStats(stats))
-											target.addBuff(i, val, turns, true, buff.getSpell(), args, caster, false);
-										target.addBuff(stats, val, duration, true, buff.getSpell(), args, caster, false);
-									}
-								}
+						for (SpellEffect effect : effects) {
+							if (this.spell == 66 || spell == 71 || spell == 196 || spell == 181 || spell == 200 || target.getId() == caster.getId())
 								break;
-							case 9://Derobade
-								if(this.isPoison())
-									continue;
-								if(caster == target || Formulas.getRandomValue(0, 99) + 1 >= buff.getValue())
-									continue;
+							if (caster.hasBuff(765) && caster.getBuff(765) != null && !caster.getBuff(765).getCaster().isDead()) {
+								// Sacrifice
+								effect.applyEffect_765B(fight, caster);
+								caster = caster.getBuff(765).getCaster();
+							}
 
-								int distance = PathFinding.getDistanceBetween(fight.getMap(), target.getCell().getId(), caster.getCell().getId());
-								int nbCell = Integer.parseInt(buff.getArgs().split(";")[1]);
-
-								if (distance > 1) {
-									continue;
-								}
-								if (nbCell == 0)
-									continue;
-								int exCase = target.getCell().getId(), newCellId = PathFinding.newCaseAfterPush(fight, caster.getCell(), target.getCell(), nbCell, false);
-
-								if (newCellId < 0) { // blocked
-									int a = -newCellId;
-									a = nbCell - a;
-									newCellId = PathFinding.newCaseAfterPush(fight, caster.getCell(), target.getCell(), a, false);
-									if (newCellId == 0) {
-										finalDommage = Formulas.getRandomValue(28, 33);
-										SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 5, target.getId() + "", target.getId() + "," + newCellId);
-										break;
-									}
-									if (fight.getMap().getCase(newCellId) == null)
-										continue;
-								}
-								if(newCellId == 0) continue;
-
-								GameCase cacheCell = target.getCell();
-								cacheCell.getFighters().clear();
-
-								target.setCell(fight.getMap().getCase(newCellId));
-								target.getCell().addFighter(target);
-								SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 5, target.getId() + "", target.getId() + "," + newCellId);
-
-								Fighter holding = target.getIsHolding();
-								if(holding != null) {
-									holding.setState(Constant.ETAT_PORTE, 0);
-									target.setState(Constant.ETAT_PORTEUR, 0);
-									holding.setHoldedBy(null);
-									target.setIsHolding(null);
-									holding.setCell(cacheCell);
-									cacheCell.addFighter(holding);
-									SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 950, target.getId() + "", target.getId() + "," + Constant.ETAT_PORTEUR + ",0");
-									SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 950, holding.getId() + "", holding.getId() + "," + Constant.ETAT_PORTE + ",0");
-									SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 51, target.getId() + "", cacheCell.getId() + "");
-								}
-
-								fight.checkTraps(target);
-								if (exCase != newCellId)
-									finalDommage = 0;
-								break;
-
-							case 79://chance éca
-								try {
-									String[] infos = buff.getArgs().split(";");
-									int coefDom = Integer.parseInt(infos[0]);
-									int coefHeal = Integer.parseInt(infos[1]);
-									int chance = Integer.parseInt(infos[2]);
-									int jet = Formulas.getRandomValue(0, 99);
-
-									if (jet < chance)//Soin
-									{
-										finalDommage = -(finalDommage * coefHeal);
-										if (-finalDommage > (target.getPdvMax() - target.getPdv()))
-											finalDommage = -(target.getPdvMax() - target.getPdv());
-									} else//Dommage
-										finalDommage = finalDommage * coefDom;
-								} catch (Exception e) {
-									e.printStackTrace();
-								}
-								break;
-							case 606://Chatiment (acncien)
-								int stat = buff.getValue();
-								int jet = Formulas.getRandomJet(caster, target, buff.getJet());
-								target.addBuff(stat, jet, -1, false, buff.getSpell(), buff.getArgs(), caster, false);
-								SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, stat, caster.getId() + "", target.getId() + "," + jet + "," + -1);
-								break;
-							case 607://Chatiment (acncien)
-								stat = buff.getValue();
-								jet = Formulas.getRandomJet(caster, target, buff.getJet());
-								target.addBuff(stat, jet, -1, false, buff.getSpell(), buff.getArgs(), caster, false);
-								SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, stat, caster.getId() + "", target.getId() + "," + jet + "," + -1);
-								break;
-							case 608://Chatiment (acncien)
-								stat = buff.getValue();
-								jet = Formulas.getRandomJet(caster, target, buff.getJet());
-								target.addBuff(stat, jet, -1, false, buff.getSpell(), buff.getArgs(), caster, false);
-								SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, stat, caster.getId() + "", target.getId() + "," + jet + "," + -1);
-								break;
-							case 609://Chatiment (acncien)
-								stat = buff.getValue();
-								jet = Formulas.getRandomJet(caster, target, buff.getJet());
-								target.addBuff(stat, jet, -1, false, buff.getSpell(), buff.getArgs(), caster, false);
-								SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, stat, caster.getId() + "", target.getId() + "," + jet + "," + -1);
-								break;
-							case 611://Chatiment (acncien)
-								stat = buff.getValue();
-								jet = Formulas.getRandomJet(caster, target, buff.getJet());
-								target.addBuff(stat, jet, -1, false, buff.getSpell(), buff.getArgs(), caster, false);
-								SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, stat, caster.getId() + "", target.getId() + "," + jet + "," + -1);
-								break;
-							case 788://Chatiments
-								if(this.spell == 66 || spell == 71 ||spell == 196 || spell == 213 || spell == 181 || spell == 200)
-									continue;
-								int factor = (caster.getPlayer() == null && caster.getInvocator() == null ? 1 : 2), gain = finalDommage / factor, max = 0;
-								stat = buff.getValue();
-
-								try {
-									max = Integer.parseInt(buff.getArgs().split(";")[1]);
-								} catch (Exception e) {
-									e.printStackTrace();
-									continue;
-								}
-
-								//on retire au max possible la valeur déjà gagné sur le chati
-								int oldValue = (target.getChatiValue().get(stat) == null ? 0 : target.getChatiValue().get(stat));
-								max -= oldValue;
-								//Si gain trop grand, on le reduit au max
-								if (gain > max) gain = max;
-								//On met a jour les valeurs des chatis
-								if(gain == 0) continue;
-								int newValue = oldValue + gain;
-
-								if (stat == 125) {
-									SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, Constant.STATS_ADD_VIE, caster.getId() + "", target.getId() + "," + gain + "," + 5);
-									target.setPdv(target.getPdv() + gain);
-									if(target.getPlayer() != null) SocketManager.GAME_SEND_STATS_PACKET(target.getPlayer());
+							String[] args = effect.getArgs().split(";");
+							float factor = 1 + (target.getTotalStats().getEffect(Constant.STATS_ADD_SAGE) / 100.0f);
+							int damageReturn;
+							try {
+								if (Integer.parseInt(args[1]) != -1) {
+									damageReturn = (int) (factor * Formulas.getRandomValue(Integer.parseInt(args[0]), Integer.parseInt(args[1])));
 								} else {
-									target.getChatiValue().put(stat, newValue);
-									target.addBuff(stat, gain, 5, true, -1, buff.getArgs(), caster, false);
-									SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, stat, caster.getId() + "", target.getId() + "," + gain + "," + 5);
+									damageReturn = (int) (factor * Integer.parseInt(args[0]));
 								}
-								target.getChatiValue().put(stat, newValue);
-								break;
+							} catch (Exception e) {
+								return finalDommage;
+							}
 
-							default:
-								break;
+							damageReturn = Math.min(damageReturn, finalDommage);
+							finalDommage -= damageReturn;
+
+							damageReturn = Formulas.applyResistancesOnDamage(elementId, damageReturn, caster, true);
+							damageReturn = Math.min(damageReturn, caster.getPdv());
+							finalDommage = Math.max(0, finalDommage);
+							damageReturn -= Formulas.getArmorResist(caster, -1);
+
+							if (caster.hasBuff(149) && caster.getBuff(149).spell == 197) {
+								damageReturn = 0;
+							}
+							if (caster.hasBuff(105)) { // Immunity
+								damageReturn = damageReturn - caster.getBuff(105).getValue();
+							}
+							if (damageReturn < 0) {
+								damageReturn = 0;
+							}
+							if (damageReturn > 0) {
+								if (damageReturn > caster.getPdv()) damageReturn = caster.getPdv();
+								caster.removePdv(caster, damageReturn);
+								target.removePdvMax(damageReturn / 10);
+								totalDamageReturn += damageReturn;
+							}
 						}
-					}
-					break;
+
+						if (caster.hasBuff(105)) { // Immunity
+							SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 105, String.valueOf(caster.getId()), target.getId() + "," + caster.getBuff(105).getValue());
+						}
+						SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 107, "-1", target.getId() + "," + totalDamageReturn);
+						SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 100, String.valueOf(caster.getId()), caster.getId() + ",-" + totalDamageReturn);
+						continue;
+					default:
+						for (SpellEffect buff : effects) {
+							switch (id) {
+								case 138:
+									if (buff.getSpell() == 1039) {
+										int stats = 0;
+										if (elementId == Constant.ELEMENT_AIR)
+											stats = 217;
+										else if (elementId == Constant.ELEMENT_EAU)
+											stats = 216;
+										else if (elementId == Constant.ELEMENT_FEU)
+											stats = 218;
+										else if (elementId == Constant.ELEMENT_NEUTRE)
+											stats = 219;
+										else if (elementId == Constant.ELEMENT_TERRE)
+											stats = 215;
+										SpellEffect b = target.getBuff(stats);
+										if (b != null) {
+											int val = b.getValue();
+											int turns = b.getTurn();
+											int duration = b.getTurn();
+											String args = b.getArgs();
+											for (int i : Constant.getOppositeStats(stats))
+												target.addBuff(i, val, turns, true, buff.getSpell(), args, caster, false);
+											target.addBuff(stats, val, duration, true, buff.getSpell(), args, caster, false);
+										}
+									}
+									break;
+								case 9://Derobade
+									if (this.isPoison())
+										continue;
+									if (caster == target || Formulas.getRandomValue(0, 99) + 1 >= buff.getValue())
+										continue;
+
+									int distance = PathFinding.getDistanceBetween(fight.getMap(), target.getCell().getId(), caster.getCell().getId());
+									int nbCell = Integer.parseInt(buff.getArgs().split(";")[1]);
+
+									if (distance > 1) {
+										continue;
+									}
+									if (nbCell == 0)
+										continue;
+									int exCase = target.getCell().getId(), newCellId = PathFinding.newCaseAfterPush(fight, caster.getCell(), target.getCell(), nbCell, false);
+
+									if (newCellId < 0) { // blocked
+										int a = -newCellId;
+										a = nbCell - a;
+										newCellId = PathFinding.newCaseAfterPush(fight, caster.getCell(), target.getCell(), a, false);
+										if (newCellId == 0) {
+											finalDommage = Formulas.getRandomValue(28, 33);
+											SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 5, target.getId() + "", target.getId() + "," + newCellId);
+											break;
+										}
+										if (fight.getMap().getCase(newCellId) == null)
+											continue;
+									}
+									if (newCellId == 0) continue;
+
+									GameCase cacheCell = target.getCell();
+									cacheCell.getFighters().clear();
+
+									target.setCell(fight.getMap().getCase(newCellId));
+									target.getCell().addFighter(target);
+									SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 5, target.getId() + "", target.getId() + "," + newCellId);
+
+									Fighter holding = target.getIsHolding();
+									if (holding != null) {
+										holding.setState(Constant.ETAT_PORTE, 0);
+										target.setState(Constant.ETAT_PORTEUR, 0);
+										holding.setHoldedBy(null);
+										target.setIsHolding(null);
+										holding.setCell(cacheCell);
+										cacheCell.addFighter(holding);
+										SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 950, target.getId() + "", target.getId() + "," + Constant.ETAT_PORTEUR + ",0");
+										SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 950, holding.getId() + "", holding.getId() + "," + Constant.ETAT_PORTE + ",0");
+										SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 51, target.getId() + "", cacheCell.getId() + "");
+									}
+
+									fight.checkTraps(target);
+									if (exCase != newCellId)
+										finalDommage = 0;
+									break;
+
+								case 79://chance éca
+									try {
+										String[] infos = buff.getArgs().split(";");
+										int coefDom = Integer.parseInt(infos[0]);
+										int coefHeal = Integer.parseInt(infos[1]);
+										int chance = Integer.parseInt(infos[2]);
+										int jet = Formulas.getRandomValue(0, 99);
+
+										if (jet < chance)//Soin
+										{
+											finalDommage = -(finalDommage * coefHeal);
+											if (-finalDommage > (target.getPdvMax() - target.getPdv()))
+												finalDommage = -(target.getPdvMax() - target.getPdv());
+										} else//Dommage
+											finalDommage = finalDommage * coefDom;
+									} catch (Exception e) {
+										e.printStackTrace();
+									}
+									break;
+								case 606://Chatiment (acncien)
+									int stat = buff.getValue();
+									int jet = Formulas.getRandomJet(caster, target, buff.getJet());
+									target.addBuff(stat, jet, -1, false, buff.getSpell(), buff.getArgs(), caster, false);
+									SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, stat, caster.getId() + "", target.getId() + "," + jet + "," + -1);
+									break;
+								case 607://Chatiment (acncien)
+									stat = buff.getValue();
+									jet = Formulas.getRandomJet(caster, target, buff.getJet());
+									target.addBuff(stat, jet, -1, false, buff.getSpell(), buff.getArgs(), caster, false);
+									SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, stat, caster.getId() + "", target.getId() + "," + jet + "," + -1);
+									break;
+								case 608://Chatiment (acncien)
+									stat = buff.getValue();
+									jet = Formulas.getRandomJet(caster, target, buff.getJet());
+									target.addBuff(stat, jet, -1, false, buff.getSpell(), buff.getArgs(), caster, false);
+									SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, stat, caster.getId() + "", target.getId() + "," + jet + "," + -1);
+									break;
+								case 609://Chatiment (acncien)
+									stat = buff.getValue();
+									jet = Formulas.getRandomJet(caster, target, buff.getJet());
+									target.addBuff(stat, jet, -1, false, buff.getSpell(), buff.getArgs(), caster, false);
+									SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, stat, caster.getId() + "", target.getId() + "," + jet + "," + -1);
+									break;
+								case 611://Chatiment (acncien)
+									stat = buff.getValue();
+									jet = Formulas.getRandomJet(caster, target, buff.getJet());
+									target.addBuff(stat, jet, -1, false, buff.getSpell(), buff.getArgs(), caster, false);
+									SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, stat, caster.getId() + "", target.getId() + "," + jet + "," + -1);
+									break;
+								case 788://Chatiments
+									if (this.spell == 66 || spell == 71 || spell == 196 || spell == 213 || spell == 181 || spell == 200)
+										continue;
+									int factor = (caster.getPlayer() == null && caster.getInvocator() == null ? 1 : 2), gain = finalDommage / factor, max = 0;
+									stat = buff.getValue();
+
+									try {
+										max = Integer.parseInt(buff.getArgs().split(";")[1]);
+									} catch (Exception e) {
+										e.printStackTrace();
+										continue;
+									}
+
+									//on retire au max possible la valeur déjà gagné sur le chati
+									int oldValue = (target.getChatiValue().get(stat) == null ? 0 : target.getChatiValue().get(stat));
+									max -= oldValue;
+									//Si gain trop grand, on le reduit au max
+									if (gain > max) gain = max;
+									//On met a jour les valeurs des chatis
+									if (gain == 0) continue;
+									int newValue = oldValue + gain;
+
+									if (stat == 125) {
+										SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, Constant.STATS_ADD_VIE, caster.getId() + "", target.getId() + "," + gain + "," + 5);
+										target.setPdv(target.getPdv() + gain);
+										if (target.getPlayer() != null)
+											SocketManager.GAME_SEND_STATS_PACKET(target.getPlayer());
+									} else {
+										target.getChatiValue().put(stat, newValue);
+										target.addBuff(stat, gain, 5, true, -1, buff.getArgs(), caster, false);
+										SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, stat, caster.getId() + "", target.getId() + "," + gain + "," + 5);
+									}
+									target.getChatiValue().put(stat, newValue);
+									break;
+
+								default:
+									break;
+							}
+						}
+						break;
+				}
 			}
 		}
 
