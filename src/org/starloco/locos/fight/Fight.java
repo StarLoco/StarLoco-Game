@@ -3337,14 +3337,12 @@ public class Fight {
             this.traps.remove(trap);
         });
 
-        if(target.getId() == caster.getId()) {
-            TimerWaiter.addNext(() -> {
-                SocketManager.GAME_SEND_FIGHT_PLAYER_DIE_TO_FIGHT(this, 7, target.getId());
-                SocketManager.GAME_SEND_GTL_PACKET_TO_FIGHT(this, 7);
+        if (caster != null && target.getId() == caster.getId()) {
+            SocketManager.GAME_SEND_FIGHT_PLAYER_DIE_TO_FIGHT(this, 7, target.getId());
+            SocketManager.GAME_SEND_GTL_PACKET_TO_FIGHT(this, 7);
 
-                if (target.canPlay() && current.getId() == target.getId() && !current.hasLeft())
-                    this.endTurn(false, current);
-            }, 3000);
+            if (target.canPlay() && current.getId() == target.getId() && !current.hasLeft())
+                this.endTurn(false, current);
         } else {
             SocketManager.GAME_SEND_FIGHT_PLAYER_DIE_TO_FIGHT(this, 7, target.getId());
             SocketManager.GAME_SEND_GTL_PACKET_TO_FIGHT(this, 7);
