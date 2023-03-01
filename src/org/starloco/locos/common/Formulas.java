@@ -438,7 +438,12 @@ public class Formulas {
             a = (((100 + i) / 100) * (j / 100));
         }
 
-        num = a * mulT * (jet * ((100 + statC + perdomC + (multiplier * 100)) / 100)) + domC;//d�gats bruts
+        int perdomT = 0;
+        if(target.hasBuff(Constant.STATS_REM_PERDOM)) {
+            perdomT = target.getTotalStats().getEffect(Constant.STATS_REM_PERDOM);
+        }
+
+        num = a * mulT * (jet * ((100 + statC + perdomC - perdomT + (multiplier * 100)) / 100)) + domC;//d�gats bruts
         //Poisons
         if (spellid != -1) {
             switch (spellid) {
