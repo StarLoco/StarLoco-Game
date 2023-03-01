@@ -3703,7 +3703,7 @@ public class Constant {
             return new int[]{210, 211, 212, 214};
         else if (statsId == 215)
             return new int[]{211, 212, 213, 214};
-        return null;
+        return new int[]{};
     }
 
     public static int getNearestCellIdUnused(Player player) {

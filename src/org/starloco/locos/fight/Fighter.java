@@ -403,10 +403,8 @@ public class Fighter implements Comparable<Fighter> {
         return null;
     }
 
-    public ArrayList<SpellEffect> getBuffsByEffectID(int effectID) {
-        ArrayList<SpellEffect> buffs = new ArrayList<>();
-        buffs.addAll(this.fightBuffs.stream().filter(buff -> buff.getEffectID() == effectID).collect(Collectors.toList()));
-        return buffs;
+    public ArrayList<SpellEffect> getBuffsByEffectID(int effectId) {
+        return this.fightBuffs.stream().filter(buff -> buff.getEffectID() == effectId).collect(Collectors.toCollection(ArrayList::new));
     }
 
     public Stats getTotalStatsLessBuff() {
@@ -526,7 +524,6 @@ public class Fighter implements Comparable<Fighter> {
                 continue;
             switch (spellEffect.getSpell()) {
                 case 437: case 431: case 433: case 443: case 441://Châtiments
-                    continue;
                 case 1104: case 1105: // Krachau immo / ralenti
                     continue;
                 case 197://Puissance sylvestre
