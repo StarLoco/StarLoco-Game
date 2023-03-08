@@ -6,7 +6,6 @@ import org.apache.mina.core.session.IoSession;
 import org.starloco.locos.game.filter.PacketFilter;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.Config;
-import org.starloco.locos.kernel.Main;
 
 public class GameHandler implements IoHandler {
 

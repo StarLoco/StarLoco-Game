@@ -1910,15 +1910,18 @@ public class SocketManager {
     }
 
     public static void GAME_SEND_gIG_PACKET(Player p, Guild g) {
-        long xpMin = World.world.getExpLevel(g.getLvl()).guilde;
-        long xpMax;
-        if (World.world.getExpLevel(g.getLvl() + 1) == null) {
-            xpMax = -1;
+        if (g == null) {
+            send(p,"gIG");
         } else {
-            xpMax = World.world.getExpLevel(g.getLvl() + 1).guilde;
+            long xpMin = World.world.getExpLevel(g.getLvl()).guilde;
+            long xpMax;
+            if (World.world.getExpLevel(g.getLvl() + 1) == null) {
+                xpMax = -1;
+            } else {
+                xpMax = World.world.getExpLevel(g.getLvl() + 1).guilde;
+            }
+            send(p, "gIG" + (g.haveTenMembers() ? 1 : 0) + "|" + g.getLvl() + "|" + xpMin + "|" + g.getXp() + "|" + xpMax);
         }
-        send(p, "gIG" + (g.haveTenMembers() ? 1 : 0) + "|" + g.getLvl() + "|" + xpMin + "|" + g.getXp() + "|" + xpMax);
-
     }
 
     public static void REALM_SEND_MESSAGE(GameClient out, String args) {
