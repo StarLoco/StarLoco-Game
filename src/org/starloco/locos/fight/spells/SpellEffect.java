@@ -4420,7 +4420,7 @@ public class SpellEffect implements Cloneable {
 				} else {
 					target.setState(id, turns);
 					SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 950, caster.getId() + "", target.getId() + "," + id + ",1");
-					target.addBuff(effectID, value, turns, id == Constant.ETAT_SAOUL, spell, args, target, false, true);
+					target.addBuff(effectID, value, turns, false, spell, args, target, false, true);
 				}
 				if (spell == 686) {
 					target.unHide(686);
@@ -4430,23 +4430,22 @@ public class SpellEffect implements Cloneable {
 	}
 
 	private void applyEffect_951(Fight fight, ArrayList<Fighter> targets) {
-		int id = -1;
-		try {
-			id = Integer.parseInt(args.split(";")[2]);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		if (id == -1)
-			return;
+		final int id = Integer.parseInt(args.split(";")[2]);
 
 		for (Fighter target : targets) {
-			//Si la cible n'a pas l'�tat
 			if (!target.haveState(id))
 				continue;
-			//on enleve l'�tat
+
 			target.setState(id, 0);
-			//on envoie le packet
-			SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 950, caster.getId() + "", target.getId() + "," + id + ",0");
+			SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 950, String.valueOf(caster.getId()), target.getId() + "," + id + ",0");
+
+			TimerWaiter.addNext(() -> {
+				for (SpellEffect effect : target.getBuffsByEffectID(950)) {
+					if (id == Integer.parseInt(args.split(";")[2])) {
+						target.getFightBuff().remove(effect);
+					}
+				}
+			}, 1000);
 		}
 	}
 
