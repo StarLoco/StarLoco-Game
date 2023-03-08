@@ -60,7 +60,7 @@ public class GameHandler implements IoHandler {
             return;
         arg1.printStackTrace();
         if (Config.debug)
-            World.world.logger.error("Exception connexion client : " + arg1.getMessage());
+            World.world.logger.error("Exception connexion client : ", arg1);
         this.kick(arg0);
     }
 
