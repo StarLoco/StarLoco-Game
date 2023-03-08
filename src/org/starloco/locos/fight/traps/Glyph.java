@@ -63,16 +63,16 @@ public class Glyph {
             if(target.getMob() != null) {
                 if(target.getMob().getTemplate().getId() == 1045) {
                     if(this.spell == 1072) {
-                        target.addBuff(217, 400, 2, false, 1077, "", target, false);// - 400 air
-                        target.addBuff(218, 400, 2, false, 1077, "", target, false);// - 400 feu
+                        target.addBuff(217, 400, 2, false, 1077, "", target, false, true);// - 400 air
+                        target.addBuff(218, 400, 2, false, 1077, "", target, false, true);// - 400 feu
                         SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 1077, caster.getId() + "", target.getId() + "," + "" + "," + 1);
                         this.fight.getFighters(7).stream().filter(fighter -> fighter.getPlayer() != null && fighter.getPlayer().isOnline()).forEach(fighter -> {
                             fighter.getPlayer().send("GA;217;-100;" + target.getId() + ",400,1");
                             fighter.getPlayer().send("GA;218;-100;" + target.getId() + ",400,1");
                         });
                     } else {
-                        target.addBuff(215, 400, 2, false, 1077, "", target, false);// - 400 terre
-                        target.addBuff(216, 400, 2, false, 1077, "", target, false);// - 400 eau
+                        target.addBuff(215, 400, 2, false, 1077, "", target, false, true);// - 400 terre
+                        target.addBuff(216, 400, 2, false, 1077, "", target, false, true);// - 400 eau
 
                         SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 1077, caster.getId() + "", target.getId() + "," + "" + "," + 1);
 

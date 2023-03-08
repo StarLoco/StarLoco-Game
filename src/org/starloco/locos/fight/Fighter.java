@@ -32,7 +32,7 @@ public class Fighter implements Comparable<Fighter> {
     private Fight fight;
     private int type = 0;                                // 1 : Personnage, 2 : Mob, 5 : Perco
     private MonsterGrade mob = null;
-    private Player perso = null;
+    private Player player = null;
     private Player _double = null;
     private Collector collector = null;
     private Prism prism = null;
@@ -78,7 +78,7 @@ public class Fighter implements Comparable<Fighter> {
             setDouble(player);
         } else {
             this.type = 1;
-            this.perso = player;
+            this.player = player;
         }
         setId(player.getId());
         this.pdvMax = player.getMaxPdv();
@@ -143,7 +143,7 @@ public class Fighter implements Comparable<Fighter> {
 
     public Player getPlayer() {
         if (this.type == 1)
-            return this.perso;
+            return this.player;
         return null;
     }
 
@@ -410,7 +410,7 @@ public class Fighter implements Comparable<Fighter> {
     public Stats getTotalStatsLessBuff() {
         Stats stats = new Stats(new HashMap<>());
         if (this.type == 1)
-            stats = this.perso.getTotalStats(true);
+            stats = this.player.getTotalStats(true);
         if (this.type == 2) {
             if (this.stats == null) {
                 this.stats = this.mob.getStats();
@@ -435,15 +435,15 @@ public class Fighter implements Comparable<Fighter> {
         return false;
     }
 
-    public SpellEffect addBuff(int id, int val, int duration, boolean debuff, int spellID, String args, Fighter caster, boolean sendGA) {
-        SpellEffect effect = new SpellEffect(id,val, duration,debuff,caster,args,spellID);
+    public SpellEffect addBuff(int id, int value, int duration, boolean debuff, int spellId, String args, Fighter caster, boolean sendGA, boolean sendGIE) {
+        SpellEffect effect = new SpellEffect(id, value, duration, debuff, caster, args, spellId);
 
         if(this.mob != null)
             for(int id1 : Constant.STATIC_INVOCATIONS)
                 if (id1 != 2750 && id1 == this.mob.getTemplate().getId())
                     return effect;
 
-        switch(spellID) {
+        switch(spellId) {
             case 1099:
                 if(this.mob != null && this.mob.getTemplate().getId() == 423)
                     return effect;
@@ -459,7 +459,7 @@ public class Fighter implements Comparable<Fighter> {
         if(id == 606 || id == 607 || id == 608 || id == 609 || id == 611 || id == 125 || id == 114) debuff = true;
         else if(id == 293) debuff = false;
 
-        switch(spellID) {
+        switch(spellId) {
             // Feca spells shields
             case 1: case 4: case 5: case 6: case 7: case 14: case 18: case 20: case 422:
                 if(this.getId() != caster.getId())
@@ -467,9 +467,9 @@ public class Fighter implements Comparable<Fighter> {
                 break;
         }
         //Si c'est le jouer actif qui s'autoBuff, on ajoute 1 a la durée
-        if(this.getId() == caster.getId() && id != 84 && id != 950 && spellID != 446) {
+        if(this.getId() == caster.getId() && id != 84 && id != 950 && spellId != 446) {
             duration += 1;
-            switch(spellID) {
+            switch(spellId) {
                 case 138: // Mot de silence
                 case 170: // Fleche d'immo
                 case 114: // Rekop
@@ -484,18 +484,17 @@ public class Fighter implements Comparable<Fighter> {
         effect.setTurn(duration);
         this.fightBuffs.add(effect);
 
-
         if(Config.debug)
-            System.out.println("- Ajout du Buff "+id+" sur le personnage fighter ("+this.getId()+") val : "+val+" duration : "+duration+" debuff : "+debuff+" spellid : "+spellID+" args : "+args+" !");
-        switch(spellID) {
+            System.out.println("- Ajout du Buff "+id+" sur le personnage fighter ("+this.getId()+") val : "+value+" duration : "+duration+" debuff : "+debuff+" spellid : "+spellId+" args : "+args+" !");
+        switch(spellId) {
             // Feca spells shields
             case 1: case 4: case 5: case 6: case 7: case 14: case 18: case 20: case 422:
                 if(this.getId() != caster.getId())
                     duration--;
                 break;
         }
-        if(id != 950 && spellID != 446) {
-            switch (spellID) {
+        if(id != 950 && spellId != 446) {
+            switch (spellId) {
                 case 170: // Fleche d'immo
                 case 114: // Rekop
                 case 101:// Roulette
@@ -511,7 +510,9 @@ public class Fighter implements Comparable<Fighter> {
         if(sendGA) {
             SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, effect.getEffectID(), String.valueOf(caster.getId()), this.getId() + "," + effect.getValue() + "," + effect.getTurn());
         }
-        fight.sendBuffPacket(this, effect, fight.getFighters(7), null, duration);
+        if(sendGIE) {
+            fight.sendBuffPacket(this, effect, fight.getFighters(7), null, duration);
+        }
         return effect;
     }
 
@@ -566,13 +567,16 @@ public class Fighter implements Comparable<Fighter> {
         ArrayList<SpellEffect> array = new ArrayList<>(this.fightBuffs);
         if (!array.isEmpty()) {
             this.fightBuffs.clear();
-            TimerWaiter.addNext(() -> array.stream().filter(Objects::nonNull)
-                    .forEach(spellEffect -> this.addBuff(spellEffect.getEffectID(), spellEffect.getValue(),
-                            spellEffect.getTurn(), spellEffect.isDebuffabe(), spellEffect.getSpell(), spellEffect.getArgs(), this, false)), 1000);
+            TimerWaiter.addNext(() -> array.stream().filter(Objects::nonNull).forEach(spellEffect -> {
+                this.addBuff(spellEffect.getEffectID(), spellEffect.getValue(), spellEffect.getTurn(), spellEffect.isDebuffabe(), spellEffect.getSpell(), spellEffect.getArgs(), spellEffect.getCaster(), false, false);
+                int duration = effect.getCaster() != this ? spellEffect.getTurn() : spellEffect.getTurn() - 1;
+                fight.sendBuffPacket(this, spellEffect, fight.getFighters(7), null, duration);
+            }), 750);
         }
 
-        if (this.perso != null && !this.hasLeft) // Envoie les stats au joueurs
-            SocketManager.GAME_SEND_STATS_PACKET(this.perso);
+        if (this.player != null && !this.hasLeft) {
+            SocketManager.GAME_SEND_STATS_PACKET(this.player);
+        }
     }
 
     private void refreshEndTurnShield() {
@@ -659,7 +663,7 @@ public class Fighter implements Comparable<Fighter> {
 
     public void initBuffStats() {
         if (this.type == 1)
-            this.fightBuffs.addAll(new ArrayList<>(this.perso.get_buff().values()));
+            this.fightBuffs.addAll(new ArrayList<>(this.player.get_buff().values()));
     }
 
     void applyBeginningTurnBuff(Fight fight) {
@@ -686,7 +690,7 @@ public class Fighter implements Comparable<Fighter> {
     public Stats getTotalStats() {
         Stats stats = new Stats(new HashMap<>());
         if (this.type == 1)
-            stats = this.perso.getTotalStats(false);
+            stats = this.player.getTotalStats(false);
         if (this.type == 2)
             stats = this.mob.getStats();
         if (this.type == 5)
@@ -753,7 +757,7 @@ public class Fighter implements Comparable<Fighter> {
 
     int getInitiative() {
         if (this.type == 1)
-            return this.perso.getInitiative();
+            return this.player.getInitiative();
         if (this.type == 2)
             return this.mob.getInit();
         if (this.type == 5)
@@ -861,8 +865,8 @@ public class Fighter implements Comparable<Fighter> {
     }
 
     public int getPdvMaxOutFight() {
-        if (this.perso != null)
-            return this.perso.getMaxPdv();
+        if (this.player != null)
+            return this.player.getMaxPdv();
         if (this.mob != null)
             return this.mob.getPdvMax();
         return 0;
@@ -873,8 +877,8 @@ public class Fighter implements Comparable<Fighter> {
     }
 
     public int getDefaultGfx() {
-        if (this.perso != null)
-            return this.perso.getGfxId();
+        if (this.player != null)
+            return this.player.getGfxId();
         if (this.mob != null)
             return this.mob.getTemplate().getGfxId();
         return 0;
@@ -882,7 +886,7 @@ public class Fighter implements Comparable<Fighter> {
 
     public int getLvl() {
         if (this.type == 1)
-            return this.perso.getLevel();
+            return this.player.getLevel();
         if (this.type == 2)
             return this.mob.getLevel();
         if (this.type == 5)
@@ -895,19 +899,19 @@ public class Fighter implements Comparable<Fighter> {
     }
 
     public String xpString(String str) {
-        if (this.perso != null) {
-            int max = this.perso.getLevel() + 1;
+        if (this.player != null) {
+            int max = this.player.getLevel() + 1;
             if (max > World.world.getExpLevelSize())
                 max = World.world.getExpLevelSize();
-            return World.world.getExpLevel(this.perso.getLevel()).perso + str
-                    + this.perso.getExp() + str + World.world.getExpLevel(max).perso;
+            return World.world.getExpLevel(this.player.getLevel()).perso + str
+                    + this.player.getExp() + str + World.world.getExpLevel(max).perso;
         }
         return "0" + str + "0" + str + "0";
     }
 
     public String getPacketsName() {
         if (this.type == 1)
-            return this.perso.getName();
+            return this.player.getName();
         if (this.type == 2)
             return this.mob.getTemplate().getId() + "";
         if (this.type == 5)
@@ -930,25 +934,25 @@ public class Fighter implements Comparable<Fighter> {
 
         switch (this.type) {
             case 1://Perso
-                str.append(this.perso.getClasse()).append(";");
-                str.append(this.perso.getGfxId()).append("^").append(this.perso.get_size()).append(";");
-                str.append(this.perso.getSexe()).append(";");
-                str.append(this.perso.getLevel()).append(";");
-                str.append(this.perso.getAlignment()).append(",");
+                str.append(this.player.getClasse()).append(";");
+                str.append(this.player.getGfxId()).append("^").append(this.player.get_size()).append(";");
+                str.append(this.player.getSexe()).append(";");
+                str.append(this.player.getLevel()).append(";");
+                str.append(this.player.getAlignment()).append(",");
                 str.append("0").append(",");
-                str.append((this.perso.is_showWings() ? this.perso.getGrade() : "0")).append(",");
-                str.append(this.perso.getLevel() + this.perso.getId());
-                if (this.perso.is_showWings() && this.perso.getDeshonor() > 0) {
+                str.append((this.player.is_showWings() ? this.player.getGrade() : "0")).append(",");
+                str.append(this.player.getLevel() + this.player.getId());
+                if (this.player.is_showWings() && this.player.getDeshonor() > 0) {
                     str.append(",");
-                    str.append(this.perso.getDeshonor() > 0 ? 1 : 0).append(';');
+                    str.append(this.player.getDeshonor() > 0 ? 1 : 0).append(';');
                 } else {
                     str.append(";");
                 }
-                int color1 = this.perso.getColor1(),
-                        color2 = this.perso.getColor2(),
-                        color3 = this.perso.getColor3();
-                if (this.perso.getObjetByPos(Constant.ITEM_POS_MALEDICTION) != null)
-                    if (this.perso.getObjetByPos(Constant.ITEM_POS_MALEDICTION).getTemplate().getId() == 10838) {
+                int color1 = this.player.getColor1(),
+                        color2 = this.player.getColor2(),
+                        color3 = this.player.getColor3();
+                if (this.player.getObjetByPos(Constant.ITEM_POS_MALEDICTION) != null)
+                    if (this.player.getObjetByPos(Constant.ITEM_POS_MALEDICTION).getTemplate().getId() == 10838) {
                         color1 = 16342021;
                         color2 = 16342021;
                         color3 = 16342021;
@@ -956,7 +960,7 @@ public class Fighter implements Comparable<Fighter> {
                 str.append((color1 == -1 ? "-1" : Integer.toHexString(color1))).append(";");
                 str.append((color2 == -1 ? "-1" : Integer.toHexString(color2))).append(";");
                 str.append((color3 == -1 ? "-1" : Integer.toHexString(color3))).append(";");
-                str.append(this.perso.getGMStuffString()).append(";");
+                str.append(this.player.getGMStuffString()).append(";");
                 str.append(getPdv()).append(";");
                 str.append(getTotalStats().getEffect(Constant.STATS_ADD_PA)).append(";");
                 str.append(getTotalStats().getEffect(Constant.STATS_ADD_PM)).append(";");
@@ -968,8 +972,8 @@ public class Fighter implements Comparable<Fighter> {
                 str.append(getTotalStats().getEffect(Constant.STATS_ADD_AFLEE)).append(";");
                 str.append(getTotalStats().getEffect(Constant.STATS_ADD_MFLEE)).append(";");
                 str.append(this.team).append(";");
-                if (this.perso.isOnMount() && this.perso.getMount() != null)
-                    str.append(this.perso.getMount().getStringColor(this.perso.parsecolortomount()));
+                if (this.player.isOnMount() && this.player.getMount() != null)
+                    str.append(this.player.getMount().getStringColor(this.player.parsecolortomount()));
                 str.append(";");
                 break;
             case 2://Mob

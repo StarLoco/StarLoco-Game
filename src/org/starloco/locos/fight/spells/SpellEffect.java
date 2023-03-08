@@ -169,8 +169,8 @@ public class SpellEffect implements Cloneable {
 											int duration = b.getTurn();
 											String args = b.getArgs();
 											for (int i : Constant.getOppositeStats(stats))
-												target.addBuff(i, val, turns, true, buff.getSpell(), args, caster, false);
-											target.addBuff(stats, val, duration, true, buff.getSpell(), args, caster, false);
+												target.addBuff(i, val, turns, true, buff.getSpell(), args, caster, false, true);
+											target.addBuff(stats, val, duration, true, buff.getSpell(), args, caster, false, true);
 										}
 									}
 									break;
@@ -251,31 +251,31 @@ public class SpellEffect implements Cloneable {
 								case 606://Chatiment (acncien)
 									int stat = buff.getValue();
 									int jet = Formulas.getRandomJet(caster, target, buff.getJet());
-									target.addBuff(stat, jet, -1, false, buff.getSpell(), buff.getArgs(), caster, false);
+									target.addBuff(stat, jet, -1, false, buff.getSpell(), buff.getArgs(), caster, false, true);
 									SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, stat, caster.getId() + "", target.getId() + "," + jet + "," + -1);
 									break;
 								case 607://Chatiment (acncien)
 									stat = buff.getValue();
 									jet = Formulas.getRandomJet(caster, target, buff.getJet());
-									target.addBuff(stat, jet, -1, false, buff.getSpell(), buff.getArgs(), caster, false);
+									target.addBuff(stat, jet, -1, false, buff.getSpell(), buff.getArgs(), caster, false, true);
 									SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, stat, caster.getId() + "", target.getId() + "," + jet + "," + -1);
 									break;
 								case 608://Chatiment (acncien)
 									stat = buff.getValue();
 									jet = Formulas.getRandomJet(caster, target, buff.getJet());
-									target.addBuff(stat, jet, -1, false, buff.getSpell(), buff.getArgs(), caster, false);
+									target.addBuff(stat, jet, -1, false, buff.getSpell(), buff.getArgs(), caster, false, true);
 									SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, stat, caster.getId() + "", target.getId() + "," + jet + "," + -1);
 									break;
 								case 609://Chatiment (acncien)
 									stat = buff.getValue();
 									jet = Formulas.getRandomJet(caster, target, buff.getJet());
-									target.addBuff(stat, jet, -1, false, buff.getSpell(), buff.getArgs(), caster, false);
+									target.addBuff(stat, jet, -1, false, buff.getSpell(), buff.getArgs(), caster, false, true);
 									SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, stat, caster.getId() + "", target.getId() + "," + jet + "," + -1);
 									break;
 								case 611://Chatiment (acncien)
 									stat = buff.getValue();
 									jet = Formulas.getRandomJet(caster, target, buff.getJet());
-									target.addBuff(stat, jet, -1, false, buff.getSpell(), buff.getArgs(), caster, false);
+									target.addBuff(stat, jet, -1, false, buff.getSpell(), buff.getArgs(), caster, false, true);
 									SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, stat, caster.getId() + "", target.getId() + "," + jet + "," + -1);
 									break;
 								case 788://Chatiments
@@ -307,7 +307,7 @@ public class SpellEffect implements Cloneable {
 											SocketManager.GAME_SEND_STATS_PACKET(target.getPlayer());
 									} else {
 										target.getChatiValue().put(stat, newValue);
-										target.addBuff(stat, gain, 5, true, -1, buff.getArgs(), caster, false);
+										target.addBuff(stat, gain, 5, true, -1, buff.getArgs(), caster, false, true);
 										SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, stat, caster.getId() + "", target.getId() + "," + gain + "," + 5);
 									}
 									target.getChatiValue().put(stat, newValue);
@@ -1103,7 +1103,7 @@ public class SpellEffect implements Cloneable {
 
 	private void applyEffect_9(ArrayList<Fighter> targets) {
 		for (Fighter target : targets) {
-			target.addBuff(effectID, value, turns, true, spell, args, caster, false);
+			target.addBuff(effectID, value, turns, true, spell, args, caster, false, true);
 		}
 	}
 
@@ -1169,12 +1169,12 @@ public class SpellEffect implements Cloneable {
 			if (pointsLost < 1)
 				continue;
 
-			target.addBuff(Constant.STATS_REM_PM, pointsLost, turns == 0 ? 1 : turns, false, spell, args, caster, false);
+			target.addBuff(Constant.STATS_REM_PM, pointsLost, turns == 0 ? 1 : turns, false, spell, args, caster, false, true);
 			SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, Constant.STATS_REM_PM, caster.getId() + "", target.getId() + ",-" + pointsLost + "," + turns);
 			total += pointsLost;
 		}
 		if (total != 0) {
-			caster.addBuff(Constant.STATS_ADD_PM, total, turns, true, spell, args, caster, true);
+			caster.addBuff(Constant.STATS_ADD_PM, total, turns, true, spell, args, caster, true, true);
 			//Gain de PM pendant le tour de jeu
 			if (caster.canPlay())
 				caster.setCurPm(fight, total);
@@ -1186,7 +1186,7 @@ public class SpellEffect implements Cloneable {
 		if (value == -1) return;
 
 		for (Fighter target : targets) {
-			target.addBuff(effectID, value, turns, true, spell, args, caster, true);
+			target.addBuff(effectID, value, turns, true, spell, args, caster, true, true);
 		}
 	}
 
@@ -1194,7 +1194,7 @@ public class SpellEffect implements Cloneable {
 		if (turns < 1) return;
 
 		for (Fighter target : targets) {
-			target.addBuff(effectID, -1, turns, true, spell, args, caster, false);
+			target.addBuff(effectID, -1, turns, true, spell, args, caster, false, true);
 		}
 	}
 
@@ -1229,7 +1229,7 @@ public class SpellEffect implements Cloneable {
 		} else {
 			for (Fighter target : targets) {
 				if (!target.isDead()) {
-					target.addBuff(effectID, 0, turns, true, spell, args, caster, false);
+					target.addBuff(effectID, 0, turns, true, spell, args, caster, false, true);
 				}
 			}
 		}
@@ -1279,7 +1279,7 @@ public class SpellEffect implements Cloneable {
 			}
 		} else {
 			for (Fighter target : targets) {
-				target.addBuff(effectID, 0, turns, true, spell, args, caster, false);//on applique un buff
+				target.addBuff(effectID, 0, turns, true, spell, args, caster, false, true);//on applique un buff
 			}
 		}
 	}
@@ -1296,13 +1296,13 @@ public class SpellEffect implements Cloneable {
 			if (pointsLost < 1)
 				continue;
 
-			target.addBuff(Constant.STATS_REM_PA, pointsLost, turns == 0 ? 1 : turns, false, spell, args, caster, false);
+			target.addBuff(Constant.STATS_REM_PA, pointsLost, turns == 0 ? 1 : turns, false, spell, args, caster, false, true);
 			SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, Constant.STATS_REM_PA, caster.getId() + "", target.getId() + ",-" + pointsLost + "," + turns);
 			total += pointsLost;
 		}
 
 		if (total != 0) {
-			caster.addBuff(Constant.STATS_ADD_PA, total, 0, true, spell, args, caster, true);
+			caster.addBuff(Constant.STATS_ADD_PA, total, 0, true, spell, args, caster, true, true);
 
 			if (caster.canPlay()) {
 				caster.setCurPa(fight, total);
@@ -1363,7 +1363,7 @@ public class SpellEffect implements Cloneable {
 			}
 		} else {
 			for (Fighter target : targets) {
-				target.addBuff(effectID, 0, turns, true, spell, args, caster, false);//on applique un buff
+				target.addBuff(effectID, 0, turns, true, spell, args, caster, false, true);//on applique un buff
 			}
 		}
 	}
@@ -1422,7 +1422,7 @@ public class SpellEffect implements Cloneable {
 			}
 		} else {
 			for (Fighter target : targets) {
-				target.addBuff(effectID, 0, turns, true, spell, args, caster, false);//on applique un buff
+				target.addBuff(effectID, 0, turns, true, spell, args, caster, false, true);//on applique un buff
 			}
 		}
 	}
@@ -1480,7 +1480,7 @@ public class SpellEffect implements Cloneable {
 			}
 		} else {
 			for (Fighter target : targets) {
-				target.addBuff(effectID, 0, turns, true, spell, args, caster, false);//on applique un buff
+				target.addBuff(effectID, 0, turns, true, spell, args, caster, false, true);//on applique un buff
 			}
 		}
 	}
@@ -1538,7 +1538,7 @@ public class SpellEffect implements Cloneable {
 			}
 		} else {
 			for (Fighter target : targets) {
-				target.addBuff(effectID, 0, turns, true, spell, args, caster, false);//on applique un buff
+				target.addBuff(effectID, 0, turns, true, spell, args, caster, false, true);//on applique un buff
 			}
 		}
 	}
@@ -1606,7 +1606,7 @@ public class SpellEffect implements Cloneable {
 			}
 		} else {
 			for (Fighter target : targets) {
-				target.addBuff(effectID, value, turns, true, spell, args, caster, false);//on applique un buff
+				target.addBuff(effectID, value, turns, true, spell, args, caster, false, true);//on applique un buff
 			}
 		}
 	}
@@ -1638,7 +1638,7 @@ public class SpellEffect implements Cloneable {
 				fight.onFighterDie(caster, caster);
 		} else {
 			for (Fighter target : targets) {
-				target.addBuff(effectID, 0, turns, true, spell, args, caster, false);//on applique un buff
+				target.addBuff(effectID, 0, turns, true, spell, args, caster, false, true);//on applique un buff
 			}
 		}
 	}
@@ -1732,7 +1732,7 @@ public class SpellEffect implements Cloneable {
 			}
 		} else {
 			for (Fighter target : targets) {
-				target.addBuff(effectID, 0, turns, true, spell, args, caster, false);//on applique un buff
+				target.addBuff(effectID, 0, turns, true, spell, args, caster, false, true);//on applique un buff
 			}
 		}
 	}
@@ -1825,7 +1825,7 @@ public class SpellEffect implements Cloneable {
 			}
 		} else {
 			for (Fighter target : targets) {
-				target.addBuff(effectID, 0, turns, true, spell, args, caster, false);//on applique un buff
+				target.addBuff(effectID, 0, turns, true, spell, args, caster, false, true);//on applique un buff
 			}
 		}
 	}
@@ -1919,7 +1919,7 @@ public class SpellEffect implements Cloneable {
 			}
 		} else {
 			for (Fighter target : targets) {
-				target.addBuff(effectID, 0, turns, true, spell, args, caster, false);//on applique un buff
+				target.addBuff(effectID, 0, turns, true, spell, args, caster, false, true);//on applique un buff
 			}
 		}
 	}
@@ -2012,7 +2012,7 @@ public class SpellEffect implements Cloneable {
 			}
 		} else {
 			for (Fighter target : targets) {
-				target.addBuff(effectID, 0, turns, true, spell, args, caster, false);//on applique un buff
+				target.addBuff(effectID, 0, turns, true, spell, args, caster, false, true);//on applique un buff
 			}
 		}
 	}
@@ -2108,7 +2108,7 @@ public class SpellEffect implements Cloneable {
 			}
 		} else {
 			for (Fighter target : targets) {
-				target.addBuff(effectID, 0, turns, true, spell, args, caster, false);//on applique un buff
+				target.addBuff(effectID, 0, turns, true, spell, args, caster, false, true);//on applique un buff
 			}
 		}
 	}
@@ -2236,7 +2236,7 @@ public class SpellEffect implements Cloneable {
 			}
 		} else {
 			for (Fighter target : targets)
-				target.addBuff(effectID, 0, turns, true, spell, args, caster, false);//on applique un buff
+				target.addBuff(effectID, 0, turns, true, spell, args, caster, false, true);//on applique un buff
 		}
 	}
 
@@ -2373,11 +2373,11 @@ public class SpellEffect implements Cloneable {
 				for (Fighter target : targets) {
 					if (target.getTeam() == caster.getTeam())
 						continue;
-					target.addBuff(effectID, 0, turns, true, spell, args, caster, false);//on applique un buff
+					target.addBuff(effectID, 0, turns, true, spell, args, caster, false, true);//on applique un buff
 				}
 			}
 			for (Fighter target : targets) {
-				target.addBuff(effectID, 0, turns, true, spell, args, caster, false);//on applique un buff
+				target.addBuff(effectID, 0, turns, true, spell, args, caster, false, true);//on applique un buff
 			}
 		}
 	}
@@ -2509,7 +2509,7 @@ public class SpellEffect implements Cloneable {
 			}
 		} else {
 			for (Fighter target : targets) {
-				target.addBuff(effectID, 0, turns, true, spell, args, caster, false);//on applique un buff
+				target.addBuff(effectID, 0, turns, true, spell, args, caster, false, true);//on applique un buff
 			}
 		}
 	}
@@ -2639,7 +2639,7 @@ public class SpellEffect implements Cloneable {
 			}
 		} else {
 			for (Fighter target : targets) {
-				target.addBuff(effectID, 0, turns, true, spell, args, caster, false);//on applique un buff
+				target.addBuff(effectID, 0, turns, true, spell, args, caster, false, true);//on applique un buff
 			}
 		}
 	}
@@ -2765,7 +2765,7 @@ public class SpellEffect implements Cloneable {
 			}
 		} else {
 			for (Fighter target : targets) {
-				target.addBuff(effectID, 0, turns, true, spell, args, caster, false);//on applique un buff
+				target.addBuff(effectID, 0, turns, true, spell, args, caster, false, true);//on applique un buff
 			}
 		}
 	}
@@ -2775,7 +2775,7 @@ public class SpellEffect implements Cloneable {
 			if (target.hasBuff(788)) {
 				SpellEffect buff = target.getBuff(788);
 				if (buff != null && buff.getValue() == 101) {
-					target.addBuff(111, value, buff.getTurn(), true, buff.getSpell(), args, target, false);
+					target.addBuff(111, value, buff.getTurn(), true, buff.getSpell(), args, target, false, true);
 					SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, effectID, String.valueOf(target.getId()), target.getId() + ",+" + value);
 				}
 			}
@@ -2793,7 +2793,7 @@ public class SpellEffect implements Cloneable {
 				SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 308, String.valueOf(caster.getId()), target.getId() + "," + (value - pointsLost));
 			}
 			if (pointsLost > 0) {
-				target.addBuff(effectID, pointsLost, turns, false, spell, args, caster, false);
+				target.addBuff(effectID, pointsLost, turns, false, spell, args, caster, false, true);
 				SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, effectID, String.valueOf(target.getId()), target.getId() + ",-" + pointsLost);
 			}
 
@@ -2806,7 +2806,7 @@ public class SpellEffect implements Cloneable {
 					this.checkMonsters(fight, target, effectID);
 				} else if (target.getMob().getTemplate().getId() == 1071) {
 					// If "Rasboul" monster
-					target.addBuff(111, value, turns, true, spell, args, target, false);
+					target.addBuff(111, value, turns, true, spell, args, target, false, true);
 					SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 111, String.valueOf(target.getId()), target.getId() + ",+" + value);
 				}
 			}
@@ -2817,7 +2817,7 @@ public class SpellEffect implements Cloneable {
 		int val = Formulas.getRandomJet(caster, null, jet);
 		if (val == -1) return;
 		for (Fighter target : targets) {
-			target.addBuff(effectID, val, turns, true, spell, args, caster, false);
+			target.addBuff(effectID, val, turns, true, spell, args, caster, false, true);
 		}
 	}
 
@@ -2832,14 +2832,14 @@ public class SpellEffect implements Cloneable {
 			return;
 
 		for (Fighter target : targets) {
-			target.addBuff(effectID, val, turns, true, spell, args, caster, false);
+			target.addBuff(effectID, val, turns, true, spell, args, caster, false, true);
 		}
 	}
 
 	private void applyEffect_107(ArrayList<Fighter> targets) {
 		if (turns >= 1)
 			for (Fighter target : targets)
-				target.addBuff(effectID, value, turns, true, spell, args, caster, false);//on applique un buff
+				target.addBuff(effectID, value, turns, true, spell, args, caster, false, true);//on applique un buff
 	}
 
 	private void applyEffect_108(ArrayList<Fighter> targets, Fight fight, boolean isCaC) {// healcion
@@ -2881,7 +2881,7 @@ public class SpellEffect implements Cloneable {
 				heal = heal2;
 			}
 		} else {
-			targets.stream().filter(target -> !target.isDead()).forEach(target -> target.addBuff(effectID, 0, turns, true, spell, args, caster, false));
+			targets.stream().filter(target -> !target.isDead()).forEach(target -> target.addBuff(effectID, 0, turns, true, spell, args, caster, false, true));
 		}
 	}
 
@@ -2904,7 +2904,7 @@ public class SpellEffect implements Cloneable {
 
 			}
 		} else {
-			caster.addBuff(effectID, 0, turns, true, spell, args, caster, false);//on applique un buff
+			caster.addBuff(effectID, 0, turns, true, spell, args, caster, false, true);//on applique un buff
 		}
 	}
 
@@ -2912,7 +2912,7 @@ public class SpellEffect implements Cloneable {
 		int val = Formulas.getRandomJet(caster, null, jet);
 		if (val == -1) return;
 		for (Fighter target : targets) {
-			target.addBuff(effectID, val, turns, true, spell, args, caster, false);
+			target.addBuff(effectID, val, turns, true, spell, args, caster, false, true);
 			SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, effectID, caster.getId() + "", target.getId() + "," + val + "," + turns);
 		}
 	}
@@ -2930,7 +2930,7 @@ public class SpellEffect implements Cloneable {
 						continue;
 					value = lostPA;
 				}
-				target.addBuff(effectID, value, turns, true, spell, args, caster, false);
+				target.addBuff(effectID, value, turns, true, spell, args, caster, false, true);
 				repetibles = true;
 				if (target.canPlay() && target == caster)
 					target.setCurPa(fight, value);
@@ -2941,7 +2941,7 @@ public class SpellEffect implements Cloneable {
 			if (spell == 521)// ruse kistoune
 				if (target.getTeam2() != caster.getTeam2())
 					continue;
-			target.addBuff(effectID, val, turns, true, spell, args, caster, false);
+			target.addBuff(effectID, val, turns, true, spell, args, caster, false, true);
 			//Gain de PA pendant le tour de jeu
 			if (target.canPlay() && target == caster)
 				target.setCurPa(fight, val);
@@ -2954,13 +2954,13 @@ public class SpellEffect implements Cloneable {
 		if(value == -1) return;
 
 		if (spell == 1090) {
-			caster.addBuff(effectID, value, turns, true, spell, args, caster, false);
+			caster.addBuff(effectID, value, turns, true, spell, args, caster, false, true);
 			SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, effectID, caster.getId() + "", caster.getId() + "," + value + "," + turns);
 			return;
 		}
 
 		for (Fighter target : targets) {
-			target.addBuff(effectID, value, turns, true, spell, args, caster, true);
+			target.addBuff(effectID, value, turns, true, spell, args, caster, true, true);
 		}
 	}
 
@@ -2969,7 +2969,7 @@ public class SpellEffect implements Cloneable {
 		if (value == -1) return;
 
 		for (Fighter target : targets) {
-			target.addBuff(effectID, value, turns, true, spell, args, caster, false);
+			target.addBuff(effectID, value, turns, true, spell, args, caster, false, true);
 			SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, effectID, String.valueOf(caster.getId()), target.getId() + "," + value + "," + turns);
 		}
 	}
@@ -2979,7 +2979,7 @@ public class SpellEffect implements Cloneable {
 		if (value == -1) return;
 
 		for (Fighter target : targets) {
-			target.addBuff(effectID, value, turns, true, spell, args, caster, true);
+			target.addBuff(effectID, value, turns, true, spell, args, caster, true, true);
 		}
 	}
 
@@ -2988,7 +2988,7 @@ public class SpellEffect implements Cloneable {
 		if (value == -1) return;
 
 		for (Fighter target : targets) {
-			target.addBuff(effectID, value, turns, true, spell, args, caster, true);
+			target.addBuff(effectID, value, turns, true, spell, args, caster, true, true);
 		}
 	}
 
@@ -2998,7 +2998,7 @@ public class SpellEffect implements Cloneable {
 		if (value == -1) return;
 
 		for (Fighter target : targets) {
-			target.addBuff(effectID, value, turns, true, spell, args, caster, true);
+			target.addBuff(effectID, value, turns, true, spell, args, caster, true, true);
 			//Gain de PO pendant le tour de jeu
 			if (target.canPlay() && target == caster) {
 				target.getTotalStats().addOneStat(Constant.STATS_ADD_PO, value);
@@ -3015,7 +3015,7 @@ public class SpellEffect implements Cloneable {
 		}
 
 		for (Fighter target : targets) {
-			target.addBuff(effectID, value, turns, true, spell, args, caster, true);
+			target.addBuff(effectID, value, turns, true, spell, args, caster, true, true);
 		}
 	}
 
@@ -3024,7 +3024,7 @@ public class SpellEffect implements Cloneable {
 		if (value == -1) return;
 
 		for (Fighter target : targets) {
-			target.addBuff(effectID, value, turns, true, spell, args, caster, true);
+			target.addBuff(effectID, value, turns, true, spell, args, caster, true, true);
 		}
 	}
 
@@ -3033,7 +3033,7 @@ public class SpellEffect implements Cloneable {
 		int value = Formulas.getRandomJet(caster, null, jet);
 		if (value == -1) return;
 
-		caster.addBuff(effectID, value, turns, true, spell, args, caster, true);
+		caster.addBuff(effectID, value, turns, true, spell, args, caster, true, true);
 		caster.setCurPa(fight, value);
 	}
 
@@ -3042,7 +3042,7 @@ public class SpellEffect implements Cloneable {
 		if (value == -1) return;
 
 		for (Fighter target : targets) {
-			target.addBuff(effectID, value, turns, true, spell, args, caster, true);
+			target.addBuff(effectID, value, turns, true, spell, args, caster, true, true);
 		}
 	}
 
@@ -3051,7 +3051,7 @@ public class SpellEffect implements Cloneable {
 		if (value == -1) return;
 
 		for (Fighter target : targets) {
-			target.addBuff(effectID, value, turns, true, spell, args, caster, true);
+			target.addBuff(effectID, value, turns, true, spell, args, caster, true, true);
 		}
 	}
 
@@ -3060,7 +3060,7 @@ public class SpellEffect implements Cloneable {
 		if (value == -1) return;
 
 		for (Fighter target : targets) {
-			target.addBuff(effectID, value, turns, true, spell, args, caster, true);
+			target.addBuff(effectID, value, turns, true, spell, args, caster, true, true);
 		}
 	}
 
@@ -3069,7 +3069,7 @@ public class SpellEffect implements Cloneable {
 		if (value == -1) return;
 
 		for (Fighter target : targets) {
-			target.addBuff(effectID, value, turns, true, spell, args, caster, true);
+			target.addBuff(effectID, value, turns, true, spell, args, caster, true, true);
 		}
 	}
 
@@ -3078,7 +3078,7 @@ public class SpellEffect implements Cloneable {
 		if (value == -1) return;
 
 		for (Fighter target : targets) {
-			target.addBuff(effectID, value, turns, true, spell, args, caster, true);
+			target.addBuff(effectID, value, turns, true, spell, args, caster, true, true);
 		}
 	}
 
@@ -3091,7 +3091,7 @@ public class SpellEffect implements Cloneable {
 		}
 
 		for (Fighter target : targets) {
-			target.addBuff(effectID, value, turns, true, spell, args, caster, true);
+			target.addBuff(effectID, value, turns, true, spell, args, caster, true, true);
 		}
 	}
 
@@ -3105,7 +3105,7 @@ public class SpellEffect implements Cloneable {
 			}
 
 			if (pointsLost > 0) {
-				target.addBuff(effectID, pointsLost, turns, false, spell, args, caster, false);
+				target.addBuff(effectID, pointsLost, turns, false, spell, args, caster, false, true);
 
 				if (turns <= 1) {
 					SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, effectID, String.valueOf(target.getId()), target.getId() + ",-" + pointsLost);
@@ -3130,7 +3130,7 @@ public class SpellEffect implements Cloneable {
 						continue;
 					value = lostPM;
 				}
-				target.addBuff(effectID, value, turns, true, spell, args, caster, true);
+				target.addBuff(effectID, value, turns, true, spell, args, caster, true, true);
 				repetibles = true;
 				if (target.canPlay() && target == caster)
 					target.setCurPm(fight, value);
@@ -3139,7 +3139,7 @@ public class SpellEffect implements Cloneable {
 				if (target.getTeam2() != caster.getTeam2())
 					continue;
 
-			target.addBuff(effectID, val, turns, true, spell, args, caster, true);
+			target.addBuff(effectID, val, turns, true, spell, args, caster, true, true);
 			//Gain de PM pendant le tour de jeu
 			if (target.canPlay() && target == caster)
 				target.setCurPm(fight, val);
@@ -3168,13 +3168,13 @@ public class SpellEffect implements Cloneable {
 			}
 		} else {
 			for (Fighter target : targets)
-				target.addBuff(effectID, 0, turns, true, spell, args, caster, false);//on applique un buff
+				target.addBuff(effectID, 0, turns, true, spell, args, caster, false, true);//on applique un buff
 		}
 	}
 
 	private void applyEffect_131(ArrayList<Fighter> targets) {
 		for (Fighter target : targets) {
-			target.addBuff(effectID, value, turns, true, spell, args, caster, false);
+			target.addBuff(effectID, value, turns, true, spell, args, caster, false, true);
 		}
 	}
 
@@ -3183,7 +3183,7 @@ public class SpellEffect implements Cloneable {
 			if (target.isHide())
 				target.unHide(spell);
 			target.debuff(this);
-			SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 132, caster.getId() + "", target.getId() + "");
+			SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 132, String.valueOf(caster.getId()), String.valueOf(target.getId()));
 		}
 	}
 
@@ -3192,13 +3192,13 @@ public class SpellEffect implements Cloneable {
 		if (value == -1) return;
 
 		for (Fighter target : targets) {
-			target.addBuff(effectID, value, turns, true, spell, args, caster, true);
+			target.addBuff(effectID, value, turns, true, spell, args, caster, true, true);
 		}
 	}
 
 	private void applyEffect_140(ArrayList<Fighter> targets) {
 		for (Fighter target : targets) {
-			target.addBuff(effectID, 0, turns, true, spell, args, caster, false);
+			target.addBuff(effectID, 0, turns, true, spell, args, caster, false, true);
 		}
 	}
 
@@ -3227,7 +3227,7 @@ public class SpellEffect implements Cloneable {
 			targets.add(this.caster);
 		}
 		for (Fighter target : targets) {
-			target.addBuff(effectID, value, turns, true, spell, args, caster, true);
+			target.addBuff(effectID, value, turns, true, spell, args, caster, true, true);
 		}
 	}
 
@@ -3297,7 +3297,7 @@ public class SpellEffect implements Cloneable {
 			for (Fighter cible : targets) {
 				if (cible.isDead())
 					continue;
-				cible.addBuff(effectID, 0, turns, true, spell, args, caster, false);
+				cible.addBuff(effectID, 0, turns, true, spell, args, caster, false, true);
 			}
 		}
 	}
@@ -3309,7 +3309,7 @@ public class SpellEffect implements Cloneable {
 		final int temp = value;
 		for (Fighter target : targets) {
 			value = getMaxMinSpell(target, value);
-			target.addBuff(145, value, turns, true, spell, args, caster, true);
+			target.addBuff(145, value, turns, true, spell, args, caster, true, true);
 			value = temp;
 		}
 	}
@@ -3319,7 +3319,7 @@ public class SpellEffect implements Cloneable {
 		if (value == -1) return;
 
 		for (Fighter target : targets) {
-			target.addBuff(effectID, value, turns, true, spell, args, caster, true);
+			target.addBuff(effectID, value, turns, true, spell, args, caster, true, true);
 		}
 	}
 
@@ -3344,7 +3344,7 @@ public class SpellEffect implements Cloneable {
 			if (id == -1)
 				id = target.getDefaultGfx();
 
-			target.addBuff(effectID, id, turns, true, spell, args, caster, false);
+			target.addBuff(effectID, id, turns, true, spell, args, caster, false, true);
 			SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, effectID, caster.getId() + "", target.getId() + "," + target.getDefaultGfx() + "," + id + "," + (target.canPlay() ? turns + 1 : turns));
 		}
 	}
@@ -3356,7 +3356,7 @@ public class SpellEffect implements Cloneable {
 			return;
 
 		if (spell == 547 || spell == 546 || spell == 548 || spell == 525) {
-			caster.addBuff(effectID, 0, 3, true, spell, args, caster, false);
+			caster.addBuff(effectID, 0, 3, true, spell, args, caster, false, true);
 			SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, effectID, caster.getId() + "", caster.getId() + "," + (3 - 1));
 			return;
 		}
@@ -3364,7 +3364,7 @@ public class SpellEffect implements Cloneable {
 		for (Fighter target : targets) {
 			if(target.getIsHolding() != null || target.getHoldedBy() != null || target.isHide())
 				continue;
-			target.addBuff(effectID, 0, turns, true, spell, args, caster, false);
+			target.addBuff(effectID, 0, turns, true, spell, args, caster, false, true);
 			SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, effectID, caster.getId() + "", target.getId() + "," + (turns - 1));
 		}
 	}
@@ -3376,7 +3376,7 @@ public class SpellEffect implements Cloneable {
 		int val2 = value;
 		for (Fighter target : targets) {
 			value = getMaxMinSpell(target, value);
-			target.addBuff(effectID, value, turns, true, spell, args, caster, true);
+			target.addBuff(effectID, value, turns, true, spell, args, caster, true, true);
 			value = val2;
 		}
 	}
@@ -3388,7 +3388,7 @@ public class SpellEffect implements Cloneable {
 		final int temp = value;
 		for (Fighter target : targets) {
 			value = getMaxMinSpell(target, value);
-			target.addBuff(effectID, value, turns, true, spell, args, caster, true);
+			target.addBuff(effectID, value, turns, true, spell, args, caster, true, true);
 			value = temp;
 		}
 	}
@@ -3400,7 +3400,7 @@ public class SpellEffect implements Cloneable {
 		int val2 = value;
 		for (Fighter target : targets) {
 			value = getMaxMinSpell(target, value);
-			target.addBuff(effectID, value, turns, true, spell, args, caster, true);
+			target.addBuff(effectID, value, turns, true, spell, args, caster, true, true);
 			value = val2;
 		}
 	}
@@ -3410,7 +3410,7 @@ public class SpellEffect implements Cloneable {
 		if (value == -1) return;
 
 		for (Fighter target : targets) {
-			target.addBuff(effectID, value, turns, true, spell, args, caster, true);
+			target.addBuff(effectID, value, turns, true, spell, args, caster, true, true);
 		}
 	}
 
@@ -3421,7 +3421,7 @@ public class SpellEffect implements Cloneable {
 		int temp = value;
 		for (Fighter target : targets) {
 			value = getMaxMinSpell(target, value);
-			target.addBuff(effectID, value, turns, true, spell, args, caster, true);
+			target.addBuff(effectID, value, turns, true, spell, args, caster, true, true);
 			value = temp;
 		}
 	}
@@ -3433,7 +3433,7 @@ public class SpellEffect implements Cloneable {
 		final int temp = value;
 		for (Fighter target : targets) {
 			value = getMaxMinSpell(target, value);
-			target.addBuff(effectID, value, turns, true, spell, args, caster, true);
+			target.addBuff(effectID, value, turns, true, spell, args, caster, true, true);
 			value = temp;
 		}
 	}
@@ -3443,7 +3443,7 @@ public class SpellEffect implements Cloneable {
 		if (value == -1) return;
 
 		for (Fighter target : targets) {
-			target.addBuff(effectID, value, turns, true, spell, args, caster, true);
+			target.addBuff(effectID, value, turns, true, spell, args, caster, true, true);
 		}
 	}
 
@@ -3452,7 +3452,7 @@ public class SpellEffect implements Cloneable {
 		if (value == -1) return;
 
 		for (Fighter target : targets) {
-			target.addBuff(effectID, value, turns, true, spell, args, caster, true);
+			target.addBuff(effectID, value, turns, true, spell, args, caster, true, true);
 		}
 	}
 
@@ -3461,7 +3461,7 @@ public class SpellEffect implements Cloneable {
 		if (value == -1) return;
 
 		for (Fighter target : targets) {
-			target.addBuff(effectID, value, turns, true, spell, args, caster, true);
+			target.addBuff(effectID, value, turns, true, spell, args, caster, true, true);
 		}
 	}
 
@@ -3470,11 +3470,11 @@ public class SpellEffect implements Cloneable {
 		if (value == -1) return;
 
 		if (targets.isEmpty() && spell == 310 && caster.getOldCible() != null) {
-			SpellEffect effect = caster.getOldCible().addBuff(effectID, value, turns, true, spell, args, caster, false);
+			SpellEffect effect = caster.getOldCible().addBuff(effectID, value, turns, true, spell, args, caster, false, true);
 			SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, effectID, String.valueOf(caster.getOldCible().getId()), caster.getOldCible().getId() + "," + value + "," + effect.getTurn());
 		}
 		for (Fighter target : targets) {
-			target.addBuff(effectID, value, turns, true, spell, args, caster, true);
+			target.addBuff(effectID, value, turns, true, spell, args, caster, true, true);
 		}
 	}
 
@@ -3483,7 +3483,7 @@ public class SpellEffect implements Cloneable {
 			return;
 
 		for (Fighter target : targets) {
-			target.addBuff(effectID, value, turns, true, spell, args, caster, false);
+			target.addBuff(effectID, value, turns, true, spell, args, caster, false, true);
 		}
 	}
 
@@ -3496,7 +3496,7 @@ public class SpellEffect implements Cloneable {
 		}
 		if (value == -1)
 			return;
-		caster.addBuff(effectID, value, turns, true, spell, args, caster, false);
+		caster.addBuff(effectID, value, turns, true, spell, args, caster, false, true);
 	}
 
 	private void applyEffect_168(ArrayList<Fighter> targets, Fight fight) {// - PA, no esquivables
@@ -3522,7 +3522,7 @@ public class SpellEffect implements Cloneable {
 				repetibles = true;
 			}
 
-			target.addBuff(effectID, value, turns, true, spell, args, caster, false);
+			target.addBuff(effectID, value, turns, true, spell, args, caster, false, true);
 			SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, effectID, target.getId() + "", target.getId() + ",-" + value);
 
 			if (fight.getFighterByGameOrder() == target) {
@@ -3540,7 +3540,7 @@ public class SpellEffect implements Cloneable {
 			return;
 
 		if (targets.isEmpty() && spell == 120 && caster.getOldCible() != null) {
-			caster.getOldCible().addBuff(effectID, value, turns, false, spell, args, caster, false);
+			caster.getOldCible().addBuff(effectID, value, turns, false, spell, args, caster, false, true);
 			if (turns <= 1) {
 				SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, effectID, String.valueOf(caster.getOldCible().getId()), caster.getOldCible().getId() + ",-" + value);
 			}
@@ -3561,7 +3561,7 @@ public class SpellEffect implements Cloneable {
 				repetibles = true;
 			}
 
-			target.addBuff(effectID, value, turns, true, spell, args, caster, false);
+			target.addBuff(effectID, value, turns, true, spell, args, caster, false, true);
 			SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, effectID, String.valueOf(target.getId()), target.getId() + ",-" + value);
 
 			if (fight.getFighterByGameOrder() == target) {
@@ -3578,7 +3578,7 @@ public class SpellEffect implements Cloneable {
 		if (value == -1) return;
 
 		for (Fighter target : targets) {
-			target.addBuff(effectID, value, turns, true, spell, args, caster, true);
+			target.addBuff(effectID, value, turns, true, spell, args, caster, true, true);
 		}
 	}
 
@@ -3587,7 +3587,7 @@ public class SpellEffect implements Cloneable {
 		if (value == -1) return;
 
 		for (Fighter target : targets) {
-			target.addBuff(effectID, value, turns, true, spell, args, caster, false);
+			target.addBuff(effectID, value, turns, true, spell, args, caster, false, true);
 		}
 	}
 
@@ -3596,7 +3596,7 @@ public class SpellEffect implements Cloneable {
 		if (value == -1) return;
 
 		for (Fighter target : targets) {
-			target.addBuff(effectID, value, turns, true, spell, args, caster, true);
+			target.addBuff(effectID, value, turns, true, spell, args, caster, true, true);
 		}
 	}
 
@@ -3607,7 +3607,7 @@ public class SpellEffect implements Cloneable {
 		final int temp = value;
 		for (Fighter target : targets) {
 			value = getMaxMinSpell(target, value);
-			target.addBuff(effectID, value, turns, true, spell, args, caster, true);
+			target.addBuff(effectID, value, turns, true, spell, args, caster, true, true);
 			value = temp;
 		}
 	}
@@ -3619,7 +3619,7 @@ public class SpellEffect implements Cloneable {
 		final int temp = value;
 		for (Fighter target : targets) {
 			value = getMaxMinSpell(target, value);
-			target.addBuff(effectID, value, turns, true, spell, args, caster, true);
+			target.addBuff(effectID, value, turns, true, spell, args, caster, true, true);
 			value = temp;
 		}
 	}
@@ -3721,7 +3721,7 @@ public class SpellEffect implements Cloneable {
 		if (value == -1) return;
 		
 		for (Fighter target : targets) {
-			target.addBuff(effectID, value, turns, true, spell, args, caster, true);
+			target.addBuff(effectID, value, turns, true, spell, args, caster, true, true);
 		}
 	}
 
@@ -3730,7 +3730,7 @@ public class SpellEffect implements Cloneable {
 		if (value == -1) return;
 		
 		for (Fighter target : targets) {
-			target.addBuff(effectID, value, turns, true, spell, args, caster, true);
+			target.addBuff(effectID, value, turns, true, spell, args, caster, true, true);
 		}
 	}
 
@@ -3739,7 +3739,7 @@ public class SpellEffect implements Cloneable {
 		if (value == -1) return;
 		
 		for (Fighter target : targets) {
-			target.addBuff(effectID, value, turns, true, spell, args, caster, true);
+			target.addBuff(effectID, value, turns, true, spell, args, caster, true, true);
 		}
 	}
 
@@ -3792,7 +3792,7 @@ public class SpellEffect implements Cloneable {
 		
 		for (Fighter target : targets) {
 			value = getMaxMinSpell(target, value);
-			target.addBuff(effectID, value, turns, true, spell, args, caster, true);
+			target.addBuff(effectID, value, turns, true, spell, args, caster, true, true);
 		}
 	}
 
@@ -3824,7 +3824,7 @@ public class SpellEffect implements Cloneable {
 			else if (this.spellLvl == 1)
 				pa = 5;
 
-			caster.addBuff(111, pa, -1, true, spell, args, caster, false);
+			caster.addBuff(111, pa, -1, true, spell, args, caster, false, true);
 			//Gain de PA pendant le tour de jeu
 			caster.setCurPa(fight, pa);
 			SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 111, caster.getId() + "", caster.getId() + "," + pa + "," + -1);
@@ -3835,7 +3835,7 @@ public class SpellEffect implements Cloneable {
 		if (value == -1) return;
 		
 		for (Fighter target : targets) {
-			target.addBuff(effectID, value, turns, true, spell, args, caster, spell != 2005); 
+			target.addBuff(effectID, value, turns, true, spell, args, caster, spell != 2005, true);
 		}
 	}
 
@@ -3846,7 +3846,7 @@ public class SpellEffect implements Cloneable {
 		if (value == -1) return;
 		
 		for (Fighter target : targets) {
-			target.addBuff(effectID, value, turns, true, spell, args, caster, spell != 2005);
+			target.addBuff(effectID, value, turns, true, spell, args, caster, spell != 2005, true);
 		}
 	}
 
@@ -3858,7 +3858,7 @@ public class SpellEffect implements Cloneable {
 		if (value == -1) return;
 		
 		for (Fighter target : targets) {
-			target.addBuff(effectID, value, turns, true, spell, args, caster, spell != 2005);
+			target.addBuff(effectID, value, turns, true, spell, args, caster, spell != 2005, true);
 		}
 	}
 
@@ -3870,7 +3870,7 @@ public class SpellEffect implements Cloneable {
 		if (value == -1) return;
 		
 		for (Fighter target : targets) {
-			target.addBuff(effectID, value, turns, true, spell, args, caster, spell != 2005);
+			target.addBuff(effectID, value, turns, true, spell, args, caster, spell != 2005, true);
 		}
 	}
 
@@ -3882,7 +3882,7 @@ public class SpellEffect implements Cloneable {
 		if (value == -1) return;
 		
 		for (Fighter target : targets) {
-			target.addBuff(effectID, value, turns, true, spell, args, caster, spell != 2005);
+			target.addBuff(effectID, value, turns, true, spell, args, caster, spell != 2005, true);
 		}
 	}
 
@@ -3891,7 +3891,7 @@ public class SpellEffect implements Cloneable {
 		if (value == -1) return;
 		
 		for (Fighter target : targets) {
-			target.addBuff(effectID, value, turns, true, spell, args, caster, true);
+			target.addBuff(effectID, value, turns, true, spell, args, caster, true, true);
 		}
 	}
 
@@ -3900,7 +3900,7 @@ public class SpellEffect implements Cloneable {
 		if (value == -1) return;
 		
 		for (Fighter target : targets) {
-			target.addBuff(effectID, value, turns, true, spell, args, caster, true);
+			target.addBuff(effectID, value, turns, true, spell, args, caster, true, true);
 		}
 	}
 
@@ -3909,7 +3909,7 @@ public class SpellEffect implements Cloneable {
 		if (value == -1) return;
 		
 		for (Fighter target : targets) {
-			target.addBuff(effectID, value, turns, true, spell, args, caster, true);
+			target.addBuff(effectID, value, turns, true, spell, args, caster, true, true);
 		}
 	}
 
@@ -3918,7 +3918,7 @@ public class SpellEffect implements Cloneable {
 		if (val == -1) return;
 		
 		for (Fighter target : targets) {
-			target.addBuff(effectID, val, turns, true, spell, args, caster, true);
+			target.addBuff(effectID, val, turns, true, spell, args, caster, true, true);
 		}
 	}
 
@@ -3927,7 +3927,7 @@ public class SpellEffect implements Cloneable {
 		if (val == -1) return;
 
 		for (Fighter target : targets) {
-			target.addBuff(effectID, val, turns, true, spell, args, caster, true);
+			target.addBuff(effectID, val, turns, true, spell, args, caster, true, true);
 		}
 	}
 
@@ -3935,7 +3935,7 @@ public class SpellEffect implements Cloneable {
 		if (turns < 1) return;
 
 		for (Fighter target : targets) {
-			target.addBuff(effectID, 0, turns, true, spell, args, caster, false);
+			target.addBuff(effectID, 0, turns, true, spell, args, caster, false, true);
 		}
 	}
 
@@ -3944,7 +3944,7 @@ public class SpellEffect implements Cloneable {
 		if (value == -1) return;
 
 		for (Fighter target : targets) {
-			target.addBuff(effectID, value, turns, true, spell, args, caster, true);
+			target.addBuff(effectID, value, turns, true, spell, args, caster, true, true);
 		}
 	}
 
@@ -3953,12 +3953,12 @@ public class SpellEffect implements Cloneable {
 		int steal = 0;
 
 		for (Fighter target : targets) {
-			target.addBuff(Constant.STATS_REM_CHAN, value, turns, true, spell, args, caster, true);
+			target.addBuff(Constant.STATS_REM_CHAN, value, turns, true, spell, args, caster, true, true);
 			steal += value;
 		}
 
 		if (steal == 0) return;
-		caster.addBuff(Constant.STATS_ADD_CHAN, steal, turns, true, spell, args, caster, true);
+		caster.addBuff(Constant.STATS_ADD_CHAN, steal, turns, true, spell, args, caster, true, true);
 	}
 
 	private void applyEffect_267(ArrayList<Fighter> targets) {
@@ -3966,12 +3966,12 @@ public class SpellEffect implements Cloneable {
 		int steal = 0;
 
 		for (Fighter target : targets) {
-			target.addBuff(Constant.STATS_REM_VITA, value, turns, true, spell, args, caster, true);
+			target.addBuff(Constant.STATS_REM_VITA, value, turns, true, spell, args, caster, true, true);
 			steal += value;
 		}
 
 		if (steal == 0) return;
-		caster.addBuff(Constant.STATS_ADD_VITA, steal, turns, true, spell, args, caster, true);
+		caster.addBuff(Constant.STATS_ADD_VITA, steal, turns, true, spell, args, caster, true, true);
 	}
 
 	private void applyEffect_268(ArrayList<Fighter> targets) {
@@ -3979,13 +3979,13 @@ public class SpellEffect implements Cloneable {
 		int steal = 0;
 
 		for (Fighter target : targets) {
-			target.addBuff(Constant.STATS_REM_AGIL, val, turns, true, spell, args, caster, true);
+			target.addBuff(Constant.STATS_REM_AGIL, val, turns, true, spell, args, caster, true, true);
 			steal += val;
 		}
 
 		if (steal == 0) return;
 
-		caster.addBuff(Constant.STATS_ADD_AGIL, steal, turns, true, spell, args, caster, true);
+		caster.addBuff(Constant.STATS_ADD_AGIL, steal, turns, true, spell, args, caster, true, true);
 	}
 
 	private void applyEffect_269(ArrayList<Fighter> targets) {
@@ -3993,12 +3993,12 @@ public class SpellEffect implements Cloneable {
 		int steal = 0;
 
 		for (Fighter target : targets) {
-			target.addBuff(Constant.STATS_REM_INTE, value, turns, true, spell, args, caster, true);
+			target.addBuff(Constant.STATS_REM_INTE, value, turns, true, spell, args, caster, true, true);
 			steal += value;
 		}
 
 		if (steal == 0) return;
-		caster.addBuff(Constant.STATS_ADD_INTE, steal, turns, true, spell, args, caster, true);
+		caster.addBuff(Constant.STATS_ADD_INTE, steal, turns, true, spell, args, caster, true, true);
 	}
 
 	private void applyEffect_270(ArrayList<Fighter> targets) {
@@ -4006,12 +4006,12 @@ public class SpellEffect implements Cloneable {
 		int steal = 0;
 
 		for (Fighter target : targets) {
-			target.addBuff(Constant.STATS_REM_SAGE, value, turns, true, spell, args, caster, true);
+			target.addBuff(Constant.STATS_REM_SAGE, value, turns, true, spell, args, caster, true, true);
 			steal += value;
 		}
 
 		if (steal == 0) return;
-		caster.addBuff(Constant.STATS_ADD_SAGE, steal, turns, true, spell, args, caster, true);
+		caster.addBuff(Constant.STATS_ADD_SAGE, steal, turns, true, spell, args, caster, true, true);
 	}
 
 	private void applyEffect_271(ArrayList<Fighter> targets) {
@@ -4019,16 +4019,16 @@ public class SpellEffect implements Cloneable {
 		int steal = 0;
 
 		for (Fighter target : targets) {
-			target.addBuff(Constant.STATS_REM_FORC, value, turns, true, spell, args, caster, true);
+			target.addBuff(Constant.STATS_REM_FORC, value, turns, true, spell, args, caster, true, true);
 			steal += value;
 		}
 
 		if (steal == 0) return;
-		caster.addBuff(Constant.STATS_ADD_FORC, steal, turns, true, spell, args, caster, true);
+		caster.addBuff(Constant.STATS_ADD_FORC, steal, turns, true, spell, args, caster, true, true);
 	}
 
 	private void applyEffect_293() {
-		caster.addBuff(effectID, value, turns, false, spell, args, caster, false);
+		caster.addBuff(effectID, value, turns, false, spell, args, caster, false, true);
 		caster.setState(300, turns + 1);
 	}
 
@@ -4036,12 +4036,12 @@ public class SpellEffect implements Cloneable {
 		int total = 0;
 
 		for (Fighter target : targets) {
-			target.addBuff(Constant.STATS_REM_PO, value, turns, true, spell, args, caster, true);
+			target.addBuff(Constant.STATS_REM_PO, value, turns, true, spell, args, caster, true, true);
 			total += value;
 		}
 
 		if (total != 0) {
-			caster.addBuff(Constant.STATS_ADD_PO, total, turns, true, spell, args, caster, true);
+			caster.addBuff(Constant.STATS_ADD_PO, total, turns, true, spell, args, caster, true, true);
 
 			if (caster.canPlay()) {
 				caster.getTotalStats().addOneStat(Constant.STATS_ADD_PO, total);
@@ -4152,7 +4152,7 @@ public class SpellEffect implements Cloneable {
 				SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 100, caster.getId() + "", target.getId() + "," + val + "," + Constant.ELEMENT_NEUTRE);
 			}
 		} else {
-			caster.addBuff(effectID, 0, turns, true, spell, args, caster, false);
+			caster.addBuff(effectID, 0, turns, true, spell, args, caster, false, true);
 		}
 	}
 
@@ -4220,7 +4220,7 @@ public class SpellEffect implements Cloneable {
 
 	private void applyEffect_765(ArrayList<Fighter> targets) {
 		for (Fighter target : targets) {
-			target.addBuff(effectID, 0, turns, true, spell, args, caster, false);
+			target.addBuff(effectID, 0, turns, true, spell, args, caster, false, true);
 		}
 	}
 
@@ -4249,7 +4249,7 @@ public class SpellEffect implements Cloneable {
 		if (value == -1) return;
 
 		for (Fighter target : targets) {
-			target.addBuff(effectID, value, turns, true, spell, args, caster, true);
+			target.addBuff(effectID, value, turns, true, spell, args, caster, true, true);
 		}
 	}
 
@@ -4305,7 +4305,7 @@ public class SpellEffect implements Cloneable {
 
 	private void applyEffect_781(ArrayList<Fighter> targets) {
 		for (Fighter target : targets) {
-			target.addBuff(effectID, value, turns, debuffable, spell, args, caster, false);
+			target.addBuff(effectID, value, turns, debuffable, spell, args, caster, false, true);
 		}
 	}
 
@@ -4314,7 +4314,7 @@ public class SpellEffect implements Cloneable {
 			targets.remove(this.caster);
 		}
 		for (Fighter target : targets) {
-			target.addBuff(effectID, value, turns, debuffable, spell, args, caster, false);
+			target.addBuff(effectID, value, turns, debuffable, spell, args, caster, false, true);
 		}
 	}
 
@@ -4379,19 +4379,19 @@ public class SpellEffect implements Cloneable {
 
 	private void applyEffect_786(ArrayList<Fighter> targets) {
 		for (Fighter target : targets) {
-			target.addBuff(effectID, value, turns, true, spell, args, caster, false);
+			target.addBuff(effectID, value, turns, true, spell, args, caster, false, true);
 		}
 	}
 
 	private void applyEffect_787(ArrayList<Fighter> targets) {
 		for (Fighter target : targets) {
-			target.addBuff(effectID, value, turns, true, spell, args, caster, false);
+			target.addBuff(effectID, value, turns, true, spell, args, caster, false, true);
 		}
 	}
 
 	private void applyEffect_788(ArrayList<Fighter> targets) {
 		for (Fighter target : targets) {
-			target.addBuff(effectID, value, turns, false, spell, args, target, false);
+			target.addBuff(effectID, value, turns, false, spell, args, target, false, true);
 		}
 	}
 
@@ -4408,7 +4408,7 @@ public class SpellEffect implements Cloneable {
 			for (Fighter mob : fight.getTeam1().values()) {
 				mob.setState(id, turns);
 				SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 950, caster.getId() + "", mob.getId() + "," + id + ",1");
-				mob.addBuff(effectID, value, turns, false, spell, args, mob, false);
+				mob.addBuff(effectID, value, turns, false, spell, args, mob, false, true);
 			}
 		}else {
 			for (Fighter target : targets) {
@@ -4420,7 +4420,7 @@ public class SpellEffect implements Cloneable {
 				} else {
 					target.setState(id, turns);
 					SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 950, caster.getId() + "", target.getId() + "," + id + ",1");
-					target.addBuff(effectID, value, turns, false, spell, args, target, false);
+					target.addBuff(effectID, value, turns, false, spell, args, target, false, true);
 				}
 				if (spell == 686) {
 					target.unHide(686);
@@ -4595,13 +4595,13 @@ public class SpellEffect implements Cloneable {
 		switch (target.getMob().getTemplate().getId()) {
 			case 232://meulou
 				if (target.hasBuff(112)) {
-					target.addBuff(112, 5, -1, true, spell, args, caster, false);
+					target.addBuff(112, 5, -1, true, spell, args, caster, false, true);
 					SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 112, caster.getId() + "", target.getId() + "," + 5 + "," + -1);
 				}
 				break;
 			case 233:
 				if (effet == 168 || effet == 101) {
-					target.addBuff(128, 1, 2, true, spell, args, target, false);
+					target.addBuff(128, 1, 2, true, spell, args, target, false, true);
 					//Gain de PM pendant le tour de jeu
 					target.setCurPm(fight, 1);
 					SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, effectID, caster.getId()
@@ -4609,7 +4609,7 @@ public class SpellEffect implements Cloneable {
 				}
 				if (effet == 169 || effet == 127)//rall pm don pa
 				{
-					target.addBuff(111, 1, 2, true, spell, args, target, false);
+					target.addBuff(111, 1, 2, true, spell, args, target, false, true);
 					//Gain de PA pendant le tour de jeu
 					target.setCurPa(fight, 1);
 					SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, effectID, caster.getId()
@@ -4724,43 +4724,43 @@ public class SpellEffect implements Cloneable {
 			case 1071://Rasboul
 				if (effet == 99 || effet == 94) {
 					if (target.hasBuff(214)) {
-						target.addBuff(218, 50, 4, false, 1039, "", target, false);// - 50 feu
-						target.addBuff(210, 50, 4, false, 1039, "", target, false);// + 50 terre
-						target.addBuff(211, 50, 4, false, 1039, "", target, false);// + 50 eau
-						target.addBuff(212, 50, 4, false, 1039, "", target, false);// + 50 air
+						target.addBuff(218, 50, 4, false, 1039, "", target, false, true);// - 50 feu
+						target.addBuff(210, 50, 4, false, 1039, "", target, false, true);// + 50 terre
+						target.addBuff(211, 50, 4, false, 1039, "", target, false, true);// + 50 eau
+						target.addBuff(212, 50, 4, false, 1039, "", target, false, true);// + 50 air
 						SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 1039, caster.getId()
 								+ "", target.getId() + "," + "" + "," + 1);
 					}
 				} else if (effet == 98 || effet == 93) {
 					if (target.hasBuff(214)) {
-						target.addBuff(217, 50, 4, false, 1039, "", target, false);// - 50 air
-						target.addBuff(210, 50, 4, false, 1039, "", target, false);// + 50 terre
-						target.addBuff(211, 50, 4, false, 1039, "", target, false);// + 50 eau
-						target.addBuff(213, 50, 4, false, 1039, "", target, false);// + 50 feu
+						target.addBuff(217, 50, 4, false, 1039, "", target, false, true);// - 50 air
+						target.addBuff(210, 50, 4, false, 1039, "", target, false, true);// + 50 terre
+						target.addBuff(211, 50, 4, false, 1039, "", target, false, true);// + 50 eau
+						target.addBuff(213, 50, 4, false, 1039, "", target, false, true);// + 50 feu
 						SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 1039, caster.getId()
 								+ "", target.getId() + "," + "" + "," + 1);
 					}
 				} else if (effet == 97 || effet == 92) {
 					if (target.hasBuff(214)) {
-						target.addBuff(215, 50, 4, false, 1039, "", target, false);// - 50 terre
-						target.addBuff(212, 50, 4, false, 1039, "", target, false);// + 50 air
-						target.addBuff(211, 50, 4, false, 1039, "", target, false);// + 50 eau
-						target.addBuff(213, 50, 4, false, 1039, "", target, false);// + 50 feu
+						target.addBuff(215, 50, 4, false, 1039, "", target, false, true);// - 50 terre
+						target.addBuff(212, 50, 4, false, 1039, "", target, false, true);// + 50 air
+						target.addBuff(211, 50, 4, false, 1039, "", target, false, true);// + 50 eau
+						target.addBuff(213, 50, 4, false, 1039, "", target, false, true);// + 50 feu
 						SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 1039, caster.getId()
 								+ "", target.getId() + "," + "" + "," + 1);
 					}
 				} else if (effet == 96 || effet == 91) {
 					if (target.hasBuff(214)) {
-						target.addBuff(216, 50, 4, false, 1039, "", target, false);// - 50 eau
-						target.addBuff(212, 50, 4, false, 1039, "", target, false);// + 50 air
-						target.addBuff(210, 50, 4, false, 1039, "", target, false);// + 50 terre
-						target.addBuff(213, 50, 4, false, 1039, "", target, false);// + 50 feu
+						target.addBuff(216, 50, 4, false, 1039, "", target, false, true);// - 50 eau
+						target.addBuff(212, 50, 4, false, 1039, "", target, false, true);// + 50 air
+						target.addBuff(210, 50, 4, false, 1039, "", target, false, true);// + 50 terre
+						target.addBuff(213, 50, 4, false, 1039, "", target, false, true);// + 50 feu
 						SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 1039, caster.getId()
 								+ "", target.getId() + "," + "" + "," + 1);
 					}
 				}
 				if (effet == 101) {
-					target.addBuff(111, value, 1, true, spell, args, target, false);
+					target.addBuff(111, value, 1, true, spell, args, target, false, true);
 					SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 111, target.getId()
 							+ "", target.getId() + ",+" + value);
 				}
