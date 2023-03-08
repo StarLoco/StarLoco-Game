@@ -4420,7 +4420,7 @@ public class SpellEffect implements Cloneable {
 				} else {
 					target.setState(id, turns);
 					SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 950, caster.getId() + "", target.getId() + "," + id + ",1");
-					target.addBuff(effectID, value, turns, false, spell, args, target, false, true);
+					target.addBuff(effectID, value, turns, id == Constant.ETAT_SAOUL, spell, args, target, false, true);
 				}
 				if (spell == 686) {
 					target.unHide(686);
