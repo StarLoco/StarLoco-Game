@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 public class Fighter implements Comparable<Fighter> {
 
     public int nbrInvoc;
-    public boolean trapped = false;
+    private boolean trapped = false, glyphed = false;
     public boolean isStatique = false;
     private int id = 0;
     private boolean canPlay = false;
@@ -375,6 +375,26 @@ public class Fighter implements Comparable<Fighter> {
                     i++;
         }
         return i;
+    }
+
+    public boolean isTrappedOrGlyphed() {
+        return isTrapped() || isGlyphed();
+    }
+
+    public boolean isTrapped() {
+        return trapped;
+    }
+
+    public void setTrapped(boolean trapped) {
+        this.trapped = trapped;
+    }
+
+    public boolean isGlyphed() {
+        return trapped;
+    }
+
+    public void setGlyphed(boolean glyphed) {
+        this.glyphed = glyphed;
     }
 
     public ArrayList<SpellEffect> getFightBuff() {

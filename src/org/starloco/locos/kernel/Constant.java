@@ -295,8 +295,8 @@ public class Constant {
     public static final int STATS_REM_RP_FEU = 218;
     public static final int STATS_REM_RP_NEU = 219;
     public static final int STATS_RETDOM = 220;
-    public static final int STATS_TRAPDOM = 225;
-    public static final int STATS_TRAPPER = 226;
+    public static final int STATS_ADD_TRAP_DOM = 225;
+    public static final int STATS_ADD_TRAP_PERDOM = 226;
     public static final int STATS_ADD_R_FEU = 240;
     public static final int STATS_ADD_R_NEU = 241;
     public static final int STATS_ADD_R_TER = 242;

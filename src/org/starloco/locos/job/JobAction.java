@@ -2089,10 +2089,10 @@ public class JobAction {
             case Constant.STATS_ADD_RP_NEU:
                 r = 6.0;
                 break;
-            case Constant.STATS_TRAPDOM:
+            case Constant.STATS_ADD_TRAP_DOM:
                 r = 15.0;
                 break;
-            case Constant.STATS_TRAPPER:
+            case Constant.STATS_ADD_TRAP_PERDOM:
                 r = 2.0;
                 break;
             case Constant.STATS_ADD_R_FEU:
@@ -2237,10 +2237,10 @@ public class JobAction {
             case Constant.STATS_ADD_RP_NEU:
                 r = 16.0;
                 break;
-            case Constant.STATS_TRAPDOM:
+            case Constant.STATS_ADD_TRAP_DOM:
                 r = 6.0;
                 break;
-            case Constant.STATS_TRAPPER:
+            case Constant.STATS_ADD_TRAP_PERDOM:
                 r = 50.0;
                 break;
             case Constant.STATS_ADD_R_FEU:

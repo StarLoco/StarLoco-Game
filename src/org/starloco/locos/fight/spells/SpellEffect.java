@@ -861,7 +861,7 @@ public class SpellEffect implements Cloneable {
 				int dist = PathFinding.getDistanceBetween(fight.getMap(), p.getCell().getId(), caster.getCell().getId());
 				//on active le piege
 				if (dist <= p.getSize())
-					p.onTraped(caster);
+					p.onTrapped(caster);
 			}
 			SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 4, caster.getId()
 					+ "", caster.getId() + "," + cell.getId());
@@ -1093,9 +1093,9 @@ public class SpellEffect implements Cloneable {
 			int dist2 = PathFinding.getDistanceBetween(fight.getMap(), p.getCell().getId(), caster.getCell().getId());
 			//on active le piege
 			if (dist <= p.getSize())
-				p.onTraped(target);
+				p.onTrapped(target);
 			else if (dist2 <= p.getSize())
-				p.onTraped(caster);
+				p.onTrapped(caster);
 		}
 		SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 4, caster.getId() + "", target.getId() + "," + exCaster.getId());
 		SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 4, caster.getId() + "", caster.getId() + "," + exTarget.getId());
@@ -2226,7 +2226,7 @@ public class SpellEffect implements Cloneable {
 					checkMonsters(fight, target, 96);
 				if (target.getPdv() <= 0) {
 					fight.onFighterDie(target, caster);
-					if(!target.trapped) {
+					if(!target.isTrappedOrGlyphed()) {
 						if (target.canPlay() && target.getPlayer() != null)
 							fight.endTurn(false);
 						else if (target.canPlay())
@@ -2360,7 +2360,7 @@ public class SpellEffect implements Cloneable {
 					checkMonsters(fight, target, 97);
 				if (target.getPdv() <= 0) {
 					fight.onFighterDie(target, caster);
-					if (!target.trapped) {
+					if (!target.isTrappedOrGlyphed()) {
 						if (target.canPlay() && target.getPlayer() != null)
 							fight.endTurn(false);
 						else if (target.canPlay())
@@ -2499,7 +2499,7 @@ public class SpellEffect implements Cloneable {
 
 				if (target.getPdv() <= 0) {
 					fight.onFighterDie(target, caster);
-					if(!target.trapped) {
+					if(!target.isTrappedOrGlyphed()) {
 						if (target.canPlay() && target.getPlayer() != null)
 							fight.endTurn(false);
 						else if (target.canPlay())
@@ -2629,7 +2629,7 @@ public class SpellEffect implements Cloneable {
 					checkMonsters(fight, target, 99);
 				if (target.getPdv() <= 0) {
 					fight.onFighterDie(target, caster);
-					if(!target.trapped) {
+					if(!target.isTrappedOrGlyphed()) {
 						if (target.canPlay() && target.getPlayer() != null)
 							fight.endTurn(false);
 						else if (target.canPlay())
@@ -2755,7 +2755,7 @@ public class SpellEffect implements Cloneable {
 					checkMonsters(fight, target, 100);
 				if (target.getPdv() <= 0) {
 					fight.onFighterDie(target, caster);
-					if(!target.trapped) {
+					if(!target.isTrappedOrGlyphed()) {
 						if (target.canPlay() && target.getPlayer() != null)
 							fight.endTurn(false);
 						else if (target.canPlay())
@@ -4551,7 +4551,7 @@ public class SpellEffect implements Cloneable {
 			caster.getCell().getFighters().clear();
 			caster.setCell(cell);
 			caster.getCell().addFighter(caster);
-			new ArrayList<>(fight.getTraps()).stream().filter(trap -> PathFinding.getDistanceBetween(fight.getMap(), trap.getCell().getId(), caster.getCell().getId()) <= trap.getSize()).forEach(trap -> trap.onTraped(caster));
+			new ArrayList<>(fight.getTraps()).stream().filter(trap -> PathFinding.getDistanceBetween(fight.getMap(), trap.getCell().getId(), caster.getCell().getId()) <= trap.getSize()).forEach(trap -> trap.onTrapped(caster));
 			SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 4, caster.getId() + "", caster.getId() + "," + cell.getId());
 		}
 

@@ -883,7 +883,7 @@ public class Fight {
             int time = 0;
 
             if (trap != null && PathFinding.getDistanceBetween(this.getMap(), trap.getCell().getId(), fighter.getCell().getId()) <= trap.getSize()) {
-                trap.onTraped(fighter);
+                trap.onTrapped(fighter);
                 time = 750 + nbr[0] * 300;
                 nbr[0]++;
                 if (this.getState() == Constant.FIGHT_STATE_FINISHED)
@@ -1854,7 +1854,7 @@ public class Fight {
             return;
 
         if (current.getPdv() <= 0) {
-            if(!current.trapped) {
+            if(!current.isTrappedOrGlyphed()) {
                 onFighterDie(current, getInit0());
                 endTurn(false, current);
                 return;
@@ -1866,7 +1866,7 @@ public class Fight {
         current.getChatiValue().clear();
 
         if (current.isDead() && !current.isInvocation()) {
-            if(!current.trapped) {
+            if(!current.isTrappedOrGlyphed()) {
                 endTurn(false, current);
                 return;
             }
@@ -2040,7 +2040,7 @@ public class Fight {
                 g.onTrapped(current);
         }
 
-        if (!current.trapped && current.getPdv() <= 0) {
+        if (!current.isTrappedOrGlyphed() && current.getPdv() <= 0) {
             onFighterDie(current, getInit0());
         }
 
@@ -3333,7 +3333,7 @@ public class Fight {
         });
 
         new ArrayList<>(this.getTraps()).stream().filter(trap -> trap.getCaster().getId() == target.getId()).forEach(trap -> {
-            trap.desappear();
+            trap.disappear();
             this.traps.remove(trap);
         });
 
