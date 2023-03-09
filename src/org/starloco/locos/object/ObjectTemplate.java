@@ -33,6 +33,7 @@ public class ObjectTemplate {
     private long sold;
     private int avgPrice;
     private int points, newPrice;
+    private int money;
     private ArrayList<ObjectAction> onUseActions;
 
     public String toString() {
@@ -61,6 +62,7 @@ public class ObjectTemplate {
         this.avgPrice = avgPrice;
         this.points = points;
         this.newPrice = newPrice;
+        this.money = -1;
         if(armesInfos.isEmpty()) return;
         try {
             String[] infos = armesInfos.split(";");
@@ -95,6 +97,7 @@ public class ObjectTemplate {
         this.avgPrice = avgPrice;
         this.points = points;
         this.newPrice = newPrice;
+        this.money=-1;
         try {
             String[] infos = armesInfos.split(";");
             PACost = Integer.parseInt(infos[0]);
@@ -664,4 +667,21 @@ public class ObjectTemplate {
         }
         return !bannedObjects.contains(this.getId());
     }
+
+    public int getMoney() {
+        return money;
+    }
+
+    public void setMoney(int id) {
+        this.money = id;
+    }
+
+    public int getNewPrice() {
+        return newPrice;
+    }
+
+    public void setNewPrice(int id) {
+        this.newPrice = id;
+    }
+
 }

@@ -58,9 +58,20 @@ public class NpcTemplate {
         if (!sales.equals("")) {
             for (String obj : sales.split(",")) {
                 try {
+                    int money = -1;
+                    if(obj.contains(";")){
+                        String[] temp = obj.split(";");
+                        money = Integer.parseInt(temp[0]);
+                        obj = temp[1];
+                    }
+
                     ObjectTemplate template = World.world.getObjTemplate(Integer.parseInt(obj));
-                    if (template != null)
+
+                    if (template != null){
                         this.sales.add(template);
+                        template.setMoney(money);
+                    }
+
                 } catch (NumberFormatException e) {
                     e.printStackTrace();
                     World.world.logger.error("#2# Erreur sur un item en vente sur le PNJ d'id : " + id);
