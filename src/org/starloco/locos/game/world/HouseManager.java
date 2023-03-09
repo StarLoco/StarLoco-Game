@@ -147,23 +147,25 @@ public class HouseManager {
         }
     }
 
-    public void closeCode(Player P) {
-        SocketManager.GAME_SEND_KODE(P, "V");
-        P.setInHouse(null);
+    public void closeCode(Player player) {
+        SocketManager.GAME_SEND_KODE(player, "V");
+        player.setInHouse(null);
     }
 
     public void closeBuy(Player P) {
         SocketManager.GAME_SEND_hOUSE(P, "V");
     }
 
-    public void lockIt(Player P, String packet) {
-        House h = P.getInHouse();
-        if (h.isHouse(P, h)) {
-            ((HouseData) DatabaseManager.get(HouseData.class)).updateCode(P, h, packet);//Change le code
-            closeCode(P);
+    public void lockIt(Player player, String packet) {
+        House h = player.getInHouse();
+        if (h.isHouse(player, h)) {
+            ((HouseData) DatabaseManager.get(HouseData.class)).updateCode(player, h, packet);//Change le code
+            closeCode(player);
         } else {
-            closeCode(P);
+            closeCode(player);
         }
+
+        player.setExchangeAction(null);
     }
 
     public String parseHouseToGuild(Player P) {

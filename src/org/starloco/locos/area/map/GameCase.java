@@ -977,7 +977,6 @@ public class GameCase {
                 House house = World.world.getHouseManager().getHouseIdByCoord(player.getCurMap().getId(), CcellID);
                 if (house == null)
                     return;
-                player.setInHouse(house);
                 house.lock(player);
                 break;
             case 84://Rentrer dans une maison
