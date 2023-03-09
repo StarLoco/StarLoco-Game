@@ -1,6 +1,6 @@
 package org.starloco.locos.fight.ia;
 
-import org.starloco.locos.entity.monster.MonsterGrade;
+import org.starloco.locos.entity.monster.Monster.MobGrade;
 import org.starloco.locos.fight.Fight;
 import org.starloco.locos.fight.Fighter;
 import org.starloco.locos.fight.ia.type.*;
@@ -15,19 +15,19 @@ public class IAHandler {
 
     public static void select(final Fight fight, final Fighter fighter) {
         IA ia = new Blank(fight, fighter);
-        MonsterGrade monsterGrade = fighter.getMob();
+        MobGrade mobGrade = fighter.getMob();
 
-        if (monsterGrade == null) {
+        if (mobGrade == null) {
             if (fighter.isDouble())
                 ia = new Blocker(fight, fighter, (byte) 4);
             if (fighter.isCollector())
                 ia = new IAPerco(fight, fighter, (byte) 7);
-        } else if (monsterGrade.getTemplate() == null) {
+        } else if (mobGrade.getTemplate() == null) {
             ia.setStop(true);
             ia.endTurn();
         } else {
             //region select ia
-            switch (monsterGrade.getTemplate().getIa()) {
+            switch (mobGrade.getTemplate().getIa()) {
                 case 1: // Random attack friend/enemy
                     ia = new IA1(fight, fighter, (byte) 4);
                     break;

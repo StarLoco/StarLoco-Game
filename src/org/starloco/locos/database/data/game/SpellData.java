@@ -3,7 +3,6 @@ package org.starloco.locos.database.data.game;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.lang.NotImplementedException;
 import org.starloco.locos.database.data.FunctionDAO;
-import org.starloco.locos.entity.monster.MonsterGrade;
 import org.starloco.locos.entity.monster.Monster;
 import org.starloco.locos.fight.spells.Spell;
 import org.starloco.locos.fight.spells.Spell.SortStats;
@@ -55,7 +54,7 @@ public class SpellData extends FunctionDAO<Spell> {
             }
             if (modif)
                 for (Monster monster : World.world.getMonstres())
-                    monster.getGrades().values().forEach(MonsterGrade::refresh);
+                    monster.getGrades().values().forEach(Monster.MobGrade::refresh);
         } catch (SQLException e) {
             super.sendError(e);
             Main.stop("Can't load spells");

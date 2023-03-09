@@ -14,9 +14,8 @@ import org.starloco.locos.common.Formulas;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.database.DatabaseManager;
 import org.starloco.locos.database.data.game.NpcQuestionData;
+import org.starloco.locos.database.data.login.ObjectData;
 import org.starloco.locos.database.data.login.PlayerData;
-import org.starloco.locos.entity.monster.MonsterGrade;
-import org.starloco.locos.entity.monster.MonsterGroup;
 import org.starloco.locos.entity.monster.Monster;
 import org.starloco.locos.entity.npc.Npc;
 import org.starloco.locos.entity.npc.NpcQuestion;
@@ -112,14 +111,41 @@ public class Action {
             SocketManager.GAME_SEND_MESSAGE(player, player.getLang().trans("ther.action.apply.impossible"), "000000");
             return true;
         }
+
         if (!cond.equalsIgnoreCase("") && !cond.equalsIgnoreCase("-1") && !World.world.getConditionManager().validConditions(player, cond)) {
-            SocketManager.GAME_SEND_Im_PACKET(player, "119");
-            return true;
+
+            if(cond.contains(";")){
+                String[] test = cond.split(";");
+                for (int i =0;i<test.length;i++){
+                    if(!World.world.getConditionManager().validConditions(player, test[i])){
+                        SocketManager.GAME_SEND_Im_PACKET(player, "119");
+                        return true;
+                    }
+                }
+            }
+            else {
+                if(!World.world.getConditionManager().validConditions(player, cond)){
+                    SocketManager.GAME_SEND_Im_PACKET(player, "119");
+                    return true;
+                }
+            }
         }
 
         GameClient client = player.getGameClient();
         switch (id) {
             case -22: //Remettre prisonnier
+                if (player.getObjetByPos(Constant.ITEM_POS_PNJ_SUIVEUR) != null) {
+                    int skinFollower = player.getObjetByPos(Constant.ITEM_POS_PNJ_SUIVEUR).getTemplate().getId();
+                    int questId = Constant.getQuestByMobSkin(skinFollower);
+                    if (questId != -1) {
+                        //perso.upgradeQuest(questId);
+                        player.setMascotte(1);
+                        int itemFollow = Constant.getItemByMobSkin(skinFollower);
+                        player.removeByTemplateID(itemFollow, 1);
+                    }
+                }
+                break;
+            case -12: //TP with Unmorphfull and delete weapon Gladia
                 if (player.getObjetByPos(Constant.ITEM_POS_PNJ_SUIVEUR) != null) {
                     int skinFollower = player.getObjetByPos(Constant.ITEM_POS_PNJ_SUIVEUR).getTemplate().getId();
                     int questId = Constant.getQuestByMobSkin(skinFollower);
@@ -226,7 +252,7 @@ public class Action {
                     q.applyQuest(player);
                 }
                 String grp = IDmob + "," + LVLmob + "," + LVLmob + ";";
-                MonsterGroup MG = new MonsterGroup(player.getCurMap().nextObjectId, map, player.getCurCell().getId(), grp);
+                Monster.MobGroup MG = new Monster.MobGroup(player.getCurMap().nextObjectId, map, player.getCurCell().getId(), grp);
                 player.getCurMap().startFigthVersusDopeuls(player, MG);
                 break;
             case -5://Apprendre un sort
@@ -343,7 +369,132 @@ public class Action {
                     return true;
                 }
                 break;
+            case 3://Equip CAC - Gladiatroll
+                try {
+                    int position = Constant.ITEM_POS_ARME;
+                    int quantity = 1;
+                    int newCacID = Integer.parseInt(args.split(",")[0]);
+                    int VerifCertificatID = Integer.parseInt(args.split(",")[1]);
+                    if (player.hasItemTemplate(VerifCertificatID, 1, false)) {
+                        String date = player.getItemTemplate(VerifCertificatID, 1).getTxtStat().get(Constant.STATS_DATE);
+                        try {
+                            long timeStamp = Long.parseLong(date);
+                            if (System.currentTimeMillis() - timeStamp <= 60000) {
+                                SocketManager.GAME_SEND_MESSAGE(player, player.getLang().trans("other.action.apply.error.gladiatroll.join.min"));
+                                return true;
+                            } else
+                                player.removeByTemplateID(VerifCertificatID, 1);
+                        } catch (Exception ignored) {
+                            player.removeByTemplateID(VerifCertificatID, 1);
+                        }
+                        SocketManager.GAME_SEND_Im_PACKET(player, "022;" + 1
+                                + "~" + VerifCertificatID);
+                    }
 
+                    ObjectTemplate T = World.world.getObjTemplate(newCacID);
+                    if (T == null)
+                        return true;
+
+                    player.unsetFullMorph();
+
+                    GameObject exObj = player.getObjetByPos(Constant.ITEM_POS_ARME);//Objet a l'ancienne position
+                    if (exObj != null)//S'il y avait d?ja un objet sur cette place on d?s?quipe
+                    {
+                        GameObject obj2;
+                        ObjectTemplate exObjTpl = exObj.getTemplate();
+
+                        if(Constant.isGladiatroolWeapon(exObjTpl.getId())) {
+                            player.removeByTemplateID(player.getObjetByPos(Constant.ITEM_POS_ARME).getTemplate().getId(),1);
+                        }
+                        else {
+                            int idSetExObj = exObj.getTemplate().getPanoId();
+                            if ((obj2 = player.getSimilarItem(exObj)) != null)//On le poss?de deja
+                            {
+                                obj2.setQuantity(obj2.getQuantity()
+                                        + exObj.getQuantity());
+                                SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(player, obj2);
+                                World.world.removeGameObject(exObj.getGuid());
+                                player.removeItem(exObj.getGuid());
+                                SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(player, exObj.getGuid());
+                            } else
+                            //On ne le poss?de pas
+                            {
+                                exObj.setPosition(Constant.ITEM_POS_NO_EQUIPED);
+                                if ((idSetExObj >= 81 && idSetExObj <= 92)
+                                        || (idSetExObj >= 201 && idSetExObj <= 212)) {
+                                    String[] stats = exObjTpl.getStrTemplate().split(",");
+                                    for (String stat : stats) {
+                                        String[] val = stat.split("#");
+                                        String modifi = Integer.parseInt(val[0], 16)
+                                                + ";" + Integer.parseInt(val[1], 16)
+                                                + ";0";
+                                        SocketManager.SEND_SB_SPELL_BOOST(player, modifi);
+                                        player.removeObjectClassSpell(Integer.parseInt(val[1], 16));
+                                    }
+                                    player.removeObjectClass(exObjTpl.getId());
+                                }
+                                SocketManager.GAME_SEND_OBJET_MOVE_PACKET(player, exObj);
+                            }
+                            if (player.getObjetByPos(Constant.ITEM_POS_ARME) == null)
+                                SocketManager.GAME_SEND_OT_PACKET(player.getGameClient(), -1);
+
+                            //Si objet de panoplie
+                            if (exObj.getTemplate().getPanoId() > 0)
+                                SocketManager.GAME_SEND_OS_PACKET(player, exObj.getTemplate().getPanoId());
+                        }
+                    }
+
+                        GameObject object = T.createNewItem(quantity, false);
+                        object.setPosition(position);
+                        //Si retourne true, on l'ajoute au monde
+                        if (player.addObjet(object, true))
+                        World.world.addGameObject(object);
+                        //SocketManager.GAME_SEND_OBJET_MOVE_PACKET(player, object);
+                        SocketManager.GAME_SEND_Ow_PACKET(player);
+                        SocketManager.GAME_SEND_ON_EQUIP_ITEM(player.getCurMap(), player);
+                        ((ObjectData) DatabaseManager.get(ObjectData.class)).update(object);
+
+                    int morphid = 0;
+                    if (position == Constant.ITEM_POS_ARME) {
+                        morphid = object.getTemplate().getId() - 12681;
+                        player.setFullMorph(morphid, false, false);
+                        Map<String, String> fullMorph = World.world.getFullMorph(morphid);
+
+
+                        if (player.getObjetByPos(Constant.ITEM_POS_TONIQUE_EQUILIBRAGE) != null) {
+                            int guid = player.getObjetByPos(Constant.ITEM_POS_TONIQUE_EQUILIBRAGE).getGuid();
+                            SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(player, guid);
+                            player.deleteItem(guid);
+                        }
+                        player.setToniqueEquilibrage(player.generateStatsTonique(fullMorph));
+
+                    } else {// Tourmenteur ; on d?morphe
+                        if (Constant.isIncarnationWeapon(object.getTemplate().getId()))
+                            player.unsetFullMorph();
+                    }
+
+
+                    ObjectTemplate t2 = World.world.getObjTemplate(VerifCertificatID);
+                    GameObject obj2 = t2.createNewItem(1, false);
+                    obj2.refreshStatsObjet("325#0#0#"
+                            + System.currentTimeMillis());
+                    if (player.addObjet(obj2, false)) {
+                        SocketManager.GAME_SEND_Im_PACKET(player, "021;" + 1
+                                + "~" + obj2.getTemplate().getId());
+                        World.world.addGameObject(obj2);
+                        ((ObjectData) DatabaseManager.get(ObjectData.class)).update(object);
+                    }
+
+                    SocketManager.GAME_SEND_STATS_PACKET(player);
+
+
+
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return true;
+                }
+                break;
             case 4://Kamas
                 try {
                     int count = Integer.parseInt(args);
@@ -724,6 +875,9 @@ public class Action {
                     int newCellID = Integer.parseInt(args.split(",")[1]);
                     int ObjetNeed = Integer.parseInt(args.split(",")[2]);
                     int MapNeed = Integer.parseInt(args.split(",")[3]);
+
+
+
                     if (ObjetNeed == 0) {
                         //T�l�portation sans objets
                         player.teleport(newMapID, newCellID);
@@ -737,9 +891,21 @@ public class Action {
                                 //Le perso a l'item
                                 //Le perso est sur la bonne map
                                 //On t�l�porte, on supprime apr�s
-                                player.teleport(newMapID, newCellID);
-                                player.removeByTemplateID(ObjetNeed, 1);
-                                SocketManager.GAME_SEND_Ow_PACKET(player);
+                                if(ObjetNeed == 12804){
+                                    if(Constant.isGladiatroolWeapon(player.getObjetByPos(Constant.ITEM_POS_ARME).getTemplate().getId())){
+                                        player.teleport(newMapID, newCellID);
+                                        player.removeByTemplateID(ObjetNeed, 1);
+                                        SocketManager.GAME_SEND_Ow_PACKET(player);
+                                    }
+                                    else{
+                                        SocketManager.GAME_SEND_MESSAGE(player, player.getLang().trans("other.action.apply.error.gladiatroll.join.cac"), "009900");
+                                    }
+                                }
+                                else {
+                                    player.teleport(newMapID, newCellID);
+                                    player.removeByTemplateID(ObjetNeed, 1);
+                                    SocketManager.GAME_SEND_Ow_PACKET(player);
+                                }
                             } else if (player.getCurMap().getId() != MapNeed) {
                                 //Le perso n'est pas sur la bonne map
                                 SocketManager.GAME_SEND_MESSAGE(player, player.getLang().trans("other.action.apply.dj.map"), "009900");
@@ -933,7 +1099,7 @@ public class Action {
                     }
                     if (ValidMobGroup.isEmpty())
                         return true;
-                    MonsterGroup group = new MonsterGroup(player.getCurMap().nextObjectId, map, player.getCurCell().getId(), ValidMobGroup);
+                    Monster.MobGroup group = new Monster.MobGroup(player.getCurMap().nextObjectId, map, player.getCurCell().getId(), ValidMobGroup);
                     player.getCurMap().startFightVersusMonstres(player, group); // Si bug startfight, voir "//Respawn d'un groupe fix" dans fight.java
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -1162,7 +1328,53 @@ public class Action {
                     return true;
                 player.teleport((short) mapid, cellid);
                 break;
+            case 49: // Echange Gladiatroc
+                try {
+                    int tID = Integer.parseInt(args.split(",")[0]);
+                    int count = Integer.parseInt(args.split(",")[1]);
+                    int tMoney = Integer.parseInt(args.split(",")[2]);
+                    int price = Integer.parseInt(args.split(",")[3]);
 
+                    if (!player.hasItemTemplate(tMoney,price,false)) {
+                        SocketManager.GAME_SEND_BUY_ERROR_PACKET(player.getGameClient());
+                        return false;
+                    }
+                    player.removeByTemplateID(tMoney,price);
+                    SocketManager.GAME_SEND_Im_PACKET(player, "022;" + price + "~" + tMoney);
+
+                    boolean send = true;
+
+                    //Si on ajoute
+                    if (count > 0) {
+                        ObjectTemplate T = World.world.getObjTemplate(tID);
+                        if (T == null)
+                            return true;
+                        GameObject O = T.createNewItem(count, false);
+                        //Si retourne true, on l'ajoute au monde
+                        if (player.addObjet(O, true))
+                            World.world.addGameObject(O);
+                    } else {
+                        player.removeByTemplateID(tID, -count);
+                    }
+                    //Si en ligne (normalement oui)
+                    if (player.isOnline())//on envoie le packet qui indique l'ajout//retrait d'un item
+                    {
+                        SocketManager.GAME_SEND_Ow_PACKET(player);
+                        if (send) {
+                            if (count >= 0) {
+                                SocketManager.GAME_SEND_Im_PACKET(player, "021;"
+                                        + count + "~" + tID);
+                            } else if (count < 0) {
+                                SocketManager.GAME_SEND_Im_PACKET(player, "022;"
+                                        + -count + "~" + tID);
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    GameServer.a();
+                }
+                break;
             case 50: //Traque
                 if (player.getAlignment() == 0 || player.getAlignment() == 3)
                     return true;
@@ -1262,7 +1474,7 @@ public class Action {
                     }
                     if (ValidMobGroup1.isEmpty())
                         return true;
-                    MonsterGroup group = new MonsterGroup(player.getCurMap().nextObjectId, map, player.getCurCell().getId(), ValidMobGroup1);
+                    Monster.MobGroup group = new Monster.MobGroup(player.getCurMap().nextObjectId, map, player.getCurCell().getId(), ValidMobGroup1);
                     player.getCurMap().startFightVersusProtectors(player, group);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -2014,7 +2226,7 @@ public class Action {
                         }
                         if (ValidMobGroup2.isEmpty())
                             return true;
-                        MonsterGroup group = new MonsterGroup(player.getCurMap().nextObjectId, player.getCurMap(), player.getCurCell().getId(), ValidMobGroup2);
+                        Monster.MobGroup group = new Monster.MobGroup(player.getCurMap().nextObjectId, player.getCurMap(), player.getCurCell().getId(), ValidMobGroup2);
                         player.getCurMap().startFightVersusMonstres(player, group);// Si bug startfight, voir "//Respawn d'un groupe fix" dans fight.java
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -2408,7 +2620,24 @@ public class Action {
                 SocketManager.GAME_SEND_Im_PACKET(player, "021;" + 1 + "~"
                         + 1728);
                 break;
-
+            case 528:// Gladiatroll : R�compense.
+                int nbjeton = Integer.parseInt(args);
+                if (!Constant.isInGladiatorDonjon(player.getCurMap().getId()) && player.getCurMap().getId() != 15080)
+                    return true;
+                player.teleport((short) 3451, 267);
+                if(nbjeton>0){
+                    GameObject Jetons = World.world.getObjTemplate(16000).createNewItem(nbjeton, false);
+                    if (!player.addObjetSimiler(Jetons, true, -1)) {
+                        World.world.addGameObject(Jetons);
+                        player.addObjet(Jetons);
+                    }
+                    if(nbjeton==1250){
+                        GameObject medals = World.world.getObjTemplate(16001).createNewItem(1, false);
+                        if (player.addObjet(medals, true))
+                            World.world.addGameObject(medals);
+                    }
+                }
+                break;
             case 501:// Donjon Bwork : R�compense.
                 if (player.getCurMap().getId() != 9767)
                     return true;
@@ -2947,7 +3176,7 @@ public class Action {
 
             case 524://R�ponse Maitre corbac
                 if(client == null) return true;
-                int qID = MonsterGroup.MAITRE_CORBAC.check();
+                int qID = Monster.MobGroup.MAITRE_CORBAC.check();
                 NpcQuestion quest = World.world.getNPCQuestion(qID);
                 if (quest == null) {
                     SocketManager.GAME_SEND_END_DIALOG_PACKET(client);
@@ -2958,11 +3187,11 @@ public class Action {
                 return false;
 
             case 525://EndFight Action Maitre Corbac
-                MonsterGroup group = player.hasMobGroup();
+                Monster.MobGroup group = player.hasMobGroup();
 
                 split = args.split(";");
 
-                for (MonsterGrade mb : group.getMobs().values()) {
+                for (Monster.MobGrade mb : group.getMobs().values()) {
                     switch (mb.getTemplate().getId()) {
                         case 289:
                             player.teleport((short) 9604, 403);
@@ -3712,10 +3941,10 @@ public class Action {
                     Monster petitChef = World.world.getMonstre(984);
                     if (petitChef == null)
                         return true;
-                    MonsterGrade mg = petitChef.getGradeByLevel(10);
+                    Monster.MobGrade mg = petitChef.getGradeByLevel(10);
                     if (mg == null)
                         return true;
-                    MonsterGroup _mg = new MonsterGroup(player.getCurMap().nextObjectId, player.getCurMap(), player.getCurCell().getId(), petitChef.getId() + "," + mg.getLevel() + "," + mg.getLevel() + ";");
+                    Monster.MobGroup _mg = new Monster.MobGroup(player.getCurMap().nextObjectId, player.getCurMap(), player.getCurCell().getId(), petitChef.getId() + "," + mg.getLevel() + "," + mg.getLevel() + ";");
                     player.getCurMap().startFightVersusMonstres(player, _mg);// Si bug startfight, voir "//Respawn d'un groupe fix" dans fight.java
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -4072,7 +4301,7 @@ public class Action {
                         if (player.hasItemTemplate(item, 1, false)) {
                             String groupe = monstre + "," + grade + "," + grade
                                     + ";";
-                            MonsterGroup Mgroupe = new MonsterGroup(player.getCurMap().nextObjectId, player.getCurMap(), player.getCurCell().getId(), groupe);
+                            Monster.MobGroup Mgroupe = new Monster.MobGroup(player.getCurMap().nextObjectId, player.getCurMap(), player.getCurCell().getId(), groupe);
                             player.getCurMap().startFightVersusMonstres(player, Mgroupe); // Si bug startfight, voir "//Respawn d'un groupe fix" dans fight.java
                         }
                     }
@@ -4293,7 +4522,7 @@ public class Action {
 
             /** Fin Donjon **/
             case 999:
-                player.teleport(this.map, Integer.parseInt(this.args));
+                player.teleport(this.map.getId(), Integer.parseInt(this.args));
                 break;
 
             case 1000:

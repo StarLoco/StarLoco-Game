@@ -18,7 +18,7 @@ public class Eniripsa extends AbstractEasyIA {
     public void run() {
         switch (this.flag) {
             case 0: // Mot d'épine
-                Spell.SortStats spell = get().findSpell(fighter, 132);
+                Spell.SortStats spell = get().findSpell(fighter, 2096);
                 Fighter friend = fighter.getInvocator();
                 if(fight.canLaunchSpell(fighter, spell, friend.getCell())) {
                     if (get().moveToAttack(fight, fighter, friend, spell))
@@ -28,11 +28,11 @@ public class Eniripsa extends AbstractEasyIA {
                 }
                 break;
             case 1: // Mot d'envol
-                if (get().tryCastSpell(fight, fighter, fighter, 2021) == 0)
+                if (get().tryCastSpell(fight, fighter, fighter, 2099) == 0)
                     this.time = 1500;
                 break;
             case 2: // Mot drainant
-                spell = get().findSpell(fighter, 123);
+                spell = get().findSpell(fighter, 2090);
                 Fighter target = get().getNearestEnnemy(fight, fighter, true);
                 if (get().moveToAttack(fight, fighter, target, spell))
                     setNextParams(1, 3, 1500);

@@ -914,6 +914,7 @@ public class ObjectAction {
         boolean effect = this.haveEffect(World.world.getGameObject(objet).getTemplate().getId(), World.world.getGameObject(objet), player);
         if (effect)
             isOk = true;
+            send = true;
         if (isOk)
             effect = true;
         if (this.type.split(";").length > 1)
@@ -930,6 +931,7 @@ public class ObjectAction {
     }
 
     private boolean haveEffect(int id, GameObject gameObject, Player player) {
+
         if (player.getFight() != null) return true;
         switch (id) {
             case 8378://Fragment magique.
@@ -1048,6 +1050,14 @@ public class ObjectAction {
                 return false;
             case 10914://Cadeau nowel 3
                 return false;
+            case 12839://Gemme Spirituel emballée
+                int templateid =  Constant.getRandomGemmesSpritiuels();
+                GameObject obj = World.world.getObjTemplate(templateid).createNewItem(1, false);
+                if (player.addObjet(obj, true))
+                    World.world.addGameObject(obj);
+                SocketManager.GAME_SEND_Ow_PACKET(player);
+                SocketManager.GAME_SEND_Im_PACKET(player, "021;" + 1 + "~" + templateid);
+                return true;
 
         }
         return false;

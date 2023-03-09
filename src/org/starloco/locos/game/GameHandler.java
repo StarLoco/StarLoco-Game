@@ -6,6 +6,7 @@ import org.apache.mina.core.session.IoSession;
 import org.starloco.locos.game.filter.PacketFilter;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.Config;
+import org.starloco.locos.kernel.Main;
 
 public class GameHandler implements IoHandler {
 
@@ -37,9 +38,13 @@ public class GameHandler implements IoHandler {
 
             int i = 0;
             do {
+                if(s[i].contains("ù")){
+                    s[i] = s[i].split("ù")[2];
+                }
                 client.parsePacket(s[i]);
                 if (Config.debug)
                     World.world.logger.trace((client.getPlayer() == null ? "" : client.getPlayer().getName()) + " <-- " + s[i]);
+
                 i++;
             } while (i == s.length - 1);
         }
@@ -59,7 +64,7 @@ public class GameHandler implements IoHandler {
             return;
         arg1.printStackTrace();
         if (Config.debug)
-            World.world.logger.error("Exception connexion client : ", arg1);
+            World.world.logger.error("Exception connexion client : " + arg1.getMessage());
         this.kick(arg0);
     }
 

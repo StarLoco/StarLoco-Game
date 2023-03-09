@@ -63,7 +63,7 @@ public class Start {
 			helper = map.addNpc(15020, (short) 179, 3);
 			player.setSpellsPlace(false);
 			Start.this.player.unlearnSpell(661);
-			Start.this.player.teleport(map, 224);
+			Start.this.player.teleport(map.getId(), 224);
 			Start.this.player.setBlockMovement(true);
 			SocketManager.GAME_SEND_ADD_NPC(Start.this.player, Start.this.helper);
 			try { Thread.sleep(5000); } catch (InterruptedException ignored) {}
@@ -146,7 +146,7 @@ public class Start {
 			try { Thread.sleep(4000); } catch (InterruptedException ignored) {}
 			SocketManager.GAME_SEND_cMK_PACKET(player, "", helper.getId(), "Ganymede", "Pour t'exercer, je te prête mon sort d'entrainement.");
 			try { Thread.sleep(1500); } catch (InterruptedException ignored) {}
-			Start.this.player.learnSpell(661, 1, 'b');
+			Start.this.player.learnSpell(661, 1, "1");
 			player.setBlockMovement(false);
 			try { Thread.sleep(2500); } catch (InterruptedException ignored) {}
 			

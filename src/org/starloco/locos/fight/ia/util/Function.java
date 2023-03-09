@@ -1939,7 +1939,7 @@ public class Function {
     }
 
     private boolean cellAvailable(Fight fight, GameCase cell) {
-        return cell.getFirstFighter() == null && cell.isWalkable(true, true, cell.getId()) && fight.getTraps().stream().filter((t) -> t.getCell().getId() == cell.getId()).count() == 0;
+        return cell.getFirstFighter() == null && cell.isWalkable(true, true, cell.getId()) && fight.getAllTraps().stream().filter((t) -> t.getCell().getId() == cell.getId()).count() == 0;
     }
     //endregion
 }

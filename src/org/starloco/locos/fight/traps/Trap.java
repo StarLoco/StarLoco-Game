@@ -100,7 +100,7 @@ public class Trap {
     public void onTraped(Fighter target) {
         if (target.isDead())
             return;
-        this.fight.getTraps().remove(this);//On efface le pieges
+        this.fight.getAllTraps().remove(this);//On efface le pieges
         desappear();//On d�clenche ses effets
         String str = this.spell + "," + this.cell.getId() + ",0,1,1," + this.caster.getId();
         SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(this.fight, 7, 307, target.getId() + "", str);
@@ -110,8 +110,9 @@ public class Trap {
         //on ajoute les cases
         for (int a = 0; a < this.size; a++) {
             char[] dirs = {'b', 'd', 'f', 'h'};
-
-            for (GameCase aCell : new ArrayList<>(cells)) {
+            ArrayList<GameCase> cases2 = new ArrayList<>();//on �vite les modifications concurrentes
+            cases2.addAll(cells);
+            for (GameCase aCell : cases2) {
                 if(aCell == null) continue;
                 for (char d : dirs) {
                     GameCase cell = this.fight.getMap().getCase(PathFinding.GetCaseIDFromDirrection(aCell.getId(), d, this.fight.getMap(), true));
