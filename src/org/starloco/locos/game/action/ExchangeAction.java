@@ -31,8 +31,8 @@ public class ExchangeAction<T> {
             FORGETTING_SPELL = 22,
             CRAFTING_BOOK = 23,
             LOCK_TRUNK = 24,
-            LOCK_HOUSE = 25;
-
+            LOCK_HOUSE = 25,
+            CHOOSING_TONIC = 26;
     private byte type;
     private T value;
 

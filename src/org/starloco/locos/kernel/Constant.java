@@ -1,8 +1,11 @@
 package org.starloco.locos.kernel;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.client.Player;
@@ -41,6 +44,7 @@ public class Constant {
     public static final int FIGHT_TYPE_PVM = 4;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            //PvM
     public static final int FIGHT_TYPE_PVT = 5;
     public static final int FIGHT_TYPE_ROYAL = 6;
+    public static final int FIGHT_TYPE_GLADIA = 8;
     //Percepteur
     public static final int FIGHT_STATE_INIT = 1;
     public static final int FIGHT_STATE_PLACE = 2;
@@ -75,6 +79,19 @@ public class Constant {
     public static final int ITEM_POS_BENEDICTION = 23;
     public static final int ITEM_POS_MALEDICTION = 22;
     public static final int ITEM_POS_BONBON = 25;
+
+    public static final int ITEM_POS_TONIQUE_EQUILIBRAGE = 65;
+    public static final int ITEM_POS_TONIQUE1 = 66;
+    public static final int ITEM_POS_TONIQUE2 = 67;
+    public static final int ITEM_POS_TONIQUE3 = 68;
+    public static final int ITEM_POS_TONIQUE4 = 69;
+    public static final int ITEM_POS_TONIQUE5 = 70;
+    public static final int ITEM_POS_TONIQUE6 = 71;
+    public static final int ITEM_POS_TONIQUE7 = 72;
+    public static final int ITEM_POS_TONIQUE8 = 73;
+    public static final int ITEM_POS_TONIQUE9 = 74;
+
+
     //Types
     public static final int ITEM_TYPE_AMULETTE = 1;
     public static final int ITEM_TYPE_ARC = 2;
@@ -190,6 +207,123 @@ public class Constant {
     public static final int ITEM_TYPE_ARME_MAGIQUE = 114;
     public static final int ITEM_TYPE_FRAGM_AME_SHUSHU = 115;
     public static final int ITEM_TYPE_POTION_FAMILIER = 116;
+    public static final int ITEM_TYPE_CARTE_COMMUN = 119;
+    public static final int ITEM_TYPE_CARTE_RARE = 120;
+    public static final int ITEM_TYPE_CARTE_EPIQUE = 121;
+    public static final int ITEM_TYPE_CARTE_ULTIME = 122;
+    public static final int ITEM_TYPE_PAQUET_CARTE = 123;
+    public static final int ITEM_TYPE_PIERRE_AME_BOSS = 124;
+    public static final int ITEM_TYPE_PIERRE_AME_ARCHI = 125;
+    public static final int ITEM_TYPE_TONIQUE = 126;
+    public static final int ITEM_TYPE_RESERVED = 127;
+
+    //Monstre
+    public static final int[] MONSTRE_TYPE_DIVERS = {-1,29,32,18,28,27,0,1,68,50,79};
+    public static final int[] MONSTRE_TYPE_CHAMPS = {11,47,9,10,45,46};
+    public static final int[] MONSTRE_TYPE_MONTAGNE = {16,12,52,6,13,5};
+    public static final int[] MONSTRE_TYPE_FORET = {38,37,49,39,4,22,7};
+    public static final int[] MONSTRE_TYPE_PLAINE = {24,23,51,21,2};
+    public static final int[] MONSTRE_TYPE_LANDES = {25};
+    public static final int[] MONSTRE_TYPE_ILE_MOON = {43,42,41,20,40};
+    public static final int[] MONSTRE_TYPE_ILE_WABBIT = {3};
+    public static final int[] MONSTRE_TYPE_PANDALA = {36,35,34,57,56,55,59};
+    public static final int[] MONSTRE_TYPE_HUMAIN = {26,30,19};
+    public static final int[] MONSTRE_TYPE_NUIT = {8,53,54,17};
+    public static final int[] MONSTRE_TYPE_MARECAGE = {48,44};
+    public static final int[] MONSTRE_TYPE_VILLE = {33,31};
+    public static final int[] MONSTRE_TYPE_VILLAGE_ELEVEUR = {60,61};
+    public static final int[] MONSTRE_TYPE_RESSOURCE_PROTECTEUR = {62,63,64,65,66};
+    public static final int[] MONSTRE_TYPE_ILE_MINO = {67};
+    public static final int[] MONSTRE_TYPE_PLAGES = {69};
+    public static final int[] MONSTRE_TYPE_INCARNAM ={70};
+    public static final int[] MONSTRE_TYPE_ILE_OTO = {71,72,73,74,75,76,77};
+    public static final int[] MONSTRE_TYPE_ARCHI = {78};
+
+    public static final int[] MONSTRE_ID_ISBOSS = {78};
+
+    public static final int[] FILTER_MONSTRE_SPE1 = ArrayUtils.addAll(MONSTRE_TYPE_DIVERS,MONSTRE_TYPE_ARCHI);
+    public static final int[] FILTER_MONSTRE_SPE2 = ArrayUtils.addAll(FILTER_MONSTRE_SPE1,MONSTRE_TYPE_HUMAIN);
+    public static final int[] FILTER_MONSTRE_SPE = ArrayUtils.addAll(FILTER_MONSTRE_SPE2,MONSTRE_TYPE_RESSOURCE_PROTECTEUR);
+
+    public static final int MONSTRES_NON_CLASSE = -1;
+    public static final int MONSTRES_INVOCATIONS_DE_CLASSE = 0;
+    public static final int MONSTRES_BOSS = 1;
+    public static final int MONSTRES_BANDITS = 2;
+    public static final int MONSTRES_WABBITS = 3;
+    public static final int MONSTRES_DRAGOEUFS = 4;
+    public static final int MONSTRES_BWORKS = 5;
+    public static final int MONSTRES_GOBELINS = 6;
+    public static final int MONSTRES_GELEES = 7;
+    public static final int MONSTRES_DE_LA_NUIT = 8;
+    public static final int MONSTRES_BOUFTOUS = 9;
+    public static final int MONSTRES_PLANTES_DES_CHAMPS = 10;
+    public static final int MONSTRES_LARVES = 11;
+    public static final int MONSTRES_KWAKS = 12;
+    public static final int MONSTRES_CRAQUELEURS = 13;
+    public static final int MONSTRES_COCHONS = 16;
+    public static final int MONSTRES_CHAFERS = 17;
+    public static final int MONSTRES_DOPEULS_TEMPLE = 18;
+    public static final int MONSTRES_PNJS = 19;
+    public static final int MONSTRES_KANNIBOULS_DE_ILE_DE_MOON = 20;
+    public static final int MONSTRES_DRAGODINDE = 21;
+    public static final int MONSTRES_ABRAKNYDIEN = 22;
+    public static final int MONSTRES_BLOP = 23;
+    public static final int MONSTRES_DES_PLAINES_DE_CANIA = 24;
+    public static final int MONSTRES_DES_LANDES = 25;
+    public static final int MONSTRES_GARDES = 26;
+    public static final int MONSTRES_DES_CONQUETES_DE_TERRITOIRES = 27;
+    public static final int MONSTRES_DU_VILLAGE_DES_DOPEULS = 28;
+    public static final int MONSTRES_TUTORIAL = 29;
+    public static final int MONSTRES_BRIGANDINS = 30;
+    public static final int MONSTRE_DES_EGOUTS = 31;
+    public static final int MONSTRES_AVIS_DE_RECHERCHE = 32;
+    public static final int MONSTRES_PIOUS = 33;
+    public static final int MONSTRES_DU_VILLAGE_DE_PANDALA = 34;
+    public static final int MONSTRES_DE_PANDALA = 35;
+    public static final int MONSTRES_FANTOME_DE_PANDALA = 36;
+    public static final int MONSTRES_SCARAFEUILLE = 37;
+    public static final int MONSTRES_ARAKNE = 38;
+    public static final int MONSTRES_MULOU = 39;
+    public static final int MONSTRES_TORTUES_DE_MOON = 40;
+    public static final int MONSTRES_PIRATES_DE_MOON = 41;
+    public static final int MONSTRES_PLANTES_DE_MOON = 42;
+    public static final int MONSTRES_DE_MOON = 43;
+    public static final int MONSTRES_CROCODAILLES = 44;
+    public static final int MONSTRES_CHAMPIGNONS = 45;
+    public static final int MONSTRES_TOFUS = 46;
+    public static final int MONSTRES_MOSKITOS = 47;
+    public static final int MONSTRES_DES_MARECAGES = 48;
+    public static final int MONSTRES_ANIMAUX_DE_LA_FORET = 49;
+    public static final int MONSTRES_DE_QUETE = 50;
+    public static final int MONSTRES_CORBACS = 51;
+    public static final int MONSTRES_GARDIENS_DES_VILLAGES_DE_KWAKS = 52;
+    public static final int MONSTRES_FANTOMES = 53;
+    public static final int MONSTRES_FAMILIERS_FANTOMES = 54;
+    public static final int MONSTRES_PLANTES_DE_PANDALA = 55;
+    public static final int MONSTRES_KITSOUS = 56;
+    public static final int MONSTRES_PANDAWAS = 57;
+    public static final int MONSTRES_FIREFOUX = 59;
+    public static final int MONSTRES_KOALAKS = 60;
+    public static final int MONSTRES_DES_CAVERNES = 61;
+    public static final int MONSTRES_PROTECTEURS_DES_CEREALES = 62;
+    public static final int MONSTRES_PROTECTEURS_DES_MINERAIS = 63;
+    public static final int MONSTRES_PROTECTEURS_DES_ARBRES = 64;
+    public static final int MONSTRES_PROTECTEURS_DES_POISSONS = 65;
+    public static final int MONSTRES_PROTECTEURS_DES_PLANTES = 66;
+    public static final int MONSTRES_MINOS = 67;
+    public static final int MONSTRES_DE_NOWEL = 68;
+    public static final int MONSTRES_DES_PLAGES = 69;
+    public static final int MONSTRES_DE_LA_ZONE_DES_DEBUTANTS = 70;
+    public static final int MONSTRES_DES_PLAINES_HERBEUSES = 71;
+    public static final int MONSTRES_DE_LA_PLAGE_DE_CORAIL = 72;
+    public static final int MONSTRES_DE_LA_TOURBIERE_SANS_FOND = 73;
+    public static final int MONSTRES_DE_LA_JUNGLE_SOMBRE = 74;
+    public static final int MONSTRES_DE_ARBRE_HAKAM = 75;
+    public static final int MONSTRES_DE_ARCHE_DOTOMAI = 76;
+    public static final int MONSTRES_DE_LA_CANOPEE_EMBRUMEE = 77;
+    public static final int MONSTRES_LES_ARCHIMONSTRES = 78;
+    public static final int MONSTRES_TO_VERIF = 79;
+
     //Alignement
     public static final byte ALIGNEMENT_NEUTRE = -1;
     public static final byte ALIGNEMENT_BONTARIEN = 1;
@@ -219,7 +353,7 @@ public class Constant {
     public static final int SEX_MALE = 0;
     public static final int SEX_FEMALE = 1;
     //GamePlay
-    public static final int MAX_EFFECTS_ID = 1500;
+    public static final int MAX_EFFECTS_ID = 2120;
     //Buff a v�rifier en d�but de tour
     public static final int[] BEGIN_TURN_BUFF = {91, 92, 93, 94, 95, 96, 97, 98, 99, 89, 100, 108};
     //Buff des Armes
@@ -268,10 +402,12 @@ public class Constant {
     public static final int STATS_ADD_MFLEE = 161;
     public static final int STATS_REM_AFLEE = 162;
     public static final int STATS_REM_MFLEE = 163;
+    public static final int STATS_REM_PERDOM = 164;
     public static final int STATS_ADD_MAITRISE = 165;
     public static final int STATS_REM_PA2 = 168;
     public static final int STATS_REM_PM2 = 169;
     public static final int STATS_REM_CC = 171;
+    public static final int STATS_REM_PDOM = 173;
     public static final int STATS_ADD_INIT = 174;
     public static final int STATS_REM_INIT = 175;
     public static final int STATS_ADD_PROS = 176;
@@ -279,10 +415,6 @@ public class Constant {
     public static final int STATS_ADD_SOIN = 178;
     public static final int STATS_REM_SOIN = 179;
     public static final int STATS_CREATURE = 182;
-    public static final int STATS_ADD_RES_M = 183;
-    public static final int STATS_ADD_RES_P = 184;
-    public static final int STATS_REM_PERDOM = 186;
-    public static final int STATS_REM_SUM = 187;
     public static final int STATS_ADD_RP_TER = 210;
     public static final int STATS_ADD_RP_EAU = 211;
     public static final int STATS_ADD_RP_AIR = 212;
@@ -321,6 +453,12 @@ public class Constant {
     public static final int STATS_ADD_R_PVP_AIR = 262;
     public static final int STATS_ADD_R_PVP_FEU = 263;
     public static final int STATS_ADD_R_PVP_NEU = 264;
+    public static final int STATS_REM_PA3 = 2100;
+    public static final int STATS_REM_RENVOI = 2111;
+    public static final int STATS_REM_INVO = 2112;
+    public static final int STATS_REM_TRAPDOM = 2113;
+    public static final int STATS_REM_TRAPPER = 2114;
+
     //Effets ID & Buffs
     public static final int EFFECT_PASS_TURN = 140;
 
@@ -337,6 +475,8 @@ public class Constant {
     // Objet d'�levage
     public static final int STATS_RESIST = 812;
     // Other
+
+    public static final int STATS_NIVEAU2 = 669;
     public static final int STATS_TURN = 811;
     public static final int STATS_EXCHANGE_IN = 983;
     public static final int STATS_CHANGE_BY = 985;
@@ -345,7 +485,7 @@ public class Constant {
     public static final int STATS_GRADE_TRAQUE = 961;
     public static final int STATS_ALIGNEMENT_TRAQUE = 960;
     public static final int STATS_NIVEAU_TRAQUE = 962;
-
+    public static final int STATS_BONUSADD = 2116;
     public static final int STATS_DATE = 805;
     public static final int STATS_NIVEAU = 962;
     public static final int STATS_NAME_DJ = 814;
@@ -394,6 +534,15 @@ public class Constant {
     public static String HUNT_LETHALINE_DOC = "65_0706251123";                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                // Léthaline Sigisbul
     //public static String HUNT_NERVOES_DOC    = "64_0706251123";  // Nervoes Brakdoun
     public static String HUNT_FOUDUGLEN_DOC = "70_0706251122";                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                // Fouduglen l'�cureuil
+
+    public static String BOSS = "58 85 86 107 113 121 147 173 180 225 226 230 232 251 252 257 289 295 374 375 377 382 404 423 430 457 478 568 605 612 669 670"
+            + " 673 675 677 681 780 792 797 799 800 827 854 926 939 940 943 1015 1027 1045 1051 1071 1072 1085 1086 1087 1159 1170 1184 1185 1186 1187 1188 1195";
+
+    public static int[] BOSS_ID = {58,85,86,107,113,121,147,173,180,225,226,230,232,251,252,257,289,295,374,375,377,382,404,423,430,457,478,568,605,612,669,670,673,675,677,681,780,792,797,799,800,827,854,926,939,940,943,1015,1027,1045,1051,1071,1072,1085,1086,1087,1159,1170,1184,1185,1186,1187,1188,1195};
+
+    public static int[] EXCEPTION_GLADIATROOL_BOSS = {423,1159};
+    public static int[] EXCEPTION_GLADIATROOL_ARCHI = {423,1159};
+    public static int[] EXCEPTION_GLADIATROOL_MONSTRES = {258,260,424,1090,1091,1092,1094};
 
     // {(int)BorneId, (int)CellId, (str)SwfDocName, (int)MobId, (int)ItemFollow, (int)QuestId, (int)reponseID
     public static String[][] HUNTING_QUESTS = {{"1988", "234", HUNT_DETAILS_DOC, "-1", "-1", "-1", "-1"}, {"1986", "161", HUNT_LETHALINE_DOC, "-1", "-1", "-1", "-1"}, {"1985", "119", HUNT_MARZWEL_DOC, "554", "7353", "117", "2552"}, {"1986", "120", HUNT_PADGREF_DOC, "459", "6870", "29", "2108"}, {"1985", "149", HUNT_FRAKACIA_DOC, "460", "6871", "30", "2109"}, {"1986", "150", HUNT_QILBIL_DOC, "481", "6873", "32", "2111"}, {"1986", "179", HUNT_BRUMEN_DOC, "464", "6874", "33", "2112"}, {"1986", "180", HUNT_OGIVOL_DOC, "462", "6876", "35", "2114"}, {"1985", "269", HUNT_MUSHA_DOC, "552", "7352", "116", "2551"}, {"1986", "270", HUNT_FOUDUGLEN_DOC, "463", "6875", "34", "2113"}, {"1985", "299", HUNT_ROK_DOC, "550", "7351", "115", "2550"}, {"1986", "300", HUNT_AERMYNE_DOC, "446", "7350", "119", "2554"}, {"1985", "329", HUNT_ZATOISHWAN_DOC, "555", "7354", "118", "2553"},};
@@ -574,68 +723,68 @@ public class Constant {
         return pos;
     }
 
-    public static HashMap<Integer, Character> getStartSortsPlaces(int classID) {
-        HashMap<Integer, Character> start = new HashMap<Integer, Character>();
+    public static HashMap<Integer, String> getStartSortsPlaces(int classID) {
+        HashMap<Integer, String> start = new HashMap<Integer, String>();
         switch (classID) {
             case CLASS_FECA:
-                start.put(3, 'b');//Attaque Naturelle
-                start.put(6, 'c');//Armure Terrestre
-                start.put(17, 'd');//Glyphe Agressif
+                start.put(3, "1");//Attaque Naturelle
+                start.put(6, "2");//Armure Terrestre
+                start.put(17, "3");//Glyphe Agressif
                 break;
             case CLASS_SRAM:
-                start.put(61, 'b');//Sournoiserie
-                start.put(72, 'c');//Invisibilit�
-                start.put(65, 'd');//Piege sournois
+                start.put(61, "1");//Sournoiserie
+                start.put(72, "2");//Invisibilit�
+                start.put(65, "3");//Piege sournois
                 break;
             case CLASS_ENIRIPSA:
-                start.put(125, 'b');//Mot Interdit
-                start.put(128, 'c');//Mot de Frayeur
-                start.put(121, 'd');//Mot Curatif
+                start.put(125, "1");//Mot Interdit
+                start.put(128, "2");//Mot de Frayeur
+                start.put(121, "3");//Mot Curatif
                 break;
             case CLASS_ECAFLIP:
-                start.put(102, 'b');//Pile ou Face
-                start.put(103, 'c');//Chance d'ecaflip
-                start.put(105, 'd');//Bond du felin
+                start.put(102, "1");//Pile ou Face
+                start.put(103, "2");//Chance d'ecaflip
+                start.put(105, "3");//Bond du felin
                 break;
             case CLASS_CRA:
-                start.put(161, 'b');//Fleche Magique
-                start.put(169, 'c');//Fleche de Recul
-                start.put(164, 'd');//Fleche Empoisonn�e(ex Fleche chercheuse)
+                start.put(161, "1");//Fleche Magique
+                start.put(169, "2");//Fleche de Recul
+                start.put(164, "3");//Fleche Empoisonn�e(ex Fleche chercheuse)
                 break;
             case CLASS_IOP:
-                start.put(143, 'b');//Intimidation
-                start.put(141, 'c');//Pression
-                start.put(142, 'd');//Bond
+                start.put(143, "1");//Intimidation
+                start.put(141, "2");//Pression
+                start.put(142, "3");//Bond
                 break;
             case CLASS_SADIDA:
-                start.put(183, 'b');//Ronce
-                start.put(200, 'c');//Poison Paralysant
-                start.put(193, 'd');//La bloqueuse
+                start.put(183, "1");//Ronce
+                start.put(200, "2");//Poison Paralysant
+                start.put(193, "3");//La bloqueuse
                 break;
             case CLASS_OSAMODAS:
-                start.put(34, 'b');//Invocation de tofu
-                start.put(21, 'c');//Griffe Spectrale
-                start.put(23, 'd');//Cri de l'ours
+                start.put(34, "1");//Invocation de tofu
+                start.put(21, "2");//Griffe Spectrale
+                start.put(23, "3");//Cri de l'ours
                 break;
             case CLASS_XELOR:
-                start.put(82, 'b');//Contre
-                start.put(81, 'c');//Ralentissement
-                start.put(83, 'd');//Aiguille
+                start.put(82, "1");//Contre
+                start.put(81, "2");//Ralentissement
+                start.put(83, "3");//Aiguille
                 break;
             case CLASS_PANDAWA:
-                start.put(686, 'b');//Picole
-                start.put(692, 'c');//Gueule de bois
-                start.put(687, 'd');//Poing enflamm�
+                start.put(686, "1");//Picole
+                start.put(692, "2");//Gueule de bois
+                start.put(687, "3");//Poing enflamm�
                 break;
             case CLASS_ENUTROF:
-                start.put(51, 'b');//Lancer de Piece
-                start.put(43, 'c');//Lancer de Pelle
-                start.put(41, 'd');//Sac anim�
+                start.put(51, "1");//Lancer de Piece
+                start.put(43, "2");//Lancer de Pelle
+                start.put(41, "3");//Sac anim�
                 break;
             case CLASS_SACRIEUR:
-                start.put(432, 'b');//Pied du Sacrieur
-                start.put(431, 'c');//Chatiment Os�
-                start.put(434, 'd');//Attirance
+                start.put(432, "1");//Pied du Sacrieur
+                start.put(431, "2");//Chatiment Os�
+                start.put(434, "3");//Attirance
                 break;
         }
         return start;
@@ -2138,6 +2287,16 @@ public class Constant {
                 stats.addOneStat(STATS_ADD_RP_FEU, lvl / 20);
                 stats.addOneStat(STATS_ADD_RP_NEU, lvl / 20);
                 break;
+            //Tabi
+            case 90:
+                stats.addOneStat(STATS_ADD_PERDOM, lvl / 2);
+                stats.addOneStat(STATS_ADD_PA, lvl / 100);
+                break;
+            //Karnage
+            case 91:
+                stats.addOneStat(STATS_ADD_DOMA, lvl / 10);
+                stats.addOneStat(STATS_ADD_PM, lvl / 100);
+                break;
         }
         return stats;
     }
@@ -2357,6 +2516,16 @@ public class Constant {
             //Armure
             case 88:
                 return World.world.getObjTemplate(9582);
+            //Dragodinde du Paladin
+            case 89:
+                return World.world.getObjTemplate(12776);
+            //Tabi
+            case 90:
+                return World.world.getObjTemplate(12780);
+            //Karnage
+            case 91:
+                return World.world.getObjTemplate(12827);
+
         }
         return null;
     }
@@ -3601,6 +3770,25 @@ public class Constant {
         return false;
     }
 
+    public static boolean isGladiatroolWeapon(int id) {
+        switch (id) {
+            case 12782:
+            case 12783:
+            case 12784:
+            case 12785:
+            case 12786:
+            case 12787:
+            case 12788:
+            case 12789:
+            case 12790:
+            case 12791:
+            case 12792:
+            case 12793:
+                return true;
+        }
+        return false;
+    }
+
     public static boolean isBanditsWeapon(int id) {
         switch (id) {
             case 10133:
@@ -3692,6 +3880,137 @@ public class Constant {
         return false;
     }
 
+    public static boolean isInGladiatorDonjon(int id) {
+        switch (id) {
+            case 15000:
+            case 15008:
+            case 15016:
+            case 15024:
+            case 15032:
+            case 15040:
+            case 15048:
+            case 15056:
+            case 15064:
+            case 15072:
+                return true;
+        }
+        return false;
+    }
+
+    public static int getPalierByNewMap(int Mapid) {
+        switch (Mapid) {
+            case 12277:
+            case 15000:
+                return 1;
+            case 15008:
+                return 2;
+            case 15016:
+                return 3;
+            case 15024:
+                return 4;
+            case 15032:
+                return 5;
+            case 15040:
+                return 6;
+            case 15048:
+                return 7;
+            case 15056:
+                return 8;
+            case 15064:
+                return 9;
+            case 15072:
+                return 10;
+        }
+        return 0;
+    }
+
+    public static String getStatStringbyPalier(int palier) {
+        switch (palier) {
+            case 6:
+                return "844#0###0d0+0,6f#1#0#0#0d0+1,7d#fa###0d0+250,7c#32###0d0+50,76#32###0d0+50,7e#32###0d0+50,7b#32###0d0+50,77#32###0d0+50,70#3###0d0+3,8a#1e###0d0+30,b2#5###0d0+5,73#3###0d0+3,d2#1###0d0+1,d5#1###0d0+1,d3#1###0d0+1,d4#1###0d0+1,d6#1###0d0+1";
+            case 8:
+                return "844#0###0d0+0,6f#1#0#0#0d0+1,80#1#0#0#0d0+1,7d#fa###0d0+250,7c#32###0d0+50,76#32###0d0+50,7e#32###0d0+50,7b#32###0d0+50,77#32###0d0+50,70#3###0d0+3,8a#1e###0d0+30,b2#5###0d0+5,73#3###0d0+3,d2#1###0d0+1,d5#1###0d0+1,d3#1###0d0+1,d4#1###0d0+1,d6#1###0d0+1";
+            default:
+                return "844#0###0d0+0,7d#fa###0d0+250,7c#32###0d0+50,76#32###0d0+50,7e#32###0d0+50,7b#32###0d0+50,77#32###0d0+50,70#3###0d0+3,8a#1e###0d0+30,b2#5###0d0+5,73#3###0d0+3,d2#1###0d0+1,d5#1###0d0+1,d3#1###0d0+1,d4#1###0d0+1,d6#1###0d0+1";
+        }
+    }
+
+
+    public static int getClasseByMorphWeapon(int MorphWeapon) {
+        int Classe = MorphWeapon-12781;
+        return Classe;
+    }
+
+
+    public static final int[] TONIQUE1 = {16002,16003,16004,16005,16006,16007,16008,16009,16010,16011,16012};
+    public static final int[] TONIQUE2 = {16013,16014,16015,16016,16017,16018,16019,16020,16021,16022,16023};
+
+    public static Integer getRandomGemmesSpritiuels() {
+        ArrayList<Integer> gemmespi = new ArrayList<Integer>();
+
+        for(int i= 10227; i<=10270;i++){
+            gemmespi.add(i);
+        }
+        gemmespi.add(10278);
+        gemmespi.add(10606);
+        gemmespi.add(11567);
+        gemmespi.add(11568);
+
+        Random rand = new Random();
+        int randomIndex = rand.nextInt(gemmespi.size());
+        int randomNum = gemmespi.get(randomIndex);
+
+        return randomNum;
+    }
+
+
+
+    public static int[] getToniques3byclasse(int classeid) {
+        int[] tonique3 = new int[]{};
+        switch (classeid){
+            case Constant.CLASS_FECA:
+                tonique3 = new int[]{16027,16028,16029,16030,16031,16032,16033,16034,16035,16036,16037,16038,16039,16040,16041,16042,16043,16044,16045,16046,16024,16025,16026};
+                break;
+            case Constant.CLASS_OSAMODAS:
+                tonique3 = new int[]{16047,16048,16049,16050,16051,16052,16053,16054,16055,16056,16057,16058,16059,16060,16061,16062,16063,16064,16065,16066,16024,16025,16026};
+                break;
+            case Constant.CLASS_ENUTROF:
+                tonique3 = new int[]{16067,16068,16069,16070,16071,16072,16073,16074,16075,16076,16077,16078,16079,16080,16081,16082,16083,16084,16085,16086,16024,16025,16026};
+                break;
+            case Constant.CLASS_SRAM:
+                tonique3 = new int[]{16087,16088,16089,16090,16091,16092,16093,16094,16095,16096,16097,16098,16099,16100,16101,16102,16103,16104,16105,16106,16024,16025,16026};
+                break;
+            case Constant.CLASS_XELOR:
+                tonique3 = new int[]{16107,16108,16109,16110,16111,16112,16113,16114,16115,16116,16117,16118,16119,16120,16121,16122,16123,16124,16125,16126,16024,16025,16026};
+                break;
+            case Constant.CLASS_ECAFLIP:
+                tonique3 = new int[]{16127,16128,16129,16130,16131,16132,16133,16134,16135,16136,16137,16138,16139,16140,16141,16142,16143,16144,16145,16146,16024,16025,16026};
+                break;
+            case Constant.CLASS_ENIRIPSA:
+                tonique3 = new int[]{16147,16148,16149,16150,16151,16152,16153,16154,16155,16156,16157,16158,16159,16160,16161,16162,16163,16164,16165,16166,16024,16025,16026};
+                break;
+            case Constant.CLASS_IOP:
+                tonique3 = new int[]{16167,16168,16169,16170,16171,16172,16173,16174,16175,16176,16177,16178,16179,16180,16181,16182,16183,16184,16185,16186,16024,16025,16026};
+                break;
+            case Constant.CLASS_CRA:
+                tonique3 = new int[]{16187,16188,16189,16190,16191,16192,16193,16194,16195,16196,16197,16198,16199,16200,16201,16202,16203,16204,16205,16206,16024,16025,16026};
+                break;
+            case Constant.CLASS_SADIDA:
+                tonique3 = new int[]{16207,16208,16209,16210,16211,16212,16213,16214,16215,16216,16217,16218,16219,16220,16221,16222,16223,16224,16225,16226,16024,16025,16026};
+                break;
+            case Constant.CLASS_SACRIEUR:
+                tonique3 = new int[]{16227,16228,16229,16230,16231,16232,16233,16234,16235,16236,16237,16238,16239,16240,16241,16242,16243,16244,16245,16246,16024,16025,16026};
+                break;
+            case Constant.CLASS_PANDAWA:
+                tonique3 = new int[]{16247,16248,16249,16250,16251,16252,16253,16254,16255,16256,16257,16258,16259,16260,16261,16262,16263,16264,16265,16266,16024,16025,16026};
+                break;
+        }
+
+        return tonique3;
+    }
+
+
+
     public static int[] getOppositeStats(int statsId) {
         if (statsId == 217)
             return new int[]{210, 211, 213, 214};
@@ -3703,7 +4022,7 @@ public class Constant {
             return new int[]{210, 211, 212, 214};
         else if (statsId == 215)
             return new int[]{211, 212, 213, 214};
-        return new int[]{};
+        return null;
     }
 
     public static int getNearestCellIdUnused(Player player) {
@@ -3883,6 +4202,8 @@ public class Constant {
             case Constant.ITEM_TYPE_HACHE:
             case Constant.ITEM_TYPE_BAGUETTE:
                 return new int[]{Constant.ITEM_POS_ARME};
+            case Constant.ITEM_TYPE_TONIQUE:
+                return new int[]{Constant.ITEM_POS_TONIQUE_EQUILIBRAGE,Constant.ITEM_POS_TONIQUE1,Constant.ITEM_POS_TONIQUE2,Constant.ITEM_POS_TONIQUE3,Constant.ITEM_POS_TONIQUE4,Constant.ITEM_POS_TONIQUE5,Constant.ITEM_POS_TONIQUE6,Constant.ITEM_POS_TONIQUE7,Constant.ITEM_POS_TONIQUE8,Constant.ITEM_POS_TONIQUE9};
             default:
                 return new int[]{};
         }

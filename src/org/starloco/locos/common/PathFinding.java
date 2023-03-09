@@ -6,6 +6,7 @@ import org.starloco.locos.client.Player;
 import org.starloco.locos.fight.Fight;
 import org.starloco.locos.fight.Fighter;
 import org.starloco.locos.fight.ia.util.AStarPathFinding;
+import org.starloco.locos.fight.spells.Spell;
 import org.starloco.locos.fight.traps.Glyph;
 import org.starloco.locos.fight.traps.Trap;
 import org.starloco.locos.game.GameServer;
@@ -41,7 +42,7 @@ public class PathFinding {
                 }
                 //Si en combat, et pas au d�but du path
                 if (fight != null && i != 0) {
-                    for (Trap trap : fight.getTraps()) {
+                    for (Trap trap : fight.getAllTraps()) {
                         if (getDistanceBetween(map, trap.getCell().getId(), newPos) <= trap.getSize()) {
                             pathRef.set(newPath);
                             return Steps;
@@ -188,7 +189,7 @@ public class PathFinding {
                     return "no:";
                 if (getEnemyFighterArround(lastPos, map, fight, true) != null)//Si ennemie proche
                     return "stop:" + lastPos;
-                for (Trap p : fight.getTraps()) {
+                for (Trap p : fight.getAllTraps()) {
                     if (getDistanceBetween(map, p.getCell().getId(), lastPos) <= p.getSize()) {//on arrete le d�placement sur la 1ere case du piege
                         return "stop:" + lastPos;
                     }
@@ -313,7 +314,7 @@ public class PathFinding {
             else
                 return -(value - a);
 
-            for (Trap trap : fight.getTraps()) {
+            for (Trap trap : fight.getAllTraps()) {
                 GameCase trapCell = trap.getCell(), nextCell = map.getCase(nextCase);
                 if (getDistanceBetween(map, trapCell.getId(), nextCell.getId()) <= trap.getSize()) {
                     if(!casesAreInSameLine(map, trapCell.getId(), nextCell.getId(), 'z', 15))
@@ -352,7 +353,7 @@ public class PathFinding {
             else
                 return -(value - a);
 
-            for (Trap trap : fight.getTraps()) {
+            for (Trap trap : fight.getAllTraps()) {
                 GameCase trapCell = trap.getCell(), nextCell = map.getCase(nextCase);
                 if (getDistanceBetween(map, trapCell.getId(), nextCell.getId()) <= trap.getSize()) {
                     if(!casesAreInSameLine(map, trapCell.getId(), nextCell.getId(), 'z', 15))
@@ -581,7 +582,7 @@ public class PathFinding {
 
         GameMap map = fight.getMap();
         ArrayList<Glyph> glyphs = new ArrayList<Glyph>();//Copie du tableau
-        glyphs.addAll(fight.getGlyphs());
+        glyphs.addAll(fight.getAllGlyphs());
         int dist = 1000;
         //On prend la cellule autour de la cible, la plus proche
         int cellID = startCell;
@@ -1094,24 +1095,24 @@ public class PathFinding {
         return path.contains(id);
     }
 
-    public static ArrayList<GameCase> getCellListFromAreaString(GameMap map, int cellID, int castCellID, String zoneStr, int PONum, boolean isCC) {
-        ArrayList<GameCase> cases = new ArrayList<>();
-
+    public static ArrayList<GameCase> getCellListFromAreaString(GameMap map,
+                                                            int cellID, int castCellID, String zoneStr, int PONum, boolean isCC) {
+        ArrayList<GameCase> cases = new ArrayList<GameCase>();
+        int c = PONum;
         if (map == null || map.getCase(cellID) == null)
             return cases;
-
         cases.add(map.getCase(cellID));
 
-        if(zoneStr.length() < (PONum + 2))
-            return cases;
-
-        int size = World.world.getCryptManager().getIntByHashedValue(zoneStr.charAt(PONum + 1));
-
-        switch (zoneStr.charAt(PONum)) {
+        if(zoneStr.length() < (c + 2)) return cases;
+        int taille = World.world.getCryptManager().getIntByHashedValue(zoneStr.charAt(c + 1));
+        switch (zoneStr.charAt(c)) {
             case 'C':// Cercle
-                for (int a = 0; a < size; a++) {
+                for (int a = 0; a < taille; a++) {
                     char[] dirs = {'b', 'd', 'f', 'h'};
-                    ArrayList<GameCase> cases2 = new ArrayList<>(cases);
+                    ArrayList<GameCase> cases2 = new ArrayList<GameCase>();// on �vite les
+                    // modifications
+                    // concurrentes
+                    cases2.addAll(cases);
                     for (GameCase aCell : cases2) {
                         if(aCell == null) continue;
                         for (char d : dirs) {
@@ -1129,7 +1130,7 @@ public class PathFinding {
                 char[] dirs = {'b', 'd', 'f', 'h'};
                 for (char d : dirs) {
                     int cID = cellID;
-                    for (int a = 0; a < size; a++) {
+                    for (int a = 0; a < taille; a++) {
                         cases.add(map.getCase(GetCaseIDFromDirrection(cID, d, map, true)));
                         cID = GetCaseIDFromDirrection(cID, d, map, true);
                     }
@@ -1138,7 +1139,7 @@ public class PathFinding {
 
             case 'L':// Ligne
                 char dir = PathFinding.getDirBetweenTwoCase(castCellID, cellID, map, true);
-                for (int a = 0; a < size; a++) {
+                for (int a = 0; a < taille; a++) {
                     cases.add(map.getCase(GetCaseIDFromDirrection(cellID, dir, map, true)));
                     cellID = GetCaseIDFromDirrection(cellID, dir, map, true);
                 }
@@ -1520,7 +1521,7 @@ public class PathFinding {
                     || !actualCell.isWalkable(false))
                 return oldCell;
 
-            for (Trap trap : fight.getTraps()) {
+            for (Trap trap : fight.getAllTraps()) {
 
                 if (PathFinding.getDistanceBetween(fight.getMap(), trap.getCell().getId(), actualCell.getId()) <= trap.getSize())
                     return actualCell;

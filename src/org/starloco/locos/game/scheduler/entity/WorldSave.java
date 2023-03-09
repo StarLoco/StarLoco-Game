@@ -5,7 +5,7 @@ import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.database.DatabaseManager;
 import org.starloco.locos.database.data.game.*;
 import org.starloco.locos.database.data.login.*;
-import org.starloco.locos.entity.monster.MonsterGroup;
+import org.starloco.locos.entity.monster.Monster;
 import org.starloco.locos.game.GameServer;
 import org.starloco.locos.game.scheduler.Updatable;
 import org.starloco.locos.game.world.World;
@@ -116,8 +116,8 @@ public class WorldSave extends Updatable {
         if(thread != null) {
             World.world.getMaps().stream().filter(map -> map != null && map.getMobGroups() != null)
                     .forEach(map -> {
-                        map.getMobGroups().values().stream().filter(Objects::nonNull).forEach(MonsterGroup::addStarBonus);
-                        map.getFixMobGroups().values().stream().filter(Objects::nonNull).forEach(MonsterGroup::addStarBonus);
+                        map.getMobGroups().values().stream().filter(Objects::nonNull).forEach(Monster.MobGroup::addStarBonus);
+                        map.getFixMobGroups().values().stream().filter(Objects::nonNull).forEach(Monster.MobGroup::addStarBonus);
                     });
             Thread copy = thread;
             thread = null;

@@ -4,7 +4,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.lang.NotImplementedException;
 import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.database.data.FunctionDAO;
-import org.starloco.locos.entity.monster.MonsterGroup;
+import org.starloco.locos.entity.monster.Monster;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.object.GameObject;
 
@@ -30,7 +30,7 @@ public class HeroicMobsGroupsData extends FunctionDAO<Object> {
             while (result.next()) {
                 final GameMap map = World.world.getMap(result.getShort("map"));
                 if(map != null) {
-                    final MonsterGroup group = new MonsterGroup(result.getInt("id"), map, result.getInt("cell"), result.getString("group"), result.getString("objects"), result.getShort("stars"));
+                    final Monster.MobGroup group = new Monster.MobGroup(result.getInt("id"), map, result.getInt("cell"), result.getString("group"), result.getString("objects"), result.getShort("stars"));
                     map.respawnGroup(group);
                 }
             }
@@ -66,7 +66,7 @@ public class HeroicMobsGroupsData extends FunctionDAO<Object> {
         return HeroicMobsGroupsData.class;
     }
 
-    public void insert(short map, MonsterGroup group) {
+    public void insert(short map, Monster.MobGroup group) {
         PreparedStatement prepare = null;
         try {
             final StringBuilder objects = new StringBuilder(), groups = new StringBuilder();
@@ -91,7 +91,7 @@ public class HeroicMobsGroupsData extends FunctionDAO<Object> {
         }
     }
 
-    public void update(short map, MonsterGroup group) {
+    public void update(short map, Monster.MobGroup group) {
         PreparedStatement prepare = null;
         try {
             final StringBuilder objects = new StringBuilder(), groups = new StringBuilder();
@@ -112,7 +112,7 @@ public class HeroicMobsGroupsData extends FunctionDAO<Object> {
         }
     }
 
-    public void delete(short map, MonsterGroup group) {
+    public void delete(short map, Monster.MobGroup group) {
         PreparedStatement prepare = null;
         try {
             final StringBuilder groups = new StringBuilder();
@@ -155,7 +155,7 @@ public class HeroicMobsGroupsData extends FunctionDAO<Object> {
                 }
                 GameMap map = World.world.getMap((short) result.getInt("map"));
                 int cell = result.getInt("cell");
-                for(MonsterGroup group : map.getMobGroups().values()) {
+                for(Monster.MobGroup group : map.getMobGroups().values()) {
                     if(group != null && group.getCellId() == cell)
                         group.setStarBonus(result.getShort("stars"));
                 }
@@ -168,7 +168,7 @@ public class HeroicMobsGroupsData extends FunctionDAO<Object> {
         }
     }
 
-    public void insertFix(short map, MonsterGroup group) {
+    public void insertFix(short map, Monster.MobGroup group) {
         PreparedStatement prepare = null;
         try {
             final StringBuilder objects = new StringBuilder(), groups = new StringBuilder();

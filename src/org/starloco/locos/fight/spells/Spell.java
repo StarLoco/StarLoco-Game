@@ -6,6 +6,7 @@ import org.starloco.locos.common.PathFinding;
 import org.starloco.locos.fight.Challenge;
 import org.starloco.locos.fight.Fight;
 import org.starloco.locos.fight.Fighter;
+import org.starloco.locos.game.GameServer;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.Constant;
 import org.starloco.locos.kernel.Main;
@@ -439,7 +440,7 @@ public class Spell {
                     if (((TE >> 5) & 1) == 1)
                         if (!finalCells.contains(perso.getCell()))
                             finalCells.add(perso.getCell());
-                    ArrayList<Fighter> cibles = SpellEffect.getTargets(finalCells);
+                    ArrayList<Fighter> cibles = SpellEffect.getTargets(SE, fight, finalCells);
 
                     if ((fight.getType() != Constant.FIGHT_TYPE_CHALLENGE)
                             && (fight.getAllChallenges().size() > 0)) {

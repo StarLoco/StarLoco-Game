@@ -1,5 +1,6 @@
 package org.starloco.locos.object;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.client.other.Stats;
 import org.starloco.locos.common.Formulas;
@@ -33,7 +34,7 @@ public class ObjectTemplate {
     private long sold;
     private int avgPrice;
     private int points, newPrice;
-    private int money;
+    private int money=-1;
     private ArrayList<ObjectAction> onUseActions;
 
     public String toString() {
@@ -62,7 +63,7 @@ public class ObjectTemplate {
         this.avgPrice = avgPrice;
         this.points = points;
         this.newPrice = newPrice;
-        this.money = -1;
+        this.money=-1;
         if(armesInfos.isEmpty()) return;
         try {
             String[] infos = armesInfos.split(";");
@@ -118,6 +119,22 @@ public class ObjectTemplate {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public int getMoney() {
+        return money;
+    }
+
+    public void setMoney(int id) {
+        this.money = id;
+    }
+
+    public int getNewPrice() {
+        return newPrice;
+    }
+
+    public void setNewPrice(int id) {
+        this.newPrice = id;
     }
 
     public String getStrTemplate() {
@@ -338,6 +355,21 @@ public class ObjectTemplate {
         return null;
     }
 
+    public GameObject createNewTonique(int posTonique,String StatsToadd) {
+        Stats stats = generateNewStatsFromTemplate(StatsToadd, true);
+        GameObject item = new GameObject(-1, getId(), 1, posTonique, stats, new ArrayList<>(), new HashMap<>(), new HashMap<>(), 0);
+        if(((ObjectData) DatabaseManager.get(ObjectData.class)).insert(item))
+            return item;
+        return null;
+    }
+
+    public GameObject createNewToniqueEquilibrage(Stats stats) {
+        GameObject item = new GameObject(-1, getId(), 1, Constant.ITEM_POS_TONIQUE_EQUILIBRAGE, stats, new ArrayList<>(), new HashMap<>(), new HashMap<>(), 0);
+        if(((ObjectData) DatabaseManager.get(ObjectData.class)).insert(item))
+            return item;
+        return null;
+    }
+
     public GameObject createNewFollowPnj(int turn) {
         Stats stats = generateNewStatsFromTemplate(getStrTemplate(), true);
         stats.addOneStat(Constant.STATS_TURN, turn);
@@ -349,61 +381,75 @@ public class ObjectTemplate {
     }
 
     public GameObject createNewItem(int qua, boolean useMax) {
-        GameObject item;
-        if (getType() == Constant.ITEM_TYPE_QUETES && (Constant.isCertificatDopeuls(getId()) || getId() == 6653)) {
-            Map<Integer, String> txtStat = new HashMap<>();
-            txtStat.put(Constant.STATS_DATE, System.currentTimeMillis() + "");
-            item = new GameObject(-1, getId(), qua, Constant.ITEM_POS_NO_EQUIPED, new Stats(false, null), new ArrayList<>(), new HashMap<>(), txtStat, 0);
-        } else if (this.getId() == 10207) {
-            item = new GameObject(-1, getId(), qua, Constant.ITEM_POS_NO_EQUIPED, new Stats(false, null), new ArrayList<>(), new HashMap<>(), Dopeul.generateStatsTrousseau(), 0);
-        } else if (getType() == Constant.ITEM_TYPE_FAMILIER) {
-            String jet = World.world.getPets(this.getId()).getJet();
-            Stats stats =  useMax ? generateNewStatsFromTemplate(jet, true) : new Stats(false, null);
+        try {
+            GameObject item;
+            if (getType() == Constant.ITEM_TYPE_QUETES && (Constant.isCertificatDopeuls(getId()) || getId() == 6653 || getId() == 12803 )) {
+                Map<Integer, String> txtStat = new HashMap<>();
+                txtStat.put(Constant.STATS_DATE, System.currentTimeMillis() + "");
+                item = new GameObject(-1, getId(), qua, Constant.ITEM_POS_NO_EQUIPED, new Stats(false, null), new ArrayList<>(), new HashMap<>(), txtStat, 0);
+            } else if (this.getId() == 10207) {
+                item = new GameObject(-1, getId(), qua, Constant.ITEM_POS_NO_EQUIPED, new Stats(false, null), new ArrayList<>(), new HashMap<>(), Dopeul.generateStatsTrousseau(), 0);
+            } else if (getType() == Constant.ITEM_TYPE_FAMILIER) {
+                String jet = World.world.getPets(this.getId()).getJet();
+                Stats stats = useMax ? generateNewStatsFromTemplate(jet, true) : new Stats(false, null);
 
-            item = new GameObject(-1, getId(), 1, Constant.ITEM_POS_NO_EQUIPED, stats, new ArrayList<>(), new HashMap<>(), World.world.getPets(getId()).generateNewtxtStatsForPets(), 0);
-            if(((ObjectData) DatabaseManager.get(ObjectData.class)).insert(item)) {
-                PetEntry pet = new PetEntry(item.getGuid(), getId(), System.currentTimeMillis(), 0, 10, 0, false);
-                World.world.addPetsEntry(pet);
-                ((PetData) DatabaseManager.get(PetData.class)).insert(pet);
-                return item;
-            }
-            return null;
-        } else if(getType() == Constant.ITEM_TYPE_CERTIF_MONTURE) {
-            item = new GameObject(-1, getId(), qua, Constant.ITEM_POS_NO_EQUIPED, generateNewStatsFromTemplate(getStrTemplate(), useMax), getEffectTemplate(getStrTemplate()), new HashMap<>(), new HashMap<>(), 0);
-        } else {
-            if (getType() == Constant.ITEM_TYPE_OBJET_ELEVAGE) {
-                item = new GameObject(-1, getId(), qua, Constant.ITEM_POS_NO_EQUIPED, new Stats(false, null), new ArrayList<>(), new HashMap<>(), getStringResistance(getStrTemplate()), 0);
-            } else if (Constant.isIncarnationWeapon(getId())) {
-                Map<Integer, Integer> Stats = new HashMap<>();
-                Stats.put(Constant.ERR_STATS_XP, 0);
-                Stats.put(Constant.STATS_NIVEAU, 1);
-                item = new GameObject(-1, getId(), qua, Constant.ITEM_POS_NO_EQUIPED, generateNewStatsFromTemplate(getStrTemplate(), useMax), getEffectTemplate(getStrTemplate()), Stats, new HashMap<>(), 0);
-            } else {
-                Map<Integer, String> Stat = new HashMap<>();
-                switch (getType()) {
-                    case 1:
-                    case 2:
-                    case 3:
-                    case 4:
-                    case 5:
-                    case 6:
-                    case 7:
-                    case 8:
-                        if(getStrTemplate() == null || getStrTemplate().equalsIgnoreCase("") ||getStrTemplate().length() <= 1)
-                            break;
-                        for (String stat : this.getStrTemplate().split(",")) {
-                            String[] stats = stat.split("#");
-                            int id = Integer.parseInt(stats[0], 16);
-                            if (id == Constant.STATS_RESIST) Stat.put(id, stats[1]);
-                        }
-                        break;
+                item = new GameObject(-1, getId(), 1, Constant.ITEM_POS_NO_EQUIPED, stats, new ArrayList<>(), new HashMap<>(), World.world.getPets(getId()).generateNewtxtStatsForPets(), 0);
+                if (((ObjectData) DatabaseManager.get(ObjectData.class)).insert(item)) {
+                    PetEntry pet = new PetEntry(item.getGuid(), getId(), System.currentTimeMillis(), 0, 10, 0, false);
+                    World.world.addPetsEntry(pet);
+                    ((PetData) DatabaseManager.get(PetData.class)).insert(pet);
+                    return item;
                 }
-                item = new GameObject(-1, getId(), qua, Constant.ITEM_POS_NO_EQUIPED, generateNewStatsFromTemplate(getStrTemplate(), useMax), getEffectTemplate(getStrTemplate()), new HashMap<>(), Stat, 0);
-                item.getSpellStats().addAll(this.getSpellStatsTemplate());
+                return null;
+            } else if (getType() == Constant.ITEM_TYPE_CERTIF_MONTURE) {
+                item = new GameObject(-1, getId(), qua, Constant.ITEM_POS_NO_EQUIPED, generateNewStatsFromTemplate(getStrTemplate(), useMax), getEffectTemplate(getStrTemplate()), new HashMap<>(), new HashMap<>(), 0);
+            } else {
+                if (getType() == Constant.ITEM_TYPE_OBJET_ELEVAGE) {
+                    item = new GameObject(-1, getId(), qua, Constant.ITEM_POS_NO_EQUIPED, new Stats(false, null), new ArrayList<>(), new HashMap<>(), getStringResistance(getStrTemplate()), 0);
+                } else if (Constant.isGladiatroolWeapon(getId())) {
+                    Map<Integer, String> Stats = new HashMap<>();
+                    Stats.put(Constant.STATS_EXCHANGE_IN, -1+"");
+                    Stats.put(Constant.STATS_NIVEAU2, 1+"");
+                    item = new GameObject(-1, getId(), qua, 1, generateNewStatsFromTemplate(getStrTemplate(), useMax), getEffectTemplate(getStrTemplate()),new HashMap<>() , Stats, 0);
+                } else if (getId()==16001) {
+                    Map<Integer, String> Stats = new HashMap<>();
+                    Stats.put(Constant.STATS_EXCHANGE_IN, -1+"");
+                    item = new GameObject(id, getId(), qua, Constant.ITEM_POS_NO_EQUIPED, new Stats(), new ArrayList<SpellEffect>(), new HashMap<Integer, Integer>(), Stats, 0);
+                }
+                else {
+                    Map<Integer, String> Stat = new HashMap<>();
+                    switch (getType()) {
+                        case 1:
+                        case 2:
+                        case 3:
+                        case 4:
+                        case 5:
+                        case 6:
+                        case 7:
+                        case 8:
+                            if (getStrTemplate() == null || getStrTemplate().equalsIgnoreCase("") || getStrTemplate().length() <= 1)
+                                break;
+                            for (String stat : this.getStrTemplate().split(",")) {
+                                if(!(stat == null || stat.length() == 0)) {
+                                    String[] stats = stat.split("#");
+                                    int id = Integer.parseInt(stats[0], 16);
+                                    if (id == Constant.STATS_RESIST) Stat.put(id, stats[1]);
+                                    if (id == Constant.STATS_EXCHANGE_IN) Stat.put(id, stats[1]);
+                                }
+                            }
+                            break;
+                    }
+                    item = new GameObject(-1, getId(), qua, Constant.ITEM_POS_NO_EQUIPED, generateNewStatsFromTemplate(getStrTemplate(), useMax), getEffectTemplate(getStrTemplate()), new HashMap<>(), Stat, 0);
+                    item.getSpellStats().addAll(this.getSpellStatsTemplate());
+                }
             }
+            if (((ObjectData) DatabaseManager.get(ObjectData.class)).insert(item))
+                return item;
+
         }
-        if(((ObjectData) DatabaseManager.get(ObjectData.class)).insert(item))
-            return item;
+        catch (Exception e){
+            e.printStackTrace();
+        }
         return null;
     }
 
@@ -511,56 +557,60 @@ public class ObjectTemplate {
 
         String[] splitted = statsTemplate.split(",");
         for (String s : splitted) {
-            String[] stats = s.split("#");
-            int statID = Integer.parseInt(stats[0], 16);
-            boolean follow = true;
+            if(!(s == null || s.length() == 0)) {
+                String[] stats = s.split("#");
+                int statID = Integer.parseInt(stats[0], 16);
+                boolean follow = true;
 
-
-            for (int a : Constant.ARMES_EFFECT_IDS)
-                if (a == statID)
-                    follow = false;
-            if (!follow)//Si c'�tait un effet Actif d'arme
-                continue;
-            if (statID >= 281 && statID <= 294)
-                continue;
-            if (statID == Constant.STATS_RESIST)
-                continue;
-            boolean isStatsInvalid = false;
-            switch (statID) {
-                case 110:
-                case 139:
-                case 605:
-                case 614:
-                    isStatsInvalid = true;
-                    break;
-                case 615:
-                    itemStats.addOneStat(statID, Integer.parseInt(stats[3], 16));
-                    break;
-            }
-            if (isStatsInvalid)
-                continue;
-            String jet = "";
-            int value = 1;
-            try {
-                jet = stats[4];
-                value = Formulas.getRandomJet(null, null, jet);
-                if (useMax) {
-                    try {
-                        //on prend le jet max
-                        int min = Integer.parseInt(stats[1], 16);
-                        int max = Integer.parseInt(stats[2], 16);
-                        value = min;
-                        if (max != 0)
-                            value = max;
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        value = Formulas.getRandomJet(null, null, jet);
-                    }
+                if(ArrayUtils.contains(Constant.ARMES_EFFECT_IDS, statID))
+                    continue; //Si c'�tait un effet Actif d'arme
+                if (statID >= 281 && statID <= 294)
+                    continue;
+                if (statID == Constant.STATS_RESIST)
+                    continue;
+                boolean isStatsInvalid = false;
+                switch (statID) {
+                    case 110:
+                    case 139:
+                    case 605:
+                    case 614:
+                    case Constant.STATS_EXCHANGE_IN:
+                        isStatsInvalid = true;
+                        break;
+                    case 615:
+                        itemStats.addOneStat(statID, Integer.parseInt(stats[3], 16));
+                        break;
                 }
-            } catch (Exception e) {
-               System.err.println(statsTemplate + " : " + s + " : " + e.getMessage());
+                if (isStatsInvalid)
+                    continue;
+                String jet = "";
+                int value = 1;
+                try {
+                    jet = stats[4];
+                    value = Formulas.getRandomJet(null, null, jet);
+                    if (useMax) {
+                        try {
+                            //on prend le jet max
+                            int min = Integer.parseInt(stats[1], 16);
+                            int max = 0;
+                            try {
+                                max = Integer.parseInt(stats[2], 16);
+                            }
+                            catch(Exception e){}
+                            value = min;
+                            if (max != 0)
+                                value = max;
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            value = Formulas.getRandomJet(null, null, jet);
+                        }
+                    }
+                } catch (Exception e) {
+                    System.err.println(statsTemplate + " : " + s + " : " + e.getMessage());
+                }
+
+                itemStats.addOneStat(statID, value);
             }
-            itemStats.addOneStat(statID, value);
         }
         return itemStats;
     }
@@ -572,6 +622,9 @@ public class ObjectTemplate {
 
         String[] splitted = statsTemplate.split(",");
         for (String s : splitted) {
+            if(s == ""){
+                continue;
+            }
             String[] stats = s.split("#");
             int statID = Integer.parseInt(stats[0], 16);
             for (int a : Constant.ARMES_EFFECT_IDS) {
@@ -600,7 +653,12 @@ public class ObjectTemplate {
     }
 
     public String parseItemTemplateStats() {
-        return getId() + ";" + getStrTemplate() + (this.newPrice > 0 ? ";" + this.newPrice : "");
+        if(this.money == -1) {
+            return getId() + ";" + getStrTemplate() + (this.newPrice > 0 ? ";" + this.newPrice : "");
+        }
+        else{
+            return getId() + ";" + getStrTemplate() + ";" + this.money + ";" + (this.newPrice > 0 ? ";" + this.newPrice : "") +";;";
+        }
     }
 
     public void applyAction(Player player, Player target, int objectId, short cellId, int quantity) {
@@ -667,21 +725,4 @@ public class ObjectTemplate {
         }
         return !bannedObjects.contains(this.getId());
     }
-
-    public int getMoney() {
-        return money;
-    }
-
-    public void setMoney(int id) {
-        this.money = id;
-    }
-
-    public int getNewPrice() {
-        return newPrice;
-    }
-
-    public void setNewPrice(int id) {
-        this.newPrice = id;
-    }
-
 }

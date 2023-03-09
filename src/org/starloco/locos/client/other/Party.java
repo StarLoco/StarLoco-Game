@@ -89,7 +89,7 @@ public class Party {
 
                         if (lastCell != null) {
                             if (tp) {
-                                follower.teleport(this.master.getCurMap(), this.master.getCurCell().getId());
+                                follower.teleport(this.master.getCurMap().getId(), this.master.getCurCell().getId());
                             } else {
                                 String path = PathFinding.getShortestStringPathBetween(this.master.getCurMap(), follower.getCurCell().getId(), lastCell.getId(), 0);
 

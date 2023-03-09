@@ -2,12 +2,14 @@ package org.starloco.locos.game.world;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
+import org.apache.commons.lang.ArrayUtils;
 import org.slf4j.LoggerFactory;
 import org.starloco.locos.area.Area;
 import org.starloco.locos.area.SubArea;
 import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.area.map.entity.*;
 import org.starloco.locos.area.map.entity.InteractiveObject.InteractiveObjectTemplate;
+import org.starloco.locos.area.map.labyrinth.Gladiatrool;
 import org.starloco.locos.area.map.labyrinth.Minotoror;
 import org.starloco.locos.area.map.labyrinth.PigDragon;
 import org.starloco.locos.client.Account;
@@ -194,15 +196,66 @@ public class World {
     }
     //endregion
 
+    public ArrayList<Monster.MobGrade> getMobgradeBetweenLvl(int min, int max){
+        ArrayList<Monster> arrayMonstre = new ArrayList<>();
+        ArrayList<Monster.MobGrade> arrayMobgrade = new ArrayList<>();
+        getMonstres().stream().filter(monster -> monster != null && !(ArrayUtils.contains(Constant.FILTER_MONSTRE_SPE, monster.getType())) && !(monster.getGrade(1).getSpells().keySet().isEmpty()) && (monster.getAlign() == -1)
+                && !(ArrayUtils.contains(Constant.BOSS_ID, monster.getId())) && !(ArrayUtils.contains(Constant.EXCEPTION_GLADIATROOL_MONSTRES, monster.getId())) && (getLvlMax(monster) >= min && getLvlMax(monster) < max)).forEach(arrayMonstre::add);
+
+        for(Monster mob : arrayMonstre){
+            arrayMobgrade.add(mob.getGrade(5));
+        }
+        return arrayMobgrade;
+    }
+
+    public ArrayList<Monster.MobGrade> getArchiMobgradeBetweenLvl(int min, int max){
+        ArrayList<Monster> arrayMonstre = new ArrayList<>();
+        ArrayList<Monster.MobGrade> arrayMobgrade = new ArrayList<>();
+        getMonstres().stream().filter(monster -> monster != null && (ArrayUtils.contains(Constant.MONSTRE_TYPE_ARCHI, monster.getType())) && !(ArrayUtils.contains(Constant.EXCEPTION_GLADIATROOL_ARCHI, monster.getId())) && !(monster.getGrade(1).getSpells().keySet().isEmpty())
+                && (getLvlMax(monster) >= min && getLvlMax(monster) < max)).forEach(arrayMonstre::add);
+
+        for(Monster mob : arrayMonstre){
+            arrayMobgrade.add(mob.getGrade(5));
+        }
+        return arrayMobgrade;
+    }
+
+    public ArrayList<Monster.MobGrade> getBossMobgradeBetweenLvl(int min, int max){
+        ArrayList<Monster> arrayMonstre = new ArrayList<>();
+        ArrayList<Monster.MobGrade> arrayMobgrade = new ArrayList<>();
+        getMonstres().stream().filter(monster -> monster != null && (ArrayUtils.contains(Constant.BOSS_ID, monster.getId())) && !(ArrayUtils.contains(Constant.EXCEPTION_GLADIATROOL_BOSS, monster.getId())) && !(monster.getGrade(1).getSpells().keySet().isEmpty()) && (monster.getAlign() == -1)
+                 && (getLvlMax(monster) >= min && getLvlMax(monster) < max)).forEach(arrayMonstre::add);
+
+        for(Monster mob : arrayMonstre){
+            arrayMobgrade.add(mob.getGrade(5));
+        }
+        return arrayMobgrade;
+    }
+
+    public int getLvlMoyenMonstre(Monster monstre){
+        int levelmoyen = monstre.getGrade(3).getLevel();
+        return levelmoyen;
+    }
+
+    public int getLvlMin(Monster monstre){
+        int levelmoyen = monstre.getGrade(1).getLevel();
+        return levelmoyen;
+    }
+
+    public int getLvlMax(Monster monstre){
+        int levelmoyen = monstre.getGrade(5).getLevel();
+        return levelmoyen;
+    }
+
     //region Objects data
     public CopyOnWriteArrayList<GameObject> getGameObjects() {
         return new CopyOnWriteArrayList<>(objects.values());
     }
 
     public void addGameObject(GameObject gameObject) {
-        if (gameObject != null && !this.objects.containsKey(gameObject.getGuid())) {
-            objects.put(gameObject.getGuid(), gameObject);
-        }
+            if (gameObject != null && !this.objects.containsKey(gameObject.getGuid())) {
+                objects.put(gameObject.getGuid(), gameObject);
+            }
     }
 
     public GameObject getGameObject(int id) {
@@ -360,7 +413,12 @@ public class World {
         DatabaseManager.get(ObjectSetData.class).loadFully();
         logger.debug("The panoplies were loaded successfully.");
 
-        DatabaseManager.get(MapData.class).loadFully();
+        try {
+            DatabaseManager.get(MapData.class).loadFully();
+        }
+        catch (Exception e){
+            System.out.println(e);
+        }
         logger.debug("The maps were loaded successfully.");
 
         DatabaseManager.get(ScriptedCellData.class).loadFully();
@@ -453,6 +511,8 @@ public class World {
         PigDragon.initialize();
         logger.debug("Initialization of the dungeons : Labyrinth of the Minotoror.");
         Minotoror.initialize();
+        logger.debug("Initialization of the dungeons : Gladiatrool.");
+        Gladiatrool.initialize();
 
         // Load auction
         DatabaseManager.get(AuctionData.class).loadFully();
@@ -918,6 +978,31 @@ public class World {
             fullmorphs.get(morphID).put("initiative", args[9]);
             fullmorphs.get(morphID).put("stats", args[10]);
             fullmorphs.get(morphID).put("donjon", args[11]);
+            if(morphID > 100){
+                fullmorphs.get(morphID).put("do", args[12]);
+                fullmorphs.get(morphID).put("doper", args[13]);
+                fullmorphs.get(morphID).put("invo", args[14]);
+                fullmorphs.get(morphID).put("esPA", args[15]);
+                fullmorphs.get(morphID).put("esPM", args[16]);
+                fullmorphs.get(morphID).put("resiNeu", args[17]);
+                fullmorphs.get(morphID).put("resiTer", args[18]);
+                fullmorphs.get(morphID).put("resiFeu", args[19]);
+                fullmorphs.get(morphID).put("resiEau", args[20]);
+                fullmorphs.get(morphID).put("resiAir", args[21]);
+                fullmorphs.get(morphID).put("PO", args[22]);
+                fullmorphs.get(morphID).put("soin", args[23]);
+                fullmorphs.get(morphID).put("crit", args[24]);
+                fullmorphs.get(morphID).put("rfixNeu", "0");
+                fullmorphs.get(morphID).put("rfixTer", "0");
+                fullmorphs.get(morphID).put("rfixFeu", "0");
+                fullmorphs.get(morphID).put("rfixEau", "0");
+                fullmorphs.get(morphID).put("rfixAir", "0");
+                fullmorphs.get(morphID).put("renvoie", "0");
+                fullmorphs.get(morphID).put("dotrap", "0");
+                fullmorphs.get(morphID).put("perdotrap", "0");
+                fullmorphs.get(morphID).put("dophysique", "0");
+
+            }
         }
     }
 

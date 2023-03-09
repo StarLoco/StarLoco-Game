@@ -5,7 +5,7 @@ import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.area.map.labyrinth.Minotoror;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.common.SocketManager;
-import org.starloco.locos.entity.monster.MonsterGroup;
+import org.starloco.locos.entity.monster.Monster;
 import org.starloco.locos.game.scheduler.Updatable;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.job.JobConstant;
@@ -124,7 +124,7 @@ public class InteractiveObject {
                 break;
 
             case 1330://Pierre de kwak
-                player.getCurMap().startFightVersusProtectors(player, new MonsterGroup(player.getCurMap().nextObjectId, player.getCurMap(), cell.getId(), getKwakere(player.getCurMap().getId())
+                player.getCurMap().startFightVersusProtectors(player, new Monster.MobGroup(player.getCurMap().nextObjectId, player.getCurMap(), cell.getId(), getKwakere(player.getCurMap().getId())
                         + "," + 40 + "," + 40));
                 break;
 

@@ -6,7 +6,6 @@ import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.fight.Fight;
 import org.starloco.locos.fight.Fighter;
-import org.starloco.locos.fight.spells.ResEffectInfo;
 import org.starloco.locos.fight.spells.SpellEffect;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.game.world.World.Couple;
@@ -39,6 +38,24 @@ public class Formulas {
             ar[i] = a;
         }
         return ar;
+    }
+
+    public static int[] getRandomsInt(int[] table,int nb)
+    {
+        int[] randomInts = new int[nb];
+        Random random = new Random();
+
+        // Shuffle the array using Fisher-Yates algorithm
+        for (int i = table.length - 1; i >= 1; i--) {
+            int j = random.nextInt(i + 1);
+            int temp = table[j];
+            table[j] = table[i];
+            table[i] = temp;
+        }
+
+        // Copy the first 7 elements of the shuffled array to the randomInts array
+        System.arraycopy(table, 0, randomInts, 0, nb);
+        return randomInts;
     }
 
     public static int countCell(int i) {
@@ -438,12 +455,7 @@ public class Formulas {
             a = (((100 + i) / 100) * (j / 100));
         }
 
-        int perdomT = 0;
-        if(target.hasBuff(Constant.STATS_REM_PERDOM)) {
-            perdomT = target.getTotalStats().getEffect(Constant.STATS_REM_PERDOM);
-        }
-
-        num = a * mulT * (jet * ((100 + statC + perdomC - perdomT + (multiplier * 100)) / 100)) + domC;//d�gats bruts
+        num = a * mulT * (jet * ((100 + statC + perdomC + (multiplier * 100)) / 100)) + domC;//d�gats bruts
         //Poisons
         if (spellid != -1) {
             switch (spellid) {
@@ -546,28 +558,7 @@ public class Formulas {
                 10 * (Math.abs(map2.getX() - map1.getX()) + Math.abs(map2.getY() - map1.getY()) - 1);
     }
 
-    public static int applyResistancesOnDamage(int elementID, int damage, Fighter target, boolean addPVPRes) {
-        ResEffectInfo resInfo = ResEffectInfo.forElement(elementID);
-
-        int resF = target.getTotalStats().getEffect(resInfo.getFixedElem()) + target.getTotalStats().getEffect(resInfo.getFixed());
-        int resP = target.getTotalStats().getEffect(resInfo.getPercentElem());
-
-        if (addPVPRes) {
-            resF += target.getTotalStats().get(resInfo.getFixedElemPvP());
-            resP += target.getTotalStats().get(resInfo.getPercentElemPvP());
-        }
-
-        if (target.getPlayer() != null) {
-            // CAP 50% Players
-            resP = Math.min(resP, 50);
-        }
-        // Apply to damage
-        damage -= resF;
-        damage *= (1 - resP / 100D);
-        return damage;
-    }
-
-    public static int getArmorResist(Fighter target, int statID) {
+    private static int getArmorResist(Fighter target, int statID) {
         int armor = 0;
         for (SpellEffect SE : target.getBuffsByEffectID(265)) {
             Fighter fighter;

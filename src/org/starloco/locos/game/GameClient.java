@@ -6,6 +6,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
 
+import org.starloco.locos.object.ShopObject;
 import org.starloco.locos.util.Pair;
 import org.apache.mina.core.session.IoSession;
 import org.starloco.locos.area.Area;
@@ -76,7 +77,7 @@ import org.starloco.locos.other.Dopeul;
 import org.starloco.locos.quest.Quest;
 import org.starloco.locos.quest.QuestPlayer;
 import org.starloco.locos.quest.QuestObjective;
-import org.starloco.locos.util.generator.NameGenerator;
+import org.starloco.locos.util.NameGenerator;
 import org.starloco.locos.util.TimerWaiter;
 
 public class GameClient {
@@ -122,6 +123,10 @@ public class GameClient {
 
         if (packet.length() > 3 && packet.substring(0, 4).equalsIgnoreCase("ping")) {
             SocketManager.GAME_SEND_PONG(this);
+            return;
+        }
+        if (packet.length() > 4 && packet.substring(0, 5).equalsIgnoreCase("qping")) {
+            SocketManager.GAME_SEND_QPONG(this);
             return;
         }
         if(Logging.USE_LOG) {
@@ -189,6 +194,9 @@ public class GameClient {
             case 'h':
                 parseHousePacket(packet);
                 break;
+            case 'H':
+                parseDeconnectionPacket(packet);
+                break;
             case 'i':
                 parseEnemyPacket(packet);
                 break;
@@ -219,12 +227,51 @@ public class GameClient {
             case 'W':
                 parseWaypointPacket(packet);
                 break;
+            case 'w':
+                parseGladiatroolPacket(packet);
+                break;
             default:
                 if(this.player != null)
                     if(this.player.isChangeName())
                         this.changeName(packet);                
                 break;
         }
+    }
+
+    private void parseDeconnectionPacket(String packet) {
+        switch (packet.charAt(1)) {
+            case 'S':
+                Deconnection();
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void Deconnection() {
+        //TODO : Faut géré ce cas de changement de perso en version 1.39.8
+
+    }
+
+
+    private void parseGladiatroolPacket(String packet) {
+       switch (packet.charAt(1)) {
+           case 'c':
+             createTonique(packet);
+             break;
+           default:
+               break;
+       }
+
+    }
+
+    private void createTonique(String packet) {
+        int ToniqueChoosedPos = Integer.parseInt(packet.substring(2));
+        int ToniqueTemplateID = this.player.LastTonicProposed[ToniqueChoosedPos];
+        int palier = Constant.getPalierByNewMap(this.player.getCurMap().getId());
+        int toniquePos = (Constant.ITEM_POS_TONIQUE_EQUILIBRAGE-1) + palier;
+        String StatsToadd = Constant.getStatStringbyPalier(palier);
+        this.player.setTonique(ToniqueTemplateID,toniquePos,StatsToadd);
     }
 
     /**
@@ -294,6 +341,37 @@ public class GameClient {
             }
         }
     }
+
+    public void onMovementItemClass(final GameObject object, final int position)
+    {
+
+        final ObjectTemplate objTemplate = object.getTemplate();
+        if(object.getSortStats().isEmpty()) return;
+
+
+        if (position != Constant.ITEM_POS_NO_EQUIPED) {
+            for (final String stat : object.getSortStats()) {
+                final String[] val = stat.split("#");
+                final int effect = Integer.parseInt(val[0], 16);
+                final int spell = Integer.parseInt(val[1], 16);
+                final int modif = Integer.parseInt(val[3], 16);
+                final String modifi = effect + ";" + spell + ";" + modif;
+                SocketManager.SEND_SB_SPELL_BOOST(this.player, modifi);
+                this.player.addItemClasseSpell(spell, effect, modif);
+            }
+            this.player.addItemClasse(objTemplate.getId());
+        }
+        else{
+            for (final String stat : object.getSortStats()) {
+                final String[] val = stat.split("#");
+                final String modifi = Integer.parseInt(val[0], 16) + ";" + Integer.parseInt(val[1], 16) + ";0";
+                SocketManager.SEND_SB_SPELL_BOOST(this.player, modifi);
+                this.player.removeItemClasseSpell(Integer.parseInt(val[1], 16));
+            }
+            this.player.removeItemClasse(objTemplate.getId());
+        }
+    }
+
 
     private void createMimibiote(String packet)
     {
@@ -1738,17 +1816,34 @@ public class GameClient {
                     int price = template.getPrice() * qua;
                     if (price < 0) return;
 
-                    if (this.player.getKamas() < price) {
-                        SocketManager.GAME_SEND_BUY_ERROR_PACKET(this);
-                        return;
-                    }
+                    if(template.getMoney() == -1) {
+                        if (this.player.getKamas() < price) {
+                            SocketManager.GAME_SEND_BUY_ERROR_PACKET(this);
+                            return;
+                        }
 
-                    object = template.createNewItem(qua, (npcTemplate.getInformations() & 0x1) == 1);
-                    
-                    this.player.setKamas(this.player.getKamas() - price);
-                    if (this.player.addObjet(object, true)) World.world.addGameObject(object);
-                    if (attachObject) object.attachToPlayer(this.player);
-                    SocketManager.GAME_SEND_BUY_OK_PACKET(this);
+                        object = template.createNewItem(qua, (npcTemplate.getInformations() & 0x1) == 1);
+
+                        this.player.setKamas(this.player.getKamas() - price);
+                        if (this.player.addObjet(object, true)) World.world.addGameObject(object);
+                        if (attachObject) object.attachToPlayer(this.player);
+                        SocketManager.GAME_SEND_BUY_OK_PACKET(this);
+
+                    }
+                    else{
+                        price = template.getNewPrice() * qua;
+                        if (!this.player.hasItemTemplate(template.getMoney(),price,false)) {
+                            SocketManager.GAME_SEND_BUY_ERROR_PACKET(this);
+                            return;
+                        }
+
+                        object = template.createNewItem(qua, (npcTemplate.getInformations() & 0x1) == 1);
+
+                        this.player.removeByTemplateID(template.getMoney(),price);
+                        if (this.player.addObjet(object, true)) World.world.addGameObject(object);
+                        if (attachObject) object.attachToPlayer(this.player);
+                        SocketManager.GAME_SEND_BUY_OK_PACKET(this);
+                    }
                     SocketManager.GAME_SEND_STATS_PACKET(this.player);
                     SocketManager.GAME_SEND_Ow_PACKET(this.player);
                 }
@@ -2550,7 +2645,6 @@ public class GameClient {
                     }
                 }
                 break;
-
             case ExchangeAction.IN_BANK:
                 switch (packet.charAt(2)) {
                     case 'G'://Kamas
@@ -5823,7 +5917,7 @@ public class GameClient {
         }
     }
 
-    private void destroyObject(String packet) {
+    public void destroyObject(String packet) {
 
         String[] infos = packet.substring(2).split("\\|");
         try {
@@ -5834,13 +5928,45 @@ public class GameClient {
             } catch (Exception ignored) {}
 
             GameObject obj = this.player.getItems().get(guid);
+
             if (obj == null || !this.player.hasItemGuid(guid) || qua <= 0
                     || this.player.getFight() != null || this.player.isAway()) {
                 //SocketManager.GAME_SEND_DELETE_OBJECT_FAILED_PACKET(this);
                 return;
             }
-            if (obj.getPosition() != Constant.ITEM_POS_NO_EQUIPED)
-                return;
+            if (obj.getPosition() != Constant.ITEM_POS_NO_EQUIPED){
+                int idSetExObj = obj.getTemplate().getPanoId();
+                GameObject obj2;
+                ObjectTemplate exObjTpl = obj.getTemplate();
+                if ((obj2 = player.getSimilarItem(obj)) != null)//On le poss?de deja
+                {
+                    obj2.setQuantity(obj2.getQuantity()
+                            + obj.getQuantity());
+                    SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(player, obj2);
+                    World.world.removeGameObject(obj.getGuid());
+                    player.removeItem(obj.getGuid());
+                    SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(player, obj.getGuid());
+                } else
+                //On ne le poss?de pas
+                {
+                    obj.setPosition(Constant.ITEM_POS_NO_EQUIPED);
+                    if ((idSetExObj >= 81 && idSetExObj <= 92)
+                            || (idSetExObj >= 201 && idSetExObj <= 212)) {
+                        String[] stats = exObjTpl.getStrTemplate().split(",");
+                        for (String stat : stats) {
+                            String[] val = stat.split("#");
+                            String modifi = Integer.parseInt(val[0], 16)
+                                    + ";" + Integer.parseInt(val[1], 16)
+                                    + ";0";
+                            SocketManager.SEND_SB_SPELL_BOOST(player, modifi);
+                            player.removeObjectClassSpell(Integer.parseInt(val[1], 16));
+                        }
+                        player.removeObjectClass(exObjTpl.getId());
+                    }
+                    SocketManager.GAME_SEND_OBJET_MOVE_PACKET(player, obj);
+                }
+            }
+
             if (qua > obj.getQuantity())
                 qua = obj.getQuantity();
             int newQua = obj.getQuantity() - qua;
@@ -6257,8 +6383,41 @@ public class GameClient {
                         case 10127: // Bandit Baroudeur
                             this.player.setFullMorph(8, false, false);
                             break;
-                        case 10133: // Bandit Ensorcelleur
-                            this.player.setFullMorph(9, false, false);
+                        case 12782: // Feca
+                            this.player.setFullMorph(101, false, false);
+                            break;
+                        case 12783: // Osa
+                            this.player.setFullMorph(102, false, false);
+                            break;
+                        case 12784: // Enu
+                            this.player.setFullMorph(103, false, false);
+                            break;
+                        case 12785: // Sram
+                            this.player.setFullMorph(104, false, false);
+                            break;
+                        case 12786: // Xelor
+                            this.player.setFullMorph(105, false, false);
+                            break;
+                        case 12787: // Eca
+                            this.player.setFullMorph(106, false, false);
+                            break;
+                        case 12788: // Eni
+                            this.player.setFullMorph(107, false, false);
+                            break;
+                        case 12789: // Iop
+                            this.player.setFullMorph(108, false, false);
+                            break;
+                        case 12790: // Cra
+                            this.player.setFullMorph(109, false, false);
+                            break;
+                        case 12791: // Sadi
+                            this.player.setFullMorph(110, false, false);
+                            break;
+                        case 12792: // Sacri
+                            this.player.setFullMorph(111, false, false);
+                            break;
+                        case 12793: // Pandawa
+                            this.player.setFullMorph(112, false, false);
                             break;
                     }
                 } else {// Tourmenteur ; on d?morphe
@@ -6349,7 +6508,7 @@ public class GameClient {
                 target.setPdvMax(this.player.getMaxPdv());
                 SocketManager.GAME_SEND_STATS_PACKET(this.player);
             }
-
+            this.onMovementItemClass(object, position);
             this.player.verifEquiped();
             ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this.player);
         } catch (Exception e) {
@@ -6394,6 +6553,11 @@ public class GameClient {
         if (obj == null)
             return;
         ObjectTemplate T = obj.getTemplate();
+        if (T.getId() == 4) {
+            this.send("AEi");
+            return;
+        }
+
         if (T.getLevel() > this.player.getLevel() || (!obj.getTemplate().getConditions().equalsIgnoreCase("") && !World.world.getConditionManager().validConditions(this.player, obj.getTemplate().getConditions()))) {
             SocketManager.GAME_SEND_Im_PACKET(this.player, "119|43");
             return;
@@ -7048,7 +7212,7 @@ public class GameClient {
             int Position = Integer.parseInt(packet.substring(2).split("\\|")[1]);
             Spell.SortStats Spell = this.player.getSortStatBySortIfHas(SpellID);
             if (Spell != null) {
-                this.player.set_SpellPlace(SpellID, World.world.getCryptManager().getHashedValueByInt(Position));
+                this.player.set_SpellPlace(SpellID, Integer.toHexString(Position));
             }
             SocketManager.GAME_SEND_BN(this);
         } catch (Exception e) {

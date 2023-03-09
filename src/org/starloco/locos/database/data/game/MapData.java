@@ -41,6 +41,11 @@ public class MapData extends FunctionDAO<GameMap> {
                 }
             }
         } catch (SQLException e) {
+            try {
+                System.out.println(result.getShort("id"));
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
             super.sendError(e);
         } finally {
             close(result);

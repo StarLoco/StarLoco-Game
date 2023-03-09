@@ -175,6 +175,10 @@ object.objectaction.apply.prisme.error.area: "L'alignment de cette sous-zone est
 other.action.restat.carac: "Tu ne possèdes pas l'orbe reconstituant."
 other.action.restat.carac.secondskill: "Tu ne peux pas restaurer t'es caractéristiques avec se pouvoir. Tu ne possèdes pas de parchemins."
 other.action.restat.ok: "Tu viens de restaurer tes caractéristiques."
+other.action.apply.error.gladiatroll.join.min: "Il faut que tu attendes 1 minute avant de pouvoir te retransformer."
+other.action.apply.error.gladiatroll.join.mins: "Il faut que tu attendes 10 minutes avant de pouvoir relancer un gladiatrool."
+other.action.apply.error.gladiatroll.join.cac: "Il faut d'abord choisir une arme en se positionnant sur une dalle avant de rejoindre le Gladiatrool !"
+
 other.action.apply.error.dopeul: "Erreur de dopeul, veuillez nous avertir sur le forum."
 other.action.apply.error.dopeul.join.lvl: "Il faut être niveau 11 minimums pour combattre les dopeuls des temples."
 other.action.apply.error.dopeul.join.day: "Il faut que tu attendes 24 heures avant de pouvoir combattre ce dopeul."

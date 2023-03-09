@@ -24,7 +24,7 @@ import org.starloco.locos.database.data.login.PlayerData;
 import org.starloco.locos.dynamic.Start;
 import org.starloco.locos.entity.Collector;
 import org.starloco.locos.entity.Prism;
-import org.starloco.locos.entity.monster.MonsterGroup;
+import org.starloco.locos.entity.monster.Monster;
 import org.starloco.locos.entity.mount.Mount;
 import org.starloco.locos.entity.pet.Pet;
 import org.starloco.locos.entity.pet.PetEntry;
@@ -151,7 +151,7 @@ public class Player {
 
     //Sort
     private Map<Integer, Spell.SortStats> _sorts = new HashMap<Integer, Spell.SortStats>();
-    private Map<Integer, Character> _sortsPlaces = new HashMap<Integer, Character>();
+    private Map<Integer, String> _sortsPlaces = new HashMap<Integer, String>();
     //Titre
     private byte currentTitle = 0;
     //Mariage
@@ -170,7 +170,7 @@ public class Player {
     //Fight end
     private int hasEndFight = -1;
     private Action endFightAction;
-    private MonsterGroup hasMonsterGroup = null;
+    private Monster.MobGroup hasMobGroup = null;
     //Item classe
     private ArrayList<Integer> objectsClass = new ArrayList<Integer>();
     private Map<Integer, World.Couple<Integer, Integer>> objectsClassSpell = new HashMap<>();
@@ -188,7 +188,7 @@ public class Player {
     private boolean _morphMode = false;
     private int _morphId;
     private Map<Integer, Spell.SortStats> _saveSorts = new HashMap<Integer, Spell.SortStats>();
-    private Map<Integer, Character> _saveSortsPlaces = new HashMap<Integer, Character>();
+    private Map<Integer, String> _saveSortsPlaces = new HashMap<Integer, String>();
     private int _saveSpellPts;
     private int pa = 0,
             pm = 0,
@@ -221,6 +221,7 @@ public class Player {
 
     private String Savecolors;
     private String Savestats;
+    public int[] LastTonicProposed = new int[3];
     
     public ArrayList<Integer> getIsCraftingType() {
         return craftingType;
@@ -367,9 +368,15 @@ public class Player {
                     _storeItems.put(obj.getGuid(), price);
                 }
             }
-            this.maxPdv = (this.level - 1) * 5 + 55
-                    + getTotalStats(false).getEffect(Constant.STATS_ADD_VITA)
-                    + getTotalStats(false).getEffect(Constant.STATS_ADD_VIE);
+
+            if(Constant.isInGladiatorDonjon(this.curMap.getId()) || this.getCurMap().getId() == 12277){
+                this.maxPdv = getTotalStats(false).getEffect(Constant.STATS_ADD_VITA);
+            }
+            else {
+                this.maxPdv = (this.level - 1) * 5 + 55
+                        + getTotalStats(false).getEffect(Constant.STATS_ADD_VITA)
+                        + getTotalStats(false).getEffect(Constant.STATS_ADD_VIE);
+            }
             if (this.curPdv <= 0)
                 this.curPdv = 1;
             if (pdvPer > 100)
@@ -862,6 +869,42 @@ public class Player {
         ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this);
     }
 
+    public void setTonique(int id,int pos, String StatsToAdd) {
+        if (getObjetByPos(pos) != null) {
+            int guid = getObjetByPos(pos).getGuid();
+            SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(this, guid);
+            this.deleteItem(guid);
+        }
+
+        String StatsString =  World.world.getObjTemplate(id).getStrTemplate() + "," + StatsToAdd;
+        GameObject obj = World.world.getObjTemplate(id).createNewTonique(pos,StatsString);
+        this.addObjet(obj, false);
+        World.world.addGameObject(obj);
+        this.getGameClient().onMovementItemClass(obj, pos);
+        SocketManager.GAME_SEND_Ow_PACKET(this);
+        SocketManager.GAME_SEND_STATS_PACKET(this);
+        ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this);
+    }
+
+    public void setToniqueEquilibrage(Stats stats) {
+        GameObject obj = World.world.getObjTemplate(16268).createNewToniqueEquilibrage(stats);
+        this.addObjet(obj, false);
+        World.world.addGameObject(obj);
+        //SocketManager.GAME_SEND_Ow_PACKET(this);
+        //SocketManager.GAME_SEND_STATS_PACKET(this);
+        ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this);
+    }
+
+    public void removeTonique(int pos){
+        GameObject obj = getObjetByPos(pos);
+        if (obj != null) {
+            SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(this, obj.getGuid());
+            this.deleteItem(obj.getGuid());
+            ((ObjectData) DatabaseManager.get(ObjectData.class)).update(obj);
+            SocketManager.GAME_SEND_STATS_PACKET(this);
+        }
+    }
+
     public void calculTurnCandy() {
         GameObject obj = getObjetByPos(Constant.ITEM_POS_BONBON);
         if (obj != null) {
@@ -1055,7 +1098,7 @@ public class Player {
                     try {
                         int id = Integer.parseInt(e.split(";")[0]);
                         int lvl = Integer.parseInt(e.split(";")[1]);
-                        char place = e.split(";")[2].charAt(0);
+                        String place = e.split(";")[2];
                         learnSpell(id, lvl);
                         this._saveSortsPlaces.put(id, place);
                     } catch (NumberFormatException e1) {
@@ -1070,7 +1113,7 @@ public class Player {
                     try {
                         int id = Integer.parseInt(e.split(";")[0]);
                         int lvl = Integer.parseInt(e.split(";")[1]);
-                        char place = e.split(";")[2].charAt(0);
+                        String place = e.split(";")[2];
                         if (!_morphMode)
                             learnSpell(id, lvl, false, false, false);
                         else
@@ -1097,7 +1140,7 @@ public class Player {
             try {
                 int id = Integer.parseInt(e.split(";")[0]);
                 int lvl = Integer.parseInt(e.split(";")[1]);
-                char place = e.split(";")[2].charAt(0);
+                String place = e.split(";")[2];
                 if (!_morphMode)
                     learnSpell(id, lvl, false, false, false);
                 else
@@ -1107,6 +1150,27 @@ public class Player {
                 e1.printStackTrace();
             }
         }
+    }
+
+    private void parseSpellsFullMorph2(String str) {
+        String[] spells = str.split(",");
+        _sorts.clear();
+        _sortsPlaces.clear();
+        for (String e : spells) {
+            try {
+                int id = Integer.parseInt(e.split(";")[0]);
+                int lvl = Integer.parseInt(e.split(";")[1]);
+                String place = e.split(";")[2];
+                if (!_morphMode)
+                    learnSpell(id, lvl, false, false, false);
+                else
+                    learnSpell(id, lvl, false, false, false);
+                _sortsPlaces.put(id, place);
+            } catch (NumberFormatException e1) {
+                e1.printStackTrace();
+            }
+        }
+        SocketManager.GAME_SEND_SPELL_LIST(this);
     }
 
     public String getSavePosition() {
@@ -1295,7 +1359,7 @@ public class Player {
         SocketManager.GAME_SEND_SPELL_LIST(this);
     }
 
-    public void learnSpell(int spell, int level, char pos) {
+    public void learnSpell(int spell, int level, String pos) {
         if (World.world.getSort(spell).getStatsByLevel(level) == null) {
             GameServer.a();
             return;
@@ -1332,6 +1396,7 @@ public class Player {
             return true;
         }
     }
+
 
     public boolean learnSpell(int spellID, int level) {
         if (World.world.getSort(spellID).getStatsByLevel(level) == null) {
@@ -1495,10 +1560,17 @@ public class Player {
         _sortsPlaces.clear();
         _spellPts = 0;
 
+        if( 10 <= Integer.parseInt(fullMorph.get("gfxid")) && Integer.parseInt(fullMorph.get("gfxid")) <= 120) {
+            setGfxId(Integer.parseInt(fullMorph.get("gfxid"))+this.getSexe());
+        }
+        else{
+            setGfxId(Integer.parseInt(fullMorph.get("gfxid")));
+        }
 
-        setGfxId(Integer.parseInt(fullMorph.get("gfxid")));
         if (this.fight == null) SocketManager.GAME_SEND_ALTER_GM_PACKET(this.getCurMap(), this);
-        parseSpellsFullMorph(fullMorph.get("spells"));
+        SocketManager.GAME_SEND_UPDATE_OBJECT_DISPLAY_PACKET(this, this.getObjetByPos(Constant.ITEM_POS_ARME));
+        this.send("SLo-");
+        parseSpellsFullMorph2(fullMorph.get("spells"));
         setMorphId(morphid);
 
         if (this.getObjetByPos(Constant.ITEM_POS_ARME) != null)
@@ -1506,36 +1578,124 @@ public class Player {
                 for (int i = 0; i <= this.getObjetByPos(Constant.ITEM_POS_ARME).getSoulStat().get(Constant.STATS_NIVEAU); i++)
                     if (i == 10 || i == 20 || i == 30 || i == 40 || i == 50)
                         boostSpellIncarnation();
-        if (this.fight == null) {
-            SocketManager.GAME_SEND_ASK(this.getGameClient(), this);
+        if (this.fight == null && !Constant.isGladiatroolWeapon(this.getObjetByPos(Constant.ITEM_POS_ARME).getTemplate().getId())) {
             SocketManager.GAME_SEND_SPELL_LIST(this);
+            SocketManager.GAME_SEND_Ow_PACKET(this);
+            //SocketManager.GAME_SEND_ASK(this.getGameClient(), this);
         }
 
-
-        if (fullMorph.get("vie") != null) {
-            try {
-                this.maxPdv = Integer.parseInt(fullMorph.get("vie"));
-                this.setPdv(this.getMaxPdv());
-                this.pa = Integer.parseInt(fullMorph.get("pa"));
-                this.pm = Integer.parseInt(fullMorph.get("pm"));
-                this.vitalite = Integer.parseInt(fullMorph.get("vitalite"));
-                this.sagesse = Integer.parseInt(fullMorph.get("sagesse"));
-                this.terre = Integer.parseInt(fullMorph.get("terre"));
-                this.feu = Integer.parseInt(fullMorph.get("feu"));
-                this.eau = Integer.parseInt(fullMorph.get("eau"));
-                this.air = Integer.parseInt(fullMorph.get("air"));
-                this.initiative = Integer.parseInt(fullMorph.get("initiative")) + this.sagesse + this.terre + this.feu + this.eau + this.air;
-                this.useStats = fullMorph.get("stats").equals("1");
+        if (this.getObjetByPos(Constant.ITEM_POS_ARME) != null) {
+            if (Constant.isGladiatroolWeapon(this.getObjetByPos(Constant.ITEM_POS_ARME).getTemplate().getId())) {
+                this.useStats = false;
                 this.donjon = fullMorph.get("donjon").equals("1");
-                this.useCac = false;
-            } catch (Exception e) {
-                e.printStackTrace();
+                this.useCac = true;
+            } else {
+                if (fullMorph.get("vie") != null) {
+                    try {
+                        this.maxPdv = Integer.parseInt(fullMorph.get("vie"));
+                        this.setPdv(this.getMaxPdv());
+                        this.pa = Integer.parseInt(fullMorph.get("pa"));
+                        this.pm = Integer.parseInt(fullMorph.get("pm"));
+                        this.vitalite = Integer.parseInt(fullMorph.get("vitalite"));
+                        this.sagesse = Integer.parseInt(fullMorph.get("sagesse"));
+                        this.terre = Integer.parseInt(fullMorph.get("terre"));
+                        this.feu = Integer.parseInt(fullMorph.get("feu"));
+                        this.eau = Integer.parseInt(fullMorph.get("eau"));
+                        this.air = Integer.parseInt(fullMorph.get("air"));
+                        this.initiative = Integer.parseInt(fullMorph.get("initiative")) + this.sagesse + this.terre + this.feu + this.eau + this.air;
+                        this.useStats = fullMorph.get("stats").equals("1");
+                        this.donjon = fullMorph.get("donjon").equals("1");
+                        this.useCac = false;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         }
 
         if (this.fight == null) SocketManager.GAME_SEND_STATS_PACKET(this);
         if (!join)
             ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this);
+    }
+
+    public Stats generateStatsTonique(Map<String, String> fullMorph) {
+        Stats statTonique = new Stats();
+
+        // Vie
+        statTonique.equilibreStat(Constant.STATS_ADD_VITA,Constant.STATS_REM_VITA,this,fullMorph,"vie");
+        // PA
+        if (getTotalStats(false).getEffect(Constant.STATS_ADD_PA) == Integer.parseInt(fullMorph.get("pa"))) {}
+        else if (getTotalStats(false).getEffect(Constant.STATS_ADD_PA) > Integer.parseInt(fullMorph.get("pa"))) {
+            statTonique.addOneStat(Constant.STATS_REM_PA3, getTotalStats(false).getEffect(Constant.STATS_ADD_PA) - Integer.parseInt(fullMorph.get("pa")));
+        } else {
+            statTonique.addOneStat(Constant.STATS_ADD_PA2, Integer.parseInt(fullMorph.get("pa")) - getTotalStats(false).getEffect(Constant.STATS_ADD_PA));
+        }
+        // PM
+        if (getTotalStats(false).getEffect(Constant.STATS_ADD_PM) == Integer.parseInt(fullMorph.get("pm"))) {}
+        else if(getTotalStats(false).getEffect(Constant.STATS_ADD_PM) > Integer.parseInt(fullMorph.get("pm"))) {
+            statTonique.addOneStat(Constant.STATS_REM_PM2, getTotalStats(false).getEffect(Constant.STATS_ADD_PM) - Integer.parseInt(fullMorph.get("pm")));
+        } else {
+            statTonique.addOneStat(Constant.STATS_ADD_PM2, Integer.parseInt(fullMorph.get("pm")) - getTotalStats(false).getEffect(Constant.STATS_ADD_PM));
+        }
+        // Sagesse
+        statTonique.equilibreStat(Constant.STATS_ADD_SAGE,Constant.STATS_REM_SAGE,this,fullMorph,"sagesse");
+        // Force
+        statTonique.equilibreStat(Constant.STATS_ADD_FORC,Constant.STATS_REM_FORC,this,fullMorph,"terre");
+        // Intel
+        statTonique.equilibreStat(Constant.STATS_ADD_INTE,Constant.STATS_REM_INTE,this,fullMorph,"feu");
+        // Chance
+        statTonique.equilibreStat(Constant.STATS_ADD_CHAN,Constant.STATS_REM_CHAN,this,fullMorph,"eau");
+        // Agi
+        statTonique.equilibreStat(Constant.STATS_ADD_AGIL,Constant.STATS_REM_AGIL,this,fullMorph,"air");
+        // Ini
+        statTonique.equilibreStat(Constant.STATS_ADD_INIT,Constant.STATS_REM_INIT,this,fullMorph,"initiative");
+        // DO
+        statTonique.equilibreStat(Constant.STATS_ADD_DOMA,Constant.STATS_REM_DOMA,this,fullMorph,"do");
+        // % DO
+        statTonique.equilibreStat(Constant.STATS_ADD_PERDOM,Constant.STATS_REM_PERDOM,this,fullMorph,"doper");
+        // CreaInvo
+        statTonique.equilibreStat(Constant.STATS_CREATURE,Constant.STATS_REM_INVO,this,fullMorph,"invo");
+        // resiPerNEU
+        statTonique.equilibreStat(Constant.STATS_ADD_RP_NEU,Constant.STATS_REM_RP_NEU,this,fullMorph,"resiNeu");
+        // resiPerTER
+        statTonique.equilibreStat(Constant.STATS_ADD_RP_TER,Constant.STATS_REM_RP_TER,this,fullMorph,"resiTer");
+        // resiPerFEU
+        statTonique.equilibreStat(Constant.STATS_ADD_RP_FEU,Constant.STATS_REM_RP_FEU,this,fullMorph,"resiFeu");
+        // resiPerEAU
+        statTonique.equilibreStat(Constant.STATS_ADD_RP_EAU,Constant.STATS_REM_RP_EAU,this,fullMorph,"resiEau");
+        // resiPerAIR
+        statTonique.equilibreStat(Constant.STATS_ADD_RP_AIR,Constant.STATS_REM_RP_AIR,this,fullMorph,"resiAir");
+        // resiFixNEU
+        statTonique.equilibreStat(Constant.STATS_ADD_R_NEU,Constant.STATS_REM_R_NEU,this,fullMorph,"rfixNeu");
+        // resiFixTER
+        statTonique.equilibreStat(Constant.STATS_ADD_R_TER,Constant.STATS_REM_R_TER,this,fullMorph,"rfixTer");
+        // resiFixFEU
+        statTonique.equilibreStat(Constant.STATS_ADD_R_FEU,Constant.STATS_REM_R_FEU,this,fullMorph,"rfixFeu");
+        // resiFixEAU
+        statTonique.equilibreStat(Constant.STATS_ADD_R_EAU,Constant.STATS_REM_R_EAU,this,fullMorph,"rfixEau");
+        // resiFixAIR
+        statTonique.equilibreStat(Constant.STATS_ADD_R_AIR,Constant.STATS_REM_R_AIR,this,fullMorph,"rfixAir");
+        // Soin
+        statTonique.equilibreStat(Constant.STATS_ADD_SOIN,Constant.STATS_REM_SOIN,this,fullMorph,"soin");
+        // CC
+        statTonique.equilibreStat(Constant.STATS_ADD_CC,Constant.STATS_REM_CC,this,fullMorph,"crit");
+        // PO
+        statTonique.equilibreStat(Constant.STATS_ADD_PO,Constant.STATS_REM_PO,this,fullMorph,"PO");
+        // Renvoi Do
+        statTonique.equilibreStat(Constant.STATS_RETDOM,Constant.STATS_REM_RENVOI,this,fullMorph,"renvoie");
+        // Do Pieg
+        statTonique.equilibreStat(Constant.STATS_TRAPDOM,Constant.STATS_REM_TRAPDOM,this,fullMorph,"dotrap");
+        // %Do Pieg
+        statTonique.equilibreStat(Constant.STATS_TRAPPER,Constant.STATS_REM_TRAPPER,this,fullMorph,"perdotrap");
+        // %Do Pieg
+        statTonique.equilibreStat(Constant.STATS_ADD_PDOM,Constant.STATS_REM_PDOM,this,fullMorph,"dophysique");
+        // %Do Pieg
+        //statTonique.equilibreStat(Constant.STATS_ADD_MFLEE,Constant.STATS_REM_MFLEE,this,fullMorph,"esPM");
+        // %Do Pieg
+        //statTonique.equilibreStat(Constant.STATS_ADD_AFLEE,Constant.STATS_REM_AFLEE,this,fullMorph,"esPA");
+
+        this.initiative = Integer.parseInt(fullMorph.get("initiative"));
+        return statTonique;
     }
 
     public boolean isMorph() {
@@ -1589,14 +1749,15 @@ public class Player {
         return packet.toString();
     }
 
-    public void set_SpellPlace(int SpellID, char Place) {
+    public void set_SpellPlace(int SpellID, String Place) {
+
         replace_SpellInBook(Place);
         _sortsPlaces.remove(SpellID);
         _sortsPlaces.put(SpellID, Place);
         ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this);
     }
 
-    private void replace_SpellInBook(char Place) {
+    private void replace_SpellInBook(String Place) {
         for (int key : _sorts.keySet())
             if (_sortsPlaces.get(key) != null)
                 if (_sortsPlaces.get(key).equals(Place))
@@ -1806,7 +1967,61 @@ public class Player {
             this.setGhost();
         if (this.fight != null) SocketManager.send(this, "ILF0");
         else SocketManager.send(this, "ILS2000");
+        this.refreshItemClasse();
     }
+
+    public Map<Integer, World.Couple<Integer, Integer>> getItemClasseSpell() {
+        return objectsClassSpell;
+    }
+
+    public void removeItemClasseSpell(int spell) {
+        if (objectsClassSpell.containsKey(spell)) {
+            objectsClassSpell.remove(spell);
+        }
+    }
+
+    public void addItemClasseSpell(int spell, int effect, int modif) {
+        if (!objectsClassSpell.containsKey(spell)) {
+            objectsClassSpell.put(spell, new World.Couple<Integer, Integer>(effect, modif));
+        }
+    }
+
+    public void addItemClasse(int item) {
+        if (!objectsClass.contains(item))
+            objectsClass.add(item);
+    }
+
+    public void removeItemClasse(int item) {
+        if (objectsClass.contains(item)) {
+            int index = objectsClass.indexOf(item);
+            objectsClass.remove(index);
+        }
+    }
+
+    public void refreshItemClasse() {
+        for (int j = 1; j < 50; j++) {
+            if (getObjetByPos(j) == null)
+                continue;
+            final GameObject obj = getObjetByPos(j);
+            final int template = obj.getTemplate().getId();
+
+            if(obj.getSortStats().isEmpty()) continue;
+
+            for (final String stat : obj.getSortStats()) {
+                final String[] val = stat.split("#");
+                final int effect = Integer.parseInt(val[0], 16);
+                final int spell = Integer.parseInt(val[1], 16);
+                final int modif = Integer.parseInt(val[3], 16);
+                final String modifi = effect + ";" + spell + ";" + modif;
+                SocketManager.SEND_SB_SPELL_BOOST(this, modifi);
+                addItemClasseSpell(spell, effect, modif);
+            }
+            if (!objectsClass.contains(template))
+                objectsClass.add(template);
+
+        }
+    }
+
 
     public void checkVote() {
         String IP = this.getAccount().getLastIP();
@@ -2124,8 +2339,12 @@ public class Player {
             for (GameObject gameObject : new ArrayList<>(this.objects.values())) {
                 byte position = (byte) gameObject.getPosition();
                 if (position != Constant.ITEM_POS_NO_EQUIPED) {
-                    if (position >= 35 && position <= 48)
-                        continue;
+                    //if (position >= 35 && position <= 48)
+                    //    continue;
+
+                    //if (position == 41){
+                    //    gameObject.getStats();
+                    //}
 
                     stats = Stats.cumulStat(stats, gameObject.getStats());
                     int id = gameObject.getTemplate().getPanoId();
@@ -2167,7 +2386,7 @@ public class Player {
     }
 
     public int getInitiative() {
-        if (!useStats) {
+        if (!useStats && !Constant.isInGladiatorDonjon(this.getCurMap().getId()) && this.getCurMap().getId()!=12277 ) {
             int fact = 4;
             int maxPdv = this.maxPdv - 55;
             int curPdv = this.curPdv - 55;
@@ -2433,21 +2652,23 @@ public class Player {
     }
 
     public boolean addObjet(GameObject newObj, boolean stackIfSimilar) {
-        synchronized (objects) {
-            for (Entry<Integer, GameObject> entry : objects.entrySet()) {
-                GameObject obj = entry.getValue();
-                if (World.world.getConditionManager().stackIfSimilar(obj, newObj, stackIfSimilar)) {
-                    obj.setQuantity(obj.getQuantity() + newObj.getQuantity());//On ajoute QUA item a la quantit� de l'objet existant
-                    if (isOnline)
-                        SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(this, obj);
-                    return false;
+            synchronized (objects) {
+                for (Entry<Integer, GameObject> entry : objects.entrySet()) {
+                    GameObject obj = entry.getValue();
+                    if (World.world.getConditionManager().stackIfSimilar(obj, newObj, stackIfSimilar)) {
+                        obj.setQuantity(obj.getQuantity() + newObj.getQuantity());//On ajoute QUA item a la quantit� de l'objet existant
+                        if (isOnline)
+                            SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(this, obj);
+                        return false;
+                    }
                 }
+                objects.put(newObj.getGuid(), newObj);
+                SocketManager.GAME_SEND_OAKO_PACKET(this, newObj);
+                SocketManager.GAME_SEND_Ow_PACKET(this);
             }
-            objects.put(newObj.getGuid(), newObj);
-            SocketManager.GAME_SEND_OAKO_PACKET(this, newObj);
-        }
         return true;
     }
+
 
     public void addObjet(GameObject newObj) {
         objects.put(newObj.getGuid(), newObj);
@@ -2612,6 +2833,8 @@ public class Player {
         double actPdvPer = (100 * (double) this.curPdv) / (double) this.maxPdv;
         if (!useStats)
             this.maxPdv = (this.getLevel() - 1) * 5 + 50 + getTotalStats(false).getEffect(Constant.STATS_ADD_VITA);
+        if(Constant.isInGladiatorDonjon(this.curMap.getId()) || this.getCurMap().getId() == 12277)
+            this.maxPdv = getTotalStats(false).getEffect(Constant.STATS_ADD_VITA);
         this.curPdv = (int) Math.round(maxPdv * actPdvPer / 100);
     }
 
@@ -2980,10 +3203,23 @@ public class Player {
         }
 
         this.setAway(false);
-        boolean fullmorph = false;
+        boolean fullmorph = false, deleteGladiaWeapon = false;
         if (Constant.isInMorphDonjon(this.curMap.getId()))
             if (!Constant.isInMorphDonjon(newMapID))
                 fullmorph = true;
+
+        if (Constant.isInGladiatorDonjon(this.curMap.getId()) || this.curMap.getId() == 12277) {
+
+            if (!Constant.isInGladiatorDonjon(newMapID)) {
+                fullmorph = true;
+                deleteGladiaWeapon = true;
+            }
+
+            if (Constant.isInGladiatorDonjon(newMapID) && this.curMap.getId() != 12277 ) {
+                this.fullPDV();
+                SocketManager.GAME_SEND_wr(this, Constant.getPalierByNewMap(this.curMap.getId()));
+            }
+        }
 
         if(client != null)
             SocketManager.GAME_SEND_GA2_PACKET(client, this.getId());
@@ -3029,6 +3265,15 @@ public class Player {
 
         if (fullmorph)
             this.unsetFullMorph();
+
+        if(deleteGladiaWeapon) {
+            if ( Constant.isGladiatroolWeapon(this.getObjetByPos(Constant.ITEM_POS_ARME).getTemplate().getId()) ) {
+                this.removeByTemplateID(this.getObjetByPos(Constant.ITEM_POS_ARME).getTemplate().getId(),1);
+                for(int i=Constant.ITEM_POS_TONIQUE_EQUILIBRAGE;i<= Constant.ITEM_POS_TONIQUE9;i++){
+                    this.removeTonique(i);
+                }
+            }
+        }
 
         if (this.follower != null && !this.follower.isEmpty())// On met a jour la Map des personnages qui nous suivent
         {
@@ -3510,6 +3755,11 @@ public class Player {
             //Si mauvais TemplateID, on passe
             if (obj.getTemplate().getId() != tID)
                 continue;
+
+            if(obj.getPosition() != Constant.ITEM_POS_NO_EQUIPED) {
+                obj.setPosition(Constant.ITEM_POS_NO_EQUIPED);
+                SocketManager.GAME_SEND_OBJET_MOVE_PACKET(this, obj);
+            }
 
             if (obj.getQuantity() >= count) {
                 int newQua = obj.getQuantity() - count;
@@ -4670,14 +4920,14 @@ public class Player {
         return hasEndFight;
     }
 
-    public MonsterGroup hasMobGroup() {
-        return hasMonsterGroup;
+    public Monster.MobGroup hasMobGroup() {
+        return hasMobGroup;
     }
 
-    public void setNeededEndFight(int hasEndFight, MonsterGroup group) {
+    public void setNeededEndFight(int hasEndFight, Monster.MobGroup group) {
         this.endFightAction = null;
         this.hasEndFight = hasEndFight;
-        this.hasMonsterGroup = group;
+        this.hasMobGroup = group;
     }
 
     public void setNeededEndFightAction(Action endFightAction) {
@@ -5791,6 +6041,7 @@ public class Player {
 			this.air = 0;
 			this.initiative = Formulas.getRandomValue(1, 100);
 			this.useStats = true;
+
 			this.donjon = false;
 			this.useCac = false;
 			if (this.fight == null)
@@ -5845,5 +6096,62 @@ public class Player {
         if(this.getGameClient() != null)
             return this.getGameClient().getLanguage();
         return LangEnum.ENGLISH;
+    }
+
+    public String getWrPacket(int palier) {
+
+        String packet = "";
+        try {
+            StringBuilder WrData = new StringBuilder();
+            WrData.append("wr");
+            int[] tonics0 = Formulas.getRandomsInt(Constant.TONIQUE1, 7);
+            int[] tonics1 = Formulas.getRandomsInt(Constant.TONIQUE2, 7);
+            int classeid = Constant.getClasseByMorphWeapon(this.getObjetByPos(Constant.ITEM_POS_ARME).getTemplate().getId());
+            int[] tonics2 = Formulas.getRandomsInt(Constant.getToniques3byclasse(classeid), 7);
+            int tonic0 = 0, tonic1 = 0, tonic2 = 0;
+            for (int i = 0; i < tonics0.length; i++) {
+                if (i == 0 || i == tonics0.length - 1) {
+                    WrData.append(tonics0[i] + ";");
+                    if (tonic0 == 0) {
+                        tonic0 = tonics0[i];
+                    }
+                } else {
+                    WrData.append(tonics0[i] + ",");
+                }
+            }
+            WrData.append(Constant.getStatStringbyPalier(palier+1) + "|");
+            for (int i = 0; i < tonics1.length; i++) {
+                if (i == 0 || i == tonics1.length - 1) {
+                    WrData.append(tonics1[i] + ";");
+                    if (tonic1 == 0) {
+                        tonic1 = tonics1[i];
+                    }
+                } else {
+                    WrData.append(tonics1[i] + ",");
+                }
+            }
+            WrData.append(Constant.getStatStringbyPalier(palier+1) + "|");
+            for (int i = 0; i < tonics2.length; i++) {
+                if (i == 0 || i == tonics2.length - 1) {
+                    WrData.append(tonics2[i] + ";");
+                    if (tonic2 == 0) {
+                        tonic2 = tonics2[i];
+                    }
+                } else {
+                    WrData.append(tonics2[i] + ",");
+                }
+            }
+            WrData.append(Constant.getStatStringbyPalier(palier+1) + "|");
+            WrData.append(palier + "|");
+            WrData.append("10;20;40;60;90;120;160;200;250;300");
+            packet = WrData.toString();
+            this.LastTonicProposed[0] =tonic0;
+            this.LastTonicProposed[1] =tonic1;
+            this.LastTonicProposed[2] =tonic2;
+        }
+        catch (Exception e){
+            System.out.println(e);
+        }
+        return packet;
     }
 }

@@ -38,9 +38,9 @@ public class MonsterData extends FunctionDAO<Monster> {
                 String xp = result.getString("exps");
                 int aggroDistance = result.getInt("aggroDistance");
                 boolean capturable = result.getInt("capturable") == 1;
-
+                int type = result.getInt("type");
                 if (World.world.getMonstre(id) == null) {
-                    World.world.addMobTemplate(id, new Monster(id, gfxID, align, colors, grades, spells, stats, statsInfos, pdvs, pts, inits, mK, MK, xp, IAType, capturable, aggroDistance));
+                    World.world.addMobTemplate(id, new Monster(id, gfxID, align, colors, grades, spells, stats, statsInfos, pdvs, pts, inits, mK, MK, xp, IAType, capturable, aggroDistance,type ));
                 } else {
                     World.world.getMonstre(id).setInfos(gfxID, align, colors, grades, spells, stats, statsInfos, pdvs, pts, inits, mK, MK, xp, IAType, capturable, aggroDistance);
                 }

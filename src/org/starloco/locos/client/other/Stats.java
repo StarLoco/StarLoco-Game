@@ -4,14 +4,16 @@ import org.starloco.locos.client.Player;
 import org.starloco.locos.guild.Guild;
 import org.starloco.locos.kernel.Constant;
 
+import java.sql.Connection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.Map.Entry;
 
 public class Stats {
 
-    private Map<Integer, Integer> effects = new HashMap<>();
+    private Map<Integer, Integer> effects = new LinkedHashMap<>();
 
     public Stats(Map<Integer, Integer> stats) {
         this.effects = stats;
@@ -79,9 +81,10 @@ public class Stats {
     }
 
     public int addOneStat(int id, int val) {
+
         if(id == 112) id = Constant.STATS_ADD_DOMA;
         if (this.effects.get(id) == null || this.effects.get(id) == 0) {
-            if(val <= 0) return 0;
+            if(val <= 0 && id != Constant.STATS_BONUSADD) return 0;
             this.effects.put(id, val);
         } else {
             int newVal = (this.effects.get(id) + val);
@@ -92,6 +95,15 @@ public class Stats {
                 this.effects.put(id, newVal);
         }
         return this.effects.get(id);
+    }
+
+    public void equilibreStat(int statadd, int statrem, Player player ,Map<String, String> fullMorph , String test) {
+        if (player.getTotalStats(false).getEffect(statadd) == Integer.parseInt(fullMorph.get(test))) {}
+        else if (player.getTotalStats(false).getEffect(statadd) > Integer.parseInt(fullMorph.get(test))) {
+            this.addOneStat(statrem, player.getTotalStats(false).getEffect(statadd) - Integer.parseInt(fullMorph.get(test)));
+        } else {
+            this.addOneStat(statadd, Integer.parseInt(fullMorph.get(test)) - player.getTotalStats(false).getEffect(statadd));
+        }
     }
 
     public boolean isSameStats(Stats other) {
@@ -130,6 +142,10 @@ public class Stats {
         int val = this.effects.get(id) == null ? 0 : this.effects.get(id);
 
         switch (id) {
+            case Constant.STATS_ADD_SAGE:
+                if (this.effects.get(Constant.STATS_REM_SAGE) != null)
+                    val -= this.effects.get(Constant.STATS_REM_SAGE);
+                break;
             case Constant.STATS_ADD_AFLEE:
                 if (this.effects.get(Constant.STATS_REM_AFLEE) != null)
                     val -= getEffect(Constant.STATS_REM_AFLEE);
@@ -145,6 +161,30 @@ public class Stats {
             case Constant.STATS_ADD_INIT:
                 if (this.effects.get(Constant.STATS_REM_INIT) != null)
                     val -= this.effects.get(Constant.STATS_REM_INIT);
+                break;
+            case Constant.STATS_ADD_CC:
+                if (this.effects.get(Constant.STATS_REM_CC) != null)
+                    val -= this.effects.get(Constant.STATS_REM_CC);
+                break;
+            case Constant.STATS_CREATURE:
+                if (this.effects.get(Constant.STATS_REM_INVO) != null)
+                    val -= this.effects.get(Constant.STATS_REM_INVO);
+                break;
+            case Constant.STATS_RETDOM:
+                if (this.effects.get(Constant.STATS_REM_RENVOI) != null)
+                    val -= this.effects.get(Constant.STATS_REM_RENVOI);
+                break;
+            case Constant.STATS_ADD_SOIN:
+                if (this.effects.get(Constant.STATS_REM_SOIN) != null)
+                    val -= this.effects.get(Constant.STATS_REM_SOIN);
+                break;
+            case Constant.STATS_TRAPPER:
+                if (this.effects.get(Constant.STATS_REM_TRAPPER) != null)
+                    val -= this.effects.get(Constant.STATS_REM_TRAPPER);
+                break;
+            case Constant.STATS_TRAPDOM:
+                if (this.effects.get(Constant.STATS_REM_TRAPDOM) != null)
+                    val -= this.effects.get(Constant.STATS_REM_TRAPDOM);
                 break;
             case Constant.STATS_ADD_AGIL:
                 if (this.effects.get(Constant.STATS_REM_AGIL) != null)
@@ -169,6 +209,8 @@ public class Stats {
                     val -= this.effects.get(Constant.STATS_REM_PA);
                 if (this.effects.get(Constant.STATS_REM_PA2) != null)//Non esquivable
                     val -= this.effects.get(Constant.STATS_REM_PA2);
+                if (this.effects.get(Constant.STATS_REM_PA3) != null)//Non esquivable
+                    val -= this.effects.get(Constant.STATS_REM_PA3);
                 break;
             case Constant.STATS_ADD_PM:
                 if (this.effects.get(Constant.STATS_ADD_PM2) != null)
@@ -188,6 +230,14 @@ public class Stats {
                 break;
             case Constant.STATS_ADD_VIE:
                 val = Constant.STATS_ADD_VIE;
+                break;
+            case Constant.STATS_ADD_PERDOM:
+                if (this.effects.get(Constant.STATS_REM_PERDOM) != null)
+                    val -= this.effects.get(Constant.STATS_REM_PERDOM);
+                break;
+            case Constant.STATS_ADD_PDOM:
+                if (this.effects.get(Constant.STATS_REM_PDOM) != null)
+                    val -= this.effects.get(Constant.STATS_REM_PDOM);
                 break;
             case Constant.STATS_ADD_DOMA:
                 if (this.effects.get(Constant.STATS_REM_DOMA) != null)
@@ -280,5 +330,9 @@ public class Stats {
             effets.put(a, som);
         }
         return new Stats(effets, false, null);
+    }
+
+    public Map<Integer, Integer> getMap() {
+        return this.effects;
     }
 }

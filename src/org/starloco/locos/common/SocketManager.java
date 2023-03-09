@@ -9,7 +9,7 @@ import org.starloco.locos.client.Player;
 import org.starloco.locos.client.other.Party;
 import org.starloco.locos.entity.Collector;
 import org.starloco.locos.entity.Prism;
-import org.starloco.locos.entity.monster.MonsterGroup;
+import org.starloco.locos.entity.monster.Monster.MobGroup;
 import org.starloco.locos.entity.mount.Mount;
 import org.starloco.locos.entity.npc.Npc;
 import org.starloco.locos.fight.Fight;
@@ -21,6 +21,7 @@ import org.starloco.locos.hdv.HdvEntry;
 import org.starloco.locos.job.JobStat;
 import org.starloco.locos.kernel.Config;
 import org.starloco.locos.kernel.Constant;
+import org.starloco.locos.kernel.Main;
 import org.starloco.locos.object.GameObject;
 import org.starloco.locos.object.ObjectSet;
 import org.starloco.locos.object.ObjectTemplate;
@@ -30,6 +31,7 @@ import org.starloco.locos.quest.Quest;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Objects;
 
@@ -118,6 +120,10 @@ public class SocketManager {
         send(perso, packet);
 
     }
+    public static void GAME_SEND_wr(Player player,int palier) {
+        String packet = player.getWrPacket(palier);
+        send(player, packet);
+    }
 
     public static void GAME_SEND_Rx_PACKET(Player out) {
         String packet = "Rx" + out.getMountXpGive();
@@ -195,7 +201,6 @@ public class SocketManager {
     public static void GAME_SEND_Ow_PACKET(Player perso) {
         String packet = "Ow" + perso.getPodUsed() + "|" + perso.getMaxPod();
         send(perso, packet);
-
     }
 
     public static void GAME_SEND_OT_PACKET(GameClient out, int id) {
@@ -464,7 +469,7 @@ public class SocketManager {
     }
 
     public static void GAME_SEND_MAP_MOBS_GM_PACKET(GameMap map,
-                                                    MonsterGroup current_Mobs) {
+                                                    MobGroup current_Mobs) {
         String packet = "GM|";
         packet += current_Mobs.parseGM(); // Un par un comme sa lors du respawn :)
         for (Player z : map.getPlayers())
@@ -1022,12 +1027,19 @@ public class SocketManager {
         }
     }
 
-    public static String GAME_SEND_FIGHT_GIE(Fight fight, int teams, int mType, int cible, int value, String mParam2, String mParam3, String mParam4, int turn, int spellID) {
+    public static void GAME_SEND_FIGHT_GIE_TO_FIGHT(Fight fight, int teams,
+                                                    int mType, int cible, int value, String mParam2, String mParam3,
+                                                    String mParam4, int turn, int spellID) {
         StringBuilder packet = new StringBuilder();
         packet.append("GIE").append(mType).append(";").append(cible).append(";").append(value).append(";").append(mParam2).append(";").append(mParam3).append(";").append(mParam4).append(";").append(turn).append(";").append(spellID);
-        return packet.toString();
-    }
+        for (Fighter f : fight.getFighters(teams)) {
+            if (f.hasLeft() || f.getPlayer() == null)
+                continue;
+            if (f.getPlayer().isOnline())
+                send(f.getPlayer(), packet.toString());
+        }
 
+    }
 
     public static void GAME_SEND_MAP_FIGHT_GMS_PACKETS_TO_FIGHT(Fight fight,
                                                                 int teams, GameMap map) {
@@ -1910,18 +1922,15 @@ public class SocketManager {
     }
 
     public static void GAME_SEND_gIG_PACKET(Player p, Guild g) {
-        if (g == null) {
-            send(p,"gIG");
+        long xpMin = World.world.getExpLevel(g.getLvl()).guilde;
+        long xpMax;
+        if (World.world.getExpLevel(g.getLvl() + 1) == null) {
+            xpMax = -1;
         } else {
-            long xpMin = World.world.getExpLevel(g.getLvl()).guilde;
-            long xpMax;
-            if (World.world.getExpLevel(g.getLvl() + 1) == null) {
-                xpMax = -1;
-            } else {
-                xpMax = World.world.getExpLevel(g.getLvl() + 1).guilde;
-            }
-            send(p, "gIG" + (g.haveTenMembers() ? 1 : 0) + "|" + g.getLvl() + "|" + xpMin + "|" + g.getXp() + "|" + xpMax);
+            xpMax = World.world.getExpLevel(g.getLvl() + 1).guilde;
         }
+        send(p, "gIG" + (g.haveTenMembers() ? 1 : 0) + "|" + g.getLvl() + "|" + xpMin + "|" + g.getXp() + "|" + xpMax);
+
     }
 
     public static void REALM_SEND_MESSAGE(GameClient out, String args) {
@@ -2586,5 +2595,6 @@ public class SocketManager {
         for (Player perso : map.getPlayers())
             send(perso, "GM|" + npc.parse(true, perso));
     }
+
 
 }

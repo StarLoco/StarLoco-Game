@@ -30,11 +30,11 @@ public class Tonneau extends AbstractNeedSpell  {
                 if (Function.getInstance().tryCastSpell(fight, fighter, fighter, 1675) == 0)
                     time = 2500;
             } else {
-                List<Fighter> fighters = this.getFightersInline(Function.getInstance().findSpell(fighter, 1674));
+                List<Fighter> fighters = this.getFightersInline(Function.getInstance().findSpell(fighter, 916));
                 fighters.removeIf((f) -> this.fighters.contains(f.getId()));
 
                 if(fighters.size() > 0) {
-                    if(Function.getInstance().tryCastSpell(fight, fighter, fighters.get(0), 1674) == 0) {
+                    if(Function.getInstance().tryCastSpell(fight, fighter, fighters.get(0), 916) == 0) {
                         time = 2500;
                     }
                     this.fighters.add(fighters.get(0).getId());

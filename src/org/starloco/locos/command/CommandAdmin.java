@@ -17,8 +17,8 @@ import org.starloco.locos.database.data.game.*;
 import org.starloco.locos.database.data.login.*;
 import org.starloco.locos.entity.Collector;
 import org.starloco.locos.entity.monster.Monster;
-import org.starloco.locos.entity.monster.MonsterGrade;
-import org.starloco.locos.entity.monster.MonsterGroup;
+import org.starloco.locos.entity.monster.Monster.MobGrade;
+import org.starloco.locos.entity.monster.Monster.MobGroup;
 import org.starloco.locos.entity.mount.Mount;
 import org.starloco.locos.entity.npc.Npc;
 import org.starloco.locos.entity.npc.NpcTemplate;
@@ -1639,7 +1639,7 @@ public class CommandAdmin extends AdminUser {
             }
             mess = "Liste des groupes de monstres :";
             this.sendMessage(mess);
-            for (Entry<Integer, MonsterGroup> entry : map.getMobGroups().entrySet()) {
+            for (Entry<Integer, MobGroup> entry : map.getMobGroups().entrySet()) {
                 mess = entry.getKey() + " | " + entry.getValue().getCellId()
                         + " | " + entry.getValue().getAlignement() + " | "
                         + entry.getValue().getMobs().size();
@@ -1826,8 +1826,10 @@ public class CommandAdmin extends AdminUser {
             }
             if (qua < 1)
                 qua = 1;
-            GameObject obj = t.createNewItem(qua, useMax);
 
+
+            GameObject obj = t.createNewItem(qua, useMax);
+            System.out.println("Ici ?" + obj);
 
             if(t.getType() == Constant.ITEM_TYPE_CERTIF_MONTURE) {
                 //obj.setMountStats(this.getPlayer(), null);
@@ -1838,20 +1840,23 @@ public class CommandAdmin extends AdminUser {
                 obj.getTxtStat().put(997, mount.getName());
                 mount.setToMax();
             }
+            System.out.println("la");
             if(lier) {
                 Player player = World.world.getPlayerByName(infos[4]);
                 obj.attachToPlayer(player);
                 if (player.addObjet(obj, true))//Si le joueur n'avait pas d'item similaire
                     World.world.addGameObject(obj);
             } else {
-                if (this.getPlayer().addObjet(obj, true))//Si le joueur n'avait pas d'item similaire
-                    World.world.addGameObject(obj);
+                    if (this.getPlayer().addObjet(obj, true))//Si le joueur n'avait pas d'item similaire
+                        World.world.addGameObject(obj);
             }
+            System.out.println("et la");
             String str = "Creation de l'item " + tID + " reussie";
             if (useMax)
                 str += " avec des stats maximums";
             str += ".";
             this.sendMessage(str);
+            System.out.println("pui la");
             SocketManager.GAME_SEND_Ow_PACKET(this.getPlayer());
             return;
         } else if (command.equalsIgnoreCase("SPELLPOINT")) {
@@ -2015,11 +2020,11 @@ public class CommandAdmin extends AdminUser {
                     String group1 = infos[2], group2 = infos[3];
                     GameCase cell = this.getPlayer().getCurCell();
                     GameMap map = this.getPlayer().getCurMap();
-                    MonsterGroup mg1 = map.spawnGroupOnCommand(cell.getId() - map.getW(), group1, true);
-                    MonsterGroup mg2 = map.spawnGroupOnCommand(cell.getId() - map.getW() + 1, group2, true);
-                    Map<Integer, MonsterGrade> hashMap = new HashMap<>();
+                    MobGroup mg1 = map.spawnGroupOnCommand(cell.getId() - map.getW(), group1, true);
+                    MobGroup mg2 = map.spawnGroupOnCommand(cell.getId() - map.getW() + 1, group2, true);
+                    Map<Integer, MobGrade> hashMap = new HashMap<>();
                     int guid = -20;
-                    for(MonsterGrade f : new ArrayList<>(mg2.getMobs().values())) {
+                    for(MobGrade f : new ArrayList<>(mg2.getMobs().values())) {
                         hashMap.put(guid, f);
                         guid--;
                     }
@@ -2432,8 +2437,8 @@ public class CommandAdmin extends AdminUser {
                 Monster monster = World.world.getMonstre(id);
 
 
-                for (MonsterGrade monsterGrade : monster.getGrades().values())
-                    line += monster.getId() + "," + monsterGrade.getLevel() + "|";
+                for (MobGrade mobGrade : monster.getGrades().values())
+                    line += monster.getId() + "," + mobGrade.getLevel() + "|";
             }
             this.sendMessage(line);
             return;
