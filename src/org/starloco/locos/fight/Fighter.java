@@ -461,7 +461,7 @@ public class Fighter implements Comparable<Fighter> {
 
         switch(spellId) {
             // Feca spells shields
-            case 1: case 4: case 5: case 6: case 7: case 14: case 18: case 20: case 422:
+            case 1: case 4: case 5: case 6: case 7: case 14: case 18: case 20:
                 if(this.getId() != caster.getId())
                     duration++;
                 break;
@@ -488,7 +488,7 @@ public class Fighter implements Comparable<Fighter> {
             System.out.println("- Ajout du Buff "+id+" sur le personnage fighter ("+this.getId()+") val : "+value+" duration : "+duration+" debuff : "+debuff+" spellid : "+spellId+" args : "+args+" !");
         switch(spellId) {
             // Feca spells shields
-            case 1: case 4: case 5: case 6: case 7: case 14: case 18: case 20: case 422:
+            case 1: case 4: case 5: case 6: case 7: case 14: case 18: case 20:
                 if(this.getId() != caster.getId())
                     duration--;
                 break;
@@ -589,7 +589,7 @@ public class Fighter implements Comparable<Fighter> {
                 if (effect != null) {
                     switch (effect.getSpell()) {
                         // Feca spells shields
-                        case 1: case 4: case 5: case 6: case 7: case 14: case 18: case 20: case 422:
+                        case 1: case 4: case 5: case 6: case 7: case 14: case 18: case 20:
                             if (this.getId() == effect.getCaster().getId()) {
                                 if (effect.decrementDuration() == 0) {
                                     iterator.remove();
@@ -613,7 +613,7 @@ public class Fighter implements Comparable<Fighter> {
                 continue;
             switch (effect.getSpell()) {
                 // Feca spells shields
-                case 1: case 4: case 5: case 6: case 7: case 14: case 18: case 20: case 422:
+                case 1: case 4: case 5: case 6: case 7: case 14: case 18: case 20:
                     continue;
             }
 
