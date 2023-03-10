@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 public class Fighter implements Comparable<Fighter> {
 
     public int nbrInvoc;
-    public boolean trapped = false;
+    private boolean trapped = false, glyphed = false;
     public boolean isStatique = false;
     private int id = 0;
     private boolean canPlay = false;
@@ -377,6 +377,26 @@ public class Fighter implements Comparable<Fighter> {
         return i;
     }
 
+    public boolean isTrappedOrGlyphed() {
+        return isTrapped() || isGlyphed();
+    }
+
+    public boolean isTrapped() {
+        return trapped;
+    }
+
+    public void setTrapped(boolean trapped) {
+        this.trapped = trapped;
+    }
+
+    public boolean isGlyphed() {
+        return trapped;
+    }
+
+    public void setGlyphed(boolean glyphed) {
+        this.glyphed = glyphed;
+    }
+
     public ArrayList<SpellEffect> getFightBuff() {
         return this.fightBuffs;
     }
@@ -461,13 +481,13 @@ public class Fighter implements Comparable<Fighter> {
 
         switch(spellId) {
             // Feca spells shields
-            case 1: case 4: case 5: case 6: case 7: case 14: case 18: case 20: case 422:
+            case 1: case 4: case 5: case 6: case 7: case 14: case 18: case 20:
                 if(this.getId() != caster.getId())
                     duration++;
                 break;
         }
         //Si c'est le jouer actif qui s'autoBuff, on ajoute 1 a la durée
-        if(this.getId() == caster.getId() && id != 84 && id != 950 && spellId != 446) {
+        if(this.getId() == caster.getId() && !this.isTrapped() && id != 84 && id != 950 && spellId != 446) {
             duration += 1;
             switch(spellId) {
                 case 138: // Mot de silence
@@ -488,7 +508,7 @@ public class Fighter implements Comparable<Fighter> {
             System.out.println("- Ajout du Buff "+id+" sur le personnage fighter ("+this.getId()+") val : "+value+" duration : "+duration+" debuff : "+debuff+" spellid : "+spellId+" args : "+args+" !");
         switch(spellId) {
             // Feca spells shields
-            case 1: case 4: case 5: case 6: case 7: case 14: case 18: case 20: case 422:
+            case 1: case 4: case 5: case 6: case 7: case 14: case 18: case 20:
                 if(this.getId() != caster.getId())
                     duration--;
                 break;
@@ -502,7 +522,7 @@ public class Fighter implements Comparable<Fighter> {
                         duration--;
                     break;
                 default:
-                    if (this.getId() == caster.getId())
+                    if (this.getId() == caster.getId() || this.isTrapped())
                         duration--;
             }
         }
@@ -589,7 +609,7 @@ public class Fighter implements Comparable<Fighter> {
                 if (effect != null) {
                     switch (effect.getSpell()) {
                         // Feca spells shields
-                        case 1: case 4: case 5: case 6: case 7: case 14: case 18: case 20: case 422:
+                        case 1: case 4: case 5: case 6: case 7: case 14: case 18: case 20:
                             if (this.getId() == effect.getCaster().getId()) {
                                 if (effect.decrementDuration() == 0) {
                                     iterator.remove();
@@ -613,7 +633,7 @@ public class Fighter implements Comparable<Fighter> {
                 continue;
             switch (effect.getSpell()) {
                 // Feca spells shields
-                case 1: case 4: case 5: case 6: case 7: case 14: case 18: case 20: case 422:
+                case 1: case 4: case 5: case 6: case 7: case 14: case 18: case 20:
                     continue;
             }
 

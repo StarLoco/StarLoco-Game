@@ -7,6 +7,7 @@ import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.client.other.Stats;
+import org.starloco.locos.common.Formulas;
 import org.starloco.locos.entity.mount.Mount;
 import org.starloco.locos.fight.spells.Spell.SortStats;
 import org.starloco.locos.game.world.World;
@@ -294,8 +295,8 @@ public class Constant {
     public static final int STATS_REM_RP_FEU = 218;
     public static final int STATS_REM_RP_NEU = 219;
     public static final int STATS_RETDOM = 220;
-    public static final int STATS_TRAPDOM = 225;
-    public static final int STATS_TRAPPER = 226;
+    public static final int STATS_ADD_TRAP_DOM = 225;
+    public static final int STATS_ADD_TRAP_PERDOM = 226;
     public static final int STATS_ADD_R_FEU = 240;
     public static final int STATS_ADD_R_NEU = 241;
     public static final int STATS_ADD_R_TER = 242;
@@ -2357,15 +2358,30 @@ public class Constant {
             //Armure
             case 88:
                 return World.world.getObjTemplate(9582);
+            // Generate random template
+            default:
+                return getParchoTemplateByMountColor(Formulas.getRandomValue(2, 88));
         }
-        return null;
     }
 
-    public static int getMountColorByParchoTemplate(int tID) {
-        for (int a = 1; a < 100; a++)
-            if (getParchoTemplateByMountColor(a) != null)
-                if (getParchoTemplateByMountColor(a).getId() == tID)
+    public static int getMountColorByParchoTemplate(int templateId) {
+        if(templateId == 7806) {
+            int color = -1;
+            ObjectTemplate template = null;
+            while(template == null) {
+                color = Formulas.getRandomValue(2, 88);
+                template = getParchoTemplateByMountColor(color);
+            }
+            return color;
+        }
+        for (int a = 1; a < 100; a++) {
+            ObjectTemplate template = getParchoTemplateByMountColor(a);
+            if (template != null) {
+                if (template.getId() == templateId) {
                     return a;
+                }
+            }
+        }
         return -1;
     }
 

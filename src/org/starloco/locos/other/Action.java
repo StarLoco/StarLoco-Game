@@ -350,11 +350,15 @@ public class Action {
                     long curKamas = player.getKamas();
                     long newKamas = curKamas + count;
                     if (newKamas < 0) {
-                        SocketManager.GAME_SEND_Im_PACKET(player, "084;1");
+                        SocketManager.GAME_SEND_Im_PACKET(player, "182");
                         return true;
                     } else {
                         player.setKamas(newKamas);
-                        SocketManager.GAME_SEND_Im_PACKET(player, "046;" + count);
+                        if(count < 0) {
+                            SocketManager.GAME_SEND_Im_PACKET(player, "046;" + (-count));
+                        } else {
+                            SocketManager.GAME_SEND_Im_PACKET(player, "045;" + count);
+                        }
                         if (player.isOnline())
                             SocketManager.GAME_SEND_STATS_PACKET(player);
                     }

@@ -310,9 +310,7 @@ public class Formulas {
 
 
     public static int calculFinalDommage(Fight fight, Fighter caster, Fighter target, int statID, int jet, boolean isHeal, boolean isCaC, int spellid) {
-        int value = calculFinalDommagee(fight, caster, target, statID, jet, isHeal, isCaC, spellid);
-
-        return value > 0 ? value : 0;
+        return Math.max(calculFinalDommagee(fight, caster, target, statID, jet, isHeal, isCaC, spellid), 0);
     }
 
     public static int calculFinalDommagee(Fight fight, Fighter caster,
@@ -329,6 +327,10 @@ public class Formulas {
                 domC = caster.getTotalStats().getEffect(Constant.STATS_ADD_DOMA);
                 perdomC = caster.getTotalStats().getEffect(Constant.STATS_ADD_PERDOM);
                 multiplier = caster.getTotalStats().getEffect(Constant.STATS_MULTIPLY_DOMMAGE);
+                if(target.isTrapped()) {
+                    domC += caster.getTotalStats().getEffect(Constant.STATS_ADD_TRAP_DOM);
+                    perdomC += caster.getTotalStats().getEffect(Constant.STATS_ADD_TRAP_PERDOM);
+                }
                 if (caster.hasBuff(114))
                     mulT = caster.getBuffValue(114);
             } else {

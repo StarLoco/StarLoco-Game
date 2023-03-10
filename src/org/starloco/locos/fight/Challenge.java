@@ -424,7 +424,7 @@ public class Challenge {
             case 19: // Mains propres
                 if (killer.getTeam() != 0 || killer.isInvocation() || this.fight.getFighterByGameOrder() != killer)
                     return;
-                if (!mob.trapped && mob.getTeam() == 1 && !mob.isInvocation()) {
+                if (!mob.isTrappedOrGlyphed() && mob.getTeam() == 1 && !mob.isInvocation()) {
                     challengeLoose(killer);
                     break;
                 }

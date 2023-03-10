@@ -11,25 +11,24 @@ import org.starloco.locos.kernel.Constant;
 
 public class Glyph {
 
-    private Fighter caster;
-    private GameCase cell;
-    private byte size;
-    private int spell;
-    private SortStats trapSpell;
+    private final Fighter caster;
+    private final GameCase cell;
+    private final byte size;
+    private final int spell;
+    private final SortStats trapSpell;
     private byte duration;
-    private Fight fight;
-    private int color;
+    private final Fight fight;
+    private final int color;
 
-    public Glyph(Fight fight, Fighter caster, GameCase cell, byte size,
-                 SortStats trapSpell, byte duration, int spell) {
+    public Glyph(Fight fight, Fighter caster, GameCase cell, byte size, SortStats spell, byte duration, int spellId) {
         this.fight = fight;
         this.caster = caster;
         this.cell = cell;
-        this.spell = spell;
+        this.spell = spellId;
         this.size = size;
-        this.trapSpell = trapSpell;
+        this.trapSpell = spell;
         this.duration = duration;
-        this.color = Constant.getGlyphColor(spell);
+        this.color = Constant.getGlyphColor(spellId);
     }
 
     public Fighter getCaster() {
@@ -96,9 +95,10 @@ public class Glyph {
 
             String str = this.spell + "," + this.cell.getId() + ", 0, 1, 1," + this.caster.getId();
             SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(this.fight, 7, 307, target.getId() + "", str);
-            target.trapped = true;
+            target.setGlyphed(true);
             this.trapSpell.applySpellEffectToFight(this.fight, this.caster, target.getCell(), false, true);
             this.fight.verifIfTeamAllDead();
+            target.setGlyphed(false);
         }
     }
 

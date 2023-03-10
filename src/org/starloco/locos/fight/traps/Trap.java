@@ -12,25 +12,24 @@ import java.util.ArrayList;
 
 public class Trap {
 
-    private Fighter caster;
-    private GameCase cell;
-    private byte size;
-    private int spell;
-    private SortStats trapSpell;
-    private Fight fight;
-    private int color;
+    private final Fighter caster;
+    private final GameCase cell;
+    private final byte size;
+    private final int spell;
+    private final SortStats trapSpell;
+    private final Fight fight;
+    private final int color;
     private boolean isUnHide = true;
     private int teamUnHide = -1;
 
-    public Trap(Fight fight, Fighter caster, GameCase cell, byte size,
-                SortStats trapSpell, int spell) {
+    public Trap(Fight fight, Fighter caster, GameCase cell, byte size, SortStats spell, int spellId) {
         this.fight = fight;
         this.caster = caster;
         this.cell = cell;
-        this.spell = spell;
+        this.spell = spellId;
         this.size = size;
-        this.trapSpell = trapSpell;
-        this.color = Constant.getTrapsColor(spell);
+        this.trapSpell = spell;
+        this.color = Constant.getTrapsColor(spellId);
     }
 
     public int getSpell() {
@@ -49,16 +48,16 @@ public class Trap {
         return this.caster;
     }
 
+    public int getColor() {
+        return this.color;
+    }
+
     public void setIsUnHide(Fighter f) {
         this.isUnHide = true;
         this.teamUnHide = f.getTeam();
     }
 
-    public int getColor() {
-        return this.color;
-    }
-
-    public void desappear() {
+    public void disappear() {
         StringBuilder str = new StringBuilder();
         StringBuilder str2 = new StringBuilder();
         StringBuilder str3 = new StringBuilder();
@@ -97,11 +96,11 @@ public class Trap {
         SocketManager.GAME_SEND_GA_PACKET(this.fight, f.getPlayer(), 999, this.caster.getId() + "", str2.toString());
     }
 
-    public void onTraped(Fighter target) {
+    public void onTrapped(Fighter target) {
         if (target.isDead())
             return;
         this.fight.getTraps().remove(this);//On efface le pieges
-        desappear();//On d�clenche ses effets
+        disappear();//On d�clenche ses effets
         String str = this.spell + "," + this.cell.getId() + ",0,1,1," + this.caster.getId();
         SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(this.fight, 7, 307, target.getId() + "", str);
 
@@ -126,8 +125,10 @@ public class Trap {
         else
             fakeCaster = new Fighter(this.fight, this.caster.getPlayer());
         fakeCaster.setCell(this.cell);
-        target.trapped = true;
+        target.setTrapped(true);
         this.trapSpell.applySpellEffectToFight(this.fight, fakeCaster, target.getCell(), cells, false);
         this.fight.verifIfTeamAllDead();
+        target.setTrapped(false);
     }
+
 }
