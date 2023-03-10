@@ -3835,7 +3835,7 @@ public class SpellEffect implements Cloneable {
 		if (value == -1) return;
 		
 		for (Fighter target : targets) {
-			target.addBuff(effectID, value, turns, true, spell, args, caster, spell != 2005, true);
+			target.addBuff(effectID, value, turns, true, spell, args, caster, true, true);
 		}
 	}
 
@@ -3846,7 +3846,7 @@ public class SpellEffect implements Cloneable {
 		if (value == -1) return;
 		
 		for (Fighter target : targets) {
-			target.addBuff(effectID, value, turns, true, spell, args, caster, spell != 2005, true);
+			target.addBuff(effectID, value, turns, true, spell, args, caster, true, true);
 		}
 	}
 
@@ -3858,7 +3858,7 @@ public class SpellEffect implements Cloneable {
 		if (value == -1) return;
 		
 		for (Fighter target : targets) {
-			target.addBuff(effectID, value, turns, true, spell, args, caster, spell != 2005, true);
+			target.addBuff(effectID, value, turns, true, spell, args, caster, true, true);
 		}
 	}
 
@@ -3870,7 +3870,7 @@ public class SpellEffect implements Cloneable {
 		if (value == -1) return;
 		
 		for (Fighter target : targets) {
-			target.addBuff(effectID, value, turns, true, spell, args, caster, spell != 2005, true);
+			target.addBuff(effectID, value, turns, true, spell, args, caster, true, true);
 		}
 	}
 
@@ -3882,7 +3882,7 @@ public class SpellEffect implements Cloneable {
 		if (value == -1) return;
 		
 		for (Fighter target : targets) {
-			target.addBuff(effectID, value, turns, true, spell, args, caster, spell != 2005, true);
+			target.addBuff(effectID, value, turns, true, spell, args, caster, true, true);
 		}
 	}
 
