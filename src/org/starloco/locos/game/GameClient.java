@@ -844,7 +844,7 @@ public class GameClient {
                 if (!this.player.get_canaux().contains(packet.charAt(2) + ""))
                     return;
                 long l;
-                if (this.player.isInAreaNotSubscribe()) {
+                if (this.player.isMissingSubscription()) {
                     SocketManager.GAME_SEND_EXCHANGE_REQUEST_ERROR(this.player.getGameClient(), 'S');
                     return;
                 }
@@ -883,7 +883,7 @@ public class GameClient {
             case '?'://Canal recrutement
                 if (!this.player.get_canaux().contains(packet.charAt(2) + ""))
                     return;
-                if (this.player.isInAreaNotSubscribe()) {
+                if (this.player.isMissingSubscription()) {
                     SocketManager.GAME_SEND_EXCHANGE_REQUEST_ERROR(this.player.getGameClient(), 'S');
                     return;
                 }
@@ -930,7 +930,7 @@ public class GameClient {
             case '!'://Alignement
                 if (!this.player.get_canaux().contains(packet.charAt(2) + ""))
                     return;
-                if (this.player.isInAreaNotSubscribe()) {
+                if (this.player.isMissingSubscription()) {
                     SocketManager.GAME_SEND_EXCHANGE_REQUEST_ERROR(this.player.getGameClient(), 'S');
                     return;
                 }
@@ -1268,7 +1268,7 @@ public class GameClient {
     }
 
     private void npcCreateDialog(String packet) {
-        if (this.player.isInAreaNotSubscribe() || this.player.getExchangeAction() != null) {
+        if (this.player.isMissingSubscription() || this.player.getExchangeAction() != null) {
             SocketManager.GAME_SEND_EXCHANGE_REQUEST_ERROR(this.player.getGameClient(), 'S');
             return;
         }
@@ -1281,10 +1281,16 @@ public class GameClient {
             return;
         }
 
-        ExchangeAction<Integer> exchangeAction = new ExchangeAction<>(ExchangeAction.TALKING_WITH, id);
+        Npc npc = this.player.getCurMap().getNpc(id);
+        if (npc == null) return;
+        int templateID = npc.getTemplate().getId();
+
+        ExchangeAction<Integer> exchangeAction = new ExchangeAction<>(ExchangeAction.TALKING_WITH, templateID);
         this.player.setExchangeAction(exchangeAction);
 
-        NpcScriptVM.getInstance().OnNPCDialog(id, this.player, 0);
+
+        SocketManager.GAME_SEND_DCK_PACKET(this, id);
+        NpcScriptVM.getInstance().OnNPCDialog(npc.getTemplate().getId(), this.player, 0);
 
 //        try {
 //            if (this.player.isInAreaNotSubscribe() || this.player.getExchangeAction() != null) {
@@ -1397,10 +1403,11 @@ public class GameClient {
             if (checkExchangeAction == null || checkExchangeAction.getType() != ExchangeAction.TALKING_WITH) return;
 
             ExchangeAction<Integer> exchangeAction = (ExchangeAction<Integer>) this.player.getExchangeAction();
-            int npcID = exchangeAction.getValue();
+            int npcTemplateID = exchangeAction.getValue();
 
             int answerId = Integer.parseInt(infos[1]);
-            NpcScriptVM.getInstance().OnNPCDialog(npcID, this.player, answerId);
+
+            NpcScriptVM.getInstance().OnNPCDialog(npcTemplateID,this.player, answerId);
 
 
 //            //FIXME: if npc == null => faille dialog npc, disable for .help command
@@ -1727,59 +1734,63 @@ public class GameClient {
 
                 NpcTemplate npcTemplate = npc.getTemplate();
 
-                if ((npc.getTemplate().getId() == 9604 && player.getLevel() > 75) || !npcTemplate.haveItem(id)) {
-                    SocketManager.GAME_SEND_BUY_ERROR_PACKET(this);
-                    return;
-                }
-
-                boolean attachObject = npc.getTemplate().getId() == 9604 || (npcTemplate.getInformations() & 0x2) == 2;
-                GameObject object = null;
-                
-                if (template.getPoints() > 0 && (npcTemplate.getInformations() & 0x4) == 4) {
-                    int value = template.getPoints() * qua, points = this.account.getPoints();
-
-                    if (points < value) {
-                        SocketManager.GAME_SEND_MESSAGE(this.player, this.player.getLang().trans("game.gameclient.buy.boutique.nopoint", Integer.toString(points) , Integer.toString(value - points)));
-                        SocketManager.GAME_SEND_BUY_ERROR_PACKET(this);
-                        return;
-                    }
-
-                    this.account.setPoints(points - value);
-                    object = template.createNewItem(qua, (npcTemplate.getInformations() & 0x1) == 1);
-                    
-                    if (this.player.addObjet(object, true)) World.world.addGameObject(object);
-                    if (attachObject) object.attachToPlayer(this.player);
-
-                    SocketManager.GAME_SEND_BUY_OK_PACKET(this);
-                    SocketManager.GAME_SEND_STATS_PACKET(this.player);
-                    SocketManager.GAME_SEND_Ow_PACKET(this.player);
-                    SocketManager.GAME_SEND_MESSAGE(this.player, this.player.getLang().trans("game.gameclient.buy.boutique.rest", Integer.toString((points - value))));
-                } else if (template.getPoints() == 0) {
-                    int price = template.getPrice() * qua;
-                    if (price < 0) return;
-
-                    if (this.player.getKamas() < price) {
-                        SocketManager.GAME_SEND_BUY_ERROR_PACKET(this);
-                        return;
-                    }
-
-                    object = template.createNewItem(qua, (npcTemplate.getInformations() & 0x1) == 1);
-                    
-                    this.player.setKamas(this.player.getKamas() - price);
-                    if (this.player.addObjet(object, true)) World.world.addGameObject(object);
-                    if (attachObject) object.attachToPlayer(this.player);
-                    SocketManager.GAME_SEND_BUY_OK_PACKET(this);
-                    SocketManager.GAME_SEND_STATS_PACKET(this.player);
-                    SocketManager.GAME_SEND_Ow_PACKET(this.player);
-                }
-                
-                if (object != null && template.getType() == Constant.ITEM_TYPE_CERTIF_MONTURE) {
-                    Mount mount = new Mount(Constant.getMountColorByParchoTemplate(object.getTemplate().getId()), this.getPlayer().getId(), false);
-                    object.clearStats();
-                    object.getStats().addOneStat(995, mount.getId());
-                    object.getTxtStat().put(996, this.getPlayer().getName());
-                    object.getTxtStat().put(997, mount.getName());
-                }
+                // FIXME Diabu
+                SocketManager.GAME_SEND_BUY_ERROR_PACKET(this);
+                return;
+//
+//                if ((npc.getTemplate().getId() == 9604 && player.getLevel() > 75) || !npcTemplate.haveItem(id)) {
+//                    SocketManager.GAME_SEND_BUY_ERROR_PACKET(this);
+//                    return;
+//                }
+//
+//                boolean attachObject = npc.getTemplate().getId() == 9604 || (npcTemplate.getInformations() & 0x2) == 2;
+//                GameObject object = null;
+//
+//                if (template.getPoints() > 0 && (npcTemplate.getInformations() & 0x4) == 4) {
+//                    int value = template.getPoints() * qua, points = this.account.getPoints();
+//
+//                    if (points < value) {
+//                        SocketManager.GAME_SEND_MESSAGE(this.player, this.player.getLang().trans("game.gameclient.buy.boutique.nopoint", Integer.toString(points) , Integer.toString(value - points)));
+//                        SocketManager.GAME_SEND_BUY_ERROR_PACKET(this);
+//                        return;
+//                    }
+//
+//                    this.account.setPoints(points - value);
+//                    object = template.createNewItem(qua, (npcTemplate.getInformations() & 0x1) == 1);
+//
+//                    if (this.player.addObjet(object, true)) World.world.addGameObject(object);
+//                    if (attachObject) object.attachToPlayer(this.player);
+//
+//                    SocketManager.GAME_SEND_BUY_OK_PACKET(this);
+//                    SocketManager.GAME_SEND_STATS_PACKET(this.player);
+//                    SocketManager.GAME_SEND_Ow_PACKET(this.player);
+//                    SocketManager.GAME_SEND_MESSAGE(this.player, this.player.getLang().trans("game.gameclient.buy.boutique.rest", Integer.toString((points - value))));
+//                } else if (template.getPoints() == 0) {
+//                    int price = template.getPrice() * qua;
+//                    if (price < 0) return;
+//
+//                    if (this.player.getKamas() < price) {
+//                        SocketManager.GAME_SEND_BUY_ERROR_PACKET(this);
+//                        return;
+//                    }
+//
+//                    object = template.createNewItem(qua, (npcTemplate.getInformations() & 0x1) == 1);
+//
+//                    this.player.setKamas(this.player.getKamas() - price);
+//                    if (this.player.addObjet(object, true)) World.world.addGameObject(object);
+//                    if (attachObject) object.attachToPlayer(this.player);
+//                    SocketManager.GAME_SEND_BUY_OK_PACKET(this);
+//                    SocketManager.GAME_SEND_STATS_PACKET(this.player);
+//                    SocketManager.GAME_SEND_Ow_PACKET(this.player);
+//                }
+//
+//                if (object != null && template.getType() == Constant.ITEM_TYPE_CERTIF_MONTURE) {
+//                    Mount mount = new Mount(Constant.getMountColorByParchoTemplate(object.getTemplate().getId()), this.getPlayer().getId(), false);
+//                    object.clearStats();
+//                    object.getStats().addOneStat(995, mount.getId());
+//                    object.getTxtStat().put(996, this.getPlayer().getName());
+//                    object.getTxtStat().put(997, mount.getName());
+//                }
             } catch (Exception e) {
                 e.printStackTrace();
                 SocketManager.GAME_SEND_BUY_ERROR_PACKET(this);
@@ -4419,11 +4430,11 @@ public class GameClient {
                 SocketManager.GAME_SEND_DUEL_Y_AWAY(this, this.player.getId());
                 return;
             }
-            if (this.player.isInAreaNotSubscribe()) {
+            if (this.player.isMissingSubscription()) {
                 SocketManager.GAME_SEND_EXCHANGE_REQUEST_ERROR(this.player.getGameClient(), 'S');
                 return;
             }
-            if (target.isInAreaNotSubscribe()) {
+            if (target.isMissingSubscription()) {
                 SocketManager.GAME_SEND_EXCHANGE_REQUEST_ERROR(this.player.getGameClient(), 'S');
                 return;
             }
@@ -4519,7 +4530,7 @@ public class GameClient {
                     SocketManager.GAME_SEND_Im_PACKET(this.player, "191");
                     return;
                 }
-                if (this.player.isInAreaNotSubscribe()) {
+                if (this.player.isMissingSubscription()) {
                     SocketManager.GAME_SEND_EXCHANGE_REQUEST_ERROR(this.player.getGameClient(), 'S');
                     return;
                 }
@@ -4550,7 +4561,7 @@ public class GameClient {
         try {
             if (this.player == null || this.player.getFight() != null || this.player.isGhost() || this.player.isDead() == 1 || this.player.cantAgro())
                 return;
-            if (this.player.isInAreaNotSubscribe()) {
+            if (this.player.isMissingSubscription()) {
                 SocketManager.GAME_SEND_EXCHANGE_REQUEST_ERROR(this.player.getGameClient(), 'S');
                 return;
             }
@@ -4565,7 +4576,7 @@ public class GameClient {
 
             if(area != null && area.getId() == 42)
                 return;
-            if (target.isInAreaNotSubscribe()) {
+            if (target.isMissingSubscription()) {
                 SocketManager.GAME_SEND_EXCHANGE_REQUEST_ERROR(target.getGameClient(), 'S');
                 return;
             }
@@ -5203,7 +5214,7 @@ public class GameClient {
 
         if (guild == null || this.player.getFight() != null || this.player.isAway() || !this.player.getGuildMember().canDo(Constant.G_POSPERCO) || !guild.haveTenMembers())
             return;
-        if (this.player.isInAreaNotSubscribe()) {
+        if (this.player.isMissingSubscription()) {
             SocketManager.GAME_SEND_EXCHANGE_REQUEST_ERROR(this.player.getGameClient(), 'S');
             return;
         }

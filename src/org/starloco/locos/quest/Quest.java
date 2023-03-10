@@ -165,7 +165,8 @@ public class Quest {
         str.append(loc3 > 0 ? loc3 : "");
         if (npc != null) {
             str.append("|");
-            str.append(npc.getInitQuestionId(player.getCurMap().getId())).append("|");
+            //  FIXME Diabu
+            // str.append(npc.getInitQuestionId(player.getCurMap().getId())).append("|");
         }
         return str.toString();
     }

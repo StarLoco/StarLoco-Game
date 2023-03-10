@@ -45,7 +45,7 @@ public class Npc {
         map.getPlayers().forEach((p) -> p.send("cMK|-1|Jacquie|" + p.getLang().trans(key) + (msg.length > 0 ? msg[0] : "") + "|"));
     }
 
-    public String parse(boolean alter, Player p) {
+    public String encodeGM(boolean alter, Player p) {
         StringBuilder sock = new StringBuilder();
         sock.append((alter ? "~" : "+"));
         sock.append(this.cellId).append(";");
@@ -65,18 +65,11 @@ public class Npc {
         sock.append((this.template.getColor1() != -1 ? Integer.toHexString(this.template.getColor1()) : "-1")).append(";");
         sock.append((this.template.getColor2() != -1 ? Integer.toHexString(this.template.getColor2()) : "-1")).append(";");
         sock.append((this.template.getColor3() != -1 ? Integer.toHexString(this.template.getColor3()) : "-1")).append(";");
-        sock.append(this.template.getAccessories()).append(";");
+        sock.append(this.template.encodeAccessories()).append(";");
 
-        Quest q = this.template.getQuest();
-        QuestPlayer questPlayer = q == null ? null : p.getQuestPersoByQuest(q);
-
-        if (q == null)
-            sock.append(-1).append(";");
-        else if (questPlayer == null)
-            sock.append(4).append(";");
-        else
-            sock.append(-1).append(";");
-
+        int extraClip = -1;; // FIXME Diabu get from lua
+        if(extraClip != -1)sock.append(extraClip);
+        sock.append(";");
         sock.append(this.template.getCustomArtWork());
         return sock.toString();
     }

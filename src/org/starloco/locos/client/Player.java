@@ -26,6 +26,7 @@ import org.starloco.locos.entity.Collector;
 import org.starloco.locos.entity.Prism;
 import org.starloco.locos.entity.monster.MonsterGroup;
 import org.starloco.locos.entity.mount.Mount;
+import org.starloco.locos.entity.npc.NpcTemplate;
 import org.starloco.locos.entity.pet.Pet;
 import org.starloco.locos.entity.pet.PetEntry;
 import org.starloco.locos.event.EventManager;
@@ -3019,7 +3020,7 @@ public class Player {
         if (collector != null && World.world.getGuild(collector.getGuildId()) == null)
             Collector.removeCollector(collector.getGuildId());
 
-        if (this.isInAreaNotSubscribe()) {
+        if (this.isMissingSubscription()) {
             if (!this.isInPrivateArea)
                 SocketManager.GAME_SEND_EXCHANGE_REQUEST_ERROR(this.getGameClient(), 'S');
             this.isInPrivateArea = true;
@@ -3150,8 +3151,19 @@ public class Player {
     }
 
     public void openBank() {
-        if(this.getExchangeAction() != null)
+        if(this.getExchangeAction().getType() == ExchangeAction.TALKING_WITH) {
+            NpcTemplate template = World.world.getNPCTemplate((Integer) this.getExchangeAction().getValue());
+            if(!template.isBankClerk()) {
+                // Opening bank while talking to an NPC is not valid, except when the NPc is a bank clerk
+                return;
+            }
+            // We were talking to a clerk, close dialog
+            this.exchangeAction = null;
+            SocketManager.GAME_SEND_END_DIALOG_PACKET(this.getGameClient());
+        }
+        if(this.getExchangeAction() != null) {
             return;
+        }
         if (this.getDeshonor() >= 1) {
             SocketManager.GAME_SEND_Im_PACKET(this, "183");
             return;
@@ -3197,18 +3209,19 @@ public class Player {
 
     public String getStringVar(String str) {
         switch (str) {
-            case "name":
+            case "[name]":
                 return this.getName();
-            case "bankCost":
+            case "[bankCost]":
                 return getBankCost() + "";
-            case "points":
+            case "[points]":
                 return this.getAccount().getPoints() + "";
-            case "nbrOnline":
+            case "[nbrOnline]":
                 return Config.gameServer.getClients().size() + "";
-            case "align":
+            case "[align]":
                 return World.world.getStatOfAlign();
+            default:
+                return str;
         }
-        return "";
     }
 
     public void refreshMapAfterFight() {
@@ -5573,7 +5586,7 @@ public class Player {
         return !Config.subscription || this.getAccount().isSubscribe();
     }
 
-    public boolean isInAreaNotSubscribe() {
+    public boolean isMissingSubscription() {
         boolean ok = Config.subscription;
 
         if (this.curMap == null)

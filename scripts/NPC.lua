@@ -1,4 +1,3 @@
-
 NPCS = NPCS or {}
 
 Npc = Npc or {}
@@ -9,27 +8,25 @@ setmetatable(Npc, {
         local self = setmetatable({}, Npc)
         self.id = id
         self.gfxID = gfxID
-        self.scale = 100
-        self.colors = {}
+        self.gender = 0
+        self.scaleX = 100
+        self.scaleY = 100
+        self.colors = {-1,-1,-1}
         self.accessories = {}
         self.extraClip = nil
+        self.customArtwork = 0
 
         -- Register the Npc in the global dict
         if NPCS[self.id] ~= nil then
-            JLogF("Overriding Npc #", self.id)
+            JLogF("Overriding Npc #{}", self.id)
         end
         NPCS[self.id] = self
         return self
     end,
 })
 
--- Called by the Dialog class
-function Npc:onTalk(jPlayer, answer)
-    --local initQ = type(self.initQuestion) == "number" and self.initQuestion or self.initQuestion(jPlayer)
-    --local fct =  not answer and QUESTIONS[initQ] or ANSWERS[answer]
-    --return fct and fct(jPlayer) or nil
-    return nil
-end
+-- Called by the Dialog class, overwritten by each Npc
+function Npc:onTalk(jPlayer, answer) return nil end
 
 ---- Used to show the ! on top of the NPC
 --function Npc:hasQuestAvailable(jPlayer)
@@ -44,6 +41,7 @@ end
 --end
 
 
+-- Helper called by java side
 function onNpcDialog(player, npcID, answer)
     return NPCS[npcID] and NPCS[npcID]:onTalk(player, answer) or nil
 end

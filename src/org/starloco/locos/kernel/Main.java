@@ -82,7 +82,8 @@ public class Main {
         try {
             NpcScriptVM.init();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            Main.logger.error("init NpcScriptVM failed", e);
+            throw new RuntimeException("init NpcScriptVM failed", e);
         }
 
         // Database

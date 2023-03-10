@@ -1632,9 +1632,10 @@ public class CommandAdmin extends AdminUser {
                         + " | "
                         + entry.getValue().getTemplate().getId()
                         + " | "
-                        + entry.getValue().getCellId()
-                        + " | "
-                        + entry.getValue().getTemplate().getInitQuestionId(this.getPlayer().getCurMap().getId());
+                        + entry.getValue().getCellId();
+// FIXME Diabu
+//                        + " | "
+//                        + entry.getValue().getTemplate().getInitQuestionId(this.getPlayer().getCurMap().getId());
                 this.sendMessage(mess);
             }
             mess = "Liste des groupes de monstres :";
