@@ -487,7 +487,7 @@ public class Fighter implements Comparable<Fighter> {
                 break;
         }
         //Si c'est le jouer actif qui s'autoBuff, on ajoute 1 a la durée
-        if(this.getId() == caster.getId() && id != 84 && id != 950 && spellId != 446) {
+        if(this.getId() == caster.getId() && !this.isTrapped() && id != 84 && id != 950 && spellId != 446) {
             duration += 1;
             switch(spellId) {
                 case 138: // Mot de silence
@@ -522,7 +522,7 @@ public class Fighter implements Comparable<Fighter> {
                         duration--;
                     break;
                 default:
-                    if (this.getId() == caster.getId())
+                    if (this.getId() == caster.getId() || this.isTrapped())
                         duration--;
             }
         }
