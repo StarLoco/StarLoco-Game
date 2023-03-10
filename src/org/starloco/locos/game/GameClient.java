@@ -6,6 +6,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
 
+import org.starloco.locos.script.NpcScriptVM;
 import org.starloco.locos.util.Pair;
 import org.apache.mina.core.session.IoSession;
 import org.starloco.locos.area.Area;
@@ -37,8 +38,6 @@ import org.starloco.locos.entity.exchange.Exchange;
 import org.starloco.locos.entity.exchange.PlayerExchange;
 import org.starloco.locos.entity.mount.Mount;
 import org.starloco.locos.entity.npc.Npc;
-import org.starloco.locos.entity.npc.NpcAnswer;
-import org.starloco.locos.entity.npc.NpcQuestion;
 import org.starloco.locos.entity.npc.NpcTemplate;
 import org.starloco.locos.entity.pet.Pet;
 import org.starloco.locos.entity.pet.PetEntry;
@@ -72,10 +71,8 @@ import org.starloco.locos.object.ObjectTemplate;
 import org.starloco.locos.object.entity.Fragment;
 import org.starloco.locos.object.entity.SoulStone;
 import org.starloco.locos.other.Action;
-import org.starloco.locos.other.Dopeul;
 import org.starloco.locos.quest.Quest;
 import org.starloco.locos.quest.QuestPlayer;
-import org.starloco.locos.quest.QuestObjective;
 import org.starloco.locos.util.generator.NameGenerator;
 import org.starloco.locos.util.TimerWaiter;
 
@@ -1250,15 +1247,15 @@ public class GameClient {
     private void parseDialogPacket(String packet) {
         switch (packet.charAt(1)) {
             case 'C'://Demande de l'initQuestion
-                create(packet);
+                npcCreateDialog(packet);
                 break;
 
             case 'R'://R?ponse du joueur
-                response(packet);
+                npcResponse(packet);
                 break;
 
             case 'V'://Fin du dialog
-                leave();
+                quitDialog();
                 break;
         }
 
@@ -1270,215 +1267,238 @@ public class GameClient {
         }
     }
 
-    private void create(String packet) {
-        try {
-            if (this.player.isInAreaNotSubscribe() || this.player.getExchangeAction() != null) {
-                SocketManager.GAME_SEND_EXCHANGE_REQUEST_ERROR(this.player.getGameClient(), 'S');
-                return;
-            }
-
-            int id = Integer.parseInt(packet.substring(2).split((char) 0x0A + "")[0]);
-            Collector collector = World.world.getCollector(id);
-
-            if (collector != null && collector.getMap() == this.player.getCurMap().getId()) {
-                SocketManager.GAME_SEND_DCK_PACKET(this, id);
-                SocketManager.GAME_SEND_QUESTION_PACKET(this, World.world.getGuild(collector.getGuildId()).parseQuestionTaxCollector());
-                return;
-            }
-
-            Npc npc = this.player.getCurMap().getNpc(id);
-            if (npc == null) return;
-
-            SocketManager.GAME_SEND_DCK_PACKET(this, id);
-            int questionId = npc.getTemplate().getInitQuestionId(this.player.getCurMap().getId());
-
-            NpcQuestion question = World.world.getNPCQuestion(questionId);
-
-            if (question == null) {
-                SocketManager.GAME_SEND_END_DIALOG_PACKET(this);
-                return;
-            }
-
-            if (npc.getTemplate().getId() == 870) {
-                Quest quest = Quest.getQuestById(185);
-                if (quest != null) {
-                    QuestPlayer questPlayer = this.player.getQuestPersoByQuest(quest);
-                    if (questPlayer != null) {
-                        if (questPlayer.isFinish()) {
-                            SocketManager.GAME_SEND_END_DIALOG_PACKET(this);
-                            return;
-                        }
-                    }
-                }
-            } else if (npc.getTemplate().getId() == 891) {
-                Quest quest = Quest.getQuestById(200);
-                if (quest != null) {
-                    if (this.player.getQuestPersoByQuest(quest) == null) {
-                        quest.applyQuest(this.player);
-                        player.send("GM|" + npc.parse(true, player));
-                    }
-                }
-            } else if (npc.getTemplate().getId() == 925 && this.player.getCurMap().getId() == (short) 9402) {
-                Quest quest = Quest.getQuestById(231);
-                if (quest != null) {
-                    QuestPlayer questPlayer = this.player.getQuestPersoByQuest(quest);
-                    if (questPlayer != null) {
-                        if (questPlayer.isFinish()) {
-                            question = World.world.getNPCQuestion(4127);
-                            if (question == null) {
-                                SocketManager.GAME_SEND_END_DIALOG_PACKET(this);
-                                return;
-                            }
-                        }
-                    }
-                }
-            } else if (npc.getTemplate().getId() == 577 && this.player.getCurMap().getId() == (short) 7596) {
-                if (this.player.hasItemTemplate(2106, 1, false))
-                    question = World.world.getNPCQuestion(2407);
-            } else if (npc.getTemplate().getId() == 1041 && this.player.getCurMap().getId() == (short) 10255 && questionId == 5516) {
-                if (this.player.getAlignment() == 1) {// bontarien
-                    if (this.player.getSexe() == 0)
-                        question = World.world.getNPCQuestion(5519);
-                    else
-                        question = World.world.getNPCQuestion(5520);
-                } else if (this.player.getAlignment() == 2) {// brakmarien
-                    if (this.player.getSexe() == 0)
-                        question = World.world.getNPCQuestion(5517);
-                    else
-                        question = World.world.getNPCQuestion(5518);
-                } else { // Neutre ou mercenaire
-                    question = World.world.getNPCQuestion(5516);
-                }
-            }
-
-            ExchangeAction<Integer> exchangeAction = new ExchangeAction<>(ExchangeAction.TALKING_WITH, id);
-            this.player.setExchangeAction(exchangeAction);
-
-            SocketManager.GAME_SEND_QUESTION_PACKET(this, question.parse(this.player));
-
-            for (QuestPlayer questPlayer :  new ArrayList<>(this.player.getQuestPerso().values())) {
-                boolean loc1 = false;
-                for (QuestObjective questObjective : questPlayer.getQuest().getQuestObjectives())
-                    if (questObjective.getNpc() != null && questObjective.getNpc().getId() == this.player.getCurMap().getNpc(exchangeAction.getValue()).getTemplate().getId())
-                        loc1 = true;
-
-                Quest quest = questPlayer.getQuest();
-                if (quest == null || questPlayer.isFinish()) continue;
-                NpcTemplate npcTemplate = quest.getNpcTemplate();
-                if (npcTemplate == null && !loc1) continue;
-
-                quest.updateQuestData(this.player, false, 0);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+    private void npcCreateDialog(String packet) {
+        if (this.player.isInAreaNotSubscribe() || this.player.getExchangeAction() != null) {
+            SocketManager.GAME_SEND_EXCHANGE_REQUEST_ERROR(this.player.getGameClient(), 'S');
+            return;
         }
+        int id = Integer.parseInt(packet.substring(2).split((char) 0x0A + "")[0]);
+        Collector collector = World.world.getCollector(id);
+
+        if (collector != null && collector.getMap() == this.player.getCurMap().getId()) {
+            SocketManager.GAME_SEND_DCK_PACKET(this, id);
+            SocketManager.GAME_SEND_QUESTION_PACKET(this, World.world.getGuild(collector.getGuildId()).parseQuestionTaxCollector());
+            return;
+        }
+
+        ExchangeAction<Integer> exchangeAction = new ExchangeAction<>(ExchangeAction.TALKING_WITH, id);
+        this.player.setExchangeAction(exchangeAction);
+
+        NpcScriptVM.getInstance().OnNPCDialog(id, this.player, 0);
+
+//        try {
+//            if (this.player.isInAreaNotSubscribe() || this.player.getExchangeAction() != null) {
+//                SocketManager.GAME_SEND_EXCHANGE_REQUEST_ERROR(this.player.getGameClient(), 'S');
+//                return;
+//            }
+//
+//            int id = Integer.parseInt(packet.substring(2).split((char) 0x0A + "")[0]);
+//            Collector collector = World.world.getCollector(id);
+//
+//            if (collector != null && collector.getMap() == this.player.getCurMap().getId()) {
+//                SocketManager.GAME_SEND_DCK_PACKET(this, id);
+//                SocketManager.GAME_SEND_QUESTION_PACKET(this, World.world.getGuild(collector.getGuildId()).parseQuestionTaxCollector());
+//                return;
+//            }
+//
+//            Npc npc = this.player.getCurMap().getNpc(id);
+//            if (npc == null) return;
+//
+//            SocketManager.GAME_SEND_DCK_PACKET(this, id);
+//            int questionId = npc.getTemplate().getInitQuestionId(this.player.getCurMap().getId());
+//
+//            NpcQuestion question = World.world.getNPCQuestion(questionId);
+//
+//            if (question == null) {
+//                SocketManager.GAME_SEND_END_DIALOG_PACKET(this);
+//                return;
+//            }
+//
+//            if (npc.getTemplate().getId() == 870) {
+//                Quest quest = Quest.getQuestById(185);
+//                if (quest != null) {
+//                    QuestPlayer questPlayer = this.player.getQuestPersoByQuest(quest);
+//                    if (questPlayer != null) {
+//                        if (questPlayer.isFinish()) {
+//                            SocketManager.GAME_SEND_END_DIALOG_PACKET(this);
+//                            return;
+//                        }
+//                    }
+//                }
+//            } else if (npc.getTemplate().getId() == 891) {
+//                Quest quest = Quest.getQuestById(200);
+//                if (quest != null) {
+//                    if (this.player.getQuestPersoByQuest(quest) == null) {
+//                        quest.applyQuest(this.player);
+//                        player.send("GM|" + npc.parse(true, player));
+//                    }
+//                }
+//            } else if (npc.getTemplate().getId() == 925 && this.player.getCurMap().getId() == (short) 9402) {
+//                Quest quest = Quest.getQuestById(231);
+//                if (quest != null) {
+//                    QuestPlayer questPlayer = this.player.getQuestPersoByQuest(quest);
+//                    if (questPlayer != null) {
+//                        if (questPlayer.isFinish()) {
+//                            question = World.world.getNPCQuestion(4127);
+//                            if (question == null) {
+//                                SocketManager.GAME_SEND_END_DIALOG_PACKET(this);
+//                                return;
+//                            }
+//                        }
+//                    }
+//                }
+//            } else if (npc.getTemplate().getId() == 577 && this.player.getCurMap().getId() == (short) 7596) {
+//                if (this.player.hasItemTemplate(2106, 1, false))
+//                    question = World.world.getNPCQuestion(2407);
+//            } else if (npc.getTemplate().getId() == 1041 && this.player.getCurMap().getId() == (short) 10255 && questionId == 5516) {
+//                if (this.player.getAlignment() == 1) {// bontarien
+//                    if (this.player.getSexe() == 0)
+//                        question = World.world.getNPCQuestion(5519);
+//                    else
+//                        question = World.world.getNPCQuestion(5520);
+//                } else if (this.player.getAlignment() == 2) {// brakmarien
+//                    if (this.player.getSexe() == 0)
+//                        question = World.world.getNPCQuestion(5517);
+//                    else
+//                        question = World.world.getNPCQuestion(5518);
+//                } else { // Neutre ou mercenaire
+//                    question = World.world.getNPCQuestion(5516);
+//                }
+//            }
+//
+//            ExchangeAction<Integer> exchangeAction = new ExchangeAction<>(ExchangeAction.TALKING_WITH, id);
+//            this.player.setExchangeAction(exchangeAction);
+//
+//            SocketManager.GAME_SEND_QUESTION_PACKET(this, question.parse(this.player));
+//
+//            for (QuestPlayer questPlayer :  new ArrayList<>(this.player.getQuestPerso().values())) {
+//                boolean loc1 = false;
+//                for (QuestObjective questObjective : questPlayer.getQuest().getQuestObjectives())
+//                    if (questObjective.getNpc() != null && questObjective.getNpc().getId() == this.player.getCurMap().getNpc(exchangeAction.getValue()).getTemplate().getId())
+//                        loc1 = true;
+//
+//                Quest quest = questPlayer.getQuest();
+//                if (quest == null || questPlayer.isFinish()) continue;
+//                NpcTemplate npcTemplate = quest.getNpcTemplate();
+//                if (npcTemplate == null && !loc1) continue;
+//
+//                quest.updateQuestData(this.player, false, 0);
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
     }
 
-    private void response(String packet) {
+    @SuppressWarnings("unchecked")
+    private void npcResponse(String packet) {
         String[] infos = packet.substring(2).split("\\|");
         try {
             ExchangeAction<?> checkExchangeAction = this.player.getExchangeAction();
             if (checkExchangeAction == null || checkExchangeAction.getType() != ExchangeAction.TALKING_WITH) return;
 
             ExchangeAction<Integer> exchangeAction = (ExchangeAction<Integer>) this.player.getExchangeAction();
-            Npc npc = this.player.getCurMap().getNpc(exchangeAction.getValue());
-
-            //FIXME: if npc == null => faille dialog npc, disable for .help command
+            int npcID = exchangeAction.getValue();
 
             int answerId = Integer.parseInt(infos[1]);
-            NpcQuestion question = World.world.getNPCQuestion(Integer.parseInt(infos[0]));
-            NpcAnswer answer = World.world.getNpcAnswer(answerId);
+            NpcScriptVM.getInstance().OnNPCDialog(npcID, this.player, answerId);
 
-            if (question == null || answer == null) {
-                this.player.setIsOnDialogAction(-1);
-                SocketManager.GAME_SEND_END_DIALOG_PACKET(this);
-                return;
-            }
 
-            if (!this.player.getQuestPerso().isEmpty()) {
-                for (QuestPlayer questPlayer : this.player.getQuestPerso().values()) {
-                    if (questPlayer.isFinish() || questPlayer.getQuest() == null || questPlayer.getQuest().getNpcTemplate() == null)
-                        continue;
-                    for (QuestObjective questObjective : questPlayer.getQuest().getQuestObjectives()) {
-                        if (questObjective == null || questPlayer.isQuestObjectiveIsValidate(questObjective) || npc.getTemplate() == null)
-                            continue;
-
-                        NpcTemplate questNpc = questObjective.getNpc(), curNpc = npc.getTemplate();
-
-                        if (questNpc != null && curNpc != null && questNpc.getId() == curNpc.getId())
-                            questPlayer.getQuest().updateQuestData(this.player, false, answerId);
-                    }
-                }
-            }
-
-            if (answerId == 6604 || answerId == 6605) {
-                String stats = "", statsReplace = "";
-                if (this.player.hasItemTemplate(10207, 1, false))
-                    stats = this.player.getItemTemplate(10207).getTxtStat().get(Constant.STATS_NAME_DJ);
-                try {
-                    for(String answer0 : question.getAnwsers().split(";")) {
-                        for (Action action : World.world.getNpcAnswer(Integer.parseInt(answer0)).getActions()) {
-                            if ((action.getId() == 15 || action.getId() == 16) && this.player.hasItemTemplate(10207, 1, false)) {
-                                for (String i : stats.split(",")) {
-                                    GameMap map = this.player.getCurMap();
-                                    if (map != null) {
-                                        Npc npc0 = map.getNpc(exchangeAction.getValue());
-                                        if (npc0 != null && npc0.getTemplate() != null && Dopeul.parseConditionTrousseau(i.replace(" ", ""), npc0.getTemplate().getId(), map.getId())) {
-                                            this.player.teleport(Short.parseShort(action.getArgs().split(",")[0]), Integer.parseInt(action.getArgs().split(",")[1]));
-                                            switch(map.getId()) {
-                                                case 9397:case 9538:
-                                                    break;
-                                                default:
-                                                    statsReplace = i;
-                                                    break;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                } catch(Exception e) {
-                    e.printStackTrace();
-                }
-
-                GameObject object = this.player.getItemTemplate(10207);
-                if (answerId == 6605 && !statsReplace.isEmpty()) {
-                    String newStats = "";
-                    for (String i : stats.split(","))
-                        if (!i.equals(statsReplace))
-                            newStats += (newStats.isEmpty() ? i : "," + i);
-
-                    object.getTxtStat().remove(Constant.STATS_NAME_DJ);
-                    object.getTxtStat().put(Constant.STATS_NAME_DJ, newStats);
-                }
-                SocketManager.GAME_SEND_UPDATE_ITEM(this.player, object);
-            } else if (answerId == 4628) {
-                if (this.player.hasItemTemplate(9487, 1, false)) {
-                    String date = this.player.getItemTemplate(9487, 1).getTxtStat().get(Constant.STATS_DATE);
-                    long timeStamp = Long.parseLong(date);
-                    if (System.currentTimeMillis() - timeStamp <= 1209600000) {
-                        new Action(1, "5522", "", World.world.getMap((short) 10255)).apply(this.player, null, -1, -1);
-                        return;
-                    }
-                }
-                new Action(1, "5521", "", World.world.getMap((short) 10255)).apply(this.player, null, -1, -1);
-                return;
-            }
-
-            boolean leave = answer.apply(this.player);
-
-            if (!answer.isAnotherDialog()) {
-                if (this.player.getIsOnDialogAction() == 1) {
-                    this.player.setIsOnDialogAction(-1);
-                } else {
-                    if (leave) {
-                        SocketManager.GAME_SEND_END_DIALOG_PACKET(this);
-                        if(this.player.getExchangeAction() != null && this.player.getExchangeAction().getType() == ExchangeAction.TALKING_WITH)
-                            this.player.setExchangeAction(null);
-                    }
-                }
-            }
+//            //FIXME: if npc == null => faille dialog npc, disable for .help command
+//
+//            int answerId = Integer.parseInt(infos[1]);
+//            NpcQuestion question = World.world.getNPCQuestion(Integer.parseInt(infos[0]));
+//            NpcAnswer answer = World.world.getNpcAnswer(answerId);
+//
+//            if (question == null || answer == null) {
+//                this.player.setIsOnDialogAction(-1);
+//                SocketManager.GAME_SEND_END_DIALOG_PACKET(this);
+//                return;
+//            }
+//
+//            if (!this.player.getQuestPerso().isEmpty()) {
+//                for (QuestPlayer questPlayer : this.player.getQuestPerso().values()) {
+//                    if (questPlayer.isFinish() || questPlayer.getQuest() == null || questPlayer.getQuest().getNpcTemplate() == null)
+//                        continue;
+//                    for (QuestObjective questObjective : questPlayer.getQuest().getQuestObjectives()) {
+//                        if (questObjective == null || questPlayer.isQuestObjectiveIsValidate(questObjective) || npc.getTemplate() == null)
+//                            continue;
+//
+//                        NpcTemplate questNpc = questObjective.getNpc(), curNpc = npc.getTemplate();
+//
+//                        if (questNpc != null && curNpc != null && questNpc.getId() == curNpc.getId())
+//                            questPlayer.getQuest().updateQuestData(this.player, false, answerId);
+//                    }
+//                }
+//            }
+//
+//            if (answerId == 6604 || answerId == 6605) {
+//                String stats = "", statsReplace = "";
+//                if (this.player.hasItemTemplate(10207, 1, false))
+//                    stats = this.player.getItemTemplate(10207).getTxtStat().get(Constant.STATS_NAME_DJ);
+//                try {
+//                    for(String answer0 : question.getAnwsers().split(";")) {
+//                        for (Action action : World.world.getNpcAnswer(Integer.parseInt(answer0)).getActions()) {
+//                            if ((action.getId() == 15 || action.getId() == 16) && this.player.hasItemTemplate(10207, 1, false)) {
+//                                for (String i : stats.split(",")) {
+//                                    GameMap map = this.player.getCurMap();
+//                                    if (map != null) {
+//                                        Npc npc0 = map.getNpc(exchangeAction.getValue());
+//                                        if (npc0 != null && npc0.getTemplate() != null && Dopeul.parseConditionTrousseau(i.replace(" ", ""), npc0.getTemplate().getId(), map.getId())) {
+//                                            this.player.teleport(Short.parseShort(action.getArgs().split(",")[0]), Integer.parseInt(action.getArgs().split(",")[1]));
+//                                            switch(map.getId()) {
+//                                                case 9397:case 9538:
+//                                                    break;
+//                                                default:
+//                                                    statsReplace = i;
+//                                                    break;
+//                                            }
+//                                        }
+//                                    }
+//                                }
+//                            }
+//                        }
+//                    }
+//                } catch(Exception e) {
+//                    e.printStackTrace();
+//                }
+//
+//                GameObject object = this.player.getItemTemplate(10207);
+//                if (answerId == 6605 && !statsReplace.isEmpty()) {
+//                    String newStats = "";
+//                    for (String i : stats.split(","))
+//                        if (!i.equals(statsReplace))
+//                            newStats += (newStats.isEmpty() ? i : "," + i);
+//
+//                    object.getTxtStat().remove(Constant.STATS_NAME_DJ);
+//                    object.getTxtStat().put(Constant.STATS_NAME_DJ, newStats);
+//                }
+//                SocketManager.GAME_SEND_UPDATE_ITEM(this.player, object);
+//            } else if (answerId == 4628) {
+//                if (this.player.hasItemTemplate(9487, 1, false)) {
+//                    String date = this.player.getItemTemplate(9487, 1).getTxtStat().get(Constant.STATS_DATE);
+//                    long timeStamp = Long.parseLong(date);
+//                    if (System.currentTimeMillis() - timeStamp <= 1209600000) {
+//                        new Action(1, "5522", "", World.world.getMap((short) 10255)).apply(this.player, null, -1, -1);
+//                        return;
+//                    }
+//                }
+//                new Action(1, "5521", "", World.world.getMap((short) 10255)).apply(this.player, null, -1, -1);
+//                return;
+//            }
+//
+//            boolean leave = answer.apply(this.player);
+//
+//            if (!answer.isAnotherDialog()) {
+//                if (this.player.getIsOnDialogAction() == 1) {
+//                    this.player.setIsOnDialogAction(-1);
+//                } else {
+//                    if (leave) {
+//                        SocketManager.GAME_SEND_END_DIALOG_PACKET(this);
+//                        if(this.player.getExchangeAction() != null && this.player.getExchangeAction().getType() == ExchangeAction.TALKING_WITH)
+//                            this.player.setExchangeAction(null);
+//                    }
+//                }
+//            }
         } catch (Exception e) {
             e.printStackTrace();
             this.player.setIsOnDialogAction(-1);
@@ -1487,7 +1507,7 @@ public class GameClient {
         }
     }
 
-    private void leave() {
+    private void quitDialog() {
         this.player.setAway(false);
         this.walk = false;
         if (this.player.getExchangeAction() != null && this.player.getExchangeAction().getType() == ExchangeAction.TALKING_WITH)

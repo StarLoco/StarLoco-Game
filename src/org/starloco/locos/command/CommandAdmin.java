@@ -1909,11 +1909,7 @@ public class CommandAdmin extends AdminUser {
                     DatabaseManager.get(ObjectActionData.class).loadFully();
                     break;
                 case "NPCS":
-                    DatabaseManager.get(NpcTemplateData.class).loadFully();
-                    World.world.getNpcQuestions().clear();
-                    DatabaseManager.get(NpcQuestionData.class).loadFully();
-                    World.world.getNpcAnswers().clear();
-                    DatabaseManager.get(NpcAnswerData.class).loadFully();
+                    // TODO reload from LUA
                     break;
                 case "ADMIN":
                     Command.reload();
@@ -2795,68 +2791,6 @@ public class CommandAdmin extends AdminUser {
                     + " a ete ajoute au joueur "
                     + perso.getName()
                     + ".");
-            return;
-        } else if (command.equalsIgnoreCase("DELNPCITEM")) {
-            int npcGUID = 0;
-            int itmID = -1;
-            try {
-                npcGUID = Integer.parseInt(infos[1]);
-                itmID = Integer.parseInt(infos[2]);
-            } catch (Exception e) {
-                // ok
-            }
-
-            GameMap map = this.getPlayer().getCurMap();
-            Npc npc = map.getNpc(npcGUID);
-            NpcTemplate npcTemplate = null;
-            if (npc == null)
-                npcTemplate = World.world.getNPCTemplate(npcGUID);
-            else
-                npcTemplate = npc.getTemplate();
-            if (npcGUID == 0 || itmID == -1 || npcTemplate == null) {
-                String str = "NpcGUID ou itemID invalide.";
-                this.sendMessage(str);
-                return;
-            }
-            String str = "";
-            if (npcTemplate.removeItemVendor(itmID))
-                str = "L'objet a ete retire.";
-            else
-                str = "L'objet n'a pas ete retire.";
-            this.sendMessage(str);
-            ((NpcTemplateData) DatabaseManager.get(NpcTemplateData.class)).update(npcTemplate);
-            return;
-        } else if (command.equalsIgnoreCase("ADDNPCITEM")) {
-            int npcGUID = 0;
-            int itmID = -1;
-            try {
-                npcGUID = Integer.parseInt(infos[1]);
-                itmID = Integer.parseInt(infos[2]);
-            } catch (Exception e) {
-                // ok
-            }
-
-            GameMap map = this.getPlayer().getCurMap();
-            Npc npc = map.getNpc(npcGUID);
-            NpcTemplate npcTemplate = null;
-            if (npc == null)
-                npcTemplate = World.world.getNPCTemplate(npcGUID);
-            else
-                npcTemplate = npc.getTemplate();
-            ObjectTemplate item = World.world.getObjTemplate(itmID);
-            if (npcGUID == 0 || itmID == -1 || npcTemplate == null
-                    || item == null) {
-                String str = "NpcGUID ou itemID invalide.";
-                this.sendMessage(str);
-                return;
-            }
-            String str = "";
-            if (npcTemplate.addItemVendor(item))
-                str = "L'objet a ete rajoute.";
-            else
-                str = "L'objet n'a pas ete rajoute.";
-            this.sendMessage(str);
-            ((NpcTemplateData) DatabaseManager.get(NpcTemplateData.class)).update(npcTemplate);
             return;
         } else if (command.equalsIgnoreCase("LISTEXTRA")) {
             String mess = "Liste des Extra Monstres :";

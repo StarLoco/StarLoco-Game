@@ -56,6 +56,7 @@ import org.starloco.locos.other.Dopeul;
 import org.starloco.locos.guild.Guild;
 import org.starloco.locos.quest.Quest;
 import org.starloco.locos.quest.QuestPlayer;
+import org.starloco.locos.script.proxy.SPlayer;
 import org.starloco.locos.util.TimerWaiter;
 
 import java.text.DateFormat;
@@ -65,6 +66,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 
 public class Player {
+    private final SPlayer scriptVal;
 
     public Stats stats;
     //Job
@@ -237,6 +239,7 @@ public class Player {
                   int deshonor, int alvl, String z, byte title, int wifeGuid,
                   String morphMode, String allTitle, String emotes, long prison,
                   boolean isNew, String parcho, long timeDeblo, boolean noall, String deadInformation, byte deathCount, long totalKills) {
+        this.scriptVal = new SPlayer(this);
         this.id = id;
         this.noall = noall;
         this.name = name;
@@ -433,6 +436,8 @@ public class Player {
                   int color1, int color2, int color3, int level, int _size,
                   int _gfxid, Map<Integer, Integer> stats, String stuff,
                   int pdvPer, byte seeAlign, int mount, int alvl, byte alignement) {
+        this.scriptVal = null; // FIXME if we ever use scripts for fights
+
         this.id = id;
         this.name = name;
         this.groupe = Group.getGroupeById(groupe);
@@ -5845,5 +5850,9 @@ public class Player {
         if(this.getGameClient() != null)
             return this.getGameClient().getLanguage();
         return LangEnum.ENGLISH;
+    }
+
+    public SPlayer Scripted() {
+        return this.scriptVal;
     }
 }

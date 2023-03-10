@@ -1,5 +1,6 @@
 package org.starloco.locos.common;
 
+import com.singularsys.jep.functions.Str;
 import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.area.map.entity.InteractiveObject;
@@ -29,6 +30,7 @@ import org.starloco.locos.guild.GuildMember;
 import org.starloco.locos.quest.Quest;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -1240,11 +1242,23 @@ public class SocketManager {
         send(out, packet);
 
     }
+    public static void GAME_SEND_QUESTION_PACKET(GameClient out, int id, int[] answers, String args) {
+        StringBuilder pck = new StringBuilder("DQ");
+        pck.append(id);
+        if(args.length() >0){
+            pck.append(";");
+            pck.append(args);
+        }
+        pck.append("|");
+        Arrays.stream(answers).forEachOrdered(pck::append);
 
+        send(out, pck.toString());
+    }
+
+    @Deprecated
     public static void GAME_SEND_QUESTION_PACKET(GameClient out, String str) {
         String packet = "DQ" + str;
         send(out, packet);
-
     }
 
     public static void GAME_SEND_END_DIALOG_PACKET(GameClient out) {
