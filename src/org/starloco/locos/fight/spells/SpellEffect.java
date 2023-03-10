@@ -533,7 +533,7 @@ public class SpellEffect implements Cloneable {
 			case 107://Renvoie de dom
 				applyEffect_107(targets);
 				break;
-			case 108://Soin
+			case 108:// PDV rendus de X à Y
 				applyEffect_108(targets, fight, isCaC);
 				break;
 			case 109://Dommage pour le lanceur
@@ -2842,7 +2842,7 @@ public class SpellEffect implements Cloneable {
 				target.addBuff(effectID, value, turns, true, spell, args, caster, false, true);//on applique un buff
 	}
 
-	private void applyEffect_108(ArrayList<Fighter> targets, Fight fight, boolean isCaC) {// healcion
+	private void applyEffect_108(ArrayList<Fighter> targets, Fight fight, boolean isCaC) {
 		if (spell == 441) return;
 		if (isCaC) return;
 		if (turns <= 0) {

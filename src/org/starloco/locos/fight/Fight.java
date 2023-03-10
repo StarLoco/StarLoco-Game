@@ -3648,6 +3648,7 @@ public class Fight {
                 String chance = effect.getArgs().split(";")[2];
                 packet.append(value).append(";").append(valMax).append(";").append(chance).append(";;");
                 break;
+            case 108:
             case 606:
             case 607:
             case 608:
