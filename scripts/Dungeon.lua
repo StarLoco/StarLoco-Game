@@ -54,5 +54,24 @@ function Dungeon:onTalkToGateKeeper(player, answer)
     end
 end
 
--- Bouftou
-BouftouDungeon = Dungeon(1568, 660, 6602, 564, {2073, 409})
+-- TODO: Rename to english
+BouftousDungeon = Dungeon(1568, 660, 6602, 564, {2073, 409})
+ForgeronsDungeon = Dungeon(1569, 7069, 6602, 6632, {2085, 408})
+SquelettesDungeon = Dungeon(1570, 7070, 6602, 7708, {2110, 118})
+BworkerDungeon = Dungeon(6884, 7071, 6602, 6636, {7522, 432})
+PandikazesDungeon = Dungeon(7309, 2940, 6602, 2576, {8326, 433})
+BulbesDungeon = Dungeon(7310, 7072, 6602, 6638, {8294, 407})
+FirefouxDungeon = Dungeon(7312, 2943, 6602, 2577, {8502, 388})
+AbraknydesDungeon = Dungeon(7557, 3272, 6602, 2927, 6605, {8713, 292})
+KoulosseDungeon = Dungeon(7908, 3119, 6602, 2742, {8963, 350})
+MaitreCorbacDungeon = Dungeon(7926, 3200, 6602, 2829, {9589, 436})
+CraqueleursDungeon = Dungeon(7927, 3163, 6602, 2781, {9578, 384})
+SkeunkDungeon = Dungeon(8073, 3138, 6602, 2762, {8969, 393})
+BworksDungeon = Dungeon(8135, 3172, 6602, 2794, {9755, 268})
+ScarafeuillesDungeon = Dungeon(8139, 3179, 6602, 2947, {9775, 436})
+TofusDungeon = Dungeon(7918, 3175, 6602, 2797, {9521, 451})
+TofulaillerRoyalDungeon = Dungeon(8142, 3176, 6602, 2798, 2799, 2800, {})
+ChampsDungeon = Dungeon(8143, 3178, 6602, 2802, {9771, 293})
+KaniDungeon = Dungeon(8342, 3177, 6602, 2801, {9658, 408})
+CheneMouDungeon = Dungeon(8436, 3276, 6602, 2930, {8714, 112})
+EnsableDungeon = Dungeon(8545, 3289, 6602, 2944, {10156, 247})
