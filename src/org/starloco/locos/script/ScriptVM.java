@@ -91,6 +91,13 @@ public class ScriptVM {
         }
     }
 
+    public static int rawInt(Table v, Object key) {
+        return ((Long)v.rawget(key)).intValue();
+    }
+    public static int rawInt(Table v, long key) {
+        return ((Long)v.rawget(key)).intValue();
+    }
+
     @SuppressWarnings("unchecked")
     public static <T> ArrayList<T> fromLuaTable(Table t) {
         ArrayList<T> out = new ArrayList<>();
@@ -109,7 +116,7 @@ public class ScriptVM {
 
         long len = t.rawlen();
         for(int i=1;i<=len;i++){
-            int a = Math.toIntExact((Long)t.rawget(i));
+            int a = rawInt (t, i);
             out.add(a);
         }
 

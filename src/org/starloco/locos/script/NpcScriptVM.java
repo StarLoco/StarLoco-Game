@@ -26,6 +26,7 @@ public final class NpcScriptVM extends ScriptVM {
         super("NPC");
 
         this.customizeEnv();
+        this.runFile(Paths.get("scripts", "Dungeon.lua"));
         this.runFile(Paths.get("scripts", "Npc.lua"));
         this.runDirectory(Paths.get("scripts", "npcs"));
 
@@ -64,18 +65,18 @@ public final class NpcScriptVM extends ScriptVM {
     static class RegisterNpcTemplate extends AbstractFunction1<Table> {
         @Override
         public void invoke(ExecutionContext context, Table val) {
-            int id = Math.toIntExact((Long)val.rawget("id"));
-            int gfxID = Math.toIntExact((Long)val.rawget("gfxID"));
-            int gender = Math.toIntExact((Long)val.rawget("gender"));
-            int scaleX = Math.toIntExact((Long)val.rawget("scaleX"));
-            int scaleY = Math.toIntExact((Long)val.rawget("scaleY"));
+            int id = rawInt(val, "id");
+            int gfxID = rawInt(val, "gfxID");
+            int gender = rawInt(val, "gender");
+            int scaleX = rawInt(val, "scaleX");
+            int scaleY = rawInt(val, "scaleY");
             Table colors = (Table)val.rawget("colors");
-            int color1 = Math.toIntExact((Long)colors.rawget(1));
-            int color2 = Math.toIntExact((Long)colors.rawget(2));
-            int color3 = Math.toIntExact((Long)colors.rawget(3));
+            int color1 = rawInt(colors,1);
+            int color2 = rawInt(colors,2);
+            int color3 = rawInt(colors,3);
             Table accessories = (Table)val.rawget("accessories");
             List<Integer> accessoriesNb = ScriptVM.intsFromLuaTable(accessories);
-            int customArtwork = Math.toIntExact((Long)val.rawget("customArtwork"));
+            int customArtwork = rawInt(val,"customArtwork");
 
             World.world.addNpcTemplate(new NpcTemplate(id, gfxID, scaleX, scaleY, gender, color1, color2, color3, accessoriesNb, customArtwork));
 

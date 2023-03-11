@@ -15,6 +15,8 @@ import org.starloco.locos.job.JobAction;
 import org.starloco.locos.kernel.Constant;
 import org.starloco.locos.kernel.Logging;
 import org.starloco.locos.object.entity.Fragment;
+import org.starloco.locos.script.proxy.SItem;
+import org.starloco.locos.script.proxy.SPlayer;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,6 +25,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 public class GameObject {
+    private final SItem scriptVal;
 
     protected ObjectTemplate template;
     protected int quantity = 1;
@@ -38,6 +41,7 @@ public class GameObject {
     private Map<Integer, Integer> SoulStats = new HashMap<>();
 
     public GameObject(int Guid, int template, int qua, int pos, String strStats, int puit) {
+        this.scriptVal = new SItem(this);
         this.guid = Guid;
         this.template = World.world.getObjTemplate(template);
         this.quantity = qua;
@@ -49,6 +53,7 @@ public class GameObject {
     }
 
     public GameObject(int Guid) {
+        this.scriptVal = new SItem(this);
         this.guid = Guid;
         this.template = World.world.getObjTemplate(8378);
         this.quantity = 1;
@@ -57,6 +62,7 @@ public class GameObject {
     }
 
     public GameObject(int Guid, int template, int qua, int pos, Stats stats, ArrayList<SpellEffect> effects, Map<Integer, Integer> _SoulStat, Map<Integer, String> _txtStats, int puit) {
+        this.scriptVal = new SItem(this);
         this.guid = Guid;
         this.template = World.world.getObjTemplate(template);
         this.quantity = qua;
@@ -1195,5 +1201,8 @@ public class GameObject {
 
     public boolean isMimibiote() {
         return getTxtStat().get(Constant.STATS_MIMIBIOTE) != null;
+    }
+    public SItem Scripted() {
+        return this.scriptVal;
     }
 }

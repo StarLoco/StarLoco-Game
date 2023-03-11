@@ -3513,7 +3513,10 @@ public class Player {
         }
     }
 
-    public void removeByTemplateID(int tID, int count) {
+    public boolean removeByTemplateID(int tID, int count) {
+        // TODO: Rewrite this function to be fail-safe
+        // Currently, if we try to remove 10 items but the user only has 9, it removes 9 items then fails.
+
         //Copie de la liste pour eviter les modif concurrentes
         ArrayList<GameObject> list = new ArrayList<GameObject>();
 
@@ -3543,7 +3546,7 @@ public class Player {
                     if (isOnline)
                         SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(this, obj.getGuid());
                 }
-                return;
+                return true;
             } else
             //Si pas assez d'objet
             {
@@ -3553,8 +3556,9 @@ public class Player {
                         obj.setQuantity(newQua);
                         if (isOnline)
                             SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(this, obj);
-                    } else
+                    } else {
                         remove.add(obj);
+                    }
 
                     for (GameObject o : remove) {
                         //on supprime de l'inventaire et du Monde
@@ -3566,6 +3570,7 @@ public class Player {
                         if (isOnline)
                             SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(this, o.getGuid());
                     }
+                    return true;
                 } else {
                     // on r�duit le compteur
                     tempCount -= obj.getQuantity();
@@ -3573,6 +3578,8 @@ public class Player {
                 }
             }
         }
+        // We failed
+        return false;
     }
 
     public ArrayList<Job> getJobs() {
