@@ -3653,19 +3653,26 @@ public class Fight {
             case 607:
             case 608:
             case 609:
-            case 611:
-                // de X sur Y tours
+            case 611: // de X sur Y tours
                 String jet = effect.getArgs().split(";")[5];
                 int min = Formulas.getMinJet(jet);
                 int max = Formulas.getMaxJet(jet);
                 packet.append(min).append(";").append(max).append(";").append(max).append(";;");
                 break;
             case 788://Fait apparaitre message le temps de buff sacri Chatiment de X sur Y tours
-                value = Integer.parseInt(effect.getArgs().split(";")[1]);
-                String valMax2 = effect.getArgs().split(";")[2];
-                if (Integer.parseInt(effect.getArgs().split(";")[0]) == 108)
-                    return;
-                packet.append(valMax2).append(";").append(valMax2).append(";").append(valMax2).append(";;");
+                String[] args = effect.getArgs().split(";");
+
+                if(args[0].equals("125")) {
+                    // Chatiment vitalessque
+                    String packetGIE = "GIE108;" + target.getId() + ";" + args[1] + ";;;;" + (effect.getTurn() - 1) + ";" + effect.getSpell();
+                    for(Fighter fighter : receivers) {
+                        if(fighter != null && fighter.getPlayer() != null) {
+                            fighter.getPlayer().send(packetGIE);
+                        }
+                    }
+                }
+
+                packet.append(";").append(args[1]).append(";").append(args[2]).append(";;");
                 break;
             case 91://Su�otement : vol eau
             case 92://vol terre

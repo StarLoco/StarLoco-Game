@@ -301,12 +301,11 @@ public class SpellEffect implements Cloneable {
 									int newValue = oldValue + gain;
 
 									if (stat == 125) {
-										SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, Constant.STATS_ADD_VIE, caster.getId() + "", target.getId() + "," + gain + "," + 5);
+										SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, Constant.STATS_ADD_VIE, String.valueOf(caster.getId()), target.getId() + "," + gain);
 										target.setPdv(target.getPdv() + gain);
 										if (target.getPlayer() != null)
 											SocketManager.GAME_SEND_STATS_PACKET(target.getPlayer());
 									} else {
-										target.getChatiValue().put(stat, newValue);
 										target.addBuff(stat, gain, 5, true, -1, buff.getArgs(), caster, false, true);
 										SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, stat, caster.getId() + "", target.getId() + "," + gain + "," + 5);
 									}

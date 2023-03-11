@@ -1022,10 +1022,11 @@ public class SocketManager {
         }
     }
 
-    public static String GAME_SEND_FIGHT_GIE(Fight fight, int teams, int mType, int cible, int value, String mParam2, String mParam3, String mParam4, int turn, int spellID) {
-        StringBuilder packet = new StringBuilder();
-        packet.append("GIE").append(mType).append(";").append(cible).append(";").append(value).append(";").append(mParam2).append(";").append(mParam3).append(";").append(mParam4).append(";").append(turn).append(";").append(spellID);
-        return packet.toString();
+    public static void GAME_SEND_FIGHT_GIE(Fight fight, int teams, int mType, int cible, int value, String mParam2, String mParam3, String mParam4, int turn, int spellID) {
+        String packet = "GIE" + mType + ";" + cible + ";" + value + ";" + mParam2 + ";" + mParam3 + ";" + mParam4 + ";" + turn + ";" + spellID;
+        fight.getFighters(teams).stream()
+                .filter((fighter) -> fighter.getPlayer() != null)
+                .forEach((fighter) -> fighter.getPlayer().send(packet));
     }
 
 
