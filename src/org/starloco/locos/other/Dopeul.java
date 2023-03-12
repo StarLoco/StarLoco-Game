@@ -222,7 +222,7 @@ public class Dopeul {
     }
 
     private static void removeObject(Player perso, int id, int qua) {
-        perso.removeByTemplateID(id, qua);
+        perso.removeItemByTemplateId(id, qua, false);
         SocketManager.GAME_SEND_Ow_PACKET(perso);
         SocketManager.GAME_SEND_Im_PACKET(perso, "022;" + qua + "~" + id);
     }

@@ -4853,7 +4853,7 @@ public class GameClient {
                     SocketManager.GAME_SEND_Im_PACKET(this.player, "14");
                     return;
                 }
-                this.player.removeByTemplateID(1575, 1);
+                this.player.removeItemByTemplateId(1575, 1, false);
             }
             Guild G = new Guild(name, emblem);
             GuildMember gm = G.addNewMember(this.player);
@@ -4886,7 +4886,7 @@ public class GameClient {
         int CellID = World.world.getEncloCellIdByMapId(MapID);
         if (this.player.hasItemTemplate(9035, 1, false)) {
             SocketManager.GAME_SEND_Im_PACKET(this.player, "022;1~9035");
-            this.player.removeByTemplateID(9035, 1);
+            this.player.removeItemByTemplateId(9035, 1, false);
             this.player.teleport(MapID, CellID);
         } else {
             SocketManager.GAME_SEND_Im_PACKET(this.player, "1159");
@@ -4943,7 +4943,7 @@ public class GameClient {
         }
         if (this.player.hasItemTemplate(8883, 1, false)) {
             SocketManager.GAME_SEND_Im_PACKET(this.player, "022;1~8883");
-            this.player.removeByTemplateID(8883, 1);
+            this.player.removeItemByTemplateId(8883, 1, false);
             this.player.teleport((short) h.getHouseMapId(), h.getHouseCellId());
         } else {
             SocketManager.GAME_SEND_Im_PACKET(this.player, "1137");
@@ -7075,7 +7075,7 @@ public class GameClient {
 
         this.player.setName(name);
         this.player.send("AlEr");
-        this.player.removeByTemplateID(10860, 1);
+        this.player.removeItemByTemplateId(10860, 1, false);
         SocketManager.GAME_SEND_ALTER_GM_PACKET(this.player.getCurMap(), this.player);
     }
 

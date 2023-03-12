@@ -1,5 +1,6 @@
 package org.starloco.locos.command;
 
+import org.starloco.locos.entity.npc.NpcMovable;
 import org.starloco.locos.script.NpcScriptVM;
 import org.starloco.locos.util.Pair;
 import org.starloco.locos.area.SubArea;
@@ -2584,6 +2585,7 @@ public class CommandAdmin extends AdminUser {
             return;
         } else if (command.equalsIgnoreCase("MOVEMOB")) {
             this.getPlayer().getCurMap().onMapMonsterDeplacement();
+            NpcMovable.moveAll();
             this.sendMessage("Vous avez deplace un groupe de monstres.");
             return;
         } else if (command.equalsIgnoreCase("ALLGIFTS")) {

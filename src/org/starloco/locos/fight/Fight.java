@@ -4055,12 +4055,12 @@ public class Fight {
                     if (player != null) {
                         if (this.isBegin()) {
                             if (player.getCurMap().getId() == 8357 && player.hasItemTemplate(7373, 1, false) && player.hasItemTemplate(7374, 1, false) && player.hasItemTemplate(7375, 1, false) && player.hasItemTemplate(7376, 1, false) && player.hasItemTemplate(7377, 1, false) && player.hasItemTemplate(7378, 1, false)) {
-                                player.removeByTemplateID(7373, 1);
-                                player.removeByTemplateID(7374, 1);
-                                player.removeByTemplateID(7375, 1);
-                                player.removeByTemplateID(7376, 1);
-                                player.removeByTemplateID(7377, 1);
-                                player.removeByTemplateID(7378, 1);
+                                player.removeItemByTemplateId(7373, 1, false);
+                                player.removeItemByTemplateId(7374, 1, false);
+                                player.removeItemByTemplateId(7375, 1, false);
+                                player.removeItemByTemplateId(7376, 1, false);
+                                player.removeItemByTemplateId(7377, 1, false);
+                                player.removeItemByTemplateId(7378, 1, false);
                             }
                             player.send(packet);
                         }

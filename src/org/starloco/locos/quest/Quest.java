@@ -260,7 +260,7 @@ public class Quest {
                             .getExchangeAction().getValue()).getTemplate().getId() == questObjective.getNpc().getId()) {
                         for (Entry<Integer, Integer> entry : questObjective.getItemNecessaryList().entrySet()) {
                             if (player.hasItemTemplate(entry.getKey(), entry.getValue(), false)) { //Il a l'item et la quantit�
-                                player.removeByTemplateID(entry.getKey(), entry.getValue()); //On supprime donc
+                                player.removeItemByTemplateId(entry.getKey(), entry.getValue(), false); //On supprime donc
                                 refresh = true;
                             }
                         }

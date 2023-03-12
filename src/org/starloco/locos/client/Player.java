@@ -3122,7 +3122,7 @@ public class Player {
                 if (this.getCurMap().getSubArea().getId() == 165
                         && map.getSubArea().getId() == 165) {
                     if (this.hasItemTemplate(997, 1, false)) {
-                        this.removeByTemplateID(997, 1);
+                        this.removeItemByTemplateId(997, 1, false);
                     } else {
                         SocketManager.GAME_SEND_Im_PACKET(this, "14");
                         return;
@@ -3561,48 +3561,46 @@ public class Player {
         }
     }
 
-    public boolean removeByTemplateID(int tID, int count) {
+    public boolean removeItemByTemplateId(int templateId, int count, boolean display) {
         // TODO: Rewrite this function to be fail-safe
         // Currently, if we try to remove 10 items but the user only has 9, it removes 9 items then fails.
-
-        //Copie de la liste pour eviter les modif concurrentes
-        ArrayList<GameObject> list = new ArrayList<GameObject>();
-
-        list.addAll(objects.values());
-
-
-        ArrayList<GameObject> remove = new ArrayList<GameObject>();
+        ArrayList<GameObject> remove = new ArrayList<>();
         int tempCount = count;
 
         //on verifie pour chaque objet
-        for (GameObject obj : list) {
+        for (GameObject item : new ArrayList<>(objects.values())) {
             //Si mauvais TemplateID, on passe
-            if (obj.getTemplate().getId() != tID)
+            if (item.getTemplate().getId() != templateId)
                 continue;
 
-            if (obj.getQuantity() >= count) {
-                int newQua = obj.getQuantity() - count;
+            if (item.getQuantity() >= count) {
+                int newQua = item.getQuantity() - count;
                 if (newQua > 0) {
-                    obj.setQuantity(newQua);
-                    if (isOnline) SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(this, obj);
+                    item.setQuantity(newQua);
+                    if (isOnline) SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(this, item);
                 } else {
                     //on supprime de l'inventaire et du Monde
-                    objects.remove(obj.getGuid());
-                    World.world.removeGameObject(obj.getGuid());
+                    objects.remove(item.getGuid());
+                    World.world.removeGameObject(item.getGuid());
                     //on envoie le packet si connect�
-                    if (isOnline) SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(this, obj.getGuid());
+                    if (isOnline) SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(this, item.getGuid());
                 }
-                SocketManager.GAME_SEND_Ow_PACKET(this);
+                if (isOnline) {
+                    if (display) {
+                        SocketManager.GAME_SEND_Im_PACKET(this, "022;" + count + "~" + item.getTemplate().getId());
+                    }
+                    SocketManager.GAME_SEND_Ow_PACKET(this);
+                }
                 return true;
             } else {
                 //Si pas assez d'objet
-                if (obj.getQuantity() >= tempCount) {
-                    int newQua = obj.getQuantity() - tempCount;
+                if (item.getQuantity() >= tempCount) {
+                    int newQua = item.getQuantity() - tempCount;
                     if (newQua > 0) {
-                        obj.setQuantity(newQua);
-                        if (isOnline) SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(this, obj);
+                        item.setQuantity(newQua);
+                        if (isOnline) SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(this, item);
                     } else {
-                        remove.add(obj);
+                        remove.add(item);
                     }
 
                     for (GameObject o : remove) {
@@ -3614,12 +3612,17 @@ public class Player {
                         //on envoie le packet si connect�
                         if (isOnline) SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(this, o.getGuid());
                     }
-                    if (isOnline) SocketManager.GAME_SEND_Ow_PACKET(this);
+                    if (isOnline) {
+                        if(display) {
+                            SocketManager.GAME_SEND_Im_PACKET(this, "022;" + count + "~" + item.getTemplate().getId());
+                        }
+                        SocketManager.GAME_SEND_Ow_PACKET(this);
+                    }
                     return true;
                 } else {
                     // on r�duit le compteur
-                    tempCount -= obj.getQuantity();
-                    remove.add(obj);
+                    tempCount -= item.getQuantity();
+                    remove.add(item);
                 }
             }
         }
@@ -5904,7 +5907,7 @@ public class Player {
     public boolean consumeCurrency(Currency cur, long qua) {
         if(cur == Currency.KAMAS) return modKamasDisplay(-qua);
         if(cur == Currency.POINTS) return account.modPoints(-qua);
-        if(cur.isItem()) return removeByTemplateID(cur.item().getId(), (int)qua);
+        if(cur.isItem()) return removeItemByTemplateId(cur.item().getId(), (int)qua, false);
         throw new RuntimeException("unknown currency type");
     }
 }

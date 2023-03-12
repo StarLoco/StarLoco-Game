@@ -303,7 +303,7 @@ public class ConditionParser {
                 int id = Integer.parseInt(split[0]), qua = Integer.parseInt(split[1]);
 
                 if (player.hasItemTemplate(id, qua, false)) {
-                    player.removeByTemplateID(id, qua);
+                    player.removeItemByTemplateId(id, qua, false);
                     return true;
                 } else {
                     SocketManager.GAME_SEND_Im_PACKET(player, "14");
