@@ -1268,11 +1268,14 @@ public class GameClient {
     }
 
     private void npcCreateDialog(String packet) {
+        int id = Integer.parseInt(packet.substring(2).split((char) 0x0A + "")[0]);
+
         if (this.player.isMissingSubscription() || this.player.getExchangeAction() != null) {
+            SocketManager.GAME_SEND_DCK_PACKET(this, id);
             SocketManager.GAME_SEND_EXCHANGE_REQUEST_ERROR(this.player.getGameClient(), 'S');
             return;
         }
-        int id = Integer.parseInt(packet.substring(2).split((char) 0x0A + "")[0]);
+
         Collector collector = World.world.getCollector(id);
 
         if (collector != null && collector.getMap() == this.player.getCurMap().getId()) {
