@@ -69,25 +69,27 @@ public class NpcTemplateData extends FunctionDAO<NpcTemplate> {
 
     @Override
     public void update(NpcTemplate entity) {
-//        String i = "";
-//        boolean first = true;
-//        for (ObjectTemplate obj : entity.getAllItem()) {
-//            if (first) i += obj.getId();
-//            else i += "," + obj.getId();
-//            first = false;
-//        }
-//
-//        PreparedStatement p = null;
-//        try {
-//            p = getPreparedStatement("UPDATE " + getTableName() + " SET `ventes` = ? WHERE `id` = ?;");
-//            p.setString(1, i);
-//            p.setInt(2, entity.getId());
-//            execute(p);
-//        } catch (SQLException e) {
-//            super.sendError(e);
-//        } finally {
-//            close(p);
-//        }
+        if(entity.legacy == null) throw new RuntimeException("not supported on scripted NPCs");
+
+        String i = "";
+        boolean first = true;
+        for (ObjectTemplate obj : entity.legacy.getAllItem()) {
+            if (first) i += obj.getId();
+            else i += "," + obj.getId();
+            first = false;
+        }
+
+        PreparedStatement p = null;
+        try {
+            p = getPreparedStatement("UPDATE " + getTableName() + " SET `ventes` = ? WHERE `id` = ?;");
+            p.setString(1, i);
+            p.setInt(2, entity.getId());
+            execute(p);
+        } catch (SQLException e) {
+            super.sendError(e);
+        } finally {
+            close(p);
+        }
     }
 
     @Override
@@ -95,26 +97,26 @@ public class NpcTemplateData extends FunctionDAO<NpcTemplate> {
         return NpcTemplateData.class;
     }
 
-//    public void loadQuest() {
-//        ResultSet result = null;
-//        try {
-//            result = getData("SELECT id, quests FROM " + getTableName() + ";");
-//            while (result.next()) {
-//                int id = result.getInt("id");
-//                String quests = result.getString("quests");
-//                if (quests.equalsIgnoreCase(""))
-//                    continue;
-//                NpcTemplate nt = World.world.getNPCTemplate(id);
-//                Quest quest = Quest.getQuestById(Integer.parseInt(quests));
-//                if (nt == null || quest == null)
-//                    continue;
-//                nt.setQuest(quest);
-//            }
-//        } catch (Exception e) {
-//            super.sendError(e);
-//            Main.stop("unknown");
-//        } finally {
-//            close(result);
-//        }
-//    }
+    public void loadQuest() {
+        ResultSet result = null;
+        try {
+            result = getData("SELECT id, quests FROM " + getTableName() + ";");
+            while (result.next()) {
+                int id = result.getInt("id");
+                String quests = result.getString("quests");
+                if (quests.equalsIgnoreCase(""))
+                    continue;
+                NpcTemplate nt = World.world.getNPCTemplate(id);
+                Quest quest = Quest.getQuestById(Integer.parseInt(quests));
+                if (nt == null || quest == null)
+                    continue;
+                nt.legacy.setQuest(quest);
+            }
+        } catch (Exception e) {
+            super.sendError(e);
+            Main.stop("unknown");
+        } finally {
+            close(result);
+        }
+    }
 }

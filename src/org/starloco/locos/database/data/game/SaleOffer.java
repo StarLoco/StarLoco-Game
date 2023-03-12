@@ -8,10 +8,12 @@ public final class SaleOffer {
     public final ObjectTemplate itemTemplate;
     public final Currency currency;
 
+    public SaleOffer(ObjectTemplate itemTemplate) {
+        this(itemTemplate, itemTemplate.getPrice());
+    }
+
     public SaleOffer(ObjectTemplate itemTemplate, long unitPrice) {
-        this.itemTemplate = itemTemplate;
-        this.unitPrice = unitPrice;
-        this.currency = Currency.KAMAS;
+        this(itemTemplate, unitPrice, Currency.KAMAS);
     }
 
     public SaleOffer(ObjectTemplate itemTemplate, long unitPrice, Currency currency) {

@@ -35,6 +35,7 @@ import org.starloco.locos.hdv.HdvEntry;
 import org.starloco.locos.job.Job;
 import org.starloco.locos.kernel.Config;
 import org.starloco.locos.kernel.Constant;
+import org.starloco.locos.kernel.Main;
 import org.starloco.locos.object.GameObject;
 import org.starloco.locos.object.ObjectSet;
 import org.starloco.locos.object.ObjectTemplate;
@@ -311,26 +312,26 @@ public class World {
         DatabaseManager.get(ObjectData.class).loadFully();
         logger.debug("The objects were loaded successfully.");
 
-//        DatabaseManager.get(NpcTemplateData.class).loadFully();
-//        logger.debug("The non-player characters were loaded successfully.");
-//
-//        DatabaseManager.get(NpcQuestionData.class).loadFully();
-//        logger.debug("The n-p-c questions were loaded successfully.");
-//
-//        DatabaseManager.get(NpcAnswerData.class).loadFully();
-//        logger.debug("The n-p-c answers were loaded successfully.");
-//
-//        DatabaseManager.get(QuestObjectiveData.class).loadFully();
-//        logger.debug("The quest goals were loaded successfully.");
-//
-//        DatabaseManager.get(QuestStepData.class).loadFully();
-//        logger.debug("The quest steps were loaded successfully.");
-//
-//        DatabaseManager.get(QuestData.class).loadFully();
-//        logger.debug("The quests data were loaded successfully.");
-//
-//        ((NpcTemplateData) DatabaseManager.get(NpcTemplateData.class)).loadQuest();
-//        logger.debug("The adding of quests on non-player characters was done successfully.");
+        DatabaseManager.get(NpcTemplateData.class).loadFully();
+        logger.debug("The non-player characters were loaded successfully.");
+
+        DatabaseManager.get(NpcQuestionData.class).loadFully();
+        logger.debug("The n-p-c questions were loaded successfully.");
+
+        DatabaseManager.get(NpcAnswerData.class).loadFully();
+        logger.debug("The n-p-c answers were loaded successfully.");
+
+        DatabaseManager.get(QuestObjectiveData.class).loadFully();
+        logger.debug("The quest goals were loaded successfully.");
+
+        DatabaseManager.get(QuestStepData.class).loadFully();
+        logger.debug("The quest steps were loaded successfully.");
+
+        DatabaseManager.get(QuestData.class).loadFully();
+        logger.debug("The quests data were loaded successfully.");
+
+        ((NpcTemplateData) DatabaseManager.get(NpcTemplateData.class)).loadQuest();
+        logger.debug("The adding of quests on non-player characters was done successfully.");
 
         DatabaseManager.get(PrismData.class).loadFully();
         logger.debug("The prisms were loaded successfully.");
@@ -691,6 +692,9 @@ public class World {
     }
 
     public void addNpcTemplate(NpcTemplate temp) {
+        if(npcsTemplate.containsKey(temp.getId()) && temp.legacy == null) {
+            Main.logger.info("Overwriting npc template #{} with script", temp.getId());
+        }
         npcsTemplate.put(temp.getId(), temp);
     }
 
