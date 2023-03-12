@@ -38,18 +38,29 @@ setmetatable(Npc, {
 })
 
 -- Called by the Dialog class, overwritten by each Npc
----@param player SPlayer
+---@param player Player
 ---@param answer number
 ---@return void
 function Npc:onTalk(player, answer) return end
 
----@param player SPlayer
+---@param player Player
 ---@return {item:number,price:number,currency:number}[]
 function Npc:salesList(player)
-    JLogF("GLOBAL SALES")
     return self.sales or {}
 end
 
+
+---@param player Player
+---@param offer ItemStack[]
+---@return ItemStack
+function Npc:exchangeOutcome(player, offer)
+    if not self.exchanges then return {} end
+
+    -- TODO
+
+
+    return {}
+end
 
 ---- Used to show the ! on top of the NPC
 --function Npc:hasQuestAvailable(jPlayer)

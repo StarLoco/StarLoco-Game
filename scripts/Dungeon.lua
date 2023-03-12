@@ -28,7 +28,7 @@ setmetatable(Dungeon, {
     end,
 })
 
----@param player SPlayer
+---@param player Player
 ---@return boolean
 function Dungeon:hasKeyChain(player)
     local item = player:getItem(keychainTemplateID, 1)
@@ -37,7 +37,7 @@ function Dungeon:hasKeyChain(player)
     return item:hasTxtStat(keychainStatID, hex(self.keyID))
 end
 
----@param player SPlayer
+---@param player Player
 ---@return boolean
 function Dungeon:useKeyChain(player)
     local item = player:getItem(keychainTemplateID, 1)
@@ -46,7 +46,7 @@ function Dungeon:useKeyChain(player)
     return item:consumeTxtStat(player, keychainStatID, hex(self.keyID))
 end
 
----@param player SPlayer
+---@param player Player
 ---@param answer number
 function Dungeon:onTalkToGateKeeper(player, answer)
     if answer == 0 then

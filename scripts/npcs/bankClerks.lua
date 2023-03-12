@@ -4,7 +4,7 @@ local function createBankClerk(id)
 
     npc.colors = {-1, -1, 15184663}
 
-    ---@param player SPlayer
+    ---@param player Player
     function npc:onTalk(player, answer)
         if answer == 0 then player:ask(318, {259,329}, "[bankCost]")
         elseif answer == 259 then player:openBank()

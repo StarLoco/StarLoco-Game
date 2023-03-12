@@ -6,3 +6,9 @@ package.path = package.path .. ";./scripts/?.lua;"
 function hex(n)
     return string.format("%x", n)
 end
+
+
+---@class ItemStack
+---@field itemID:number
+---@field quantity:number
+local ItemStack = {}

@@ -10,6 +10,7 @@ import org.classdump.luna.env.RuntimeEnvironments;
 import org.classdump.luna.exec.CallException;
 import org.classdump.luna.exec.CallPausedException;
 import org.classdump.luna.exec.DirectCallExecutor;
+import org.classdump.luna.impl.ImmutableTable;
 import org.classdump.luna.impl.NonsuspendableFunctionException;
 import org.classdump.luna.impl.StateContexts;
 import org.classdump.luna.lib.*;
@@ -21,6 +22,7 @@ import org.classdump.luna.runtime.ExecutionContext;
 import org.classdump.luna.runtime.LuaFunction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.starloco.locos.object.GameObject;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -154,5 +156,12 @@ public class ScriptVM {
         }
 
         return out;
+    }
+
+    public static Table ItemStack(GameObject stack) {
+        return new ImmutableTable.Builder()
+            .add("itemID", stack.getTemplate().getId())
+            .add("quantity", stack.getQuantity())
+            .build();
     }
 }

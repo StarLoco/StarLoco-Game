@@ -5,7 +5,7 @@ npc.sales = {
     {item=6765}
 }
 
----@param player SPlayer
+---@param player Player
 ---@param answer number
 function npc:onTalk(player, answer)
     local answers = player:kamas() >= 5 and {1662} or {}

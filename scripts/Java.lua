@@ -1,63 +1,63 @@
 --- DO NOT USE TYPES DEFINED HERE
 --- THOSE ARE ONLY FOR AUTO-COMPLETION
 
----@class SPlayer
-local SPlayer = {}
+---@class Player
+local Player = {}
 
 ---@param question number
 ---@param answers table<number>
 ---@param param string
 ---@return void
-function SPlayer:ask(question, answers,param) end
+function Player:ask(question, answers, param) end
 
 ---@return void
-function SPlayer:endDialog() end
+function Player:endDialog() end
 
 ---@param mapID number
 ---@param cellID number
 ---@return void
-function SPlayer:teleport(mapID, cellID) end
+function Player:teleport(mapID, cellID) end
 
 ---@return void
-function SPlayer:openBank() end
+function Player:openBank() end
 
 ---@param templateID number
 ---@param quantity number
----@return SItem
-function SPlayer:getItem(templateID, quantity) end
+---@return Item
+function Player:getItem(templateID, quantity) end
 
 ---@param templateID number
 ---@param quantity number
 ---@return boolean
-function SPlayer:consumeItem(templateID, quantity) end
+function Player:consumeItem(templateID, quantity) end
 
 ---@param quantity number
 ---@return boolean
-function SPlayer:modKamas(quantity) end
+function Player:modKamas(quantity) end
 
 ---@param templateID number
 ---@param quantity number
 ---@param isPerfect boolean defaults to true
 ---@return void
-function SPlayer:addItem(templateID, quantity, isPerfect) end
+function Player:addItem(templateID, quantity, isPerfect) end
 
 ---@param templateID number
 ---@param unitPrice number
 ---@param quantity number defaults to 1
 ---@param isPerfect boolean defaults to true
 ---@return boolean
-function SPlayer:tryBuyItem(templateID, unitPrice, quantity, isPerfect) end
+function Player:tryBuyItem(templateID, unitPrice, quantity, isPerfect) end
 
 
----@class SItem
-local SItem = {}
-
----@param statID number
----@param val string
----@return boolean
-function SItem:hasTxtStat(statID, val) end
+---@class Item
+local Item = {}
 
 ---@param statID number
 ---@param val string
 ---@return boolean
-function SItem:consumeTxtStat(statID, val) end
+function Item:hasTxtStat(statID, val) end
+
+---@param statID number
+---@param val string
+---@return boolean
+function Item:consumeTxtStat(statID, val) end
