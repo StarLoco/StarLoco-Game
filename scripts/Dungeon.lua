@@ -4,7 +4,7 @@
 ---@field keychainResponseID number
 ---@field keyResponseID number
 ---@field tpDest number[] mapID,cellID
-Dungeon = Dungeon or {}
+Dungeon = {}
 Dungeon.__index = Dungeon
 
 local keychainTemplateID = 10207

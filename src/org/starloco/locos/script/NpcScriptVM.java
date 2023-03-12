@@ -20,13 +20,24 @@ import java.util.function.Consumer;
 public final class NpcScriptVM extends ScriptVM {
     private static NpcScriptVM instance;
 
-    @SuppressWarnings("unchecked")
     private NpcScriptVM() throws LoaderException, IOException, CallException, CallPausedException, InterruptedException {
         super("NPC");
 
         this.customizeEnv();
+        loadData();
+    }
+
+    public void loadData() throws CallException, LoaderException, IOException, CallPausedException, InterruptedException {
         this.runFile(Paths.get("scripts", "Npc.lua"));
         this.runDirectory(Paths.get("scripts", "npcs"));
+    }
+
+    public void safeLoadData() {
+        try {
+            this.loadData();
+        } catch (Exception e) {
+            ScriptVM.logger.error("Failed to load NPC data", e);
+        }
     }
 
     private void customizeEnv() {

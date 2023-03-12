@@ -1,7 +1,7 @@
 require("Dungeon")
 
 ---@type table<number, Npc>
-NPCS = NPCS or {}
+NPCS = {}
 
 ---@class Npc
 ---@field id number
@@ -12,7 +12,7 @@ NPCS = NPCS or {}
 ---@field colors number[] 3 colors, -1 for default
 ---@field accessories number[] Up to 5 accessories
 ---@field customArtwork number
-Npc = Npc or {}
+Npc = {}
 Npc.__index = Npc
 
 setmetatable(Npc, {

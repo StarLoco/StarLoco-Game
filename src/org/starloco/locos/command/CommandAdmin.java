@@ -1,5 +1,6 @@
 package org.starloco.locos.command;
 
+import org.starloco.locos.script.NpcScriptVM;
 import org.starloco.locos.util.Pair;
 import org.starloco.locos.area.SubArea;
 import org.starloco.locos.area.map.GameCase;
@@ -1911,7 +1912,13 @@ public class CommandAdmin extends AdminUser {
                     DatabaseManager.get(ObjectActionData.class).loadFully();
                     break;
                 case "NPCS":
-                    // TODO reload from LUA
+                    DatabaseManager.get(NpcTemplateData.class).loadFully();
+                    World.world.getNpcQuestions().clear();
+                    DatabaseManager.get(NpcQuestionData.class).loadFully();
+                    World.world.getNpcAnswers().clear();
+                    DatabaseManager.get(NpcAnswerData.class).loadFully();
+                    // Reload lua
+                    NpcScriptVM.getInstance().safeLoadData();
                     break;
                 case "ADMIN":
                     Command.reload();
