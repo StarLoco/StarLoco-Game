@@ -106,11 +106,6 @@ public class NpcTemplate {
         return customArtWork;
     }
 
-    public Quest getQuest() {
-        return null; // FIXME Diabu
-        //return quest;
-    }
-
     public boolean isBankClerk() {
         switch(id) {
             case 100:
@@ -169,6 +164,31 @@ public class NpcTemplate {
 
     public byte getFlags() {
         return flags;
+    }
+
+    @Deprecated
+    public void setQuest(Quest quest) {
+        if(this.legacy==null)return; // Scripted NPC
+        this.legacy.quest = quest;
+    }
+
+    @Deprecated
+    public Quest getQuest() {
+        if(this.legacy==null)return null; // Scripted NPC
+        return this.legacy.quest;
+    }
+
+    public int getExtraClip(Player p) {
+        if(this.legacy==null) {
+            // TODO Scripted NPC
+            return 0;
+        }
+        Quest q = this.legacy.quest;
+        if(q==null) return -1;
+
+        QuestPlayer questPlayer = p.getQuestPersoByQuest(q);
+        if (questPlayer == null) return 4;
+        return -1;
     }
 
     public static class LegacyData {
@@ -309,10 +329,6 @@ public class NpcTemplate {
                 }
             }
             return null;
-        }
-
-        public void setQuest(Quest quest) {
-            this.quest = quest;
         }
 
         public void onDialog(NpcTemplate template, Player player, int response) {

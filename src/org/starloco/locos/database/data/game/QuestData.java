@@ -22,10 +22,9 @@ public class QuestData extends FunctionDAO<Quest> {
 
             while (result.next()) {
                 Quest quest = new Quest(result.getInt("id"), result.getString("etapes"), result.getString("objectif"), result.getInt("npc"), result.getString("action"), result.getString("args"), (result.getInt("deleteFinish") == 1), result.getString("condition"));
-//                if (quest.getNpcTemplate() != null) {
-//                    quest.getNpcTemplate().setQuest(quest);
-//                    quest.getNpcTemplate().setExtraClip(4);
-//                }
+                if (quest.getNpcTemplate() != null) {
+                    quest.getNpcTemplate().setQuest(quest);
+                }
                 Quest.addQuest(quest);
             }
         } catch (SQLException e) {

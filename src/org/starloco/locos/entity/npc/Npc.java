@@ -2,19 +2,19 @@ package org.starloco.locos.entity.npc;
 
 import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.client.Player;
+import org.starloco.locos.game.world.World;
 import org.starloco.locos.quest.Quest;
 import org.starloco.locos.quest.QuestPlayer;
 
 public class Npc {
-    private int id, cellId;
+    private int id, templateID,cellId;
     private byte orientation;
-    private NpcTemplate template;
 
-    public Npc(int id, int cellId, byte orientation, NpcTemplate template) {
+    public Npc(int id, int cellId, byte orientation, int templateID) {
         this.id = id;
+        this.templateID = templateID;
         this.cellId = cellId;
         this.orientation = orientation;
-        this.template = template;
     }
 
     public int getId() {
@@ -38,7 +38,7 @@ public class Npc {
     }
 
     public NpcTemplate getTemplate() {
-        return this.template;
+        return World.world.getNPCTemplate(templateID);
     }
 
     public void talk(GameMap map, String key, String... msg) {
@@ -46,31 +46,30 @@ public class Npc {
     }
 
     public String encodeGM(boolean alter, Player p) {
+        NpcTemplate template = getTemplate();
         StringBuilder sock = new StringBuilder();
         sock.append((alter ? "~" : "+"));
         sock.append(this.cellId).append(";");
         sock.append(this.orientation).append(";");
         sock.append("0").append(";");
         sock.append(this.id).append(";");
-        sock.append(this.template.getId()).append(";");
+        sock.append(template.getId()).append(";");
         sock.append("-4").append(";");//type = NPC
-        sock.append(this.template.getGfxId()).append("^");
+        sock.append(template.getGfxId()).append("^");
 
-        if (this.template.getScaleX() == this.template.getScaleY())
-            sock.append(this.template.getScaleY()).append(";");
+        if (template.getScaleX() == template.getScaleY())
+            sock.append(template.getScaleY()).append(";");
         else
-            sock.append(this.template.getScaleX()).append("x").append(this.template.getScaleY()).append(";");
+            sock.append(template.getScaleX()).append("x").append(template.getScaleY()).append(";");
 
-        sock.append(this.template.getSex()).append(";");
-        sock.append((this.template.getColor1() != -1 ? Integer.toHexString(this.template.getColor1()) : "-1")).append(";");
-        sock.append((this.template.getColor2() != -1 ? Integer.toHexString(this.template.getColor2()) : "-1")).append(";");
-        sock.append((this.template.getColor3() != -1 ? Integer.toHexString(this.template.getColor3()) : "-1")).append(";");
-        sock.append(this.template.encodeAccessories()).append(";");
+        sock.append(template.getSex()).append(";");
+        sock.append((template.getColor1() != -1 ? Integer.toHexString(template.getColor1()) : "-1")).append(";");
+        sock.append((template.getColor2() != -1 ? Integer.toHexString(template.getColor2()) : "-1")).append(";");
+        sock.append((template.getColor3() != -1 ? Integer.toHexString(template.getColor3()) : "-1")).append(";");
+        sock.append(template.encodeAccessories()).append(";");
 
-        int extraClip = -1;; // FIXME Diabu get from lua
-        if(extraClip != -1)sock.append(extraClip);
-        sock.append(";");
-        sock.append(this.template.getCustomArtWork());
+        sock.append(template.getExtraClip(p));
+        sock.append(template.getCustomArtWork());
         return sock.toString();
     }
 }
