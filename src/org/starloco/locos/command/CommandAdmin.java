@@ -1,5 +1,6 @@
 package org.starloco.locos.command;
 
+import org.starloco.locos.script.NpcScriptVM;
 import org.starloco.locos.util.Pair;
 import org.starloco.locos.area.SubArea;
 import org.starloco.locos.area.map.GameCase;
@@ -1632,9 +1633,11 @@ public class CommandAdmin extends AdminUser {
                         + " | "
                         + entry.getValue().getTemplate().getId()
                         + " | "
-                        + entry.getValue().getCellId()
-                        + " | "
-                        + entry.getValue().getTemplate().getInitQuestionId(this.getPlayer().getCurMap().getId());
+                        + entry.getValue().getCellId();
+                if(entry.getValue().getTemplate().legacy != null) {
+                        mess += " | "
+                        + entry.getValue().getTemplate().legacy.getInitQuestionId(this.getPlayer().getCurMap().getId());
+                }
                 this.sendMessage(mess);
             }
             mess = "Liste des groupes de monstres :";
@@ -1914,6 +1917,8 @@ public class CommandAdmin extends AdminUser {
                     DatabaseManager.get(NpcQuestionData.class).loadFully();
                     World.world.getNpcAnswers().clear();
                     DatabaseManager.get(NpcAnswerData.class).loadFully();
+                    // Reload lua
+                    NpcScriptVM.getInstance().safeLoadData();
                     break;
                 case "ADMIN":
                     Command.reload();
@@ -2796,68 +2801,6 @@ public class CommandAdmin extends AdminUser {
                     + perso.getName()
                     + ".");
             return;
-        } else if (command.equalsIgnoreCase("DELNPCITEM")) {
-            int npcGUID = 0;
-            int itmID = -1;
-            try {
-                npcGUID = Integer.parseInt(infos[1]);
-                itmID = Integer.parseInt(infos[2]);
-            } catch (Exception e) {
-                // ok
-            }
-
-            GameMap map = this.getPlayer().getCurMap();
-            Npc npc = map.getNpc(npcGUID);
-            NpcTemplate npcTemplate = null;
-            if (npc == null)
-                npcTemplate = World.world.getNPCTemplate(npcGUID);
-            else
-                npcTemplate = npc.getTemplate();
-            if (npcGUID == 0 || itmID == -1 || npcTemplate == null) {
-                String str = "NpcGUID ou itemID invalide.";
-                this.sendMessage(str);
-                return;
-            }
-            String str = "";
-            if (npcTemplate.removeItemVendor(itmID))
-                str = "L'objet a ete retire.";
-            else
-                str = "L'objet n'a pas ete retire.";
-            this.sendMessage(str);
-            ((NpcTemplateData) DatabaseManager.get(NpcTemplateData.class)).update(npcTemplate);
-            return;
-        } else if (command.equalsIgnoreCase("ADDNPCITEM")) {
-            int npcGUID = 0;
-            int itmID = -1;
-            try {
-                npcGUID = Integer.parseInt(infos[1]);
-                itmID = Integer.parseInt(infos[2]);
-            } catch (Exception e) {
-                // ok
-            }
-
-            GameMap map = this.getPlayer().getCurMap();
-            Npc npc = map.getNpc(npcGUID);
-            NpcTemplate npcTemplate = null;
-            if (npc == null)
-                npcTemplate = World.world.getNPCTemplate(npcGUID);
-            else
-                npcTemplate = npc.getTemplate();
-            ObjectTemplate item = World.world.getObjTemplate(itmID);
-            if (npcGUID == 0 || itmID == -1 || npcTemplate == null
-                    || item == null) {
-                String str = "NpcGUID ou itemID invalide.";
-                this.sendMessage(str);
-                return;
-            }
-            String str = "";
-            if (npcTemplate.addItemVendor(item))
-                str = "L'objet a ete rajoute.";
-            else
-                str = "L'objet n'a pas ete rajoute.";
-            this.sendMessage(str);
-            ((NpcTemplateData) DatabaseManager.get(NpcTemplateData.class)).update(npcTemplate);
-            return;
         } else if (command.equalsIgnoreCase("LISTEXTRA")) {
             String mess = "Liste des Extra Monstres :";
             for (Entry<Integer, GameMap> i : World.world.getExtraMonsterOnMap().entrySet())
@@ -2962,7 +2905,7 @@ public class CommandAdmin extends AdminUser {
                 if (perso == null)
                     perso = this.getPlayer();
             }
-            int pointtotal = perso.getAccount().getPoints() + count;
+            long pointtotal = perso.getAccount().getPoints() + count;
             if (pointtotal < 0)
                 pointtotal = 0;
             if (pointtotal > 50000)

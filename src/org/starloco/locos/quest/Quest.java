@@ -163,9 +163,9 @@ public class Quest {
         str.append("|");
         str.append(loc2 > 0 ? loc2 : "").append("|");
         str.append(loc3 > 0 ? loc3 : "");
-        if (npc != null) {
+        if (npc != null && npc.legacy != null) {
             str.append("|");
-            str.append(npc.getInitQuestionId(player.getCurMap().getId())).append("|");
+            str.append(npc.legacy.getInitQuestionId(player.getCurMap().getId())).append("|");
         }
         return str.toString();
     }

@@ -30,7 +30,7 @@ public class Account {
     private String currentIp = "";
     private String lastIP = "";
     private String lastConnectionDate = "";
-    private int points;
+    private long points;
     private long muteTime = 0;
     private String mutePseudo = "";
     private boolean banned = false;
@@ -141,21 +141,29 @@ public class Account {
         lastConnectionDate = i;
     }
 
-    public int getPoints() {
+    public long getPoints() {
         points = ((AccountData) DatabaseManager.get(AccountData.class)).loadPoints(name);
         return points;
     }
 
-    public void setPoints(int i) {
+    public void setPoints(long i) {
         points = i;
         ((AccountData) DatabaseManager.get(AccountData.class)).updatePoints(id, points);
     }
 
-    public void addPoints(int i) {
+    public void addPoints(long i) {
         this.getPoints();
         points += i;
         ((AccountData) DatabaseManager.get(AccountData.class)).updatePoints(id, points);
     }
+
+    public boolean modPoints(long d) {
+        World.Couple<Long,Boolean> ret = ((AccountData) DatabaseManager.get(AccountData.class)).modPoints(id, d);
+        if(!ret.second) return false;
+        points = ret.first;
+        return true;
+    }
+
 
     public void mute(short minutes, String pseudo) {
         if (minutes <= 0) return;

@@ -654,16 +654,17 @@ public class GameMap {
     }
 
     public Npc addNpc(int npcID, int cellID, int dir) {
-        NpcTemplate temp = World.world.getNPCTemplate(npcID);
-        if (temp == null)
+        NpcTemplate template = World.world.getNPCTemplate(npcID);
+        if (template == null)
             return null;
         if (getCase(cellID) == null)
             return null;
         Npc npc;
-        if(temp.getPath().isEmpty())
-            npc = new Npc(this.nextObjectId, cellID, (byte) dir, temp);
+        if(template.legacy == null || template.legacy.getPath().isEmpty())
+            npc = new Npc(this.nextObjectId, cellID, (byte) dir, npcID);
         else
-            npc = new NpcMovable(this.nextObjectId, cellID, (byte) dir, this.id, temp);
+            npc = new NpcMovable(this.nextObjectId, cellID, (byte) dir, this.id, npcID);
+
         this.npcs.put(this.nextObjectId, npc);
         this.nextObjectId--;
         return npc;
@@ -1146,7 +1147,7 @@ public class GameMap {
         packet.append("GM|");
         boolean isFirst = true;
         for (Entry<Integer, Npc> entry : this.npcs.entrySet()) {
-            String GM = entry.getValue().parse(false, p);
+            String GM = entry.getValue().encodeGM(false, p);
             if (GM.equals(""))
                 continue;
 
@@ -1184,7 +1185,7 @@ public class GameMap {
     public void startFightVersusMonstres(Player player, MonsterGroup group) {
         if (player.getFight() != null)
             return;
-        if (player.isInAreaNotSubscribe()) {
+        if (player.isMissingSubscription()) {
             SocketManager.GAME_SEND_EXCHANGE_REQUEST_ERROR(player.getGameClient(), 'S');
             return;
         }
@@ -1242,7 +1243,7 @@ public class GameMap {
     public void startFightVersusProtectors(Player player, MonsterGroup group) {
         if (Main.fightAsBlocked || player == null || player.getFight() != null || player.isDead() == 1 || !player.canAggro())
             return;
-        if (player.isInAreaNotSubscribe()) {
+        if (player.isMissingSubscription()) {
             SocketManager.GAME_SEND_EXCHANGE_REQUEST_ERROR(player.getGameClient(), 'S');
             return;
         }
@@ -1267,7 +1268,7 @@ public class GameMap {
     {
         if (perso.getFight() != null)
             return;
-        if (perso.isInAreaNotSubscribe()) {
+        if (perso.isMissingSubscription()) {
             SocketManager.GAME_SEND_EXCHANGE_REQUEST_ERROR(perso.getGameClient(), 'S');
             return;
         }
@@ -1287,7 +1288,7 @@ public class GameMap {
     public void startFightVersusPercepteur(Player perso, Collector perco) {
         if (perso.getFight() != null)
             return;
-        if (perso.isInAreaNotSubscribe()) {
+        if (perso.isMissingSubscription()) {
             SocketManager.GAME_SEND_EXCHANGE_REQUEST_ERROR(perso.getGameClient(), 'S');
             return;
         }
@@ -1310,7 +1311,7 @@ public class GameMap {
     public void startFightVersusPrisme(Player perso, Prism Prisme) {
         if (perso.getFight() != null)
             return;
-        if (perso.isInAreaNotSubscribe()) {
+        if (perso.isMissingSubscription()) {
             SocketManager.GAME_SEND_EXCHANGE_REQUEST_ERROR(perso.getGameClient(), 'S');
             return;
         }

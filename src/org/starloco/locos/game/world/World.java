@@ -35,6 +35,7 @@ import org.starloco.locos.hdv.HdvEntry;
 import org.starloco.locos.job.Job;
 import org.starloco.locos.kernel.Config;
 import org.starloco.locos.kernel.Constant;
+import org.starloco.locos.kernel.Main;
 import org.starloco.locos.object.GameObject;
 import org.starloco.locos.object.ObjectSet;
 import org.starloco.locos.object.ObjectTemplate;
@@ -691,10 +692,11 @@ public class World {
     }
 
     public void addNpcTemplate(NpcTemplate temp) {
+        if(npcsTemplate.containsKey(temp.getId()) && temp.legacy == null) {
+            Main.logger.info("Overwriting npc template #{} with script", temp.getId());
+        }
         npcsTemplate.put(temp.getId(), temp);
     }
-
-
 
     public void removePlayer(Player player) {
         if (player.getGuild() != null) {

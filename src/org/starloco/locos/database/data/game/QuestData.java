@@ -24,7 +24,6 @@ public class QuestData extends FunctionDAO<Quest> {
                 Quest quest = new Quest(result.getInt("id"), result.getString("etapes"), result.getString("objectif"), result.getInt("npc"), result.getString("action"), result.getString("args"), (result.getInt("deleteFinish") == 1), result.getString("condition"));
                 if (quest.getNpcTemplate() != null) {
                     quest.getNpcTemplate().setQuest(quest);
-                    quest.getNpcTemplate().setExtraClip(4);
                 }
                 Quest.addQuest(quest);
             }

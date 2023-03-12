@@ -16,10 +16,10 @@ public class NpcMovable extends Npc {
 	private short position = 0;
 	private String[] path;
 
-    public NpcMovable(int id, int cellid, byte orientation, short mapid, NpcTemplate template) {
+    public NpcMovable(int id, int cellid, byte orientation, short mapid, int template) {
 		super(id, cellid, orientation, template);
 		this.map = World.world.getMap(mapid);
-		this.path = template.getPath().split(";");
+		this.path = getTemplate().legacy.getPath().split(";");
         NpcMovable.movables.add(this);
 	}	
 	
@@ -64,7 +64,8 @@ public class NpcMovable extends Npc {
 		this.position++;
 		
 		if(this.position == this.path.length) {
-			this.path = (NpcMovable.getPath(this.path).equals(this.getTemplate().getPath()) ? NpcMovable.inverseOfPath(this.getTemplate().getPath()).split(";") : this.getTemplate().getPath().split(";"));
+			String templatePath = getTemplate().legacy.getPath();
+			this.path = (NpcMovable.getPath(this.path).equals(templatePath) ? NpcMovable.inverseOfPath(templatePath).split(";") : templatePath.split(";"));
 			this.position = 0;
 		}		
 	}	

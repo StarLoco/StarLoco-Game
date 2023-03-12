@@ -2,6 +2,7 @@ package org.starloco.locos.kernel;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
+import org.classdump.luna.load.LoaderException;
 import org.fusesource.jansi.AnsiConsole;
 import org.slf4j.LoggerFactory;
 import org.starloco.locos.area.map.GameMap;
@@ -20,9 +21,11 @@ import org.starloco.locos.game.scheduler.entity.WorldPlayerOption;
 import org.starloco.locos.game.scheduler.entity.WorldPub;
 import org.starloco.locos.game.scheduler.entity.WorldSave;
 import org.starloco.locos.game.world.World;
+import org.starloco.locos.script.NpcScriptVM;
 import org.starloco.locos.util.TimerWaiter;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -74,6 +77,7 @@ public class Main {
         Config.verify("game.config.properties");
         Logging.getInstance().initialize();
 
+        // Database
         if(DatabaseManager.getInstance().isConnected()) {
             Config.isRunning = true;
 	        World.world.createWorld();
@@ -81,6 +85,14 @@ public class Main {
             new GameServer().initialize();
             new ExchangeClient().initialize();
 
+            // Script engine
+            Main.logger.debug("Loading script engine");
+            try {
+                NpcScriptVM.init();
+            } catch (Exception e) {
+                Main.logger.error("init NpcScriptVM failed", e);
+                throw new RuntimeException("init NpcScriptVM failed", e);
+            }
             Main.logger.info("The server is ready ! Waiting for connection..\n");
 
 	        if (!Config.debug) {
@@ -133,6 +145,7 @@ public class Main {
         } else {
             Main.logger.error("An error occurred when the server have try a connection on the Mysql server. Please check your identification.");
         }
+
     }
 
     public static void stop(String reason) {

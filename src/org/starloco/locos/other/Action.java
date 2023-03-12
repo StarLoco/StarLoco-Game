@@ -1133,7 +1133,7 @@ public class Action {
                     quest0.applyQuest(player);
                     if(player.getExchangeAction().getType() == ExchangeAction.TALKING_WITH) {
                         Npc npc = player.getCurMap().getNpc(((ExchangeAction<Integer>) player.getExchangeAction()).getValue());
-                        player.send("GM|" + npc.parse(true, player));
+                        player.send("GM|" + npc.encodeGM(true, player));
                     }
                 }
                 break;
@@ -1949,7 +1949,7 @@ public class Action {
             case 230://Point Boutique  
                 try {
                     int pts = Integer.parseInt(args);
-                    int ptsTotal = player.getAccount().getPoints() + pts;
+                    long ptsTotal = player.getAccount().getPoints() + pts;
                     if (ptsTotal < 0)
                         ptsTotal = 0;
                     if (ptsTotal > 50000)
