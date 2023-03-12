@@ -110,7 +110,7 @@ public class NpcTemplateData extends FunctionDAO<NpcTemplate> {
                 Quest quest = Quest.getQuestById(Integer.parseInt(quests));
                 if (nt == null || quest == null)
                     continue;
-                nt.legacy.setQuest(quest);
+                nt.setQuest(quest);
             }
         } catch (Exception e) {
             super.sendError(e);

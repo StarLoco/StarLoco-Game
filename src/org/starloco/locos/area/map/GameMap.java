@@ -659,7 +659,7 @@ public class GameMap {
             return null;
         if (getCase(cellID) == null)
             return null;
-        Npc npc= new Npc(this.nextObjectId, cellID, (byte) dir, template);
+        Npc npc= new Npc(this.nextObjectId, cellID, (byte) dir, npcID);
 
         this.npcs.put(this.nextObjectId, npc);
         this.nextObjectId--;
