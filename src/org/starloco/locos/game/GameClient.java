@@ -1550,62 +1550,6 @@ public class GameClient {
 
                 player.addItem(offer.itemTemplate, qua,(npcTemplate.getFlags() & 0x1) != 0);
                 SocketManager.GAME_SEND_BUY_OK_PACKET(this);
-                return;
-
-//
-//                if ((npc.getTemplate().getId() == 9604 && player.getLevel() > 75) || !npcTemplate.haveItem(id)) {
-//                    SocketManager.GAME_SEND_BUY_ERROR_PACKET(this);
-//                    return;
-//                }
-//
-//                boolean attachObject = npc.getTemplate().getId() == 9604 || (npcTemplate.getInformations() & 0x2) == 2;
-//                GameObject object = null;
-//
-//                if (template.getPoints() > 0 && (npcTemplate.getInformations() & 0x4) == 4) {
-//                    int value = template.getPoints() * qua, points = this.account.getPoints();
-//
-//                    if (points < value) {
-//                        SocketManager.GAME_SEND_MESSAGE(this.player, this.player.getLang().trans("game.gameclient.buy.boutique.nopoint", Integer.toString(points) , Integer.toString(value - points)));
-//                        SocketManager.GAME_SEND_BUY_ERROR_PACKET(this);
-//                        return;
-//                    }
-//
-//                    this.account.setPoints(points - value);
-//                    object = template.createNewItem(qua, (npcTemplate.getInformations() & 0x1) == 1);
-//
-//                    if (this.player.addObjet(object, true)) World.world.addGameObject(object);
-//                    if (attachObject) object.attachToPlayer(this.player);
-//
-//                    SocketManager.GAME_SEND_BUY_OK_PACKET(this);
-//                    SocketManager.GAME_SEND_STATS_PACKET(this.player);
-//                    SocketManager.GAME_SEND_Ow_PACKET(this.player);
-//                    SocketManager.GAME_SEND_MESSAGE(this.player, this.player.getLang().trans("game.gameclient.buy.boutique.rest", Integer.toString((points - value))));
-//                } else if (template.getPoints() == 0) {
-//                    int price = template.getPrice() * qua;
-//                    if (price < 0) return;
-//
-//                    if (this.player.getKamas() < price) {
-//                        SocketManager.GAME_SEND_BUY_ERROR_PACKET(this);
-//                        return;
-//                    }
-//
-//                    object = template.createNewItem(qua, (npcTemplate.getInformations() & 0x1) == 1);
-//
-//                    this.player.setKamas(this.player.getKamas() - price);
-//                    if (this.player.addObjet(object, true)) World.world.addGameObject(object);
-//                    if (attachObject) object.attachToPlayer(this.player);
-//                    SocketManager.GAME_SEND_BUY_OK_PACKET(this);
-//                    SocketManager.GAME_SEND_STATS_PACKET(this.player);
-//                    SocketManager.GAME_SEND_Ow_PACKET(this.player);
-//                }
-//
-//                if (object != null && template.getType() == Constant.ITEM_TYPE_CERTIF_MONTURE) {
-//                    Mount mount = new Mount(Constant.getMountColorByParchoTemplate(object.getTemplate().getId()), this.getPlayer().getId(), false);
-//                    object.clearStats();
-//                    object.getStats().addOneStat(995, mount.getId());
-//                    object.getTxtStat().put(996, this.getPlayer().getName());
-//                    object.getTxtStat().put(997, mount.getName());
-//                }
             } catch (Exception e) {
                 e.printStackTrace();
                 SocketManager.GAME_SEND_BUY_ERROR_PACKET(this);

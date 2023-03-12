@@ -309,8 +309,8 @@ public class World {
         DatabaseManager.get(ObjectTemplateData.class).loadFully();
         logger.debug("The template objects were loaded successfully.");
 
-        DatabaseManager.get(ObjectData.class).loadFully();
-        logger.debug("The objects were loaded successfully.");
+//        DatabaseManager.get(ObjectData.class).loadFully();
+//        logger.debug("The objects were loaded successfully.");
 
         DatabaseManager.get(NpcTemplateData.class).loadFully();
         logger.debug("The non-player characters were loaded successfully.");
