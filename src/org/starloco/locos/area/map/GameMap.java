@@ -1706,7 +1706,7 @@ public class GameMap {
                     if (obj != null) {
                         if (Logging.USE_LOG)
                             Logging.getInstance().write("Object", "GetInOnTheFloor : " + player.getName() + " a ramassé [" + obj.getTemplate().getId() + "@" + obj.getGuid() + ";" + obj.getQuantity() + "]");
-                        if (player.addObjet(obj, true))
+                        if (player.addItem(obj, true, false))
                             World.world.addGameObject(obj);
                         SocketManager.GAME_SEND_GDO_PACKET_TO_MAP(this, '-', id, 0, 0);
                         SocketManager.GAME_SEND_Ow_PACKET(player);

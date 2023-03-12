@@ -22,7 +22,6 @@ import org.starloco.locos.entity.monster.MonsterGrade;
 import org.starloco.locos.entity.monster.MonsterGroup;
 import org.starloco.locos.entity.mount.Mount;
 import org.starloco.locos.entity.npc.Npc;
-import org.starloco.locos.entity.npc.NpcTemplate;
 import org.starloco.locos.entity.pet.PetEntry;
 import org.starloco.locos.event.EventManager;
 import org.starloco.locos.event.type.Event;
@@ -1777,7 +1776,7 @@ public class CommandAdmin extends AdminUser {
 
             for (ObjectTemplate t : IS.getItemTemplates()) {
                 GameObject obj = t.createNewItem(1, useMax);
-                if (this.getPlayer().addObjet(obj, true))//Si le joueur n'avait pas d'item similaire
+                if (this.getPlayer().addItem(obj, true, false))//Si le joueur n'avait pas d'item similaire
                     World.world.addGameObject(obj);
             }
             String str = "Creation de la panoplie " + tID + " reussie";
@@ -1844,10 +1843,10 @@ public class CommandAdmin extends AdminUser {
             if(lier) {
                 Player player = World.world.getPlayerByName(infos[4]);
                 obj.attachToPlayer(player);
-                if (player.addObjet(obj, true))//Si le joueur n'avait pas d'item similaire
+                if (player.addItem(obj, true, false))//Si le joueur n'avait pas d'item similaire
                     World.world.addGameObject(obj);
             } else {
-                if (this.getPlayer().addObjet(obj, true))//Si le joueur n'avait pas d'item similaire
+                if (this.getPlayer().addItem(obj, true, false))//Si le joueur n'avait pas d'item similaire
                     World.world.addGameObject(obj);
             }
             String str = "Creation de l'item " + tID + " reussie";
@@ -3258,7 +3257,7 @@ public class CommandAdmin extends AdminUser {
                     ObjectTemplate objT = World.world.getObjTemplate(entry.getKey());
                     int qua = entry.getValue();
                     GameObject obj = objT.createNewItem(qua, false);
-                    if (this.getPlayer().addObjet(obj, true))
+                    if (this.getPlayer().addItem(obj, true, false))
                         World.world.addGameObject(obj);
                     SocketManager.GAME_SEND_Im_PACKET(this.getPlayer(), "021;"
                             + qua + "~" + objT.getId());

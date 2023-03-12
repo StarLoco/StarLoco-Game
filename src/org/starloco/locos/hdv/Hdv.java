@@ -150,7 +150,7 @@ public class Hdv {
             SocketManager.GAME_SEND_STATS_PACKET(newOwner);//Met a jour les kamas de l'acheteur
 
             toBuy.getGameObject().setPosition(Constant.ITEM_POS_NO_EQUIPED);
-            newOwner.addObjet(toBuy.getGameObject(), true);//Ajoute l'objet au nouveau propri�taire
+            newOwner.addItem(toBuy.getGameObject(), true, false);//Ajoute l'objet au nouveau propri�taire
             toBuy.getGameObject().getTemplate().newSold(toBuy.getAmount(true), price);//Ajoute la ventes au statistiques
             try {
                 String name = "undefined";

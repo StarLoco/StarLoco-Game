@@ -682,7 +682,7 @@ public class ObjectAction {
                         if (player0.getFight() != null) return;
                         for (String i : arg.split(";")) {
                             obj = World.world.getObjTemplate(Integer.parseInt(i.split(",")[0])).createNewItem(Integer.parseInt(i.split(",")[1]), false);
-                            if (player.addObjet(obj, true))
+                            if (player.addItem(obj, true, false))
                                 World.world.addGameObject(obj);
                         }
                         SocketManager.GAME_SEND_Ow_PACKET(player);
@@ -837,7 +837,7 @@ public class ObjectAction {
                             } else {
                                 obj = template.createNewItem(1, false);
                             }
-                            if (player.addObjet(obj, true))
+                            if (player.addItem(obj, true, false))
                                 World.world.addGameObject(obj);
                             SocketManager.GAME_SEND_Im_PACKET(player, "021;1~" + template.getId());
                         }
@@ -874,7 +874,7 @@ public class ObjectAction {
                                 break;
                         }
                         obj = template.createNewItem(1, max);
-                        if (player.addObjet(obj, true))
+                        if (player.addItem(obj, true, false))
                             World.world.addGameObject(obj);
                         SocketManager.GAME_SEND_Im_PACKET(player, "021;1~" + template.getId());
                         break;
@@ -894,7 +894,7 @@ public class ObjectAction {
                         mount.setCastrated();
                         mount.setToMax();
 
-                        if (player.addObjet(obj, true))
+                        if (player.addItem(obj, true, false))
                             World.world.addGameObject(obj);
                         SocketManager.GAME_SEND_Im_PACKET(player, "021;1~" + template.getId());
                         break;
@@ -946,7 +946,7 @@ public class ObjectAction {
 
                     if (!player.addObjetSimiler(newGameObject, true, -1)) {
                         World.world.addGameObject(newGameObject);
-                        player.addObjet(newGameObject);
+                        player.addItem(newGameObject, true);
                     }
                 }
                 send = true;

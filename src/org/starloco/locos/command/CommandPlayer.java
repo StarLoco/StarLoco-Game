@@ -5,13 +5,11 @@ import org.starloco.locos.client.Player;
 import org.starloco.locos.client.other.Party;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.event.EventManager;
-import org.starloco.locos.game.GameClient;
 import org.starloco.locos.game.action.ExchangeAction;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.Config;
 import org.starloco.locos.kernel.Constant;
 import org.starloco.locos.kernel.Logging;
-import org.starloco.locos.lang.LangEnum;
 import org.starloco.locos.object.GameObject;
 import org.starloco.locos.util.TimerWaiter;
 
@@ -281,7 +279,7 @@ public class CommandPlayer {
                     });
             TimerWaiter.addNext(() -> {
                 for(GameObject object : objects) {
-                    if(!player.addObjet(object, true))
+                    if(!player.addItem(object, true, false))
                         World.world.removeGameObject(object.getGuid());
                 }
                 player.sendTypeMessage("Transfert", objects.size()  + " objets récupérés.");

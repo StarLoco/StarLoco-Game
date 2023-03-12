@@ -24,7 +24,7 @@ public class Loterie {
                     GameObject newObjAdded = World.world.getObjTemplate(objIdWin).createNewItem(1, false);
                     if (!perso.addObjetSimiler(newObjAdded, true, -1)) {
                         World.world.addGameObject(newObjAdded);
-                        perso.addObjet(newObjAdded);
+                        perso.addItem(newObjAdded, true);
                     }
                 } else {
                     SocketManager.GAME_SEND_Im_PACKET(perso, "14|43");
@@ -44,7 +44,7 @@ public class Loterie {
                     GameObject newObjAdded = World.world.getObjTemplate(objIdWin).createNewItem(1, false);
                     if (!perso.addObjetSimiler(newObjAdded, true, -1)) {
                         World.world.addGameObject(newObjAdded);
-                        perso.addObjet(newObjAdded);
+                        perso.addItem(newObjAdded, true);
                     }
                 } else {
                     SocketManager.GAME_SEND_Im_PACKET(perso, "14|43");
@@ -59,7 +59,7 @@ public class Loterie {
         GameObject newObjAdded = World.world.getObjTemplate(objIdWin).createNewItem(1, false);
         if (!perso.addObjetSimiler(newObjAdded, true, -1)) {
             World.world.addGameObject(newObjAdded);
-            perso.addObjet(newObjAdded);
+            perso.addItem(newObjAdded, true);
         }
     }
 

@@ -81,18 +81,13 @@ public class Main {
         if(DatabaseManager.getInstance().isConnected()) {
             Config.isRunning = true;
 	        World.world.createWorld();
+            // Script engine
+            World.world.loadScripts();
 
             new GameServer().initialize();
             new ExchangeClient().initialize();
 
-            // Script engine
-            Main.logger.debug("Loading script engine");
-            try {
-                NpcScriptVM.init();
-            } catch (Exception e) {
-                Main.logger.error("init NpcScriptVM failed", e);
-                throw new RuntimeException("init NpcScriptVM failed", e);
-            }
+
             Main.logger.info("The server is ready ! Waiting for connection..\n");
 
 	        if (!Config.debug) {

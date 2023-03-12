@@ -89,7 +89,7 @@ public class SPlayer extends DefaultUserdata<Player> {
         int quantity = args.nextInt();
         boolean isPerfect = args.nextOptionalBoolean(true);
 
-        p.addItem(itemID, quantity, isPerfect);
+        p.addItem(itemID, quantity, isPerfect, false);
     }
 
     @SuppressWarnings("unused")
@@ -103,7 +103,7 @@ public class SPlayer extends DefaultUserdata<Player> {
         int totalPrice = unitPrice * quantity;
         if(!p.modKamasDisplay(-totalPrice)) return false;
 
-        p.addItem(itemID, quantity, isPerfect);
+        p.addItem(itemID, quantity, isPerfect, false);
         return true;
     }
 }

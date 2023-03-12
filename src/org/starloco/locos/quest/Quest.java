@@ -380,7 +380,7 @@ public class Quest {
                 int quantity = entry.getValue();
                 GameObject object = template.createNewItem(quantity, false);
 
-                if (player.addObjet(object, true)) {
+                if (player.addItem(object, true, false)) {
                     World.world.addGameObject(object);
                 }
                 SocketManager.GAME_SEND_Im_PACKET(player, "021;" + quantity + "~" + template.getId());

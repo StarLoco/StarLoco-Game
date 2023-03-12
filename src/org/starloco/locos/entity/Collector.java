@@ -500,7 +500,7 @@ public class Collector {
                 //On retire l'item
                 removeObjet(id);
                 //On l'ajoute au joueur
-                P.addObjet(CollectorObj);
+                P.addItem(CollectorObj, true);
                 //On envoie les packets
                 String str = "O-" + id;
                 SocketManager.GAME_SEND_EsK_PACKET(P, str);
@@ -514,7 +514,7 @@ public class Collector {
                 //On retire X objet
                 CollectorObj.setQuantity(newQua);
                 //On l'ajoute au joueur
-                P.addObjet(PersoObj);
+                P.addItem(PersoObj, true);
 
                 //On envoie les packets
                 String str = "O+" + CollectorObj.getGuid() + "|"

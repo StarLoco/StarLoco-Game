@@ -382,7 +382,7 @@ public class Action {
                             return true;
                         GameObject O = T.createNewItem(count, false);
                         //Si retourne true, on l'ajoute au monde
-                        if (player.addObjet(O, true))
+                        if (player.addItem(O, true, false))
                             World.world.addGameObject(O);
                     } else {
                         player.removeByTemplateID(tID, -count);
@@ -1224,7 +1224,7 @@ public class Action {
                     newObj.addTxtStat(Constant.STATS_GRADE_TRAQUE, Integer.toHexString(tempP.getGrade()) + "");
                     newObj.addTxtStat(Constant.STATS_NIVEAU_TRAQUE, Integer.toHexString(tempP.getLevel()) + "");
 
-                    if (player.addObjet(newObj, true))
+                    if (player.addItem(newObj, true, false))
                         World.world.addGameObject(newObj);
                 } else {
                     SocketManager.GAME_SEND_MESSAGE(player, player.getLang().trans("other.action.apply.traque.sleep"), "000000");
@@ -1310,7 +1310,7 @@ public class Action {
                     GameObject newObjAdded = World.world.getObjTemplate(9201).createNewItem(1, false);
                     if (!player.addObjetSimiler(newObjAdded, true, -1)) {
                         World.world.addGameObject(newObjAdded);
-                        player.addObjet(newObjAdded);
+                        player.addItem(newObjAdded, true);
                     }
                 }
                 break;
@@ -1582,7 +1582,7 @@ public class Action {
                     GameObject newObjAdded = World.world.getObjTemplate(970).createNewItem(1, false);
                     if (!player.addObjetSimiler(newObjAdded, true, -1)) {
                         World.world.addGameObject(newObjAdded);
-                        player.addObjet(newObjAdded);
+                        player.addItem(newObjAdded, true);
                     }
                     SocketManager.GAME_SEND_Im_PACKET(player, "021;" + 1 + "~"
                             + 970);
@@ -1591,7 +1591,7 @@ public class Action {
                     GameObject newObjAdded = World.world.getObjTemplate(969).createNewItem(1, false);
                     if (!player.addObjetSimiler(newObjAdded, true, -1)) {
                         World.world.addGameObject(newObjAdded);
-                        player.addObjet(newObjAdded);
+                        player.addItem(newObjAdded, true);
                     }
                     SocketManager.GAME_SEND_Im_PACKET(player, "021;" + 1 + "~"
                             + 969);
@@ -1600,7 +1600,7 @@ public class Action {
                     GameObject newObjAdded = World.world.getObjTemplate(971).createNewItem(1, false);
                     if (!player.addObjetSimiler(newObjAdded, true, -1)) {
                         World.world.addGameObject(newObjAdded);
-                        player.addObjet(newObjAdded);
+                        player.addItem(newObjAdded, true);
                     }
                     SocketManager.GAME_SEND_Im_PACKET(player, "021;" + 1 + "~"
                             + 971);
@@ -1630,12 +1630,12 @@ public class Action {
                         GameObject newObjAdded = World.world.getObjTemplate(newObj1).createNewItem(newQua1, false);
                         if (!player.addObjetSimiler(newObjAdded, true, -1)) {
                             World.world.addGameObject(newObjAdded);
-                            player.addObjet(newObjAdded);
+                            player.addItem(newObjAdded, true);
                         }
                         GameObject newObjAdded1 = World.world.getObjTemplate(newObj2).createNewItem(newQua2, false);
                         if (!player.addObjetSimiler(newObjAdded1, true, -1)) {
                             World.world.addGameObject(newObjAdded1);
-                            player.addObjet(newObjAdded1);
+                            player.addItem(newObjAdded1, true);
                         }
                     } else {
                         SocketManager.GAME_SEND_Im_PACKET(player, "14|43");
@@ -1670,7 +1670,7 @@ public class Action {
                         GameObject newObjAdded = World.world.getObjTemplate(newObj1).createNewItem(newQua1, false);
                         if (!player.addObjetSimiler(newObjAdded, true, -1)) {
                             World.world.addGameObject(newObjAdded);
-                            player.addObjet(newObjAdded);
+                            player.addItem(newObjAdded, true);
                         }
                     } else {
                         SocketManager.GAME_SEND_Im_PACKET(player, "14|43");
@@ -1762,7 +1762,7 @@ public class Action {
                         GameObject newObjAdded = World.world.getObjTemplate(newItem).createNewItem(quaNewItem, false);
                         if (!player.addObjetSimiler(newObjAdded, true, -1)) {
                             World.world.addGameObject(newObjAdded);
-                            player.addObjet(newObjAdded);
+                            player.addItem(newObjAdded, true);
                         }
                         SocketManager.GAME_SEND_Im_PACKET(player, "022;" + qua0
                                 + "~" + obj0);
@@ -1813,7 +1813,7 @@ public class Action {
                         GameObject newObjAdded = World.world.getObjTemplate(newItem).createNewItem(quaNewItem, false);
                         if (!player.addObjetSimiler(newObjAdded, true, -1)) {
                             World.world.addGameObject(newObjAdded);
-                            player.addObjet(newObjAdded);
+                            player.addItem(newObjAdded, true);
                         }
                         SocketManager.GAME_SEND_Im_PACKET(player, "022;" + qua0
                                 + "~" + obj0);
@@ -1857,7 +1857,7 @@ public class Action {
                         GameObject newObjAdded = World.world.getObjTemplate(newItem).createNewItem(quaNewItem, false);
                         if (!player.addObjetSimiler(newObjAdded, true, -1)) {
                             World.world.addGameObject(newObjAdded);
-                            player.addObjet(newObjAdded);
+                            player.addItem(newObjAdded, true);
                         }
                         SocketManager.GAME_SEND_Im_PACKET(player, "022;" + qua0
                                 + "~" + obj0);
@@ -1886,12 +1886,12 @@ public class Action {
                     GameObject newObj1 = World.world.getObjTemplate(1020).createNewItem(1, false);
                     if (!player.addObjetSimiler(newObj1, true, -1)) {
                         World.world.addGameObject(newObj1);
-                        player.addObjet(newObj1);
+                        player.addItem(newObj1, true);
                     }
                     GameObject newObj2 = World.world.getObjTemplate(1022).createNewItem(1, false);
                     if (!player.addObjetSimiler(newObj2, true, -1)) {
                         World.world.addGameObject(newObj2);
-                        player.addObjet(newObj2);
+                        player.addItem(newObj2, true);
                     }
                     SocketManager.GAME_SEND_Im_PACKET(player, "022;" + 1 + "~"
                             + 1089);
@@ -1978,7 +1978,7 @@ public class Action {
                         GameObject newObjAdded = World.world.getObjTemplate(newItem).createNewItem(quaNewItem, false);
                         if (!player.addObjetSimiler(newObjAdded, true, -1)) {
                             World.world.addGameObject(newObjAdded);
-                            player.addObjet(newObjAdded);
+                            player.addItem(newObjAdded, true);
                         }
                         SocketManager.GAME_SEND_Im_PACKET(player, "022;" + qua
                                 + "~" + obj);
@@ -2048,7 +2048,7 @@ public class Action {
                                 return true;
                             GameObject O = T.createNewItem(count, false);
                             //Si retourne true, on l'ajoute au monde
-                            if (player.addObjet(O, true))
+                            if (player.addItem(O, true, false))
                                 World.world.addGameObject(O);
                         } else {
                             player.removeByTemplateID(tID, -count);
@@ -2083,7 +2083,7 @@ public class Action {
                     GameObject newObjAdded = World.world.getObjTemplate(IdObj).createNewItem(1, false);
                     if (!player.addObjetSimiler(newObjAdded, true, -1)) {
                         World.world.addGameObject(newObjAdded);
-                        player.addObjet(newObjAdded);
+                        player.addItem(newObjAdded, true);
                     }
                 } else {
                     SocketManager.GAME_SEND_MESSAGE(player, player.getLang().trans("other.action.apply.objalereadyexit"));
@@ -2103,7 +2103,7 @@ public class Action {
                         GameObject newObjAdded = World.world.getObjTemplate(960).createNewItem(1, false);
                         if (!player.addObjetSimiler(newObjAdded, true, -1)) {
                             World.world.addGameObject(newObjAdded);
-                            player.addObjet(newObjAdded);
+                            player.addItem(newObjAdded, true);
                         }
                         SocketManager.GAME_SEND_Im_PACKET(player, "022;" + 1
                                 + "~" + 757);
@@ -2170,7 +2170,7 @@ public class Action {
                         SocketManager.GAME_SEND_STATS_PACKET(player);
                     ObjectTemplate OT = World.world.getObjTemplate(6653);
                     GameObject obj = OT.createNewItem(1, false);
-                    if (player.addObjet(obj, true))//Si le joueur n'avait pas d'item similaire
+                    if (player.addItem(obj, true, false))//Si le joueur n'avait pas d'item similaire
                         World.world.addGameObject(obj);
                     obj.refreshStatsObjet("325#0#0#"
                             + System.currentTimeMillis());
@@ -2196,7 +2196,7 @@ public class Action {
                     GameObject newObjAdded = World.world.getObjTemplate(998).createNewItem(1, false);
                     if (!player.addObjetSimiler(newObjAdded, true, -1)) {
                         World.world.addGameObject(newObjAdded);
-                        player.addObjet(newObjAdded);
+                        player.addItem(newObjAdded, true);
                     }
                     SocketManager.GAME_SEND_Im_PACKET(player, "021;" + 1 + "~"
                             + 998);
@@ -2219,7 +2219,7 @@ public class Action {
                     GameObject newObjAdded = World.world.getObjTemplate(1004).createNewItem(1, false);
                     if (!player.addObjetSimiler(newObjAdded, true, -1)) {
                         World.world.addGameObject(newObjAdded);
-                        player.addObjet(newObjAdded);
+                        player.addItem(newObjAdded, true);
                     }
                     SocketManager.GAME_SEND_Im_PACKET(player, "021;" + 1 + "~"
                             + 1004);
@@ -2265,7 +2265,7 @@ public class Action {
                     GameObject newObjAdded = World.world.getObjTemplate(6716).createNewItem(1, false);
                     if (!player.addObjetSimiler(newObjAdded, true, -1)) {
                         World.world.addGameObject(newObjAdded);
-                        player.addObjet(newObjAdded);
+                        player.addItem(newObjAdded, true);
                     }
                     SocketManager.GAME_SEND_Im_PACKET(player, "021;" + 1 + "~"
                             + 6716);
@@ -2328,7 +2328,7 @@ public class Action {
                     GameObject newObjAdded = World.world.getObjTemplate(1086).createNewItem(1, false);
                     if (!player.addObjetSimiler(newObjAdded, true, -1)) {
                         World.world.addGameObject(newObjAdded);
-                        player.addObjet(newObjAdded);
+                        player.addItem(newObjAdded, true);
                     }
                     SocketManager.GAME_SEND_Im_PACKET(player, "021;" + 1 + "~"
                             + 1086);
@@ -2362,7 +2362,7 @@ public class Action {
                     GameObject newObjAdded = World.world.getObjTemplate(1088).createNewItem(1, false);
                     if (!player.addObjetSimiler(newObjAdded, true, -1)) {
                         World.world.addGameObject(newObjAdded);
-                        player.addObjet(newObjAdded);
+                        player.addItem(newObjAdded, true);
                     }
                     SocketManager.GAME_SEND_Im_PACKET(player, "021;" + 1 + "~"
                             + 1088);
@@ -2390,7 +2390,7 @@ public class Action {
                     GameObject newObjAdded11 = World.world.getObjTemplate(1089).createNewItem(1, false);
                     if (!player.addObjetSimiler(newObjAdded11, true, -1)) {
                         World.world.addGameObject(newObjAdded11);
-                        player.addObjet(newObjAdded11);
+                        player.addItem(newObjAdded11, true);
                     }
                     SocketManager.GAME_SEND_Im_PACKET(player, "021;" + 1 + "~"
                             + 1089);
@@ -2407,7 +2407,7 @@ public class Action {
                 GameObject newObjAdded = World.world.getObjTemplate(1728).createNewItem(1, false);
                 if (!player.addObjetSimiler(newObjAdded, true, -1)) {
                     World.world.addGameObject(newObjAdded);
-                    player.addObjet(newObjAdded);
+                    player.addItem(newObjAdded, true);
                 }
                 SocketManager.GAME_SEND_Im_PACKET(player, "021;" + 1 + "~"
                         + 1728);
@@ -2420,7 +2420,7 @@ public class Action {
                 GameObject newObjAdded1 = World.world.getObjTemplate(8000).createNewItem(1, false);
                 if (!player.addObjetSimiler(newObjAdded1, true, -1)) {
                     World.world.addGameObject(newObjAdded1);
-                    player.addObjet(newObjAdded1);
+                    player.addItem(newObjAdded1, true);
                 }
                 SocketManager.GAME_SEND_Im_PACKET(player, "021;" + 1 + "~"
                         + 8000);
@@ -2448,7 +2448,7 @@ public class Action {
                     GameObject newObjAdded11 = World.world.getObjTemplate(972).createNewItem(1, false);
                     if (!player.addObjetSimiler(newObjAdded11, true, -1)) {
                         World.world.addGameObject(newObjAdded11);
-                        player.addObjet(newObjAdded11);
+                        player.addItem(newObjAdded11, true);
                     }
                     SocketManager.GAME_SEND_Im_PACKET(player, "021;" + 1 + "~"
                             + 972);
@@ -2468,7 +2468,7 @@ public class Action {
                         GameObject newObjAdded11 = World.world.getObjTemplate(7890).createNewItem(1, false);
                         if (!player.addObjetSimiler(newObjAdded11, true, -1)) {
                             World.world.addGameObject(newObjAdded11);
-                            player.addObjet(newObjAdded11);
+                            player.addItem(newObjAdded11, true);
                         }
                         SocketManager.GAME_SEND_Im_PACKET(player, "021;" + 1
                                 + "~" + 7890);
@@ -2477,7 +2477,7 @@ public class Action {
                         GameObject newObjAdded11 = World.world.getObjTemplate(7889).createNewItem(1, false);
                         if (!player.addObjetSimiler(newObjAdded11, true, -1)) {
                             World.world.addGameObject(newObjAdded11);
-                            player.addObjet(newObjAdded11);
+                            player.addItem(newObjAdded11, true);
                         }
                         SocketManager.GAME_SEND_Im_PACKET(player, "021;" + 1
                                 + "~" + 7889);
@@ -2486,7 +2486,7 @@ public class Action {
                         GameObject newObjAdded11 = World.world.getObjTemplate(7888).createNewItem(1, false);
                         if (!player.addObjetSimiler(newObjAdded11, true, -1)) {
                             World.world.addGameObject(newObjAdded11);
-                            player.addObjet(newObjAdded11);
+                            player.addItem(newObjAdded11, true);
                         }
                         SocketManager.GAME_SEND_Im_PACKET(player, "021;" + 1
                                 + "~" + 7888);
@@ -2495,7 +2495,7 @@ public class Action {
                         GameObject newObjAdded11 = World.world.getObjTemplate(7887).createNewItem(1, false);
                         if (!player.addObjetSimiler(newObjAdded11, true, -1)) {
                             World.world.addGameObject(newObjAdded11);
-                            player.addObjet(newObjAdded11);
+                            player.addItem(newObjAdded11, true);
                         }
                         SocketManager.GAME_SEND_Im_PACKET(player, "021;" + 1
                                 + "~" + 7887);
@@ -2707,7 +2707,7 @@ public class Action {
                     GameObject newObjAdded11 = World.world.getObjTemplate(7415).createNewItem(1, false);
                     if (!player.addObjetSimiler(newObjAdded11, true, -1)) {
                         World.world.addGameObject(newObjAdded11);
-                        player.addObjet(newObjAdded11);
+                        player.addItem(newObjAdded11, true);
                     }
                     SocketManager.GAME_SEND_Im_PACKET(player, "021;" + 1 + "~"
                             + 7415);
@@ -2719,14 +2719,14 @@ public class Action {
                 GameObject newObjAdded11 = World.world.getObjTemplate(6885).createNewItem(1, false);
                 if (!player.addObjetSimiler(newObjAdded11, true, -1)) {
                     World.world.addGameObject(newObjAdded11);
-                    player.addObjet(newObjAdded11);
+                    player.addItem(newObjAdded11, true);
                 }
                 SocketManager.GAME_SEND_Im_PACKET(player, "021;" + 1 + "~"
                         + 6885);
                 GameObject newObjAdded12 = World.world.getObjTemplate(8388).createNewItem(1, false);
                 if (!player.addObjetSimiler(newObjAdded12, true, -1)) {
                     World.world.addGameObject(newObjAdded12);
-                    player.addObjet(newObjAdded12);
+                    player.addItem(newObjAdded12, true);
                 }
                 SocketManager.GAME_SEND_Im_PACKET(player, "021;" + 1 + "~"
                         + 8388);
@@ -2739,7 +2739,7 @@ public class Action {
                     GameObject newObjAdded121 = World.world.getObjTemplate(6887).createNewItem(1, false);
                     if (!player.addObjetSimiler(newObjAdded121, true, -1)) {
                         World.world.addGameObject(newObjAdded121);
-                        player.addObjet(newObjAdded121);
+                        player.addItem(newObjAdded121, true);
                     }
                     SocketManager.GAME_SEND_Im_PACKET(player, "022;" + 1 + "~"
                             + 6885);
@@ -2753,7 +2753,7 @@ public class Action {
                 GameObject newObjAdded121 = World.world.getObjTemplate(cadeau).createNewItem(1, false);
                 if (!player.addObjetSimiler(newObjAdded121, true, -1)) {
                     World.world.addGameObject(newObjAdded121);
-                    player.addObjet(newObjAdded121);
+                    player.addItem(newObjAdded121, true);
                 }
                 SocketManager.GAME_SEND_Im_PACKET(player, "021;" + 1 + "~"
                         + cadeau);
@@ -2765,7 +2765,7 @@ public class Action {
                     GameObject newObjAdded111 = World.world.getObjTemplate(8476).createNewItem(1, false);
                     if (!player.addObjetSimiler(newObjAdded111, true, -1)) {
                         World.world.addGameObject(newObjAdded111);
-                        player.addObjet(newObjAdded111);
+                        player.addItem(newObjAdded111, true);
                     }
                     SocketManager.GAME_SEND_Im_PACKET(player, "021;" + 1 + "~"
                             + 8476);
@@ -2778,7 +2778,7 @@ public class Action {
                     GameObject newObjAdded111 = World.world.getObjTemplate(8477).createNewItem(1, false);
                     if (!player.addObjetSimiler(newObjAdded111, true, -1)) {
                         World.world.addGameObject(newObjAdded111);
-                        player.addObjet(newObjAdded111);
+                        player.addItem(newObjAdded111, true);
                     }
                     SocketManager.GAME_SEND_Im_PACKET(player, "021;" + 1 + "~"
                             + 8477);
@@ -2805,7 +2805,7 @@ public class Action {
                     GameObject newObjAdded111 = World.world.getObjTemplate(7414).createNewItem(1, false);
                     if (!player.addObjetSimiler(newObjAdded111, true, -1)) {
                         World.world.addGameObject(newObjAdded111);
-                        player.addObjet(newObjAdded111);
+                        player.addItem(newObjAdded111, true);
                     }
                     SocketManager.GAME_SEND_Im_PACKET(player, "021;" + 1 + "~"
                             + 7414);
@@ -2818,7 +2818,7 @@ public class Action {
                     GameObject newObjAdded111 = World.world.getObjTemplate(2239).createNewItem(1, false);
                     if (!player.addObjetSimiler(newObjAdded111, true, -1)) {
                         World.world.addGameObject(newObjAdded111);
-                        player.addObjet(newObjAdded111);
+                        player.addItem(newObjAdded111, true);
                     }
                     SocketManager.GAME_SEND_Im_PACKET(player, "021;" + 1 + "~"
                             + 2239);
@@ -2863,12 +2863,12 @@ public class Action {
                     return true;
                 GameObject obj1 = World.world.getObjTemplate(Integer.parseInt(args.split(";")[2])).createNewItem(1, false);
                 if (obj1 != null)
-                    if (player.addObjet(obj1, true))
+                    if (player.addItem(obj1, true, false))
                         World.world.addGameObject(obj1);
                 player.send("Im021;1~" + args.split(";")[2]);
                 obj1 = World.world.getObjTemplate(Integer.parseInt(args.split(";")[3])).createNewItem(1, false);
                 if (obj1 != null)
-                    if (player.addObjet(obj1, true))
+                    if (player.addItem(obj1, true, false))
                         World.world.addGameObject(obj1);
                 player.send("Im021;1~" + args.split(";")[3]);
                 player.teleport((short) mapId, cellId);
@@ -2879,12 +2879,12 @@ public class Action {
                     return true;
 
                 obj1 = World.world.getObjTemplate(7414).createNewItem(1, false);
-                if (player.addObjet(obj1, true))
+                if (player.addItem(obj1, true, false))
                     World.world.addGameObject(obj1);
                 player.send("Im021;1~7414");
                 if (!player.getEmotes().contains(15)) {
                     obj1 = World.world.getObjTemplate(7413).createNewItem(1, false);
-                    if (player.addObjet(obj1, true))
+                    if (player.addItem(obj1, true, false))
                         World.world.addGameObject(obj1);
                     player.send("Im021;1~7413");
                 }
@@ -2907,7 +2907,7 @@ public class Action {
                     player.send("Im022;1~7890");
 
                     obj1 = World.world.getObjTemplate(8073).createNewItem(1, false);
-                    if (player.addObjet(obj1, true))
+                    if (player.addItem(obj1, true, false))
                         World.world.addGameObject(obj1);
                     player.send("Im021;1~8073");
                 } else {
@@ -2920,7 +2920,7 @@ public class Action {
                     return true;
 
                 obj1 = World.world.getObjTemplate(6978).createNewItem(1, false);
-                if (player.addObjet(obj1, true))
+                if (player.addItem(obj1, true, false))
                     World.world.addGameObject(obj1);
                 player.send("Im021;1~6978");
                 player.teleport((short) 8467, 227);
@@ -2986,7 +2986,7 @@ public class Action {
                     return true;
 
                 obj1 = World.world.getObjTemplate(7703).createNewItem(1, false);
-                if (player.addObjet(obj1, true))
+                if (player.addItem(obj1, true, false))
                     World.world.addGameObject(obj1);
                 player.send("Im021;1~7703");
                 player.teleport((short) 2985, 279);
@@ -3042,7 +3042,7 @@ public class Action {
                 GameObject obj2 = t2.createNewItem(1, false);
                 obj2.refreshStatsObjet("325#0#0#"
                         + System.currentTimeMillis());
-                if (player.addObjet(obj2, false)) {
+                if (player.addItem(obj2, false, false)) {
                     SocketManager.GAME_SEND_Im_PACKET(player, "021;" + 1
                             + "~" + obj2.getTemplate().getId());
                     World.world.addGameObject(obj2);
@@ -3093,7 +3093,7 @@ public class Action {
                     GameObject obj = t.createNewItem(1, false);
                     obj.refreshStatsObjet("325#0#0#"
                             + System.currentTimeMillis());
-                    if (player.addObjet(obj, false)) {
+                    if (player.addItem(obj, false, false)) {
                         SocketManager.GAME_SEND_Im_PACKET(player, "021;" + 1
                                 + "~" + obj.getTemplate().getId());
                         World.world.addGameObject(obj);
@@ -3136,7 +3136,7 @@ public class Action {
                 obj2 = t2.createNewItem(1, false);
                 obj2.refreshStatsObjet("325#0#0#"
                         + System.currentTimeMillis());
-                if (player.addObjet(obj2, false)) {
+                if (player.addItem(obj2, false, false)) {
                     SocketManager.GAME_SEND_Im_PACKET(player, "021;" + 1
                             + "~" + obj2.getTemplate().getId());
                     World.world.addGameObject(obj2);
@@ -3211,7 +3211,7 @@ public class Action {
                     GameObject obj = t.createNewItem(1, false);
                     obj.refreshStatsObjet("325#0#0#"
                             + System.currentTimeMillis());
-                    if (player.addObjet(obj, false)) {
+                    if (player.addItem(obj, false, false)) {
                         SocketManager.GAME_SEND_Im_PACKET(player, "021;" + 1
                                 + "~" + obj.getTemplate().getId());
                         World.world.addGameObject(obj);
@@ -3384,7 +3384,7 @@ public class Action {
 
                 GameObject object = World.world.getObjTemplate(8072).createNewItem(1, false);
 
-                if (player.addObjet(object, false)) {
+                if (player.addItem(object, false, false)) {
                     SocketManager.GAME_SEND_Im_PACKET(player, "021;" + 1 + "~" + object.getTemplate().getId());
                     World.world.addGameObject(object);
                 }
@@ -3419,7 +3419,7 @@ public class Action {
 
                 ObjectTemplate dofus = World.world.getObjTemplate(8072);
                 GameObject obj = dofus.createNewItem(1, false);
-                if (player.addObjet(obj, false)) {
+                if (player.addItem(obj, false, false)) {
                     SocketManager.GAME_SEND_Im_PACKET(player, "021;" + 1 + "~" + obj.getTemplate().getId());
                     World.world.addGameObject(obj);
                 }
@@ -3796,7 +3796,7 @@ public class Action {
                         obj = t.createNewItem(1, false);
                         obj.refreshStatsObjet("325#0#0#"
                                 + System.currentTimeMillis());
-                        if (player.addObjet(obj, false)) {
+                        if (player.addItem(obj, false, false)) {
                             SocketManager.GAME_SEND_Im_PACKET(player, "021;" + 1
                                     + "~" + obj.getTemplate().getId());
                             World.world.addGameObject(obj);
@@ -3842,7 +3842,7 @@ public class Action {
                             obj = t.createNewItem(1, false);
                             obj.refreshStatsObjet("325#0#0#"
                                     + System.currentTimeMillis());
-                            if (player.addObjet(obj, false)) {
+                            if (player.addItem(obj, false, false)) {
                                 SocketManager.GAME_SEND_Im_PACKET(player, "021;"
                                         + 1 + "~" + obj.getTemplate().getId());
                                 World.world.addGameObject(obj);
@@ -3892,7 +3892,7 @@ public class Action {
                         ObjectTemplate t = World.world.getObjTemplate(item3);
                         if (t != null) {
                             obj = t.createNewItem(1, false);
-                            if (player.addObjet(obj, false)) {
+                            if (player.addItem(obj, false, false)) {
                                 SocketManager.GAME_SEND_Im_PACKET(player, "021;"
                                         + 1 + "~" + obj.getTemplate().getId());
                                 World.world.addGameObject(obj);
@@ -3988,7 +3988,7 @@ public class Action {
                         ObjectTemplate t = World.world.getObjTemplate(item2);
                         if (t != null) {
                             obj = t.createNewItem(1, false);
-                            if (player.addObjet(obj, false)) {
+                            if (player.addItem(obj, false, false)) {
                                 SocketManager.GAME_SEND_Im_PACKET(player, "021;"
                                         + 1 + "~" + obj.getTemplate().getId());
                                 World.world.addGameObject(obj);
@@ -4181,7 +4181,7 @@ public class Action {
                                 obj = t.createNewItem(1, false);
                                 obj.refreshStatsObjet("325#0#0#"
                                         + System.currentTimeMillis());
-                                if (player.addObjet(obj, false)) {
+                                if (player.addItem(obj, false, false)) {
                                     SocketManager.GAME_SEND_Im_PACKET(player, "021;"
                                             + 1
                                             + "~"
@@ -4320,7 +4320,7 @@ public class Action {
                     ObjectTemplate template = World.world.getObjTemplate(Integer.parseInt(s1[0]));
                     if(template != null) {
                         GameObject o = template.createNewItem(Integer.parseInt(s1[1]), false);
-                        if(player.addObjet(o, true))
+                        if(player.addItem(o, true, false))
                             World.world.addGameObject(o);
                     }
                 }
