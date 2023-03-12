@@ -1290,7 +1290,7 @@ public class GameClient {
 
 
         SocketManager.GAME_SEND_DCK_PACKET(this, id);
-        NpcScriptVM.getInstance().OnNPCDialog(npc.getTemplate().getId(), this.player, 0);
+        npc.getTemplate().onCreateDialog(this.player);
 
 //        try {
 //            if (this.player.isInAreaNotSubscribe() || this.player.getExchangeAction() != null) {
@@ -1407,7 +1407,8 @@ public class GameClient {
 
             int answerId = Integer.parseInt(infos[1]);
 
-            NpcScriptVM.getInstance().OnNPCDialog(npcTemplateID,this.player, answerId);
+
+            World.world.getNPCTemplate(npcTemplateID).onDialog(this.player, answerId);
 
 
 //            //FIXME: if npc == null => faille dialog npc, disable for .help command

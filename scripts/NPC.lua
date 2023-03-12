@@ -60,11 +60,3 @@ function Npc:salesList(player) return {} end
 --    return true
 --end
 
-
--- Helper called by java side
----@param player SPlayer
----@param npcID number
----@param answer number
-function onNpcDialog(player, npcID, answer)
-    return NPCS[npcID] and NPCS[npcID]:onTalk(player, answer) or nil
-end
