@@ -19,7 +19,6 @@ import java.util.function.Consumer;
 
 public final class NpcScriptVM extends ScriptVM {
     private static NpcScriptVM instance;
-    private final Object _vmLock = new Object(); // Find a better way if performances become an issue
 
     @SuppressWarnings("unchecked")
     private NpcScriptVM() throws LoaderException, IOException, CallException, CallPausedException, InterruptedException {
@@ -42,16 +41,6 @@ public final class NpcScriptVM extends ScriptVM {
 
     public static NpcScriptVM getInstance()  {
         return instance;
-    }
-
-    public void call(Object val, Object... args) {
-        synchronized (_vmLock) {
-            try {
-                this.executor.call(this.state, val, args);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
     }
 
     static class RegisterNpcTemplate extends AbstractFunction1<Table> {

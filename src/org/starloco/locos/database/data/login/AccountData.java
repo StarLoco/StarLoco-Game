@@ -188,7 +188,7 @@ public class AccountData extends FunctionDAO<Account> {
         return this.loadPointsWithoutUsersDb(user);
     }
 
-    public void updatePoints(int id, int points) {
+    public void updatePoints(int id, long points) {
         this.updatePointsWithoutUsersDb(id, points);
     }
 
@@ -208,11 +208,28 @@ public class AccountData extends FunctionDAO<Account> {
         return points;
     }
 
-    public void updatePointsWithoutUsersDb(int id, int points) {
+    public World.Couple<Long, Boolean> modPoints(int id, long points) {
+        try(PreparedStatement p = getPreparedStatement("UPDATE " + getTableName() + " SET `points` += ? WHERE `guid` = ? RETURNING `points`")) {
+            p.setLong(1, points);
+            p.setInt(2, id);
+            execute(p);
+
+            try(ResultSet rs = p.getResultSet()) {
+                long newVal = rs.getLong(0);
+                return new World.Couple<>(newVal, true);
+            }
+        } catch (SQLException e) {
+            super.sendError(e);
+            return new World.Couple<>(0L, false);
+        }
+    }
+
+    @Deprecated
+    public void updatePointsWithoutUsersDb(int id, long points) {
         PreparedStatement p = null;
         try {
             p = getPreparedStatement("UPDATE " + getTableName() + " SET `points` = ? WHERE `guid` = ?");
-            p.setInt(1, points);
+            p.setLong(1, points);
             p.setInt(2, id);
             execute(p);
         } catch (SQLException e) {

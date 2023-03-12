@@ -1,4 +1,7 @@
 local npc = Npc(464, 1207)
+npc.sales = {
+    {item=0x1ac9}
+}
 
 ---@param player SPlayer
 ---@param answer number
@@ -14,5 +17,4 @@ function npc:onTalk(player, answer)
         player:ask(1931)
     end
 end
-
 RegisterNPCDef(npc)

@@ -694,8 +694,6 @@ public class World {
         npcsTemplate.put(temp.getId(), temp);
     }
 
-
-
     public void removePlayer(Player player) {
         if (player.getGuild() != null) {
             if (player.getGuild().getPlayers().size() <= 1) {

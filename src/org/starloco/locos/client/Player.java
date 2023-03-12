@@ -59,6 +59,7 @@ import org.starloco.locos.quest.Quest;
 import org.starloco.locos.quest.QuestPlayer;
 import org.starloco.locos.script.proxy.SPlayer;
 import org.starloco.locos.util.TimerWaiter;
+import org.starloco.locos.database.data.game.SaleOffer.Currency;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -2443,8 +2444,10 @@ public class Player {
                 GameObject obj = entry.getValue();
                 if (World.world.getConditionManager().stackIfSimilar(obj, newObj, stackIfSimilar)) {
                     obj.setQuantity(obj.getQuantity() + newObj.getQuantity());//On ajoute QUA item a la quantit� de l'objet existant
-                    if (isOnline)
+                    if (isOnline) {
                         SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(this, obj);
+                        SocketManager.GAME_SEND_Ow_PACKET(this);
+                    }
                     return false;
                 }
             }
@@ -2454,7 +2457,11 @@ public class Player {
     }
 
     public void addItem(int templateID, int quantity, boolean useMax) {
-        GameObject obj = World.world.getObjTemplate(templateID).createNewItem(quantity, useMax);
+        this.addItem(World.world.getObjTemplate(templateID), quantity, useMax);
+    }
+
+    public void addItem(ObjectTemplate template, int quantity, boolean useMax) {
+        GameObject obj = template.createNewItem(quantity, useMax);
         if (this.addObjet(obj, true))
             World.world.addGameObject(obj);
     }
@@ -3558,26 +3565,23 @@ public class Player {
                 int newQua = obj.getQuantity() - count;
                 if (newQua > 0) {
                     obj.setQuantity(newQua);
-                    if (isOnline)
-                        SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(this, obj);
+                    if (isOnline) SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(this, obj);
                 } else {
                     //on supprime de l'inventaire et du Monde
                     objects.remove(obj.getGuid());
                     World.world.removeGameObject(obj.getGuid());
                     //on envoie le packet si connect�
-                    if (isOnline)
-                        SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(this, obj.getGuid());
+                    if (isOnline) SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(this, obj.getGuid());
                 }
+                SocketManager.GAME_SEND_Ow_PACKET(this);
                 return true;
-            } else
-            //Si pas assez d'objet
-            {
+            } else {
+                //Si pas assez d'objet
                 if (obj.getQuantity() >= tempCount) {
                     int newQua = obj.getQuantity() - tempCount;
                     if (newQua > 0) {
                         obj.setQuantity(newQua);
-                        if (isOnline)
-                            SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(this, obj);
+                        if (isOnline) SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(this, obj);
                     } else {
                         remove.add(obj);
                     }
@@ -3589,9 +3593,9 @@ public class Player {
 
                         World.world.removeGameObject(o.getGuid());
                         //on envoie le packet si connect�
-                        if (isOnline)
-                            SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(this, o.getGuid());
+                        if (isOnline) SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(this, o.getGuid());
                     }
+                    if (isOnline) SocketManager.GAME_SEND_Ow_PACKET(this);
                     return true;
                 } else {
                     // on r�duit le compteur
@@ -5896,5 +5900,12 @@ public class Player {
 
     public SPlayer Scripted() {
         return this.scriptVal;
+    }
+
+    public boolean consumeCurrency(Currency cur, long qua) {
+        if(cur == Currency.KAMAS) return modKamasDisplay(-qua);
+        if(cur == Currency.POINTS) return account.modPoints(-qua);
+        if(cur.isItem()) return removeByTemplateID(cur.item().getId(), (int)qua);
+        throw new RuntimeException("unknown currency type");
     }
 }

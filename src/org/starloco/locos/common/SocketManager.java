@@ -1,5 +1,6 @@
 package org.starloco.locos.common;
 
+import com.singularsys.jep.functions.Str;
 import com.sun.istack.internal.Nullable;
 import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.area.map.GameMap;
@@ -8,11 +9,13 @@ import org.starloco.locos.area.map.entity.MountPark;
 import org.starloco.locos.area.map.entity.Trunk;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.client.other.Party;
+import org.starloco.locos.database.data.game.SaleOffer;
 import org.starloco.locos.entity.Collector;
 import org.starloco.locos.entity.Prism;
 import org.starloco.locos.entity.monster.MonsterGroup;
 import org.starloco.locos.entity.mount.Mount;
 import org.starloco.locos.entity.npc.Npc;
+import org.starloco.locos.entity.npc.NpcTemplate;
 import org.starloco.locos.fight.Fight;
 import org.starloco.locos.fight.Fighter;
 import org.starloco.locos.game.GameClient;
@@ -1210,10 +1213,9 @@ public class SocketManager {
 
     }
 
-    public static void GAME_SEND_ITEM_VENDOR_LIST_PACKET(GameClient out, Npc npc) {
-        String packet = "EL" ;// FIXME Diabu "EL" + npc.getTemplate().getItemVendorList();
+    public static void GAME_SEND_ITEM_VENDOR_LIST_PACKET(GameClient out, List<SaleOffer> offers) {
+        String packet = "EL" + offers.stream().map(o -> o.itemTemplate.parseItemTemplateStats()).collect(Collectors.joining("|"));
         send(out, packet);
-
     }
 
     public static void GAME_SEND_ITEM_LIST_PACKET_PERCEPTEUR(GameClient out, Collector perco) {

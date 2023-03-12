@@ -1949,7 +1949,7 @@ public class Action {
             case 230://Point Boutique  
                 try {
                     int pts = Integer.parseInt(args);
-                    int ptsTotal = player.getAccount().getPoints() + pts;
+                    long ptsTotal = player.getAccount().getPoints() + pts;
                     if (ptsTotal < 0)
                         ptsTotal = 0;
                     if (ptsTotal > 50000)

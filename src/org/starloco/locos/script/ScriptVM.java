@@ -38,6 +38,8 @@ public class ScriptVM {
     protected final ChunkLoader loader;
     protected final DirectCallExecutor executor = DirectCallExecutor.newExecutor();
 
+    protected final Object _vmLock = new Object(); // Find a better way if performances become an issue
+
     protected ScriptVM(String name) throws CallException, LoaderException, IOException, CallPausedException, InterruptedException {
         this.state = StateContexts.newDefaultInstance();
         RuntimeEnvironment rtEnv = RuntimeEnvironments.system();
@@ -73,6 +75,24 @@ public class ScriptVM {
 
         DirectCallExecutor.newExecutor().call(this.state, fn);
     }
+    public Object[] call(Object val, Object... args) {
+        synchronized (_vmLock) {
+            try {
+                return this.executor.call(this.state, val, args);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    public static Object recursiveGet(Table t, Object key) {
+        if(t == null) return null;
+
+        Object v = t.rawget(key);
+        if(v != null) return v;
+        return recursiveGet(t.getMetatable(), key);
+    }
+
 
     static class LogF extends AbstractLibFunction {
         @Override
@@ -83,6 +103,12 @@ public class ScriptVM {
             ByteString fmt = args.nextString();
             logger.info(fmt.toString(), args.copyRemaining());
         }
+    }
+
+    public static int rawOptionalInt(Table v, Object key, int val) {
+        Object n = v.rawget(key);
+        if(n==null) return val;
+        return ((Long)v.rawget(key)).intValue();
     }
 
     public static int rawInt(Table v, Object key) {
@@ -112,6 +138,19 @@ public class ScriptVM {
         for(int i=1;i<=len;i++){
             int a = rawInt (t, i);
             out.add(a);
+        }
+
+        return out;
+    }
+
+    public static int[] intArrayFromLuaTable(Table t) {
+        if(t == null) return null;
+
+        long len = t.rawlen();
+        int[] out = new int[(int)len];
+
+        for(int i=0;i<len;i++){
+            out[i] = rawInt (t, i+1);
         }
 
         return out;

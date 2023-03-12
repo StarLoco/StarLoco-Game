@@ -2897,7 +2897,7 @@ public class CommandAdmin extends AdminUser {
                 if (perso == null)
                     perso = this.getPlayer();
             }
-            int pointtotal = perso.getAccount().getPoints() + count;
+            long pointtotal = perso.getAccount().getPoints() + count;
             if (pointtotal < 0)
                 pointtotal = 0;
             if (pointtotal > 50000)

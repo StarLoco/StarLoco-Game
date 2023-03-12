@@ -26,6 +26,7 @@ setmetatable(Npc, {
         self.colors = {-1,-1,-1}
         self.accessories = {}
         self.customArtwork = 0
+        self.flags = 0
 
         -- Register the Npc in the global dict
         if NPCS[self.id] ~= nil then
@@ -42,10 +43,12 @@ setmetatable(Npc, {
 ---@return void
 function Npc:onTalk(player, answer) return end
 
--- Called by the Dialog class, overwritten by each Npc
 ---@param player SPlayer
----@return {itemID:number,price:number,currencyID:number}[]
-function Npc:salesList(player) return {} end
+---@return {item:number,price:number,currency:number}[]
+function Npc:salesList(player)
+    JLogF("GLOBAL SALES")
+    return self.sales or {}
+end
 
 
 ---- Used to show the ! on top of the NPC

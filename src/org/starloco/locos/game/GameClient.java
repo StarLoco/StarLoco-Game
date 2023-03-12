@@ -1719,25 +1719,35 @@ public class GameClient {
                 if (qua <= 0 || qua > 100000)
                     return;
 
-                ObjectTemplate template = World.world.getObjTemplate(id);
                 Npc npc = this.player.getCurMap().getNpc(exchangeAction.getValue());
+                if (npc == null) return;
+                NpcTemplate npcTemplate = npc.getTemplate();
 
-                if (template == null) {
+                Optional<SaleOffer> optOffer = npcTemplate.salesList(this.player).stream().filter(o -> o.itemTemplate.getId() == id).findFirst();
+                if (!optOffer.isPresent()) {
                     SocketManager.GAME_SEND_BUY_ERROR_PACKET(this);
                     return;
                 }
-                if (template.getType() == 18 && qua > 1) {
+
+                SaleOffer offer = optOffer.get();
+                if (offer.itemTemplate.getType() == 18 && qua > 1) {
                     this.player.sendMessage(this.player.getLang().trans("game.gameclient.buy.fami"));
                     return;
                 }
-                if (npc == null)
+
+                long totalPrice = qua * offer.unitPrice;
+
+
+                if(!player.consumeCurrency(offer.currency, totalPrice)) {
+                    SocketManager.GAME_SEND_BUY_ERROR_PACKET(this);
+                    // FIXME Make a notEnoughCurrency(offer.currency) function to call here
                     return;
+                }
 
-                NpcTemplate npcTemplate = npc.getTemplate();
-
-                // FIXME Diabu
-                SocketManager.GAME_SEND_BUY_ERROR_PACKET(this);
+                player.addItem(offer.itemTemplate, qua,(npcTemplate.getFlags() & 0x1) != 0);
+                SocketManager.GAME_SEND_BUY_OK_PACKET(this);
                 return;
+
 //
 //                if ((npc.getTemplate().getId() == 9604 && player.getLevel() > 75) || !npcTemplate.haveItem(id)) {
 //                    SocketManager.GAME_SEND_BUY_ERROR_PACKET(this);
@@ -3355,7 +3365,7 @@ public class GameClient {
                     this.player.setExchangeAction(exchangeAction);
 
                     SocketManager.GAME_SEND_ECK_PACKET(this, 0, String.valueOf(id));
-                    SocketManager.GAME_SEND_ITEM_VENDOR_LIST_PACKET(this, npc);
+                    SocketManager.GAME_SEND_ITEM_VENDOR_LIST_PACKET(this, npc.getTemplate().salesList(this.player));
                 }
                 break;
             case '1'://Si joueur
