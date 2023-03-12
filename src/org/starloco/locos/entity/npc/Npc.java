@@ -68,7 +68,7 @@ public class Npc {
         sock.append((template.getColor3() != -1 ? Integer.toHexString(template.getColor3()) : "-1")).append(";");
         sock.append(template.encodeAccessories()).append(";");
 
-        sock.append(template.getExtraClip(p));
+        sock.append(template.getExtraClip(p)).append(";");
         sock.append(template.getCustomArtWork());
         return sock.toString();
     }
