@@ -594,7 +594,8 @@ public class PlayerExchange extends Exchange {
         }
 
         public synchronized void putAllGiveItem() {
-            ArrayList<Couple<Integer,Integer>> objects = null; // FIXME Diabu this.npc.checkGetObjects(this.items1);
+            if(this.npc.legacy == null) return;
+            ArrayList<Couple<Integer,Integer>> objects = this.npc.legacy.checkGetObjects(this.items1);
 
             if(objects != null) {
                 this.clearItems();
