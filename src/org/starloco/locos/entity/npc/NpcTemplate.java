@@ -181,7 +181,7 @@ public class NpcTemplate {
     public int getExtraClip(Player p) {
         if(this.legacy==null) {
             // TODO Scripted NPC
-            return 0;
+            return -1;
         }
         Quest q = this.legacy.quest;
         if(q==null) return -1;
