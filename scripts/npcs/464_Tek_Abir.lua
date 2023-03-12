@@ -1,10 +1,16 @@
 local npc = Npc(464, 1207)
 
+---@param player SPlayer
+---@param answer number
 function npc:onTalk(player, answer)
-    if answer == 0 then player:ask(1930, {1662}, "[name]")
+    local answers = player:kamas() >= 5 and {1662} or {}
+
+    if answer == 0 then player:ask(1930, answers, "[name]")
     elseif answer == 1662 then
-        -- TODO: Buy beer -- OAKOd541bd5~1ac9~1~~6e#2###0d0+2;
-        -- Lose 5 Kamas -- As packet + Im046;5
+        if not player:tryBuyItem(0x1ac9, 5) then
+            player:endDialog()
+            return
+        end
         player:ask(1931)
     end
 end

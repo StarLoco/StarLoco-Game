@@ -134,7 +134,7 @@ public class Player {
     private Party party;
     private int duelId = -1;
     private Map<Integer, SpellEffect> buffs = new HashMap<Integer, SpellEffect>();
-    private Map<Integer, GameObject> objects = new HashMap<>();
+    private final Map<Integer, GameObject> objects = new HashMap<>();
     private String _savePos;
     private int _emoteActive = 0;
     private int savestat;
@@ -567,7 +567,6 @@ public class Player {
         }
 
         Player Clone = new Player(id, P.getName(), (P.getGroupe() != null) ? P.getGroupe().getId() : -1, P.getSexe(), P.getClasse(), P.getColor1(), P.getColor2(), P.getColor3(), P.getLevel(), 100, P.getGfxId(), stats, "", 100, showWings, mountID, alvl, P.getAlignment());
-        Clone.objects = new HashMap<>();
         Clone.objects.putAll(P.objects);
         Clone.set_isClone(true);
         if (P._onMount) {
@@ -2449,21 +2448,26 @@ public class Player {
                     return false;
                 }
             }
-            objects.put(newObj.getGuid(), newObj);
-            SocketManager.GAME_SEND_OAKO_PACKET(this, newObj);
+            addObject(newObj, isOnline);
         }
         return true;
     }
 
+    public void addItem(int templateID, int quantity, boolean useMax) {
+        GameObject obj = World.world.getObjTemplate(templateID).createNewItem(quantity, useMax);
+        if (this.addObjet(obj, true))
+            World.world.addGameObject(obj);
+    }
+
     public void addObjet(GameObject newObj) {
-        objects.put(newObj.getGuid(), newObj);
-        SocketManager.GAME_SEND_OAKO_PACKET(this, newObj);
+        addObject(newObj, true);
     }
 
     public void addObject(GameObject newObj, boolean display) {
         this.objects.put(newObj.getGuid(), newObj);
         if(display) {
             SocketManager.GAME_SEND_OAKO_PACKET(this, newObj);
+            SocketManager.GAME_SEND_Im_PACKET(this, "021;" + newObj.getQuantity() + "~" + newObj.getTemplate());
         }
     }
 
@@ -2712,8 +2716,26 @@ public class Player {
         return up;
     }
 
-    public void addKamas(long l) {
+    public boolean addKamas(long l) {
+        // Make sure the player has enough
+        if(l < 0 && kamas < -l) return false;
         kamas += l;
+        return true;
+    }
+
+    public boolean modKamasDisplay(long quantity) {
+        if(!addKamas(quantity)) {
+            if(isOnline)SocketManager.GAME_SEND_Im_PACKET(this, "182");
+            return false;
+        }
+        if(!isOnline)return true;
+        if(quantity < 0) {
+            SocketManager.GAME_SEND_Im_PACKET(this, "046;" + (-quantity));
+        } else {
+            SocketManager.GAME_SEND_Im_PACKET(this, "045;" + quantity);
+        }
+        SocketManager.GAME_SEND_STATS_PACKET(this);
+        return true;
     }
 
     public GameObject getSimilarItem(GameObject exGameObject) {

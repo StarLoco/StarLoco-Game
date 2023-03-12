@@ -1,3 +1,9 @@
+---@class Dungeon
+---@field keyID number
+---@field questionID number
+---@field keychainResponseID number
+---@field keyResponseID number
+---@field tpDest number[] mapID,cellID
 Dungeon = Dungeon or {}
 Dungeon.__index = Dungeon
 
@@ -5,6 +11,11 @@ local keychainTemplateID = 10207
 local keychainStatID = 814
 
 setmetatable(Dungeon, {
+    ---@param keyID number
+    ---@param questionID number
+    ---@param keychainResponseID number
+    ---@param keyResponseID number
+    ---@param tpDest number[] mapID,cellID
     __call = function (cls, keyID, questionID, keychainResponseID, keyResponseID, tpDest)
         local self = setmetatable({}, Dungeon)
         self.keyID = keyID
@@ -17,21 +28,26 @@ setmetatable(Dungeon, {
     end,
 })
 
+---@param player SPlayer
+---@return boolean
 function Dungeon:hasKeyChain(player)
     local item = player:getItem(keychainTemplateID, 1)
     if not item then return false end
     -- Keys are stored as hex value in keychain
-    return item:hasTxtStat(keychainStatID, string.format("%x", self.keyID))
+    return item:hasTxtStat(keychainStatID, hex(self.keyID))
 end
 
+---@param player SPlayer
+---@return boolean
 function Dungeon:useKeyChain(player)
     local item = player:getItem(keychainTemplateID, 1)
     if not item then return false end
     -- Keys are stored as hex value in keychain
-    return item:consumeTxtStat(player, keychainStatID, string.format("%x", self.keyID))
+    return item:consumeTxtStat(player, keychainStatID, hex(self.keyID))
 end
 
-
+---@param player SPlayer
+---@param answer number
 function Dungeon:onTalkToGateKeeper(player, answer)
     if answer == 0 then
         -- Check if player has item / keychain

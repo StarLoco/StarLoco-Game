@@ -1,122 +1,109 @@
 package org.starloco.locos.script.proxy;
 
 import org.classdump.luna.ByteString;
-import org.classdump.luna.Metatables;
-import org.classdump.luna.Table;
 import org.classdump.luna.impl.DefaultUserdata;
 import org.classdump.luna.impl.ImmutableTable;
-import org.classdump.luna.impl.NonsuspendableFunctionException;
-import org.classdump.luna.lib.AbstractLibFunction;
 import org.classdump.luna.lib.ArgumentIterator;
-import org.classdump.luna.runtime.*;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.game.action.ExchangeAction;
 import org.starloco.locos.object.GameObject;
 import org.starloco.locos.script.ScriptVM;
+import org.starloco.locos.script.types.MetaTables;
 
 import java.util.List;
 
 public class SPlayer extends DefaultUserdata<Player> {
-    private static final ImmutableTable INDEX_TABLE = new ImmutableTable.Builder()
-            // Calls
-            .add("ask", new AskCall())
-            .add("endDialog", new EndDialogCall())
-            .add("teleport", new TeleportCall())
-            .add("openBank", new OpenBankCall())
-            .add("getItem", new GetItemCall())
-            .add("consumeItem", new ConsumeItemCall())
-            .build();
-    private static final ImmutableTable META_TABLE = new ImmutableTable.Builder()
-            .add(Metatables.MT_INDEX, INDEX_TABLE)
-            .build();
+    private static final ImmutableTable META_TABLE= MetaTables.MetaTable(MetaTables.ReflectIndexTable(SPlayer.class));
 
     public SPlayer(Player userValue) {
         super(META_TABLE, userValue);
     }
 
-    private static class AskCall extends AbstractLibFunction {
-        @Override
-        protected String name() { return "player:ask"; }
-
-        @Override
-        protected void invoke(ExecutionContext context, ArgumentIterator args) throws ResolvedControlThrowable {
-            Player p = args.nextUserdata("SPlayer", SPlayer.class).getUserValue();
-            int question = args.nextInt();
-            List<Integer> answersInts = ScriptVM.intsFromLuaTable(args.nextOptionalTable(null));
-            ByteString param = args.nextOptionalString(null);
+    @SuppressWarnings("unused")
+    private static void ask(Player p, ArgumentIterator args) {
+        int question = args.nextInt();
+        List<Integer> answersInts = ScriptVM.intsFromLuaTable(args.nextOptionalTable(null));
+        ByteString param = args.nextOptionalString(null);
 
 
-            String paramVal = param == null ? null : p.getStringVar(param.toString());
-            SocketManager.GAME_SEND_QUESTION_PACKET(p.getGameClient(), question, answersInts, paramVal);
-
-            context.getReturnBuffer().setTo();
-        }
+        String paramVal = param == null ? null : p.getStringVar(param.toString());
+        SocketManager.GAME_SEND_QUESTION_PACKET(p.getGameClient(), question, answersInts, paramVal);
     }
 
-    private static class EndDialogCall extends AbstractLibFunction {
-        @Override
-        protected String name() { return "player:endDialog"; }
-
-        @Override
-        public void invoke(ExecutionContext context, ArgumentIterator args) {
-            Player p = args.nextUserdata("SPlayer", SPlayer.class).getUserValue();
-            if (p.getExchangeAction() == null || p.getExchangeAction().getType() != ExchangeAction.TALKING_WITH ){
-                return;
-            }
-            p.setAway(false);
-            p.setExchangeAction(null);
-            SocketManager.GAME_SEND_END_DIALOG_PACKET(p.getGameClient());
-
-            context.getReturnBuffer().setTo();
+    @SuppressWarnings("unused")
+    private static void endDialog(Player p) {
+        if (p.getExchangeAction() == null || p.getExchangeAction().getType() != ExchangeAction.TALKING_WITH ){
+            return;
         }
+        p.setAway(false);
+        p.setExchangeAction(null);
+        SocketManager.GAME_SEND_END_DIALOG_PACKET(p.getGameClient());
     }
 
-    private static class OpenBankCall extends AbstractFunction1<SPlayer> {
-        @Override
-        public void invoke(ExecutionContext context, SPlayer player) {
-           player.getUserValue().openBank();
-
-            context.getReturnBuffer().setTo();
-        }
-        @Override
-        public void resume(ExecutionContext context, Object suspendedState) { throw new NonsuspendableFunctionException(); }
+    @SuppressWarnings("unused")
+    private static void teleport(Player p, ArgumentIterator args) {
+        short mapID = (short)args.nextInt();
+        int cellID = args.nextInt();
+        p.teleport(mapID, cellID);
     }
 
-    private static class TeleportCall extends AbstractFunction3<SPlayer, Long, Long> {
-        @Override
-        public void invoke(ExecutionContext context, SPlayer player, Long lMapID, Long lCellID) {
-            player.getUserValue().teleport(lMapID.shortValue(), lCellID.intValue());
-
-            context.getReturnBuffer().setTo();
-        }
-        @Override
-        public void resume(ExecutionContext context, Object suspendedState) { throw new NonsuspendableFunctionException(); }
+    @SuppressWarnings("unused")
+    private static void openBank(Player p) {
+        p.openBank();
     }
 
-    private static class GetItemCall extends AbstractFunction2<SPlayer, Long> {
-        @Override
-        public void invoke(ExecutionContext context, SPlayer player, Long lItemID) {
-            GameObject item = player.getUserValue().getItemTemplate(lItemID.intValue(), 1);
-            if(item == null) {
-                // No item return null
-                context.getReturnBuffer().setTo();
-                return;
-            }
-            context.getReturnBuffer().setTo(item.Scripted());
+    @SuppressWarnings("unused")
+    private static SItem getItem(Player p, ArgumentIterator args) {
+        int itemID = args.nextInt();
+        int quantity = args.nextInt();
+        GameObject item = p.getItemTemplate(itemID, quantity);
+        if(item == null) {
+            // No item return null
+            return null;
         }
-        @Override
-        public void resume(ExecutionContext context, Object suspendedState) { throw new NonsuspendableFunctionException(); }
+        return item.Scripted();
     }
 
-    private static class ConsumeItemCall extends AbstractFunction3<SPlayer, Long, Long> {
-        @Override
-        public void invoke(ExecutionContext context, SPlayer player, Long lItemID, Long lQuantity) {
-            boolean consumed = player.getUserValue().removeByTemplateID(lItemID.intValue(), lQuantity.intValue());
+    @SuppressWarnings("unused")
+    private static boolean consumeItem(Player p, ArgumentIterator args) {
+        int itemID = args.nextInt();
+        int quantity = args.nextInt();
+        return p.removeByTemplateID(itemID, quantity);
+    }
 
-            context.getReturnBuffer().setTo(consumed);
-        }
-        @Override
-        public void resume(ExecutionContext context, Object suspendedState) { throw new NonsuspendableFunctionException(); }
+    @SuppressWarnings("unused")
+    private static long kamas(Player p) {
+        return p.getKamas();
+    }
+
+    @SuppressWarnings("unused")
+    private static boolean modKamas(Player p, ArgumentIterator args) {
+        int quantity = args.nextInt();
+        return p.modKamasDisplay(quantity);
+    }
+
+    @SuppressWarnings("unused")
+    private static void addItem(Player p, ArgumentIterator args) {
+        int itemID = args.nextInt();
+        int quantity = args.nextInt();
+        boolean isPerfect = args.nextOptionalBoolean(true);
+
+        p.addItem(itemID, quantity, isPerfect);
+    }
+
+    @SuppressWarnings("unused")
+    private static boolean tryBuyItem(Player p, ArgumentIterator args) {
+        int itemID = args.nextInt();
+        int unitPrice = args.nextInt();
+        int quantity = args.nextOptionalInt(1);
+        boolean isPerfect = args.nextOptionalBoolean(true);
+
+
+        int totalPrice = unitPrice * quantity;
+        if(!p.modKamasDisplay(-totalPrice)) return false;
+
+        p.addItem(itemID, quantity, isPerfect);
+        return true;
     }
 }

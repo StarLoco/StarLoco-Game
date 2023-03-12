@@ -25,38 +25,34 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.stream.Stream;
 
 public class ScriptVM {
-    protected static final Logger logger = LoggerFactory.getLogger("Script");
+    public static final Logger logger = LoggerFactory.getLogger("Script");
     protected final Table env;
     protected final StateContext state;
     protected final ChunkLoader loader;
     protected final DirectCallExecutor executor = DirectCallExecutor.newExecutor();
 
-    private ScriptVM(String name, StateContext ctx, Table state){
-        this.state = ctx;
-        this.env = state;
-        this.loader = CompilerChunkLoader.of(name);
-    }
-
-    protected ScriptVM(String name) {
+    protected ScriptVM(String name) throws CallException, LoaderException, IOException, CallPausedException, InterruptedException {
         this.state = StateContexts.newDefaultInstance();
         RuntimeEnvironment rtEnv = RuntimeEnvironments.system();
 
         this.loader = CompilerChunkLoader.of(name);
         this.env = state.newTable();
         BasicLib.installInto(state, env, rtEnv, null);
-        ModuleLib.installInto(state, env, rtEnv, null, null);
+        ModuleLib.installInto(state, env, rtEnv, this.loader, null);
         CoroutineLib.installInto(state, env);
         StringLib.installInto(state, env);
         MathLib.installInto(state, env);
         TableLib.installInto(state, env);
 
         this.env.rawset("JLogF", new LogF());
+        runFile(Paths.get("scripts", "Common.lua"));
     }
 
     protected void runDirectory(Path path) throws IOException, LoaderException, CallException, CallPausedException, InterruptedException {
@@ -78,16 +74,14 @@ public class ScriptVM {
         DirectCallExecutor.newExecutor().call(this.state, fn);
     }
 
-    static class LogF extends AbstractFunctionAnyArg {
+    static class LogF extends AbstractLibFunction {
         @Override
-        public void invoke(ExecutionContext context, Object[] args) {
-            ByteString fmt = (ByteString)args[0];
-            logger.info(fmt.toString(), Arrays.copyOfRange(args, 1, args.length));
-        }
+        protected String name() { return "JLogF"; }
 
         @Override
-        public void resume(ExecutionContext context, Object suspendedState) {
-            throw new NonsuspendableFunctionException();
+        public void invoke(ExecutionContext context, ArgumentIterator args) {
+            ByteString fmt = args.nextString();
+            logger.info(fmt.toString(), args.copyRemaining());
         }
     }
 

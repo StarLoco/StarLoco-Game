@@ -26,7 +26,6 @@ public final class NpcScriptVM extends ScriptVM {
         super("NPC");
 
         this.customizeEnv();
-        this.runFile(Paths.get("scripts", "Dungeon.lua"));
         this.runFile(Paths.get("scripts", "Npc.lua"));
         this.runDirectory(Paths.get("scripts", "npcs"));
 
@@ -52,7 +51,6 @@ public final class NpcScriptVM extends ScriptVM {
     }
 
     public void OnNPCDialog(int npcID, Player player, int answer) {
-        // Lazy thread safety. The Lua VM is not concurrent
         synchronized (_vmLock) {
             try {
                 this.executor.call(this.state, onNpcDialog, player.Scripted(), npcID, answer);

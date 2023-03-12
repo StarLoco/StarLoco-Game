@@ -1,5 +1,17 @@
+require("Dungeon")
+
+---@type table<number, Npc>
 NPCS = NPCS or {}
 
+---@class Npc
+---@field id number
+---@field gfxID number
+---@field gender number
+---@field scaleX number
+---@field scaleY number
+---@field colors number[] 3 colors, -1 for default
+---@field accessories number[] Up to 5 accessories
+---@field customArtwork number
 Npc = Npc or {}
 Npc.__index = Npc
 
@@ -13,7 +25,6 @@ setmetatable(Npc, {
         self.scaleY = 100
         self.colors = {-1,-1,-1}
         self.accessories = {}
-        self.extraClip = nil
         self.customArtwork = 0
 
         -- Register the Npc in the global dict
@@ -26,7 +37,16 @@ setmetatable(Npc, {
 })
 
 -- Called by the Dialog class, overwritten by each Npc
-function Npc:onTalk(jPlayer, answer) return nil end
+---@param player SPlayer
+---@param answer number
+---@return void
+function Npc:onTalk(player, answer) return end
+
+-- Called by the Dialog class, overwritten by each Npc
+---@param player SPlayer
+---@return {itemID:number,price:number,currencyID:number}[]
+function Npc:salesList(player) return {} end
+
 
 ---- Used to show the ! on top of the NPC
 --function Npc:hasQuestAvailable(jPlayer)
@@ -42,15 +62,9 @@ function Npc:onTalk(jPlayer, answer) return nil end
 
 
 -- Helper called by java side
+---@param player SPlayer
+---@param npcID number
+---@param answer number
 function onNpcDialog(player, npcID, answer)
     return NPCS[npcID] and NPCS[npcID]:onTalk(player, answer) or nil
 end
-
---
---function Npc:ask(jPlayer, questionID, answerIDs)
---    -- TODO
---end
---
---function Npc:endDialog(jPlayer)
---    -- TODO
---end
