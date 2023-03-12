@@ -659,7 +659,11 @@ public class GameMap {
             return null;
         if (getCase(cellID) == null)
             return null;
-        Npc npc= new Npc(this.nextObjectId, cellID, (byte) dir, npcID);
+        Npc npc;
+        if(template.legacy == null || template.legacy.getPath().isEmpty())
+            npc = new Npc(this.nextObjectId, cellID, (byte) dir, npcID);
+        else
+            npc = new NpcMovable(this.nextObjectId, cellID, (byte) dir, this.id, npcID);
 
         this.npcs.put(this.nextObjectId, npc);
         this.nextObjectId--;
