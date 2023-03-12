@@ -4008,9 +4008,6 @@ public class GameClient {
             case 1://Deplacement
                 final Party party = this.player.getParty();
 
-                /*if(party != null && party.getMaster() != null && party.getMaster().isOnMount())
-                    party.getMaster().toogleOnMount();*/
-
                 GameMap oldMap = this.player.getCurMap();
                 GameCase oldCase = this.player.getCurCell();
                 this.gameParseDeplacementPacket(GA);
@@ -4033,19 +4030,6 @@ public class GameClient {
                                     } else if (oldMap.getId() == follower.getCurMap().getId() && oldMap.getId() != newMap.getId() && oldCase.getId() == follower.getCurCell().getId()) {
                                         follower.teleport(newMap.getId(), newCase.getId());
                                     }
-                                /* Old mode master
-                                List<GameCase> cells = PathFinding.getShortestPathBetween(party.getMaster().getCurMap(), follower.getCurCell().getId(), newCase.getId(), 0);
-
-                                if(!cells.isEmpty()) {
-                                    GameCase lastCell = cells.get(cells.size() - 1);
-                                    if(lastCell != null && lastCell.getId() == newCase.getId()) {
-
-                                    if (follower.getCurCell().getId() != oldCase.getId())
-                                        follower.teleport(follower.getCurMap().getId(), oldCase.getId());
-                                    follower.getGameClient().sendActions(packet);
-
-                                    }
-                                }*/
                             });
                         oldMap.send(gm.toString());
                     }, 0, TimeUnit.MILLISECONDS);

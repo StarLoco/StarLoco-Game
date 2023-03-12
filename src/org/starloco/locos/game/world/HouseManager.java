@@ -10,6 +10,7 @@ import org.starloco.locos.database.data.game.HouseData;
 import org.starloco.locos.database.data.game.TrunkData;
 import org.starloco.locos.database.data.login.AccountData;
 import org.starloco.locos.database.data.login.PlayerData;
+import org.starloco.locos.game.action.ExchangeAction;
 import org.starloco.locos.kernel.Constant;
 import org.starloco.locos.guild.Guild;
 
@@ -149,7 +150,7 @@ public class HouseManager {
 
     public void closeCode(Player player) {
         SocketManager.GAME_SEND_KODE(player, "V");
-        player.setInHouse(null);
+        player.setExchangeAction(null);
     }
 
     public void closeBuy(Player P) {
@@ -157,15 +158,15 @@ public class HouseManager {
     }
 
     public void lockIt(Player player, String packet) {
-        House h = player.getInHouse();
-        if (h.isHouse(player, h)) {
-            ((HouseData) DatabaseManager.get(HouseData.class)).updateCode(player, h, packet);//Change le code
-            closeCode(player);
-        } else {
+        ExchangeAction<?> action = player.getExchangeAction();
+
+        if(action != null && action.getType() == ExchangeAction.LOCK_HOUSE) {
+            House house = (House) player.getExchangeAction().getValue();
+            if (house != null && house.isHouse(player, house)) {
+                ((HouseData) DatabaseManager.get(HouseData.class)).updateCode(player, house, packet);
+            }
             closeCode(player);
         }
-
-        player.setExchangeAction(null);
     }
 
     public String parseHouseToGuild(Player P) {

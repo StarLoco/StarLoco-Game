@@ -1001,7 +1001,7 @@ public class GameMap {
         while (this.containsForbiddenCellSpawn(cell))
             cell = this.getRandomFreeCellId();
 
-        MonsterGroup group = new MonsterGroup(this.nextObjectId, -1, this.mobPossibles, this, cell, this.fixSize, this.minSize, this.maxSize, _m);
+        MonsterGroup group = new MonsterGroup(this.nextObjectId, Constant.ALIGNEMENT_NEUTRE, this.mobPossibles, this, cell, this.fixSize, this.minSize, this.maxSize, _m);
         group.setIsFix(false);
         this.mobGroups.put(this.nextObjectId, group);
         SocketManager.GAME_SEND_MAP_MOBS_GM_PACKET(this, group);
