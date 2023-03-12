@@ -125,7 +125,9 @@ public class NpcTemplate {
             // TODO: fallback to legacy system
             return;
         }
-        NpcScriptVM.getInstance().call(scriptVal.rawget("onTalk"), scriptVal, player.Scripted(), response);
+        Object onTalk = recursiveGet(scriptVal,"onTalk");
+        if(onTalk == null) return;
+        NpcScriptVM.getInstance().call(onTalk, scriptVal, player.Scripted(), response);
     }
     public List<SaleOffer> salesList(Player player) {
         if(scriptVal == null) {

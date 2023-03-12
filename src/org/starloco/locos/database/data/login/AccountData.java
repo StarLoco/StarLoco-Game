@@ -209,12 +209,16 @@ public class AccountData extends FunctionDAO<Account> {
     }
 
     public World.Couple<Long, Boolean> modPoints(int id, long points) {
-        try(PreparedStatement p = getPreparedStatement("UPDATE " + getTableName() + " SET `points` += ? WHERE `guid` = ? RETURNING `points`")) {
+        long minPts = points <0? -points: 0; // Compute minimum required points
+
+        try(PreparedStatement p = getPreparedStatement("UPDATE " + getTableName() + " SET `points` += ? WHERE `guid` = ? AND `points` >= ? RETURNING `points`")) {
             p.setLong(1, points);
-            p.setInt(2, id);
+            p.setLong(2, minPts); // Make sure the user has enough points
+            p.setInt(3, id);
             execute(p);
 
             try(ResultSet rs = p.getResultSet()) {
+                if(!rs.next()) return new World.Couple<>(0L, false);
                 long newVal = rs.getLong(0);
                 return new World.Couple<>(newVal, true);
             }
