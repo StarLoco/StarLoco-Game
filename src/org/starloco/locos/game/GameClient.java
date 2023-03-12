@@ -1306,108 +1306,11 @@ public class GameClient {
             ExchangeAction<Integer> exchangeAction = (ExchangeAction<Integer>) this.player.getExchangeAction();
             int npcTemplateID = exchangeAction.getValue();
 
+            int questionId = Integer.parseInt(infos[0]);
             int answerId = Integer.parseInt(infos[1]);
 
 
-            World.world.getNPCTemplate(npcTemplateID).onDialog(this.player, answerId);
-
-
-//            //FIXME: if npc == null => faille dialog npc, disable for .help command
-//
-//            int answerId = Integer.parseInt(infos[1]);
-//            NpcQuestion question = World.world.getNPCQuestion(Integer.parseInt(infos[0]));
-//            NpcAnswer answer = World.world.getNpcAnswer(answerId);
-//
-//            if (question == null || answer == null) {
-//                this.player.setIsOnDialogAction(-1);
-//                SocketManager.GAME_SEND_END_DIALOG_PACKET(this);
-//                return;
-//            }
-//
-//            if (!this.player.getQuestPerso().isEmpty()) {
-//                for (QuestPlayer questPlayer : this.player.getQuestPerso().values()) {
-//                    if (questPlayer.isFinish() || questPlayer.getQuest() == null || questPlayer.getQuest().getNpcTemplate() == null)
-//                        continue;
-//                    for (QuestObjective questObjective : questPlayer.getQuest().getQuestObjectives()) {
-//                        if (questObjective == null || questPlayer.isQuestObjectiveIsValidate(questObjective) || npc.getTemplate() == null)
-//                            continue;
-//
-//                        NpcTemplate questNpc = questObjective.getNpc(), curNpc = npc.getTemplate();
-//
-//                        if (questNpc != null && curNpc != null && questNpc.getId() == curNpc.getId())
-//                            questPlayer.getQuest().updateQuestData(this.player, false, answerId);
-//                    }
-//                }
-//            }
-//
-//            if (answerId == 6604 || answerId == 6605) {
-//                String stats = "", statsReplace = "";
-//                if (this.player.hasItemTemplate(10207, 1, false))
-//                    stats = this.player.getItemTemplate(10207).getTxtStat().get(Constant.STATS_NAME_DJ);
-//                try {
-//                    for(String answer0 : question.getAnwsers().split(";")) {
-//                        for (Action action : World.world.getNpcAnswer(Integer.parseInt(answer0)).getActions()) {
-//                            if ((action.getId() == 15 || action.getId() == 16) && this.player.hasItemTemplate(10207, 1, false)) {
-//                                for (String i : stats.split(",")) {
-//                                    GameMap map = this.player.getCurMap();
-//                                    if (map != null) {
-//                                        Npc npc0 = map.getNpc(exchangeAction.getValue());
-//                                        if (npc0 != null && npc0.getTemplate() != null && Dopeul.parseConditionTrousseau(i.replace(" ", ""), npc0.getTemplate().getId(), map.getId())) {
-//                                            this.player.teleport(Short.parseShort(action.getArgs().split(",")[0]), Integer.parseInt(action.getArgs().split(",")[1]));
-//                                            switch(map.getId()) {
-//                                                case 9397:case 9538:
-//                                                    break;
-//                                                default:
-//                                                    statsReplace = i;
-//                                                    break;
-//                                            }
-//                                        }
-//                                    }
-//                                }
-//                            }
-//                        }
-//                    }
-//                } catch(Exception e) {
-//                    e.printStackTrace();
-//                }
-//
-//                GameObject object = this.player.getItemTemplate(10207);
-//                if (answerId == 6605 && !statsReplace.isEmpty()) {
-//                    String newStats = "";
-//                    for (String i : stats.split(","))
-//                        if (!i.equals(statsReplace))
-//                            newStats += (newStats.isEmpty() ? i : "," + i);
-//
-//                    object.getTxtStat().remove(Constant.STATS_NAME_DJ);
-//                    object.getTxtStat().put(Constant.STATS_NAME_DJ, newStats);
-//                }
-//                SocketManager.GAME_SEND_UPDATE_ITEM(this.player, object);
-//            } else if (answerId == 4628) {
-//                if (this.player.hasItemTemplate(9487, 1, false)) {
-//                    String date = this.player.getItemTemplate(9487, 1).getTxtStat().get(Constant.STATS_DATE);
-//                    long timeStamp = Long.parseLong(date);
-//                    if (System.currentTimeMillis() - timeStamp <= 1209600000) {
-//                        new Action(1, "5522", "", World.world.getMap((short) 10255)).apply(this.player, null, -1, -1);
-//                        return;
-//                    }
-//                }
-//                new Action(1, "5521", "", World.world.getMap((short) 10255)).apply(this.player, null, -1, -1);
-//                return;
-//            }
-//
-//            boolean leave = answer.apply(this.player);
-//
-//            if (!answer.isAnotherDialog()) {
-//                if (this.player.getIsOnDialogAction() == 1) {
-//                    this.player.setIsOnDialogAction(-1);
-//                } else {
-//                    if (leave) {
-//                        SocketManager.GAME_SEND_END_DIALOG_PACKET(this);
-//                        if(this.player.getExchangeAction() != null && this.player.getExchangeAction().getType() == ExchangeAction.TALKING_WITH)
-//                            this.player.setExchangeAction(null);
-//                    }
-//                }
-//            }
+            World.world.getNPCTemplate(npcTemplateID).onDialog(this.player, questionId, answerId);
         } catch (Exception e) {
             e.printStackTrace();
             this.player.setIsOnDialogAction(-1);
