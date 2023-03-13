@@ -52,6 +52,9 @@ function Player:tryBuyItem(templateID, unitPrice, quantity, isPerfect) end
 ---@return number
 function Player:mapID() end
 
+---@return number,number mapID,cellID
+function Player:savedPosition() end
+
 ---@param actionID number
 ---@param actionType number
 ---@param actionVal string
@@ -67,7 +70,7 @@ function Player:jobLevel(jobID) end
 function Player:spellLevel(spellID) end
 
 ---@param spellID number
----@param level number 0 to unlearn
+---@param level number 0 to unlearn, works even if spell is not known yet
 ---@param modPoints boolean Do we spend/grant spell points
 ---@return boolean
 function Player:setSpellLevel(spellID,level, modPoints) end
