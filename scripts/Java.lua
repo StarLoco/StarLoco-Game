@@ -4,6 +4,10 @@
 ---@class Player
 local Player = {}
 
+
+---@return number
+function Player:gender() end
+
 ---@param question number
 ---@param answers table<number>
 ---@param param string

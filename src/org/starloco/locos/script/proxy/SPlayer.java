@@ -27,6 +27,12 @@ public class SPlayer extends DefaultUserdata<Player> {
 
     //region Basic stuff
     @SuppressWarnings("unused")
+    private static int gender(Player p) {
+       return p.getSexe();
+    }
+
+
+    @SuppressWarnings("unused")
     private static void openBank(Player p) {
         p.openBank();
     }
@@ -72,11 +78,13 @@ public class SPlayer extends DefaultUserdata<Player> {
     //endregion
 
     //region Emotes
+    @SuppressWarnings("unused")
     public static boolean hasEmote(Player p, ArgumentIterator args) {
         int emote = args.nextInt();
         return p.getEmotes().contains(emote);
     }
 
+    @SuppressWarnings("unused")
     public static boolean learnEmote(Player p, ArgumentIterator args) {
         int emote = args.nextInt();
         return p.addStaticEmote(emote);
@@ -117,6 +125,7 @@ public class SPlayer extends DefaultUserdata<Player> {
     //endregion
 
     //region Inventory/Gear
+    @SuppressWarnings("unused")
     public static SItem gearAt(Player p, ArgumentIterator args) {
         int pos = args.nextInt();
         return p.getEquippedObjects().stream()
@@ -125,7 +134,8 @@ public class SPlayer extends DefaultUserdata<Player> {
                 .orElse(null);
     }
 
-    public static Pair<Integer, Integer> pods(Player p, ArgumentIterator args) {
+    @SuppressWarnings("unused")
+    public static Pair<Integer, Integer> pods(Player p) {
         return new Pair<>(p.getPodUsed(), p.getMaxPod());
     }
 
