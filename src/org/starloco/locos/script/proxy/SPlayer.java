@@ -6,12 +6,17 @@ import org.classdump.luna.impl.ImmutableTable;
 import org.classdump.luna.lib.ArgumentIterator;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.common.SocketManager;
+import org.starloco.locos.fight.spells.Spell;
 import org.starloco.locos.game.action.ExchangeAction;
+import org.starloco.locos.job.JobStat;
 import org.starloco.locos.object.GameObject;
 import org.starloco.locos.script.ScriptVM;
 import org.starloco.locos.script.types.MetaTables;
+import org.starloco.locos.util.Pair;
 
+import javax.swing.text.html.Option;
 import java.util.List;
+import java.util.Optional;
 
 public class SPlayer extends DefaultUserdata<Player> {
     private static final ImmutableTable META_TABLE= MetaTables.MetaTable(MetaTables.ReflectIndexTable(SPlayer.class));
@@ -124,5 +129,34 @@ public class SPlayer extends DefaultUserdata<Player> {
         ByteString actionValue = args.nextString();
 
         SocketManager.GAME_SEND_GA_PACKET(p.getGameClient(), actionIDStr, String.valueOf(actionType),  String.valueOf(p.getId()), actionValue.toString());
+    }
+
+    @SuppressWarnings("unused")
+    private static Pair<Integer,Integer> savedPosition(Player p, ArgumentIterator args) {
+        return p.getSavePosition();
+    }
+
+    @SuppressWarnings("unused")
+    private static int jobLevel(Player p, ArgumentIterator args) {
+        int jobID = args.nextInt();
+        return Optional.ofNullable(p.getMetiers().get(jobID)).map(JobStat::get_lvl).orElse(0);
+    }
+
+
+    @SuppressWarnings("unused")
+    private static int spellLevel(Player p, ArgumentIterator args) {
+        int spellID = args.nextInt();
+        return p.getSpells().stream()
+                .filter(s -> s.getSpellID() == spellID).findFirst()
+                .map(Spell.SortStats::getLevel).orElse(0);
+    }
+
+    @SuppressWarnings("unused")
+    private static boolean setSpellLevel(Player p, ArgumentIterator args) {
+        int spellID = args.nextInt();
+        int level = args.nextInt();
+        boolean modPoints = args.nextOptionalBoolean(false);
+
+        return p.ensureSpellLevel(spellID, level, modPoints, false);
     }
 }

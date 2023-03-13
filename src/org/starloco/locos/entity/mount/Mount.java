@@ -45,7 +45,7 @@ public class Mount {
 	private long exp;
 	
 	private int owner;
-	private short mapId;
+	private int mapId;
 	private int cellId, orientation;
 	
 	private int fatigue, energy, reproduction;
@@ -339,11 +339,11 @@ public class Mount {
 		this.owner = owner;
 	}
 
-	public short getMapId() {
+	public int getMapId() {
 		return mapId;
 	}
 
-	public void setMapId(short mapId) {
+	public void setMapId(int mapId) {
 		this.mapId = mapId;
 	}
 

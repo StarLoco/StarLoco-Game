@@ -1173,7 +1173,7 @@ public class GameClient {
                     return;
 
                 int FightID = -1, cellID = -1;
-                short MapID = -1;
+                int MapID = -1;
                 try {
                     FightID = prism.getFight().getId();
                     MapID = prism.getMap();
@@ -1189,7 +1189,7 @@ public class GameClient {
                     return;
                 }
 
-                final short map = MapID;
+                final int map = MapID;
                 final int cell = cellID;
                 final Fight fight = World.world.getMap(map).getFight(FightID);
 
@@ -6791,7 +6791,7 @@ public class GameClient {
             int id = Integer.parseInt(packet.substring(2));
 
             if (this.player.boostSpell(id)) {
-                SocketManager.GAME_SEND_SPELL_UPGRADE_SUCCED(this, id, this.player.getSortStatBySortIfHas(id).getLevel());
+                SocketManager.GAME_SEND_SPELL_UPGRADE_SUCCESS(this, id, this.player.getSortStatBySortIfHas(id).getLevel());
                 SocketManager.GAME_SEND_STATS_PACKET(this.player);
             } else {
                 SocketManager.GAME_SEND_SPELL_UPGRADE_FAILED(this);
@@ -6809,7 +6809,7 @@ public class GameClient {
         if(id == -1)
             this.player.setExchangeAction(null);
         if (this.player.forgetSpell(id)) {
-            SocketManager.GAME_SEND_SPELL_UPGRADE_SUCCED(this, id, this.player.getSortStatBySortIfHas(id).getLevel());
+            SocketManager.GAME_SEND_SPELL_UPGRADE_SUCCESS(this, id, this.player.getSortStatBySortIfHas(id).getLevel());
             SocketManager.GAME_SEND_STATS_PACKET(this.player);
             this.player.setExchangeAction(null);
         }

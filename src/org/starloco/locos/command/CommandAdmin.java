@@ -191,7 +191,7 @@ public class CommandAdmin extends AdminUser {
                 this.sendMessage(str);
                 return;
             }
-            short mapID = P.getCurMap().getId();
+            int mapID = P.getCurMap().getId();
             int cellID = P.getCurCell().getId();
 
             Player perso = this.getPlayer();
@@ -379,7 +379,7 @@ public class CommandAdmin extends AdminUser {
                 }
             }
             if (P.isOnline()) {
-                short mapID = P.getCurMap().getId();
+                int mapID = P.getCurMap().getId();
                 int cellID = P.getCurCell().getId();
                 perso.teleport(mapID, cellID);
                 String str = "Le joueur " + perso.getName()

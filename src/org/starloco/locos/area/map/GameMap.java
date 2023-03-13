@@ -110,7 +110,7 @@ public class GameMap {
 
     public int nextObjectId = -1;
     public boolean noSellers = false, noCollectors = false, noPrisms = false, noTp = false, noDefy = false, noAgro = false, noCanal = false;
-    private short id;
+    private int id;
     private String date, key, placesStr;
     private byte w, h, X = 0, Y = 0, maxGroup = 3, maxSize, minSize, fixSize;
     private int maxTeam = 0;
@@ -227,7 +227,7 @@ public class GameMap {
         }
     }
 
-    public GameMap(short id, String date, byte w, byte h, String key, String places) {
+    public GameMap(int id, String date, byte w, byte h, String key, String places) {
         this.id = id;
         this.date = date;
         this.w = w;
@@ -237,7 +237,7 @@ public class GameMap {
         this.cases = new ArrayList<>();
     }
 
-    public GameMap(short id, String date, byte w, byte h, String key,
+    public GameMap(int id, String date, byte w, byte h, String key,
                    String places, byte x, byte y, byte maxGroup, byte fixSize,
                    byte minSize, byte maxSize) {
         this.id = id;
@@ -537,7 +537,7 @@ public class GameMap {
         return this.fixSize;
     }
 
-    public short getId() {
+    public int getId() {
         return id;
     }
 

@@ -95,7 +95,7 @@ public class ObjectAction {
 
                     case 0://T�l�portation.
                         if (player0.getFight() != null) return;
-                        short mapId = Short.parseShort(arg.split(",", 2)[0]);
+                        int mapId = Short.parseShort(arg.split(",", 2)[0]);
                         int cellId = Integer.parseInt(arg.split(",", 2)[1]);
                         if(mapId == 8978) {
                             isOk = false;

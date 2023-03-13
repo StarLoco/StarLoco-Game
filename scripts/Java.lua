@@ -51,20 +51,30 @@ function Player:tryBuyItem(templateID, unitPrice, quantity, isPerfect) end
 
 ---@return number
 function Player:mapID() end
+
 ---@param actionID number
 ---@param actionType number
 ---@param actionVal string
 ---@return void
 function Player:sendAction(actionID,actionType, actionVal) end
 
+---@param jobID number
+---@return number -- 0 if not known
+function Player:jobLevel(jobID) end
+
+---@param spellID number
+---@return number -- 0 if not known
+function Player:spellLevel(spellID) end
+
+---@param spellID number
+---@param level number 0 to unlearn
+---@param modPoints boolean Do we spend/grant spell points
+---@return boolean
+function Player:setSpellLevel(spellID,level, modPoints) end
+
 
 ---@class Item
 local Item = {}
-
----@param statID number
----@return string
-function Item:getTxtStatVal(statID) end
-
 
 ---@param statID number
 ---@param val string

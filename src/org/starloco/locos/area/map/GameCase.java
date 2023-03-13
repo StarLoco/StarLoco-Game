@@ -832,9 +832,8 @@ public class GameCase {
             case 44://Sauvegarder pos
                 if (!player.verifOtomaiZaap())
                     return;
-                short map = player.getCurMap().getId();
-                String str = map + "," + World.world.getZaapCellIdByMapId(map);
-                player.set_savePos(str);
+                int map = player.getCurMap().getId();
+                player.setSavePos(map, Constant.ZAAPS.getOrDefault(map, -1));
                 SocketManager.GAME_SEND_Im_PACKET(player, "06");
                 break;
 

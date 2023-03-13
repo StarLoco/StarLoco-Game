@@ -19,7 +19,7 @@ import java.util.HashMap;
 public class Collector {
 
     private int id;
-    private short map;
+    private int map;
     private int cell;
     private byte orientation;
     private int guildId = 0;
@@ -38,7 +38,7 @@ public class Collector {
     //La d�fense
     private java.util.Map<Integer, Player> defenserId = new HashMap<>();
 
-    public Collector(int id, short map, int cell, byte orientation,
+    public Collector(int id, int map, int cell, byte orientation,
                      int aGuildID, short N1, short N2, Player poseur, long date,
                      String items, long kamas, long xp) {
         this.id = id;
@@ -246,7 +246,7 @@ public class Collector {
         return 0;
     }
 
-    public static Collector getCollectorByMapId(short id) {
+    public static Collector getCollectorByMapId(int id) {
         for (java.util.Map.Entry<Integer, Collector> Collector : World.world.getCollectors().entrySet())
             if (Collector.getValue().getMap() == id)
                 return World.world.getCollectors().get(Collector.getValue().getId());
@@ -273,7 +273,7 @@ public class Collector {
                 SocketManager.GAME_SEND_gITP_PACKET(perso, parseDefenseToGuild(Collector.getValue()));
     }
 
-    public static String parseAttaqueToGuild(int id, short map, int fightId) {
+    public static String parseAttaqueToGuild(int id, int map, int fightId) {
         StringBuilder str = new StringBuilder();
         str.append("+").append(id);
         GameMap gameMap = World.world.getMap(map);
@@ -349,7 +349,7 @@ public class Collector {
         return this.id;
     }
 
-    public short getMap() {
+    public int getMap() {
         return this.map;
     }
 
