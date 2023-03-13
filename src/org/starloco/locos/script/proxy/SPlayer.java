@@ -9,12 +9,12 @@ import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.fight.spells.Spell;
 import org.starloco.locos.game.action.ExchangeAction;
 import org.starloco.locos.job.JobStat;
+import org.starloco.locos.kernel.Constant;
 import org.starloco.locos.object.GameObject;
 import org.starloco.locos.script.ScriptVM;
 import org.starloco.locos.script.types.MetaTables;
 import org.starloco.locos.util.Pair;
 
-import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,6 +25,27 @@ public class SPlayer extends DefaultUserdata<Player> {
         super(META_TABLE, userValue);
     }
 
+    //region Basic stuff
+    @SuppressWarnings("unused")
+    private static void openBank(Player p) {
+        p.openBank();
+    }
+
+    @SuppressWarnings("unused")
+    private static void sendAction(Player p, ArgumentIterator args) {
+        int actionID = args.nextInt();
+        String actionIDStr = "";
+        if(actionID != -1) actionIDStr = String.valueOf(actionID);
+
+        int actionType = args.nextInt();
+        ByteString actionValue = args.nextString();
+
+        SocketManager.GAME_SEND_GA_PACKET(p.getGameClient(), actionIDStr, String.valueOf(actionType),  String.valueOf(p.getId()), actionValue.toString());
+    }
+
+    //endregion
+
+    //region Dialogs
     @SuppressWarnings("unused")
     private static void ask(Player p, ArgumentIterator args) {
         int question = args.nextInt();
@@ -45,6 +66,34 @@ public class SPlayer extends DefaultUserdata<Player> {
         p.setExchangeAction(null);
         SocketManager.GAME_SEND_END_DIALOG_PACKET(p.getGameClient());
     }
+    //endregion
+
+    // Quests
+    //endregion
+
+    //region Emotes
+    public static boolean hasEmote(Player p, ArgumentIterator args) {
+        int emote = args.nextInt();
+        return p.getEmotes().contains(emote);
+    }
+
+    public static boolean learnEmote(Player p, ArgumentIterator args) {
+        int emote = args.nextInt();
+        return p.addStaticEmote(emote);
+    }
+    //endregion
+
+    //region Geolocation (Maps)
+    @SuppressWarnings("unused")
+    private static Pair<Integer,Integer> savedPosition(Player p, ArgumentIterator args) {
+        return p.getSavePosition();
+    }
+
+    @SuppressWarnings("unused")
+    private static int mapID(Player p, ArgumentIterator args) {
+        //  TODO: Replace with map():SMap
+        return p.getCurMap().getId();
+    }
 
     @SuppressWarnings("unused")
     private static void teleport(Player p, ArgumentIterator args) {
@@ -52,10 +101,24 @@ public class SPlayer extends DefaultUserdata<Player> {
         int cellID = args.nextInt();
         p.teleport(mapID, cellID);
     }
+    //endregion
+
+    //region Currency
+    @SuppressWarnings("unused")
+    private static long kamas(Player p) {
+        return p.getKamas();
+    }
 
     @SuppressWarnings("unused")
-    private static void openBank(Player p) {
-        p.openBank();
+    private static boolean modKamas(Player p, ArgumentIterator args) {
+        int quantity = args.nextInt();
+        return p.modKamasDisplay(quantity);
+    }
+    //endregion
+
+    //region Inventory
+    public static Pair<Integer, Integer> pods(Player p, ArgumentIterator args) {
+        return new Pair<>(p.getPodUsed(), p.getMaxPod());
     }
 
     @SuppressWarnings("unused")
@@ -77,16 +140,6 @@ public class SPlayer extends DefaultUserdata<Player> {
         return p.removeItemByTemplateId(itemID, quantity, true);
     }
 
-    @SuppressWarnings("unused")
-    private static long kamas(Player p) {
-        return p.getKamas();
-    }
-
-    @SuppressWarnings("unused")
-    private static boolean modKamas(Player p, ArgumentIterator args) {
-        int quantity = args.nextInt();
-        return p.modKamasDisplay(quantity);
-    }
 
     @SuppressWarnings("unused")
     private static void addItem(Player p, ArgumentIterator args) {
@@ -112,37 +165,30 @@ public class SPlayer extends DefaultUserdata<Player> {
         p.addItem(itemID, quantity, isPerfect, true);
         return true;
     }
+    //endregion
 
-    @SuppressWarnings("unused")
-    private static int mapID(Player p, ArgumentIterator args) {
-        //  TODO: Replace with map():SMap
-        return p.getCurMap().getId();
-    }
-
-    @SuppressWarnings("unused")
-    private static void sendAction(Player p, ArgumentIterator args) {
-        int actionID = args.nextInt();
-        String actionIDStr = "";
-        if(actionID != -1) actionIDStr = String.valueOf(actionID);
-
-        int actionType = args.nextInt();
-        ByteString actionValue = args.nextString();
-
-        SocketManager.GAME_SEND_GA_PACKET(p.getGameClient(), actionIDStr, String.valueOf(actionType),  String.valueOf(p.getId()), actionValue.toString());
-    }
-
-    @SuppressWarnings("unused")
-    private static Pair<Integer,Integer> savedPosition(Player p, ArgumentIterator args) {
-        return p.getSavePosition();
-    }
-
+    //region Jobs
     @SuppressWarnings("unused")
     private static int jobLevel(Player p, ArgumentIterator args) {
         int jobID = args.nextInt();
         return Optional.ofNullable(p.getMetiers().get(jobID)).map(JobStat::get_lvl).orElse(0);
     }
 
+    @SuppressWarnings("unused")
+    private static boolean addJobXP(Player p, ArgumentIterator args) {
+        int jobID = args.nextInt();
+        int xpDelta = args.nextInt();
 
+        if(xpDelta<0) return false; // Not supported
+
+        JobStat js = p.getMetiers().get(jobID);
+        if(js == null) return false;
+        js.addXp(p, xpDelta);
+        return true;
+    }
+    //endregion
+
+    //region Spells
     @SuppressWarnings("unused")
     private static int spellLevel(Player p, ArgumentIterator args) {
         int spellID = args.nextInt();
@@ -159,4 +205,22 @@ public class SPlayer extends DefaultUserdata<Player> {
 
         return p.ensureSpellLevel(spellID, level, modPoints, false);
     }
+    //endregion
+
+    //region Factions
+    @SuppressWarnings("unused")
+    private static boolean setFaction(Player p, ArgumentIterator args) {
+        byte faction = (byte)args.nextInt();
+        boolean replace = args.nextOptionalBoolean(false);
+
+        byte current = p.getAlignment();
+        if(current == faction) return true;
+
+        // We're not allowed to replace an existing faction
+        if(!replace && current != Constant.ALIGNEMENT_NEUTRE) return false;
+
+        p.modifAlignement(faction);
+        return true;
+    }
+    //endregion
 }

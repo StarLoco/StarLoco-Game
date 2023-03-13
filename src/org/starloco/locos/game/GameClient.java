@@ -1305,6 +1305,9 @@ public class GameClient {
             ExchangeAction<Integer> exchangeAction = (ExchangeAction<Integer>) this.player.getExchangeAction();
             int npcTemplateID = exchangeAction.getValue();
 
+            // safety check
+            if(player.getCurMap().getNpcByTemplateId(npcTemplateID) == null)return;
+
             int questionId = Integer.parseInt(infos[0]);
             int answerId = Integer.parseInt(infos[1]);
 

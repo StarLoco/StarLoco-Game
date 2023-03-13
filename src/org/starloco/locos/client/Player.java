@@ -3988,6 +3988,7 @@ public class Player {
 
     public void modifAlignement(int i) {
         if(this.getGroupe() == null && this.getGuild() != null) {
+            // Why do we remove user from guild on faction change ?
             this.getGuild().removeMember(this);
         }
         _honor = 0;
@@ -5629,15 +5630,16 @@ public class Player {
         return emotes;
     }
 
-    public void addStaticEmote(int emote) {
+    public boolean addStaticEmote(int emote) {
         if (this.emotes.contains(emote))
-            return;
+            return false;
         this.emotes.add(emote);
         if (!isOnline())
-            return;
+            return true;
         SocketManager.GAME_SEND_EMOTE_LIST(this, getCompiledEmote(getEmotes()));
         SocketManager.GAME_SEND_STATS_PACKET(this);
         SocketManager.send(this, "eA" + emote);
+        return true;
     }
 
     public String parseEmoteToDB() {
