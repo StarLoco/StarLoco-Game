@@ -116,7 +116,7 @@ public class InteractiveObject {
                 if (!player.hasItemTemplate(1570, 1, false)) {
                     SocketManager.GAME_SEND_MESSAGE(player, "Vous ne possedez pas la clef nécessaire.", "009900");
                 } else {
-                    player.removeByTemplateID(1570, 1);
+                    player.removeItemByTemplateId(1570, 1, false);
                     SocketManager.GAME_SEND_Im_PACKET(player, "022;" + 1 + "~"
                             + 1570);
                     player.teleport((short) 2110, 118);

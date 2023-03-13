@@ -3184,7 +3184,7 @@ public class Fight {
                      }
                      if(ok && temp != null) {
                          GameObject object = World.world.getObjTemplate(10275).createNewItem(1, false);
-                         if(temp.addObjet(object, true))
+                         if(temp.addItem(object, true, false))
                              World.world.addGameObject(object);
                          SocketManager.GAME_SEND_Im_PACKET(temp, "021;1~10275");
                      }
@@ -3648,23 +3648,31 @@ public class Fight {
                 String chance = effect.getArgs().split(";")[2];
                 packet.append(value).append(";").append(valMax).append(";").append(chance).append(";;");
                 break;
+            case 108:
             case 606:
             case 607:
             case 608:
             case 609:
-            case 611:
-                // de X sur Y tours
+            case 611: // de X sur Y tours
                 String jet = effect.getArgs().split(";")[5];
                 int min = Formulas.getMinJet(jet);
                 int max = Formulas.getMaxJet(jet);
                 packet.append(min).append(";").append(max).append(";").append(max).append(";;");
                 break;
             case 788://Fait apparaitre message le temps de buff sacri Chatiment de X sur Y tours
-                value = Integer.parseInt(effect.getArgs().split(";")[1]);
-                String valMax2 = effect.getArgs().split(";")[2];
-                if (Integer.parseInt(effect.getArgs().split(";")[0]) == 108)
-                    return;
-                packet.append(valMax2).append(";").append(valMax2).append(";").append(valMax2).append(";;");
+                String[] args = effect.getArgs().split(";");
+
+                if(args[0].equals("125")) {
+                    // Chatiment vitalessque
+                    String packetGIE = "GIE108;" + target.getId() + ";" + args[1] + ";;;;" + (effect.getTurn() - 1) + ";" + effect.getSpell();
+                    for(Fighter fighter : receivers) {
+                        if(fighter != null && fighter.getPlayer() != null) {
+                            fighter.getPlayer().send(packetGIE);
+                        }
+                    }
+                }
+
+                packet.append(";").append(args[1]).append(";").append(args[2]).append(";;");
                 break;
             case 91://Su�otement : vol eau
             case 92://vol terre
@@ -4047,12 +4055,12 @@ public class Fight {
                     if (player != null) {
                         if (this.isBegin()) {
                             if (player.getCurMap().getId() == 8357 && player.hasItemTemplate(7373, 1, false) && player.hasItemTemplate(7374, 1, false) && player.hasItemTemplate(7375, 1, false) && player.hasItemTemplate(7376, 1, false) && player.hasItemTemplate(7377, 1, false) && player.hasItemTemplate(7378, 1, false)) {
-                                player.removeByTemplateID(7373, 1);
-                                player.removeByTemplateID(7374, 1);
-                                player.removeByTemplateID(7375, 1);
-                                player.removeByTemplateID(7376, 1);
-                                player.removeByTemplateID(7377, 1);
-                                player.removeByTemplateID(7378, 1);
+                                player.removeItemByTemplateId(7373, 1, false);
+                                player.removeItemByTemplateId(7374, 1, false);
+                                player.removeItemByTemplateId(7375, 1, false);
+                                player.removeItemByTemplateId(7376, 1, false);
+                                player.removeItemByTemplateId(7377, 1, false);
+                                player.removeItemByTemplateId(7378, 1, false);
                             }
                             player.send(packet);
                         }
@@ -4697,7 +4705,7 @@ public class Fight {
                                     quantity = 4;
 
                             GameObject object = World.world.getObjTemplate(10275).createNewItem(quantity, false);
-                            if (curPlayer.addObjet(object, true))
+                            if (curPlayer.addItem(object, true, false))
                                 World.world.addGameObject(object);
                             kamas = new Couple<>(1000 * quantity, 1000 * quantity);
                             curPlayer.addKamas(1000 * quantity);
@@ -4723,7 +4731,7 @@ public class Fight {
                         kamas = new Couple<>(1000 * quantity, 1000 * quantity);
                         curPlayer.addKamas(1000 * quantity);
                         GameObject object = World.world.getObjTemplate(10275).createNewItem(quantity, false);
-                        if (curPlayer.addObjet(object, true))
+                        if (curPlayer.addItem(object, true, false))
                             World.world.addGameObject(object);
                         stalk = true;
                     }
@@ -5050,7 +5058,7 @@ public class Fight {
                                 if (drops.length() > 0)
                                     drops.append(",");
                                 drops.append(this.getFullSoul().getTemplate().getId()).append("~").append(1);
-                                if (player.addObjet(this.getFullSoul(), false))
+                                if (player.addItem(this.getFullSoul(), false, false))
                                     World.world.addGameObject(this.getFullSoul());
                             }
                             if (list != null) {
@@ -5091,7 +5099,7 @@ public class Fight {
                                     player.setMascotte(template.getId());
                                 } else if (template.getType() == Constant.ITEM_TYPE_FAMILIER && Config.maxPets) {
                                     GameObject obj = template.createNewItem(1, false);
-                                    if (target.addObjet(obj, true))//Si le joueur n'avait pas d'item similaire
+                                    if (target.addItem(obj, true, false))//Si le joueur n'avait pas d'item similaire
                                         World.world.addGameObject(obj);
                                     SocketManager.GAME_SEND_Ow_PACKET(target);
                                 } else {
@@ -5107,7 +5115,7 @@ public class Fight {
                                     }
 
                                     if (newObj != null && target.getItems().get(newObj.getGuid()) == null) {
-                                        if (target.addObjet(newObj, true))
+                                        if (target.addItem(newObj, true, false))
                                             World.world.addGameObject(newObj);
                                     } else {
                                         SocketManager.GAME_SEND_UPDATE_OBJECT_DISPLAY_PACKET(target, newObj);
@@ -5130,7 +5138,7 @@ public class Fight {
                                 ObjectTemplate OT2 = World.world.getObjTemplate(Constant.getCertificatByDopeuls(IDmob));
                                 if (OT2 != null) {
                                     GameObject obj2 = OT2.createNewItem(1, false);
-                                    if (player.addObjet(obj2, true))// Si le joueur n'avait pas d'item similaire
+                                    if (player.addItem(obj2, true, false))// Si le joueur n'avait pas d'item similaire
                                         World.world.addGameObject(obj2);
                                     obj2.refreshStatsObjet("325#0#0#" + System.currentTimeMillis());
                                     ((PlayerData) DatabaseManager.get(PlayerData.class)).update(player);
@@ -5186,7 +5194,7 @@ public class Fight {
                             switch (player.getCurMap().getId()) {
                                 case 8984:
                                     GameObject obj = World.world.getObjTemplate(8012).createNewItem(1, false);
-                                    if (player.addObjet(obj, true))
+                                    if (player.addItem(obj, true, false))
                                         World.world.addGameObject(obj);
                                     drops.append(drops.length() > 0 ? "," : "").append("8012~1");
                                     break;
@@ -5775,7 +5783,7 @@ public class Fight {
 
                     if (player != null) {
                         object.setPosition(Constant.ITEM_POS_NO_EQUIPED);
-                        player.addObjet(object, true);
+                        player.addItem(object, true, false);
                         String value = list.get(player);
                         value += (value.isEmpty() ? "" : ",") + object.getTemplate().getId() + "~" + object.getQuantity();
                         list.remove(player);

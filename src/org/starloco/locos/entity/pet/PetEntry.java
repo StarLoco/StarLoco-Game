@@ -163,7 +163,7 @@ public class PetEntry {
                 World.world.removeGameObject(obj.getGuid());
                 player.removeItem(obj.getGuid());
                 SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(player, obj.getGuid());
-                if (player.addObjet(obj, true))//Si le joueur n'avait pas d'item similaire
+                if (player.addItem(obj, true, false))//Si le joueur n'avait pas d'item similaire
                     World.world.addGameObject(obj);
             } else {
                 obj.setTemplate(pets.getDeadTemplate());

@@ -763,10 +763,7 @@ public class GameMap {
     }
 
     public boolean containsForbiddenCellSpawn(int id) {
-        if(this.mountPark != null)
-            if(this.mountPark.getCellAndObject().containsKey(id))
-                return true;
-        return false;
+        return this.mountPark != null && this.mountPark.getCellAndObject().containsKey(id);
     }
 
     public GameMap getMapCopy() {
@@ -875,7 +872,7 @@ public class GameMap {
         MonsterGrade grade = World.world.getMonstre(idMob).getRandomGrade();
         int cell = this.getRandomFreeCellId();
 
-        MonsterGroup group = new MonsterGroup(this.nextObjectId, Constant.ALIGNEMENT_NEUTRE, this.mobPossibles, this, cell, this.fixSize, this.maxSize, this.maxSize, grade);
+        MonsterGroup group = new MonsterGroup(this.nextObjectId, Constant.ALIGNEMENT_NEUTRE, this.mobPossibles, this, cell, this.fixSize, grade);
         if (group.getMobs().isEmpty())
             return false;
         this.mobGroups.put(this.nextObjectId, group);
@@ -976,7 +973,7 @@ public class GameMap {
             while(this.mobGroups.get(this.nextObjectId) != null)
                 this.nextObjectId--;
 
-            MonsterGroup group = new MonsterGroup(this.nextObjectId, align, mobPoss, this, cellID, this.fixSize, this.minSize, this.maxSize, null);
+            MonsterGroup group = new MonsterGroup(this.nextObjectId, align, mobPoss, this, cellID, this.fixSize, null);
 
             if (group.getMobs().isEmpty())
                 continue;
@@ -1002,7 +999,7 @@ public class GameMap {
         while (this.containsForbiddenCellSpawn(cell))
             cell = this.getRandomFreeCellId();
 
-        MonsterGroup group = new MonsterGroup(this.nextObjectId, -1, this.mobPossibles, this, cell, this.fixSize, this.minSize, this.maxSize, _m);
+        MonsterGroup group = new MonsterGroup(this.nextObjectId, Constant.ALIGNEMENT_NEUTRE, this.mobPossibles, this, cell, this.fixSize, _m);
         group.setIsFix(false);
         this.mobGroups.put(this.nextObjectId, group);
         SocketManager.GAME_SEND_MAP_MOBS_GM_PACKET(this, group);
@@ -1112,7 +1109,7 @@ public class GameMap {
         packet.append("GM|");
         boolean isFirst = true;
         for (MonsterGroup entry : this.mobGroups.values()) {
-            String GM = entry.parseGM();
+            String GM = entry.encodeGM();
             if (GM.equals(""))
                 continue;
 
@@ -1706,7 +1703,7 @@ public class GameMap {
                     if (obj != null) {
                         if (Logging.USE_LOG)
                             Logging.getInstance().write("Object", "GetInOnTheFloor : " + player.getName() + " a ramassé [" + obj.getTemplate().getId() + "@" + obj.getGuid() + ";" + obj.getQuantity() + "]");
-                        if (player.addObjet(obj, true))
+                        if (player.addItem(obj, true, false))
                             World.world.addGameObject(obj);
                         SocketManager.GAME_SEND_GDO_PACKET_TO_MAP(this, '-', id, 0, 0);
                         SocketManager.GAME_SEND_Ow_PACKET(player);

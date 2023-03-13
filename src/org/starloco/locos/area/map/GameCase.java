@@ -823,7 +823,7 @@ public class GameCase {
                     SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(player.getCurMap(), this);
                     int qua = Formulas.getRandomValue(1, 5);//On a entre 1 et 10 eaux
                     GameObject obj = World.world.getObjTemplate(537).createNewItem(qua, false);
-                    if (player.addObjet(obj, true))
+                    if (player.addItem(obj, true, false))
                         World.world.addGameObject(obj);
                     SocketManager.GAME_SEND_IQ_PACKET(player, player.getId(), qua);
                 }, this.getObject().getUseDuration());
@@ -858,7 +858,7 @@ public class GameCase {
                     SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(player.getCurMap(), this);
                     int qua = Formulas.getRandomValue(1, 5);//On a entre 1 et 10 eaux
                     GameObject obj = World.world.getObjTemplate(6857).createNewItem(qua, false);
-                    if (player.addObjet(obj, true))
+                    if (player.addItem(obj, true, false))
                         World.world.addGameObject(obj);
                     player.send("Im021;" + qua + "~6857");
                     SocketManager.GAME_SEND_IQ_PACKET(player, player.getId(), qua);
@@ -1110,7 +1110,7 @@ public class GameCase {
                 SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(perso.getCurMap(), this);
                 int qua = Formulas.getRandomValue(1, 5);//On a entre 1 et 5 patates
                 GameObject obj = World.world.getObjTemplate(537).createNewItem(qua, false);
-                if (perso.addObjet(obj, true))
+                if (perso.addItem(obj, true, false))
                     World.world.addGameObject(obj);
                 SocketManager.GAME_SEND_IQ_PACKET(perso, perso.getId(), qua);
                 break;
@@ -1124,7 +1124,7 @@ public class GameCase {
                 SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(perso.getCurMap(), this);
                 qua = Formulas.getRandomValue(1, 10);//On a entre 1 et 10 eaux
                 obj = World.world.getObjTemplate(311).createNewItem(qua, false);
-                if (perso.addObjet(obj, true))
+                if (perso.addItem(obj, true, false))
                     World.world.addGameObject(obj);
                 SocketManager.GAME_SEND_IQ_PACKET(perso, perso.getId(), qua);
                 break;

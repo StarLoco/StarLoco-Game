@@ -5,9 +5,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
-
 import org.starloco.locos.entity.exchange.NpcExchange;
-import org.starloco.locos.script.NpcScriptVM;
 import org.starloco.locos.util.Pair;
 import org.apache.mina.core.session.IoSession;
 import org.starloco.locos.area.Area;
@@ -365,9 +363,9 @@ public class GameClient {
             return;
         }
 
-        if(this.player.addObjet(mimibiote, true))
+        if(this.player.addItem(mimibiote, true, false))
             World.world.addGameObject(mimibiote);
-        this.player.addObjet(apparat, true);
+        this.player.addItem(apparat, true, false);
         item.getTxtStat().remove(Constant.STATS_MIMIBIOTE); // setModification est dedans
         SocketManager.GAME_SEND_UPDATE_ITEM(player, item);
         if(item.getPosition() != Constant.ITEM_POS_NO_EQUIPED)
@@ -543,7 +541,7 @@ public class GameClient {
                     obj = World.world.getObjTemplate(template).createNewItem(qua, (jp == 1));
                     if (objNeedAttach.contains(obj.getTemplate().getId()))
                         obj.attachToPlayer(player);
-                    if (player.addObjet(obj, true))
+                    if (player.addItem(obj, true, false))
                         World.world.addGameObject(obj);
                     if(obj.getTemplate().getType() == Constant.ITEM_TYPE_CERTIF_MONTURE)
                         obj.setMountStats(player, null, true).setToMax();
@@ -554,7 +552,7 @@ public class GameClient {
                     obj = World.world.getObjTemplate(template).createNewItem(1, (jp == 1));
                     if (objNeedAttach.contains(obj.getTemplate().getId()))
                         obj.attachToPlayer(player);
-                    if (player.addObjet(obj, true))
+                    if (player.addItem(obj, true, false))
                         World.world.addGameObject(obj);
                     if(obj.getTemplate().getType() == Constant.ITEM_TYPE_CERTIF_MONTURE)
                         obj.setMountStats(player, null, true).setToMax();
@@ -1484,14 +1482,14 @@ public class GameClient {
                         qua = itemStore.getQuantity();
                     if (qua == itemStore.getQuantity()) {
                         seller.getStoreItems().remove(itemStore.getGuid());
-                        this.player.addObjet(itemStore, true);
+                        this.player.addItem(itemStore, true, false);
                     } else if (itemStore.getQuantity() > qua) {
                         seller.getStoreItems().remove(itemStore.getGuid());
                         itemStore.setQuantity(itemStore.getQuantity() - qua);
                         seller.addStoreItem(itemStore.getGuid(), price2);
 
                         GameObject clone = itemStore.getClone(qua, true);
-                        if (this.player.addObjet(clone, true))
+                        if (this.player.addItem(clone, true, false))
                             World.world.addGameObject(clone);
                     } else {
                         SocketManager.GAME_SEND_BUY_ERROR_PACKET(this);
@@ -1549,7 +1547,7 @@ public class GameClient {
                     return;
                 }
 
-                player.addItem(offer.itemTemplate, qua,(npcTemplate.getFlags() & 0x1) != 0);
+                player.addItem(offer.itemTemplate, qua,(npcTemplate.getFlags() & 0x1) != 0, true);
                 SocketManager.GAME_SEND_BUY_OK_PACKET(this);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -1740,7 +1738,7 @@ public class GameClient {
             }
 
             World.world.addGameObject(fragment);
-            this.player.addObjet(fragment);
+            this.player.addItem(fragment, true);
             SocketManager.GAME_SEND_Ec_PACKET(this.player, "K;8378");
             SocketManager.GAME_SEND_Ow_PACKET(this.player);
             SocketManager.GAME_SEND_IO_PACKET_TO_MAP(this.player.getCurMap(), this.player.getId(), "+8378");
@@ -2731,7 +2729,7 @@ public class GameClient {
                     object.setMountStats(this.player, mount, false);
 
                     World.world.addGameObject(object);
-                    this.player.addObjet(object);
+                    this.player.addItem(object, true);
 
                     SocketManager.GAME_SEND_Ee_PACKET(this.player, '-', mount.getId() + "");
                     ((MountData) DatabaseManager.get(MountData.class)).update(mount);
@@ -3799,9 +3797,6 @@ public class GameClient {
             case 1://Deplacement
                 final Party party = this.player.getParty();
 
-                /*if(party != null && party.getMaster() != null && party.getMaster().isOnMount())
-                    party.getMaster().toogleOnMount();*/
-
                 GameMap oldMap = this.player.getCurMap();
                 GameCase oldCase = this.player.getCurCell();
                 this.gameParseDeplacementPacket(GA);
@@ -3824,19 +3819,6 @@ public class GameClient {
                                     } else if (oldMap.getId() == follower.getCurMap().getId() && oldMap.getId() != newMap.getId() && oldCase.getId() == follower.getCurCell().getId()) {
                                         follower.teleport(newMap.getId(), newCase.getId());
                                     }
-                                /* Old mode master
-                                List<GameCase> cells = PathFinding.getShortestPathBetween(party.getMaster().getCurMap(), follower.getCurCell().getId(), newCase.getId(), 0);
-
-                                if(!cells.isEmpty()) {
-                                    GameCase lastCell = cells.get(cells.size() - 1);
-                                    if(lastCell != null && lastCell.getId() == newCase.getId()) {
-
-                                    if (follower.getCurCell().getId() != oldCase.getId())
-                                        follower.teleport(follower.getCurMap().getId(), oldCase.getId());
-                                    follower.getGameClient().sendActions(packet);
-
-                                    }
-                                }*/
                             });
                         oldMap.send(gm.toString());
                     }, 0, TimeUnit.MILLISECONDS);
@@ -4871,7 +4853,7 @@ public class GameClient {
                     SocketManager.GAME_SEND_Im_PACKET(this.player, "14");
                     return;
                 }
-                this.player.removeByTemplateID(1575, 1);
+                this.player.removeItemByTemplateId(1575, 1, false);
             }
             Guild G = new Guild(name, emblem);
             GuildMember gm = G.addNewMember(this.player);
@@ -4904,7 +4886,7 @@ public class GameClient {
         int CellID = World.world.getEncloCellIdByMapId(MapID);
         if (this.player.hasItemTemplate(9035, 1, false)) {
             SocketManager.GAME_SEND_Im_PACKET(this.player, "022;1~9035");
-            this.player.removeByTemplateID(9035, 1);
+            this.player.removeItemByTemplateId(9035, 1, false);
             this.player.teleport(MapID, CellID);
         } else {
             SocketManager.GAME_SEND_Im_PACKET(this.player, "1159");
@@ -4961,7 +4943,7 @@ public class GameClient {
         }
         if (this.player.hasItemTemplate(8883, 1, false)) {
             SocketManager.GAME_SEND_Im_PACKET(this.player, "022;1~8883");
-            this.player.removeByTemplateID(8883, 1);
+            this.player.removeItemByTemplateId(8883, 1, false);
             this.player.teleport((short) h.getHouseMapId(), h.getHouseCellId());
         } else {
             SocketManager.GAME_SEND_Im_PACKET(this.player, "1137");
@@ -5905,7 +5887,7 @@ public class GameClient {
                         {
                             int newItemQua = object.getQuantity() - quantity;
                             GameObject newItem = object.getClone(newItemQua, true);
-                            this.player.addObjet(newItem, false);
+                            this.player.addItem(newItem, false, false);
                             World.world.addGameObject(newItem);
                             object.setQuantity(quantity);
                             SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(this.player, object);
@@ -5996,7 +5978,7 @@ public class GameClient {
                                     object.setQuantity(quantity);
                                     SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(this.player, object);
 
-                                    if (this.player.addObjet(newItem, false))
+                                    if (this.player.addItem(newItem, false, false))
                                         World.world.addGameObject(newItem);
                                 }
                             }
@@ -6011,7 +5993,7 @@ public class GameClient {
                                 if (object.getQuantity() - quantity > 0) {//Si il en reste
                                     int newItemQua = object.getQuantity() - quantity;
                                     GameObject newItem = object.getClone(newItemQua, true);
-                                    if (this.player.addObjet(newItem, true))
+                                    if (this.player.addItem(newItem, true, false))
                                         World.world.addGameObject(newItem);
                                     object.setQuantity(quantity);
                                     SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(this.player, object);
@@ -6248,7 +6230,7 @@ public class GameClient {
         }
         obV.clearStats();
         obV.refreshStatsObjet(obviStats);
-        if (this.player.addObjet(obV, true))
+        if (this.player.addItem(obV, true, false))
             World.world.addGameObject(obV);
         obj.removeAllObvijevanStats();
         SocketManager.send(this.player, obj.obvijevanOCO_Packet(pos));
@@ -6760,7 +6742,7 @@ public class GameClient {
         obj.getTxtStat().remove(812); //on retire les stats "32c"
         obj.addTxtStat(812, Integer.toHexString(statNew));// on ajthis les bonnes stats
 
-        if (this.player.addObjet(obj, true))//Si le joueur n'avait pas d'item similaire
+        if (this.player.addItem(obj, true, false))//Si le joueur n'avait pas d'item similaire
             World.world.addGameObject(obj);
         if (MP.delObject(cell))
             SocketManager.SEND_GDO_PUT_OBJECT_MOUNT(map, cell + ";0;0"); // on retire l'objet de la map
@@ -7093,7 +7075,7 @@ public class GameClient {
 
         this.player.setName(name);
         this.player.send("AlEr");
-        this.player.removeByTemplateID(10860, 1);
+        this.player.removeItemByTemplateId(10860, 1, false);
         SocketManager.GAME_SEND_ALTER_GM_PACKET(this.player.getCurMap(), this.player);
     }
 

@@ -171,7 +171,7 @@ public class EventSmiley extends Event {
             if(template != null) {
                 GameObject object = template.createNewItem(1, false);
 
-                if (object != null && winner.addObjet(object, true)) {
+                if (object != null && winner.addItem(object, true, false)) {
                     World.world.addGameObject(object);
                 }
             }

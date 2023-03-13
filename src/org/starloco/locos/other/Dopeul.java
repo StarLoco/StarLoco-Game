@@ -57,7 +57,7 @@ public class Dopeul {
                     return;
                 }
                 GameObject obj = World.world.getObjTemplate(10207).createNewItem(1, true);
-                if (player.addObjet(obj, false))
+                if (player.addItem(obj, false, false))
                     World.world.addGameObject(obj);
                 removeObject(player, doplon, 1);
                 break;
@@ -104,7 +104,7 @@ public class Dopeul {
 
                 ObjectTemplate OT = World.world.getObjTemplate(10601); // On lui donne un certificat de restat
                 GameObject obj2 = OT.createNewItem(1, false);
-                if (player.addObjet(obj2, true)) //Si le joueur n'avait pas d'item similaire
+                if (player.addItem(obj2, true, false)) //Si le joueur n'avait pas d'item similaire
                     World.world.addGameObject(obj2);
                 obj2.refreshStatsObjet("325" + System.currentTimeMillis());
                 SocketManager.GAME_SEND_STATS_PACKET(player);
@@ -118,7 +118,7 @@ public class Dopeul {
                     return;
                 }
                 obj = World.world.getObjTemplate(1575).createNewItem(1, true);
-                if (player.addObjet(obj, false))
+                if (player.addItem(obj, false, false))
                     World.world.addGameObject(obj);
                 for (int id : doplons)
                     removeObject(player, id, 1);
@@ -222,7 +222,7 @@ public class Dopeul {
     }
 
     private static void removeObject(Player perso, int id, int qua) {
-        perso.removeByTemplateID(id, qua);
+        perso.removeItemByTemplateId(id, qua, false);
         SocketManager.GAME_SEND_Ow_PACKET(perso);
         SocketManager.GAME_SEND_Im_PACKET(perso, "022;" + qua + "~" + id);
     }

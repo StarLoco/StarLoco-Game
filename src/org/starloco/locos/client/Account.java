@@ -488,7 +488,7 @@ public class Account {
         if (this.currentPlayer.addObjetSimiler(obj, true, -1)) {
             World.world.removeGameObject(obj.getGuid());
         } else {
-            this.currentPlayer.addObjet(obj);
+            this.currentPlayer.addItem(obj, true);
         }
         ((HdvObjectData) DatabaseManager.get(HdvObjectData.class)).delete(entry);
         World.world.getHdv(hdvID).delEntry(entry);//Retire l'item de l'HDV

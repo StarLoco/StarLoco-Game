@@ -303,7 +303,7 @@ public class ConditionParser {
                 int id = Integer.parseInt(split[0]), qua = Integer.parseInt(split[1]);
 
                 if (player.hasItemTemplate(id, qua, false)) {
-                    player.removeByTemplateID(id, qua);
+                    player.removeItemByTemplateId(id, qua, false);
                     return true;
                 } else {
                     SocketManager.GAME_SEND_Im_PACKET(player, "14");
@@ -559,41 +559,43 @@ public class ConditionParser {
         return copyCond;
     }
 
-    public boolean stackIfSimilar(GameObject obj, GameObject newObj, boolean stackIfSimilar) {
-        if(obj.getTxtStat().get(Constant.STATS_MIMIBIOTE) != null || newObj.getTxtStat().get(Constant.STATS_MIMIBIOTE) != null)
+    public boolean stackIfSimilar(GameObject item, GameObject newItem, boolean stack) {
+        if(item.getTxtStat().get(Constant.STATS_MIMIBIOTE) != null || newItem.getTxtStat().get(Constant.STATS_MIMIBIOTE) != null)
             return false;
 
-        switch (obj.getTemplate().getId()) {
+        switch (item.getTemplate().getId()) {
             case 10275:
-                if (obj.getTemplate().getId() == newObj.getTemplate().getId())
+                if (item.getTemplate().getId() == newItem.getTemplate().getId())
                     return true;
                 break;
             case 8378:
-                if (obj.getTemplate().getId() == newObj.getTemplate().getId())
+                if (item.getTemplate().getId() == newItem.getTemplate().getId())
                     return false;
                 break;
         }
 
-        for (SpellEffect effect1 : obj.getEffects()) {
+        for (SpellEffect effect1 : item.getEffects()) {
             boolean ok = false;
-            for (SpellEffect effect2 : newObj.getEffects()) {
-                if(effect1.getEffectID() == effect2.getEffectID() && effect1.getJet().equals(effect2.getJet()) && effect1.getArgs().equals(effect2.getArgs()))
+            for (SpellEffect effect2 : newItem.getEffects()) {
+                if (effect1.getEffectID() == effect2.getEffectID() && effect1.getJet().equals(effect2.getJet()) && effect1.getArgs().equals(effect2.getArgs())) {
                     ok = true;
+                    break;
+                }
             }
             if(!ok)
                 return false;
         }
 
 
-        return obj.getTemplate().getId() == newObj.getTemplate().getId() && stackIfSimilar && obj.isSameStats(newObj) && !Constant.isIncarnationWeapon(newObj.getTemplate().getId())
-                && newObj.getTemplate().getType() != Constant.ITEM_TYPE_CERTIFICAT_CHANIL
-                && newObj.getTemplate().getType() != Constant.ITEM_TYPE_PIERRE_AME_PLEINE
-                && newObj.getTemplate().getType() != Constant.ITEM_TYPE_OBJET_ELEVAGE
-                && newObj.getTemplate().getType() != Constant.ITEM_TYPE_CERTIF_MONTURE
-                && newObj.getTemplate().getType() != Constant.ITEM_TYPE_OBJET_VIVANT
-                && newObj.getTemplate().getType() != Constant.ITEM_TYPE_FAMILIER
-                && newObj.getTemplate().getType() != Constant.ITEM_TYPE_FANTOME_FAMILIER
-                && (newObj.getTemplate().getType() != Constant.ITEM_TYPE_QUETES || Constant.isFlacGelee(obj.getTemplate().getId()) || Constant.isDoplon(obj.getTemplate().getId()))
-                && obj.getPosition() == Constant.ITEM_POS_NO_EQUIPED;
+        return item.getTemplate().getId() == newItem.getTemplate().getId() && stack && item.isSameStats(newItem) && !Constant.isIncarnationWeapon(newItem.getTemplate().getId())
+                && newItem.getTemplate().getType() != Constant.ITEM_TYPE_CERTIFICAT_CHANIL
+                && newItem.getTemplate().getType() != Constant.ITEM_TYPE_PIERRE_AME_PLEINE
+                && newItem.getTemplate().getType() != Constant.ITEM_TYPE_OBJET_ELEVAGE
+                && newItem.getTemplate().getType() != Constant.ITEM_TYPE_CERTIF_MONTURE
+                && newItem.getTemplate().getType() != Constant.ITEM_TYPE_OBJET_VIVANT
+                && newItem.getTemplate().getType() != Constant.ITEM_TYPE_FAMILIER
+                && newItem.getTemplate().getType() != Constant.ITEM_TYPE_FANTOME_FAMILIER
+                && (newItem.getTemplate().getType() != Constant.ITEM_TYPE_QUETES || Constant.isFlacGelee(item.getTemplate().getId()) || Constant.isDoplon(item.getTemplate().getId()))
+                && item.getPosition() == Constant.ITEM_POS_NO_EQUIPED;
     }
 }

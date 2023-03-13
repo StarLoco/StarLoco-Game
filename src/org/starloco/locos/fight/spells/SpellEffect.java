@@ -301,12 +301,11 @@ public class SpellEffect implements Cloneable {
 									int newValue = oldValue + gain;
 
 									if (stat == 125) {
-										SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, Constant.STATS_ADD_VIE, caster.getId() + "", target.getId() + "," + gain + "," + 5);
+										SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, Constant.STATS_ADD_VIE, String.valueOf(caster.getId()), target.getId() + "," + gain);
 										target.setPdv(target.getPdv() + gain);
 										if (target.getPlayer() != null)
 											SocketManager.GAME_SEND_STATS_PACKET(target.getPlayer());
 									} else {
-										target.getChatiValue().put(stat, newValue);
 										target.addBuff(stat, gain, 5, true, -1, buff.getArgs(), caster, false, true);
 										SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, stat, caster.getId() + "", target.getId() + "," + gain + "," + 5);
 									}
@@ -533,7 +532,7 @@ public class SpellEffect implements Cloneable {
 			case 107://Renvoie de dom
 				applyEffect_107(targets);
 				break;
-			case 108://Soin
+			case 108:// PDV rendus de X à Y
 				applyEffect_108(targets, fight, isCaC);
 				break;
 			case 109://Dommage pour le lanceur
@@ -2842,7 +2841,7 @@ public class SpellEffect implements Cloneable {
 				target.addBuff(effectID, value, turns, true, spell, args, caster, false, true);//on applique un buff
 	}
 
-	private void applyEffect_108(ArrayList<Fighter> targets, Fight fight, boolean isCaC) {// healcion
+	private void applyEffect_108(ArrayList<Fighter> targets, Fight fight, boolean isCaC) {
 		if (spell == 441) return;
 		if (isCaC) return;
 		if (turns <= 0) {
@@ -3835,7 +3834,7 @@ public class SpellEffect implements Cloneable {
 		if (value == -1) return;
 		
 		for (Fighter target : targets) {
-			target.addBuff(effectID, value, turns, true, spell, args, caster, spell != 2005, true);
+			target.addBuff(effectID, value, turns, true, spell, args, caster, true, true);
 		}
 	}
 
@@ -3846,7 +3845,7 @@ public class SpellEffect implements Cloneable {
 		if (value == -1) return;
 		
 		for (Fighter target : targets) {
-			target.addBuff(effectID, value, turns, true, spell, args, caster, spell != 2005, true);
+			target.addBuff(effectID, value, turns, true, spell, args, caster, true, true);
 		}
 	}
 
@@ -3858,7 +3857,7 @@ public class SpellEffect implements Cloneable {
 		if (value == -1) return;
 		
 		for (Fighter target : targets) {
-			target.addBuff(effectID, value, turns, true, spell, args, caster, spell != 2005, true);
+			target.addBuff(effectID, value, turns, true, spell, args, caster, true, true);
 		}
 	}
 
@@ -3870,7 +3869,7 @@ public class SpellEffect implements Cloneable {
 		if (value == -1) return;
 		
 		for (Fighter target : targets) {
-			target.addBuff(effectID, value, turns, true, spell, args, caster, spell != 2005, true);
+			target.addBuff(effectID, value, turns, true, spell, args, caster, true, true);
 		}
 	}
 
@@ -3882,7 +3881,7 @@ public class SpellEffect implements Cloneable {
 		if (value == -1) return;
 		
 		for (Fighter target : targets) {
-			target.addBuff(effectID, value, turns, true, spell, args, caster, spell != 2005, true);
+			target.addBuff(effectID, value, turns, true, spell, args, caster, true, true);
 		}
 	}
 

@@ -521,7 +521,7 @@ public class Player {
                 if(template != null) {
                     GameObject object = template.createNewItem(1, false);
                     if(object != null) {
-                        if(player.addObjet(object, true))
+                        if(player.addItem(object, true, false))
                             World.world.addGameObject(object);
                         player.send("Im021;1~" + template.getId());
                     }
@@ -745,7 +745,7 @@ public class Player {
         }
 
         GameObject obj = World.world.getObjTemplate(objTemplate).createNewRoleplayBuff();
-        this.addObjet(obj, false);
+        this.addItem(obj, false, false);
         World.world.addGameObject(obj);
         SocketManager.GAME_SEND_ALTER_GM_PACKET(this.getCurMap(), this);
         SocketManager.GAME_SEND_Ow_PACKET(this);
@@ -774,7 +774,7 @@ public class Player {
         }
 
         GameObject obj = World.world.getObjTemplate(id).createNewBenediction(turn);
-        this.addObjet(obj, false);
+        this.addItem(obj, false, false);
         World.world.addGameObject(obj);
         SocketManager.GAME_SEND_ALTER_GM_PACKET(this.getCurMap(), this);
         SocketManager.GAME_SEND_Ow_PACKET(this);
@@ -802,7 +802,7 @@ public class Player {
         }
 
         GameObject obj = World.world.getObjTemplate(objTemplate).createNewMalediction();
-        this.addObjet(obj, false);
+        this.addItem(obj, false, false);
         World.world.addGameObject(obj);
         if (this.getFight() != null) {
             SocketManager.GAME_SEND_ALTER_GM_PACKET(this.getCurMap(), this);
@@ -825,7 +825,7 @@ public class Player {
 
         GameObject obj = World.world.getObjTemplate(id).createNewFollowPnj(1);
         if (obj != null)
-            if (this.addObjet(obj, false))
+            if (this.addItem(obj, false, false))
                 World.world.addGameObject(obj);
 
         SocketManager.GAME_SEND_ALTER_GM_PACKET(this.getCurMap(), this);
@@ -861,7 +861,7 @@ public class Player {
         }
 
         GameObject obj = World.world.getObjTemplate(id).createNewCandy(turn);
-        this.addObjet(obj, false);
+        this.addItem(obj, false, false);
         World.world.addGameObject(obj);
         SocketManager.GAME_SEND_Ow_PACKET(this);
         SocketManager.GAME_SEND_STATS_PACKET(this);
@@ -2438,44 +2438,63 @@ public class Player {
         return str.toString();
     }
 
-    public boolean addObjet(GameObject newObj, boolean stackIfSimilar) {
+    public void addItem(int templateId, int quantity, boolean useMax, boolean display) {
+        this.addItem(World.world.getObjTemplate(templateId), quantity, useMax, display);
+    }
+
+    public void addItem(ObjectTemplate template, int quantity, boolean useMax, boolean display) {
+        GameObject item = template.createNewItem(quantity, useMax);
+        if (this.addItem(item, true, display)) {
+            World.world.addGameObject(item);
+        }
+    }
+
+    public boolean addItem(GameObject newItem, boolean stack, boolean display) {
         synchronized (objects) {
-            for (Entry<Integer, GameObject> entry : objects.entrySet()) {
-                GameObject obj = entry.getValue();
-                if (World.world.getConditionManager().stackIfSimilar(obj, newObj, stackIfSimilar)) {
-                    obj.setQuantity(obj.getQuantity() + newObj.getQuantity());//On ajoute QUA item a la quantit� de l'objet existant
+            for (GameObject item : objects.values()) {
+                if (World.world.getConditionManager().stackIfSimilar(item, newItem, stack)) {
+                    item.setQuantity(item.getQuantity() + newItem.getQuantity());
                     if (isOnline) {
-                        SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(this, obj);
+                        SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(this, item);
                         SocketManager.GAME_SEND_Ow_PACKET(this);
+                        if(display) {
+                            SocketManager.GAME_SEND_Im_PACKET(this, "021;" + newItem.getQuantity() + "~" + newItem.getTemplate());
+                        }
                     }
                     return false;
                 }
             }
-            addObject(newObj, isOnline);
+            addItem(newItem, display);
         }
         return true;
     }
 
-    public void addItem(int templateID, int quantity, boolean useMax) {
-        this.addItem(World.world.getObjTemplate(templateID), quantity, useMax);
-    }
-
-    public void addItem(ObjectTemplate template, int quantity, boolean useMax) {
-        GameObject obj = template.createNewItem(quantity, useMax);
-        if (this.addObjet(obj, true))
-            World.world.addGameObject(obj);
-    }
-
-    public void addObjet(GameObject newObj) {
-        addObject(newObj, true);
-    }
-
-    public void addObject(GameObject newObj, boolean display) {
-        this.objects.put(newObj.getGuid(), newObj);
-        if(display) {
-            SocketManager.GAME_SEND_OAKO_PACKET(this, newObj);
-            SocketManager.GAME_SEND_Im_PACKET(this, "021;" + newObj.getQuantity() + "~" + newObj.getTemplate());
+    public void addItem(GameObject item, boolean display) {
+        this.objects.put(item.getGuid(), item);
+        if(isOnline) {
+            SocketManager.GAME_SEND_OAKO_PACKET(this, item);
+            if(display) {
+                SocketManager.GAME_SEND_Im_PACKET(this, "021;" + item.getQuantity() + "~" + item.getTemplate());
+            }
         }
+    }
+
+    public boolean addObjetSimiler(GameObject objet, boolean hasSimiler, int oldID) {
+        ObjectTemplate objModelo = objet.getTemplate();
+        if (hasSimiler) {
+            for (Entry<Integer, GameObject> entry : objects.entrySet()) {
+                GameObject obj = entry.getValue();
+                if (obj.getPosition() == -1 && obj.getGuid() != oldID
+                        && obj.getTemplate().getId() == objModelo.getId()
+                        && obj.getStats().isSameStats(objet.getStats())
+                        && World.world.getConditionManager().stackIfSimilar(obj, objet, hasSimiler)) {
+                    obj.setQuantity(obj.getQuantity() + objet.getQuantity());
+                    SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(this, obj);
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public Map<Integer, GameObject> getItems() {
@@ -3103,7 +3122,7 @@ public class Player {
                 if (this.getCurMap().getSubArea().getId() == 165
                         && map.getSubArea().getId() == 165) {
                     if (this.hasItemTemplate(997, 1, false)) {
-                        this.removeByTemplateID(997, 1);
+                        this.removeItemByTemplateId(997, 1, false);
                     } else {
                         SocketManager.GAME_SEND_Im_PACKET(this, "14");
                         return;
@@ -3542,48 +3561,46 @@ public class Player {
         }
     }
 
-    public boolean removeByTemplateID(int tID, int count) {
+    public boolean removeItemByTemplateId(int templateId, int count, boolean display) {
         // TODO: Rewrite this function to be fail-safe
         // Currently, if we try to remove 10 items but the user only has 9, it removes 9 items then fails.
-
-        //Copie de la liste pour eviter les modif concurrentes
-        ArrayList<GameObject> list = new ArrayList<GameObject>();
-
-        list.addAll(objects.values());
-
-
-        ArrayList<GameObject> remove = new ArrayList<GameObject>();
+        ArrayList<GameObject> remove = new ArrayList<>();
         int tempCount = count;
 
         //on verifie pour chaque objet
-        for (GameObject obj : list) {
+        for (GameObject item : new ArrayList<>(objects.values())) {
             //Si mauvais TemplateID, on passe
-            if (obj.getTemplate().getId() != tID)
+            if (item.getTemplate().getId() != templateId)
                 continue;
 
-            if (obj.getQuantity() >= count) {
-                int newQua = obj.getQuantity() - count;
+            if (item.getQuantity() >= count) {
+                int newQua = item.getQuantity() - count;
                 if (newQua > 0) {
-                    obj.setQuantity(newQua);
-                    if (isOnline) SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(this, obj);
+                    item.setQuantity(newQua);
+                    if (isOnline) SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(this, item);
                 } else {
                     //on supprime de l'inventaire et du Monde
-                    objects.remove(obj.getGuid());
-                    World.world.removeGameObject(obj.getGuid());
+                    objects.remove(item.getGuid());
+                    World.world.removeGameObject(item.getGuid());
                     //on envoie le packet si connect�
-                    if (isOnline) SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(this, obj.getGuid());
+                    if (isOnline) SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(this, item.getGuid());
                 }
-                SocketManager.GAME_SEND_Ow_PACKET(this);
+                if (isOnline) {
+                    if (display) {
+                        SocketManager.GAME_SEND_Im_PACKET(this, "022;" + count + "~" + item.getTemplate().getId());
+                    }
+                    SocketManager.GAME_SEND_Ow_PACKET(this);
+                }
                 return true;
             } else {
                 //Si pas assez d'objet
-                if (obj.getQuantity() >= tempCount) {
-                    int newQua = obj.getQuantity() - tempCount;
+                if (item.getQuantity() >= tempCount) {
+                    int newQua = item.getQuantity() - tempCount;
                     if (newQua > 0) {
-                        obj.setQuantity(newQua);
-                        if (isOnline) SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(this, obj);
+                        item.setQuantity(newQua);
+                        if (isOnline) SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(this, item);
                     } else {
-                        remove.add(obj);
+                        remove.add(item);
                     }
 
                     for (GameObject o : remove) {
@@ -3595,12 +3612,17 @@ public class Player {
                         //on envoie le packet si connect�
                         if (isOnline) SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(this, o.getGuid());
                     }
-                    if (isOnline) SocketManager.GAME_SEND_Ow_PACKET(this);
+                    if (isOnline) {
+                        if(display) {
+                            SocketManager.GAME_SEND_Im_PACKET(this, "022;" + count + "~" + item.getTemplate().getId());
+                        }
+                        SocketManager.GAME_SEND_Ow_PACKET(this);
+                    }
                     return true;
                 } else {
                     // on r�duit le compteur
-                    tempCount -= obj.getQuantity();
-                    remove.add(obj);
+                    tempCount -= item.getQuantity();
+                    remove.add(item);
                 }
             }
         }
@@ -5400,26 +5422,6 @@ public class Player {
                 + (color3 == -1 ? "" : Integer.toHexString(color3));
     }
 
-    public boolean addObjetSimiler(GameObject objet, boolean hasSimiler, int oldID) {
-        ObjectTemplate objModelo = objet.getTemplate();
-        if (objModelo.getType() == 85 || objModelo.getType() == 18)
-            return false;
-        if (hasSimiler) {
-            for (Entry<Integer, GameObject> entry : objects.entrySet()) {
-                GameObject obj = entry.getValue();
-                if (obj.getPosition() == -1 && obj.getGuid() != oldID
-                        && obj.getTemplate().getId() == objModelo.getId()
-                        && obj.getStats().isSameStats(objet.getStats())
-                        && World.world.getConditionManager().stackIfSimilar(obj, objet, hasSimiler)) {
-                    obj.setQuantity(obj.getQuantity() + objet.getQuantity());
-                    SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(this, obj);
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
     //region Objects class
     public Map<Integer, World.Couple<Integer, Integer>> getObjectsClassSpell() {
         return objectsClassSpell;
@@ -5905,7 +5907,7 @@ public class Player {
     public boolean consumeCurrency(Currency cur, long qua) {
         if(cur == Currency.KAMAS) return modKamasDisplay(-qua);
         if(cur == Currency.POINTS) return account.modPoints(-qua);
-        if(cur.isItem()) return removeByTemplateID(cur.item().getId(), (int)qua);
+        if(cur.isItem()) return removeItemByTemplateId(cur.item().getId(), (int)qua, false);
         throw new RuntimeException("unknown currency type");
     }
 }
