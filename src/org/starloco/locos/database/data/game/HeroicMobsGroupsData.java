@@ -30,7 +30,7 @@ public class HeroicMobsGroupsData extends FunctionDAO<Object> {
             while (result.next()) {
                 final GameMap map = World.world.getMap(result.getShort("map"));
                 if(map != null) {
-                    final MonsterGroup group = new MonsterGroup(result.getInt("id"), map, result.getInt("cell"), result.getString("group"), result.getString("objects"), result.getShort("stars"));
+                    final MonsterGroup group = new MonsterGroup(result.getInt("id"), result.getInt("cell"), result.getString("group"), result.getString("objects"), result.getShort("stars"));
                     map.respawnGroup(group);
                 }
             }

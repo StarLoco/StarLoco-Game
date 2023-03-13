@@ -40,13 +40,9 @@ public class NpcTemplateData extends FunctionDAO<NpcTemplate> {
                 String ventes = result.getString("ventes");
                 String quests = result.getString("quests");
                 String exchanges = result.getString("exchanges");
-                NpcTemplate template = World.world.getNPCTemplate(result.getInt("id"));
 
-                if (template == null) {
-                    World.world.addNpcTemplate(new NpcTemplate(id, bonusValue, gfxID, scaleX, scaleY, sex, color1, color2, color3, access, extraClip, customArtWork, initQId, ventes, quests, exchanges, result.getString("path"), result.getByte("informations")));
-                } else {
-                    template.setInfos(id, bonusValue, gfxID, scaleX, scaleY, sex, color1, color2, color3, access, extraClip, customArtWork, initQId, ventes, quests, exchanges, result.getString("path"), result.getByte("informations"));
-                }
+                NpcTemplate template = new NpcTemplate(id, bonusValue, gfxID, scaleX, scaleY, sex, color1, color2, color3, access, extraClip, customArtWork, initQId, ventes, quests, exchanges, result.getString("path"), result.getByte("informations"));
+                World.world.addNpcTemplate(template);
             }
         } catch (SQLException e) {
             super.sendError(e);
@@ -73,9 +69,11 @@ public class NpcTemplateData extends FunctionDAO<NpcTemplate> {
 
     @Override
     public void update(NpcTemplate entity) {
+        if(entity.legacy == null) throw new RuntimeException("not supported on scripted NPCs");
+
         String i = "";
         boolean first = true;
-        for (ObjectTemplate obj : entity.getAllItem()) {
+        for (ObjectTemplate obj : entity.legacy.getAllItem()) {
             if (first) i += obj.getId();
             else i += "," + obj.getId();
             first = false;

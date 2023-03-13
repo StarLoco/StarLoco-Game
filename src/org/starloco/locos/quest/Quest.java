@@ -163,9 +163,9 @@ public class Quest {
         str.append("|");
         str.append(loc2 > 0 ? loc2 : "").append("|");
         str.append(loc3 > 0 ? loc3 : "");
-        if (npc != null) {
+        if (npc != null && npc.legacy != null) {
             str.append("|");
-            str.append(npc.getInitQuestionId(player.getCurMap().getId())).append("|");
+            str.append(npc.legacy.getInitQuestionId(player.getCurMap().getId())).append("|");
         }
         return str.toString();
     }
@@ -260,7 +260,7 @@ public class Quest {
                             .getExchangeAction().getValue()).getTemplate().getId() == questObjective.getNpc().getId()) {
                         for (Entry<Integer, Integer> entry : questObjective.getItemNecessaryList().entrySet()) {
                             if (player.hasItemTemplate(entry.getKey(), entry.getValue(), false)) { //Il a l'item et la quantit�
-                                player.removeByTemplateID(entry.getKey(), entry.getValue()); //On supprime donc
+                                player.removeItemByTemplateId(entry.getKey(), entry.getValue(), false); //On supprime donc
                                 refresh = true;
                             }
                         }
@@ -380,7 +380,7 @@ public class Quest {
                 int quantity = entry.getValue();
                 GameObject object = template.createNewItem(quantity, false);
 
-                if (player.addObjet(object, true)) {
+                if (player.addItem(object, true, false)) {
                     World.world.addGameObject(object);
                 }
                 SocketManager.GAME_SEND_Im_PACKET(player, "021;" + quantity + "~" + template.getId());

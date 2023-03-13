@@ -37,8 +37,6 @@ import org.starloco.locos.entity.exchange.Exchange;
 import org.starloco.locos.entity.exchange.PlayerExchange;
 import org.starloco.locos.entity.mount.Mount;
 import org.starloco.locos.entity.npc.Npc;
-import org.starloco.locos.entity.npc.NpcAnswer;
-import org.starloco.locos.entity.npc.NpcQuestion;
 import org.starloco.locos.entity.npc.NpcTemplate;
 import org.starloco.locos.entity.pet.Pet;
 import org.starloco.locos.entity.pet.PetEntry;
@@ -72,10 +70,8 @@ import org.starloco.locos.object.ObjectTemplate;
 import org.starloco.locos.object.entity.Fragment;
 import org.starloco.locos.object.entity.SoulStone;
 import org.starloco.locos.other.Action;
-import org.starloco.locos.other.Dopeul;
 import org.starloco.locos.quest.Quest;
 import org.starloco.locos.quest.QuestPlayer;
-import org.starloco.locos.quest.QuestObjective;
 import org.starloco.locos.util.generator.NameGenerator;
 import org.starloco.locos.util.TimerWaiter;
 
@@ -367,9 +363,9 @@ public class GameClient {
             return;
         }
 
-        if(this.player.addObjet(mimibiote, true))
+        if(this.player.addItem(mimibiote, true, false))
             World.world.addGameObject(mimibiote);
-        this.player.addObjet(apparat, true);
+        this.player.addItem(apparat, true, false);
         item.getTxtStat().remove(Constant.STATS_MIMIBIOTE); // setModification est dedans
         SocketManager.GAME_SEND_UPDATE_ITEM(player, item);
         if(item.getPosition() != Constant.ITEM_POS_NO_EQUIPED)
@@ -545,7 +541,7 @@ public class GameClient {
                     obj = World.world.getObjTemplate(template).createNewItem(qua, (jp == 1));
                     if (objNeedAttach.contains(obj.getTemplate().getId()))
                         obj.attachToPlayer(player);
-                    if (player.addObjet(obj, true))
+                    if (player.addItem(obj, true, false))
                         World.world.addGameObject(obj);
                     if(obj.getTemplate().getType() == Constant.ITEM_TYPE_CERTIF_MONTURE)
                         obj.setMountStats(player, null, true).setToMax();
@@ -556,7 +552,7 @@ public class GameClient {
                     obj = World.world.getObjTemplate(template).createNewItem(1, (jp == 1));
                     if (objNeedAttach.contains(obj.getTemplate().getId()))
                         obj.attachToPlayer(player);
-                    if (player.addObjet(obj, true))
+                    if (player.addItem(obj, true, false))
                         World.world.addGameObject(obj);
                     if(obj.getTemplate().getType() == Constant.ITEM_TYPE_CERTIF_MONTURE)
                         obj.setMountStats(player, null, true).setToMax();
@@ -847,7 +843,7 @@ public class GameClient {
                 if (!this.player.get_canaux().contains(packet.charAt(2) + ""))
                     return;
                 long l;
-                if (this.player.isInAreaNotSubscribe()) {
+                if (this.player.isMissingSubscription()) {
                     SocketManager.GAME_SEND_EXCHANGE_REQUEST_ERROR(this.player.getGameClient(), 'S');
                     return;
                 }
@@ -886,7 +882,7 @@ public class GameClient {
             case '?'://Canal recrutement
                 if (!this.player.get_canaux().contains(packet.charAt(2) + ""))
                     return;
-                if (this.player.isInAreaNotSubscribe()) {
+                if (this.player.isMissingSubscription()) {
                     SocketManager.GAME_SEND_EXCHANGE_REQUEST_ERROR(this.player.getGameClient(), 'S');
                     return;
                 }
@@ -933,7 +929,7 @@ public class GameClient {
             case '!'://Alignement
                 if (!this.player.get_canaux().contains(packet.charAt(2) + ""))
                     return;
-                if (this.player.isInAreaNotSubscribe()) {
+                if (this.player.isMissingSubscription()) {
                     SocketManager.GAME_SEND_EXCHANGE_REQUEST_ERROR(this.player.getGameClient(), 'S');
                     return;
                 }
@@ -1250,15 +1246,15 @@ public class GameClient {
     private void parseDialogPacket(String packet) {
         switch (packet.charAt(1)) {
             case 'C'://Demande de l'initQuestion
-                create(packet);
+                npcCreateDialog(packet);
                 break;
 
             case 'R'://R?ponse du joueur
-                response(packet);
+                npcResponse(packet);
                 break;
 
             case 'V'://Fin du dialog
-                leave();
+                quitDialog();
                 break;
         }
 
@@ -1270,215 +1266,50 @@ public class GameClient {
         }
     }
 
-    private void create(String packet) {
-        try {
-            if (this.player.isInAreaNotSubscribe() || this.player.getExchangeAction() != null) {
-                SocketManager.GAME_SEND_EXCHANGE_REQUEST_ERROR(this.player.getGameClient(), 'S');
-                return;
-            }
+    private void npcCreateDialog(String packet) {
+        int id = Integer.parseInt(packet.substring(2).split((char) 0x0A + "")[0]);
 
-            int id = Integer.parseInt(packet.substring(2).split((char) 0x0A + "")[0]);
-            Collector collector = World.world.getCollector(id);
-
-            if (collector != null && collector.getMap() == this.player.getCurMap().getId()) {
-                SocketManager.GAME_SEND_DCK_PACKET(this, id);
-                SocketManager.GAME_SEND_QUESTION_PACKET(this, World.world.getGuild(collector.getGuildId()).parseQuestionTaxCollector());
-                return;
-            }
-
-            Npc npc = this.player.getCurMap().getNpc(id);
-            if (npc == null) return;
-
+        if (this.player.isMissingSubscription() || this.player.getExchangeAction() != null) {
             SocketManager.GAME_SEND_DCK_PACKET(this, id);
-            int questionId = npc.getTemplate().getInitQuestionId(this.player.getCurMap().getId());
-
-            NpcQuestion question = World.world.getNPCQuestion(questionId);
-
-            if (question == null) {
-                SocketManager.GAME_SEND_END_DIALOG_PACKET(this);
-                return;
-            }
-
-            if (npc.getTemplate().getId() == 870) {
-                Quest quest = Quest.getQuestById(185);
-                if (quest != null) {
-                    QuestPlayer questPlayer = this.player.getQuestPersoByQuest(quest);
-                    if (questPlayer != null) {
-                        if (questPlayer.isFinish()) {
-                            SocketManager.GAME_SEND_END_DIALOG_PACKET(this);
-                            return;
-                        }
-                    }
-                }
-            } else if (npc.getTemplate().getId() == 891) {
-                Quest quest = Quest.getQuestById(200);
-                if (quest != null) {
-                    if (this.player.getQuestPersoByQuest(quest) == null) {
-                        quest.applyQuest(this.player);
-                        player.send("GM|" + npc.parse(true, player));
-                    }
-                }
-            } else if (npc.getTemplate().getId() == 925 && this.player.getCurMap().getId() == (short) 9402) {
-                Quest quest = Quest.getQuestById(231);
-                if (quest != null) {
-                    QuestPlayer questPlayer = this.player.getQuestPersoByQuest(quest);
-                    if (questPlayer != null) {
-                        if (questPlayer.isFinish()) {
-                            question = World.world.getNPCQuestion(4127);
-                            if (question == null) {
-                                SocketManager.GAME_SEND_END_DIALOG_PACKET(this);
-                                return;
-                            }
-                        }
-                    }
-                }
-            } else if (npc.getTemplate().getId() == 577 && this.player.getCurMap().getId() == (short) 7596) {
-                if (this.player.hasItemTemplate(2106, 1, false))
-                    question = World.world.getNPCQuestion(2407);
-            } else if (npc.getTemplate().getId() == 1041 && this.player.getCurMap().getId() == (short) 10255 && questionId == 5516) {
-                if (this.player.getAlignment() == 1) {// bontarien
-                    if (this.player.getSexe() == 0)
-                        question = World.world.getNPCQuestion(5519);
-                    else
-                        question = World.world.getNPCQuestion(5520);
-                } else if (this.player.getAlignment() == 2) {// brakmarien
-                    if (this.player.getSexe() == 0)
-                        question = World.world.getNPCQuestion(5517);
-                    else
-                        question = World.world.getNPCQuestion(5518);
-                } else { // Neutre ou mercenaire
-                    question = World.world.getNPCQuestion(5516);
-                }
-            }
-
-            ExchangeAction<Integer> exchangeAction = new ExchangeAction<>(ExchangeAction.TALKING_WITH, id);
-            this.player.setExchangeAction(exchangeAction);
-
-            SocketManager.GAME_SEND_QUESTION_PACKET(this, question.parse(this.player));
-
-            for (QuestPlayer questPlayer :  new ArrayList<>(this.player.getQuestPerso().values())) {
-                boolean loc1 = false;
-                for (QuestObjective questObjective : questPlayer.getQuest().getQuestObjectives())
-                    if (questObjective.getNpc() != null && questObjective.getNpc().getId() == this.player.getCurMap().getNpc(exchangeAction.getValue()).getTemplate().getId())
-                        loc1 = true;
-
-                Quest quest = questPlayer.getQuest();
-                if (quest == null || questPlayer.isFinish()) continue;
-                NpcTemplate npcTemplate = quest.getNpcTemplate();
-                if (npcTemplate == null && !loc1) continue;
-
-                quest.updateQuestData(this.player, false, 0);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+            SocketManager.GAME_SEND_EXCHANGE_REQUEST_ERROR(this.player.getGameClient(), 'S');
+            return;
         }
+
+        Collector collector = World.world.getCollector(id);
+
+        if (collector != null && collector.getMap() == this.player.getCurMap().getId()) {
+            SocketManager.GAME_SEND_DCK_PACKET(this, id);
+            SocketManager.GAME_SEND_QUESTION_PACKET(this, World.world.getGuild(collector.getGuildId()).parseQuestionTaxCollector());
+            return;
+        }
+
+        Npc npc = this.player.getCurMap().getNpc(id);
+        if (npc == null) return;
+        int templateID = npc.getTemplate().getId();
+
+        ExchangeAction<Integer> exchangeAction = new ExchangeAction<>(ExchangeAction.TALKING_WITH, templateID);
+        this.player.setExchangeAction(exchangeAction);
+
+
+        SocketManager.GAME_SEND_DCK_PACKET(this, id);
+        npc.getTemplate().onCreateDialog(this.player);
     }
 
-    private void response(String packet) {
+    @SuppressWarnings("unchecked")
+    private void npcResponse(String packet) {
         String[] infos = packet.substring(2).split("\\|");
         try {
             ExchangeAction<?> checkExchangeAction = this.player.getExchangeAction();
             if (checkExchangeAction == null || checkExchangeAction.getType() != ExchangeAction.TALKING_WITH) return;
 
             ExchangeAction<Integer> exchangeAction = (ExchangeAction<Integer>) this.player.getExchangeAction();
-            Npc npc = this.player.getCurMap().getNpc(exchangeAction.getValue());
+            int npcTemplateID = exchangeAction.getValue();
 
-            //FIXME: if npc == null => faille dialog npc, disable for .help command
-
+            int questionId = Integer.parseInt(infos[0]);
             int answerId = Integer.parseInt(infos[1]);
-            NpcQuestion question = World.world.getNPCQuestion(Integer.parseInt(infos[0]));
-            NpcAnswer answer = World.world.getNpcAnswer(answerId);
 
-            if (question == null || answer == null) {
-                this.player.setIsOnDialogAction(-1);
-                SocketManager.GAME_SEND_END_DIALOG_PACKET(this);
-                return;
-            }
 
-            if (!this.player.getQuestPerso().isEmpty()) {
-                for (QuestPlayer questPlayer : this.player.getQuestPerso().values()) {
-                    if (questPlayer.isFinish() || questPlayer.getQuest() == null || questPlayer.getQuest().getNpcTemplate() == null)
-                        continue;
-                    for (QuestObjective questObjective : questPlayer.getQuest().getQuestObjectives()) {
-                        if (questObjective == null || questPlayer.isQuestObjectiveIsValidate(questObjective) || npc.getTemplate() == null)
-                            continue;
-
-                        NpcTemplate questNpc = questObjective.getNpc(), curNpc = npc.getTemplate();
-
-                        if (questNpc != null && curNpc != null && questNpc.getId() == curNpc.getId())
-                            questPlayer.getQuest().updateQuestData(this.player, false, answerId);
-                    }
-                }
-            }
-
-            if (answerId == 6604 || answerId == 6605) {
-                String stats = "", statsReplace = "";
-                if (this.player.hasItemTemplate(10207, 1, false))
-                    stats = this.player.getItemTemplate(10207).getTxtStat().get(Constant.STATS_NAME_DJ);
-                try {
-                    for(String answer0 : question.getAnwsers().split(";")) {
-                        for (Action action : World.world.getNpcAnswer(Integer.parseInt(answer0)).getActions()) {
-                            if ((action.getId() == 15 || action.getId() == 16) && this.player.hasItemTemplate(10207, 1, false)) {
-                                for (String i : stats.split(",")) {
-                                    GameMap map = this.player.getCurMap();
-                                    if (map != null) {
-                                        Npc npc0 = map.getNpc(exchangeAction.getValue());
-                                        if (npc0 != null && npc0.getTemplate() != null && Dopeul.parseConditionTrousseau(i.replace(" ", ""), npc0.getTemplate().getId(), map.getId())) {
-                                            this.player.teleport(Short.parseShort(action.getArgs().split(",")[0]), Integer.parseInt(action.getArgs().split(",")[1]));
-                                            switch(map.getId()) {
-                                                case 9397:case 9538:
-                                                    break;
-                                                default:
-                                                    statsReplace = i;
-                                                    break;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                } catch(Exception e) {
-                    e.printStackTrace();
-                }
-
-                GameObject object = this.player.getItemTemplate(10207);
-                if (answerId == 6605 && !statsReplace.isEmpty()) {
-                    String newStats = "";
-                    for (String i : stats.split(","))
-                        if (!i.equals(statsReplace))
-                            newStats += (newStats.isEmpty() ? i : "," + i);
-
-                    object.getTxtStat().remove(Constant.STATS_NAME_DJ);
-                    object.getTxtStat().put(Constant.STATS_NAME_DJ, newStats);
-                }
-                SocketManager.GAME_SEND_UPDATE_ITEM(this.player, object);
-            } else if (answerId == 4628) {
-                if (this.player.hasItemTemplate(9487, 1, false)) {
-                    String date = this.player.getItemTemplate(9487, 1).getTxtStat().get(Constant.STATS_DATE);
-                    long timeStamp = Long.parseLong(date);
-                    if (System.currentTimeMillis() - timeStamp <= 1209600000) {
-                        new Action(1, "5522", "", World.world.getMap((short) 10255)).apply(this.player, null, -1, -1);
-                        return;
-                    }
-                }
-                new Action(1, "5521", "", World.world.getMap((short) 10255)).apply(this.player, null, -1, -1);
-                return;
-            }
-
-            boolean leave = answer.apply(this.player);
-
-            if (!answer.isAnotherDialog()) {
-                if (this.player.getIsOnDialogAction() == 1) {
-                    this.player.setIsOnDialogAction(-1);
-                } else {
-                    if (leave) {
-                        SocketManager.GAME_SEND_END_DIALOG_PACKET(this);
-                        if(this.player.getExchangeAction() != null && this.player.getExchangeAction().getType() == ExchangeAction.TALKING_WITH)
-                            this.player.setExchangeAction(null);
-                    }
-                }
-            }
+            World.world.getNPCTemplate(npcTemplateID).onDialog(this.player, questionId, answerId);
         } catch (Exception e) {
             e.printStackTrace();
             this.player.setIsOnDialogAction(-1);
@@ -1487,7 +1318,7 @@ public class GameClient {
         }
     }
 
-    private void leave() {
+    private void quitDialog() {
         this.player.setAway(false);
         this.walk = false;
         if (this.player.getExchangeAction() != null && this.player.getExchangeAction().getType() == ExchangeAction.TALKING_WITH)
@@ -1651,14 +1482,14 @@ public class GameClient {
                         qua = itemStore.getQuantity();
                     if (qua == itemStore.getQuantity()) {
                         seller.getStoreItems().remove(itemStore.getGuid());
-                        this.player.addObjet(itemStore, true);
+                        this.player.addItem(itemStore, true, false);
                     } else if (itemStore.getQuantity() > qua) {
                         seller.getStoreItems().remove(itemStore.getGuid());
                         itemStore.setQuantity(itemStore.getQuantity() - qua);
                         seller.addStoreItem(itemStore.getGuid(), price2);
 
                         GameObject clone = itemStore.getClone(qua, true);
-                        if (this.player.addObjet(clone, true))
+                        if (this.player.addItem(clone, true, false))
                             World.world.addGameObject(clone);
                     } else {
                         SocketManager.GAME_SEND_BUY_ERROR_PACKET(this);
@@ -1691,75 +1522,33 @@ public class GameClient {
                 if (qua <= 0 || qua > 100000)
                     return;
 
-                ObjectTemplate template = World.world.getObjTemplate(id);
                 Npc npc = this.player.getCurMap().getNpc(exchangeAction.getValue());
+                if (npc == null) return;
+                NpcTemplate npcTemplate = npc.getTemplate();
 
-                if (template == null) {
+                Optional<SaleOffer> optOffer = npcTemplate.salesList(this.player).stream().filter(o -> o.itemTemplate.getId() == id).findFirst();
+                if (!optOffer.isPresent()) {
                     SocketManager.GAME_SEND_BUY_ERROR_PACKET(this);
                     return;
                 }
-                if (template.getType() == 18 && qua > 1) {
+
+                SaleOffer offer = optOffer.get();
+                if (offer.itemTemplate.getType() == 18 && qua > 1) {
                     this.player.sendMessage(this.player.getLang().trans("game.gameclient.buy.fami"));
                     return;
                 }
-                if (npc == null)
-                    return;
 
-                NpcTemplate npcTemplate = npc.getTemplate();
+                long totalPrice = qua * offer.unitPrice;
 
-                if ((npc.getTemplate().getId() == 9604 && player.getLevel() > 75) || !npcTemplate.haveItem(id)) {
+
+                if(!player.consumeCurrency(offer.currency, totalPrice)) {
                     SocketManager.GAME_SEND_BUY_ERROR_PACKET(this);
+                    // FIXME Make a notEnoughCurrency(offer.currency) function to call here
                     return;
                 }
 
-                boolean attachObject = npc.getTemplate().getId() == 9604 || (npcTemplate.getInformations() & 0x2) == 2;
-                GameObject object = null;
-                
-                if (template.getPoints() > 0 && (npcTemplate.getInformations() & 0x4) == 4) {
-                    int value = template.getPoints() * qua, points = this.account.getPoints();
-
-                    if (points < value) {
-                        SocketManager.GAME_SEND_MESSAGE(this.player, this.player.getLang().trans("game.gameclient.buy.boutique.nopoint", Integer.toString(points) , Integer.toString(value - points)));
-                        SocketManager.GAME_SEND_BUY_ERROR_PACKET(this);
-                        return;
-                    }
-
-                    this.account.setPoints(points - value);
-                    object = template.createNewItem(qua, (npcTemplate.getInformations() & 0x1) == 1);
-                    
-                    if (this.player.addObjet(object, true)) World.world.addGameObject(object);
-                    if (attachObject) object.attachToPlayer(this.player);
-
-                    SocketManager.GAME_SEND_BUY_OK_PACKET(this);
-                    SocketManager.GAME_SEND_STATS_PACKET(this.player);
-                    SocketManager.GAME_SEND_Ow_PACKET(this.player);
-                    SocketManager.GAME_SEND_MESSAGE(this.player, this.player.getLang().trans("game.gameclient.buy.boutique.rest", Integer.toString((points - value))));
-                } else if (template.getPoints() == 0) {
-                    int price = template.getPrice() * qua;
-                    if (price < 0) return;
-
-                    if (this.player.getKamas() < price) {
-                        SocketManager.GAME_SEND_BUY_ERROR_PACKET(this);
-                        return;
-                    }
-
-                    object = template.createNewItem(qua, (npcTemplate.getInformations() & 0x1) == 1);
-                    
-                    this.player.setKamas(this.player.getKamas() - price);
-                    if (this.player.addObjet(object, true)) World.world.addGameObject(object);
-                    if (attachObject) object.attachToPlayer(this.player);
-                    SocketManager.GAME_SEND_BUY_OK_PACKET(this);
-                    SocketManager.GAME_SEND_STATS_PACKET(this.player);
-                    SocketManager.GAME_SEND_Ow_PACKET(this.player);
-                }
-                
-                if (object != null && template.getType() == Constant.ITEM_TYPE_CERTIF_MONTURE) {
-                    Mount mount = new Mount(Constant.getMountColorByParchoTemplate(object.getTemplate().getId()), this.getPlayer().getId(), false);
-                    object.clearStats();
-                    object.getStats().addOneStat(995, mount.getId());
-                    object.getTxtStat().put(996, this.getPlayer().getName());
-                    object.getTxtStat().put(997, mount.getName());
-                }
+                player.addItem(offer.itemTemplate, qua,(npcTemplate.getFlags() & 0x1) != 0, true);
+                SocketManager.GAME_SEND_BUY_OK_PACKET(this);
             } catch (Exception e) {
                 e.printStackTrace();
                 SocketManager.GAME_SEND_BUY_ERROR_PACKET(this);
@@ -1949,7 +1738,7 @@ public class GameClient {
             }
 
             World.world.addGameObject(fragment);
-            this.player.addObjet(fragment);
+            this.player.addItem(fragment, true);
             SocketManager.GAME_SEND_Ec_PACKET(this.player, "K;8378");
             SocketManager.GAME_SEND_Ow_PACKET(this.player);
             SocketManager.GAME_SEND_IO_PACKET_TO_MAP(this.player.getCurMap(), this.player.getId(), "+8378");
@@ -2940,7 +2729,7 @@ public class GameClient {
                     object.setMountStats(this.player, mount, false);
 
                     World.world.addGameObject(object);
-                    this.player.addObjet(object);
+                    this.player.addItem(object, true);
 
                     SocketManager.GAME_SEND_Ee_PACKET(this.player, '-', mount.getId() + "");
                     ((MountData) DatabaseManager.get(MountData.class)).update(mount);
@@ -3323,7 +3112,7 @@ public class GameClient {
                     this.player.setExchangeAction(exchangeAction);
 
                     SocketManager.GAME_SEND_ECK_PACKET(this, 0, String.valueOf(id));
-                    SocketManager.GAME_SEND_ITEM_VENDOR_LIST_PACKET(this, npc);
+                    SocketManager.GAME_SEND_ITEM_VENDOR_LIST_PACKET(this, npc.getTemplate().salesList(this.player));
                 }
                 break;
             case '1'://Si joueur
@@ -4383,11 +4172,11 @@ public class GameClient {
                 SocketManager.GAME_SEND_DUEL_Y_AWAY(this, this.player.getId());
                 return;
             }
-            if (this.player.isInAreaNotSubscribe()) {
+            if (this.player.isMissingSubscription()) {
                 SocketManager.GAME_SEND_EXCHANGE_REQUEST_ERROR(this.player.getGameClient(), 'S');
                 return;
             }
-            if (target.isInAreaNotSubscribe()) {
+            if (target.isMissingSubscription()) {
                 SocketManager.GAME_SEND_EXCHANGE_REQUEST_ERROR(this.player.getGameClient(), 'S');
                 return;
             }
@@ -4483,7 +4272,7 @@ public class GameClient {
                     SocketManager.GAME_SEND_Im_PACKET(this.player, "191");
                     return;
                 }
-                if (this.player.isInAreaNotSubscribe()) {
+                if (this.player.isMissingSubscription()) {
                     SocketManager.GAME_SEND_EXCHANGE_REQUEST_ERROR(this.player.getGameClient(), 'S');
                     return;
                 }
@@ -4514,7 +4303,7 @@ public class GameClient {
         try {
             if (this.player == null || this.player.getFight() != null || this.player.isGhost() || this.player.isDead() == 1 || this.player.cantAgro())
                 return;
-            if (this.player.isInAreaNotSubscribe()) {
+            if (this.player.isMissingSubscription()) {
                 SocketManager.GAME_SEND_EXCHANGE_REQUEST_ERROR(this.player.getGameClient(), 'S');
                 return;
             }
@@ -4529,7 +4318,7 @@ public class GameClient {
 
             if(area != null && area.getId() == 42)
                 return;
-            if (target.isInAreaNotSubscribe()) {
+            if (target.isMissingSubscription()) {
                 SocketManager.GAME_SEND_EXCHANGE_REQUEST_ERROR(target.getGameClient(), 'S');
                 return;
             }
@@ -5064,7 +4853,7 @@ public class GameClient {
                     SocketManager.GAME_SEND_Im_PACKET(this.player, "14");
                     return;
                 }
-                this.player.removeByTemplateID(1575, 1);
+                this.player.removeItemByTemplateId(1575, 1, false);
             }
             Guild G = new Guild(name, emblem);
             GuildMember gm = G.addNewMember(this.player);
@@ -5097,7 +4886,7 @@ public class GameClient {
         int CellID = World.world.getEncloCellIdByMapId(MapID);
         if (this.player.hasItemTemplate(9035, 1, false)) {
             SocketManager.GAME_SEND_Im_PACKET(this.player, "022;1~9035");
-            this.player.removeByTemplateID(9035, 1);
+            this.player.removeItemByTemplateId(9035, 1, false);
             this.player.teleport(MapID, CellID);
         } else {
             SocketManager.GAME_SEND_Im_PACKET(this.player, "1159");
@@ -5154,7 +4943,7 @@ public class GameClient {
         }
         if (this.player.hasItemTemplate(8883, 1, false)) {
             SocketManager.GAME_SEND_Im_PACKET(this.player, "022;1~8883");
-            this.player.removeByTemplateID(8883, 1);
+            this.player.removeItemByTemplateId(8883, 1, false);
             this.player.teleport((short) h.getHouseMapId(), h.getHouseCellId());
         } else {
             SocketManager.GAME_SEND_Im_PACKET(this.player, "1137");
@@ -5167,7 +4956,7 @@ public class GameClient {
 
         if (guild == null || this.player.getFight() != null || this.player.isAway() || !this.player.getGuildMember().canDo(Constant.G_POSPERCO) || !guild.haveTenMembers())
             return;
-        if (this.player.isInAreaNotSubscribe()) {
+        if (this.player.isMissingSubscription()) {
             SocketManager.GAME_SEND_EXCHANGE_REQUEST_ERROR(this.player.getGameClient(), 'S');
             return;
         }
@@ -6098,7 +5887,7 @@ public class GameClient {
                         {
                             int newItemQua = object.getQuantity() - quantity;
                             GameObject newItem = object.getClone(newItemQua, true);
-                            this.player.addObjet(newItem, false);
+                            this.player.addItem(newItem, false, false);
                             World.world.addGameObject(newItem);
                             object.setQuantity(quantity);
                             SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(this.player, object);
@@ -6189,7 +5978,7 @@ public class GameClient {
                                     object.setQuantity(quantity);
                                     SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(this.player, object);
 
-                                    if (this.player.addObjet(newItem, false))
+                                    if (this.player.addItem(newItem, false, false))
                                         World.world.addGameObject(newItem);
                                 }
                             }
@@ -6204,7 +5993,7 @@ public class GameClient {
                                 if (object.getQuantity() - quantity > 0) {//Si il en reste
                                     int newItemQua = object.getQuantity() - quantity;
                                     GameObject newItem = object.getClone(newItemQua, true);
-                                    if (this.player.addObjet(newItem, true))
+                                    if (this.player.addItem(newItem, true, false))
                                         World.world.addGameObject(newItem);
                                     object.setQuantity(quantity);
                                     SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(this.player, object);
@@ -6441,7 +6230,7 @@ public class GameClient {
         }
         obV.clearStats();
         obV.refreshStatsObjet(obviStats);
-        if (this.player.addObjet(obV, true))
+        if (this.player.addItem(obV, true, false))
             World.world.addGameObject(obV);
         obj.removeAllObvijevanStats();
         SocketManager.send(this.player, obj.obvijevanOCO_Packet(pos));
@@ -6953,7 +6742,7 @@ public class GameClient {
         obj.getTxtStat().remove(812); //on retire les stats "32c"
         obj.addTxtStat(812, Integer.toHexString(statNew));// on ajthis les bonnes stats
 
-        if (this.player.addObjet(obj, true))//Si le joueur n'avait pas d'item similaire
+        if (this.player.addItem(obj, true, false))//Si le joueur n'avait pas d'item similaire
             World.world.addGameObject(obj);
         if (MP.delObject(cell))
             SocketManager.SEND_GDO_PUT_OBJECT_MOUNT(map, cell + ";0;0"); // on retire l'objet de la map
@@ -7286,7 +7075,7 @@ public class GameClient {
 
         this.player.setName(name);
         this.player.send("AlEr");
-        this.player.removeByTemplateID(10860, 1);
+        this.player.removeItemByTemplateId(10860, 1, false);
         SocketManager.GAME_SEND_ALTER_GM_PACKET(this.player.getCurMap(), this.player);
     }
 

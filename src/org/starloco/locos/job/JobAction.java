@@ -183,7 +183,7 @@ public class JobAction {
                         ObjectTemplate template = World.world.getObjTemplate(id);
                         if (template != null) {
                             GameObject object = template.createNewItem(qua, false);
-                            if (player.addObjet(object, true))
+                            if (player.addItem(object, true, false))
                                 World.world.addGameObject(object);
                         }
                     }
@@ -196,7 +196,7 @@ public class JobAction {
                 return;
             GameObject O = T.createNewItem(qua, false);
 
-            if (player.addObjet(O, true))
+            if (player.addItem(O, true, false))
                 World.world.addGameObject(O);
             SocketManager.GAME_SEND_IQ_PACKET(player, player.getId(), qua);
             SocketManager.GAME_SEND_Ow_PACKET(player);
@@ -498,7 +498,7 @@ public class JobAction {
                 GameObject newObj = World.world.getObjTemplate(templateId).createNewItemWithoutDuplication(this.player.getItems().values(), 1, false);
                 if(newObj != null) {
                     if (this.player.getItems().get(newObj.getGuid()) == null) {
-                        if (this.player.addObjet(newObj, true))
+                        if (this.player.addItem(newObj, true, false))
                             World.world.addGameObject(newObj);
                     } else {
                         SocketManager.GAME_SEND_UPDATE_OBJECT_DISPLAY_PACKET(this.player, newObj);
@@ -537,7 +537,7 @@ public class JobAction {
 
             if(newObj != null) {
                 if (this.player.getItems().get(newObj.getGuid()) == null) {
-                    if (this.player.addObjet(newObj, true))
+                    if (this.player.addItem(newObj, true, false))
                         World.world.addGameObject(newObj);
                 } else {
                     SocketManager.GAME_SEND_UPDATE_OBJECT_DISPLAY_PACKET(this.player, newObj);
@@ -1176,7 +1176,7 @@ public class JobAction {
         if (SM == null || objectFm == null || runeOrPotion == null) {
             if (objectFm != null) {
                 World.world.addGameObject(objectFm);
-                this.player.addObjet(objectFm);
+                this.player.addItem(objectFm, true);
             }
 
             if(receiver != null)
@@ -1496,9 +1496,9 @@ public class JobAction {
         if (objectFm != null) {
             World.world.addGameObject(objectFm);
             if(receiver == null) {
-                this.player.addObjet(objectFm);
+                this.player.addItem(objectFm, true);
             } else {
-                receiver.addObjet(objectFm);
+                receiver.addItem(objectFm, true);
             }
         }
 
@@ -2562,7 +2562,7 @@ public class JobAction {
             //region success critique
             if (result == 0) {
                 int newQuantity = this.ingredients.get(runeObject.getGuid()) - 1;
-                this.player.removeByTemplateID(runeObject.getTemplate().getId(), 1);
+                this.player.removeItemByTemplateId(runeObject.getTemplate().getId(), 1, false);
 
                 int winXP = Formulas.calculXpWinFm(gameObject.getTemplate().getLevel(), (int) Math.floor(runeTemplate.getWeight())) * Config.rateJob;
                 if (winXP > 0) this.SM.addXp(this.player, winXP);
@@ -2572,7 +2572,7 @@ public class JobAction {
                 this.player.removeItem(gameObject.getGuid(), 1, true, gameObject.getQuantity() == 1);
 
                 if (signingObject != null) {
-                    this.player.removeByTemplateID(signingObject.getTemplate().getId(), 1);
+                    this.player.removeItemByTemplateId(signingObject.getTemplate().getId(), 1, false);
                     if (newObject.getTxtStat().containsKey(985))
                         newObject.getTxtStat().remove(985);
                     newObject.addTxtStat(985, this.player.getName());
@@ -2580,7 +2580,7 @@ public class JobAction {
 
                 newObject.getStats().addOneStat(runeTemplate.getCharacteristic(), runeTemplate.getBonus());
 
-                if (this.player.addObjet(newObject, false))
+                if (this.player.addItem(newObject, false, false))
                     World.world.addGameObject(newObject);
 
                 SocketManager.GAME_SEND_Ow_PACKET(this.player);
@@ -2703,7 +2703,7 @@ public class JobAction {
             //endregion
 
             int newQuantity = this.ingredients.get(runeObject.getGuid()) - 1;
-            this.player.removeByTemplateID(runeObject.getTemplate().getId(), 1);
+            this.player.removeItemByTemplateId(runeObject.getTemplate().getId(), 1, false);
 
             GameObject newObject = gameObject.getClone(1, true);
 
@@ -2714,7 +2714,7 @@ public class JobAction {
 
 
             if (signingObject != null)
-                this.player.removeByTemplateID(signingObject.getTemplate().getId(), 1);
+                this.player.removeItemByTemplateId(signingObject.getTemplate().getId(), 1, false);
 
             if(result == 1) { // succes neutre
                 if (signingObject != null) {
@@ -2731,7 +2731,7 @@ public class JobAction {
             }
 
             this.player.removeItem(gameObject.getGuid(), 1, true, true);
-            if(this.player.addObjet(newObject, false))
+            if(this.player.addItem(newObject, false, false))
                 World.world.addGameObject(newObject);
 
             SocketManager.GAME_SEND_Ow_PACKET(this.player);

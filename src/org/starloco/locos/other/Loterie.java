@@ -16,7 +16,7 @@ public class Loterie {
                     //ObjectTemplate objWin = World.world.getObjTemplate(objIdWin);
                     //String objName = objWin.getName();
                     //SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(perso.getCurMap(), "", -5, "Roulette", "F�licitation "+perso.getName()+" ! Tu viens de gagn� : '"+objName+"'.");
-                    perso.removeByTemplateID(15001, 1);
+                    perso.removeItemByTemplateId(15001, 1, false);
                     SocketManager.GAME_SEND_Im_PACKET(perso, "022;" + 1 + "~"
                             + 15001);
                     SocketManager.GAME_SEND_Im_PACKET(perso, "021;" + 1 + "~"
@@ -24,7 +24,7 @@ public class Loterie {
                     GameObject newObjAdded = World.world.getObjTemplate(objIdWin).createNewItem(1, false);
                     if (!perso.addObjetSimiler(newObjAdded, true, -1)) {
                         World.world.addGameObject(newObjAdded);
-                        perso.addObjet(newObjAdded);
+                        perso.addItem(newObjAdded, true);
                     }
                 } else {
                     SocketManager.GAME_SEND_Im_PACKET(perso, "14|43");
@@ -36,7 +36,7 @@ public class Loterie {
                     //ObjectTemplate objWin = World.world.getObjTemplate(objIdWin);
                     //String objName = objWin.getName();
                     //SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(perso.getCurMap(), "", -5, "Roulette", "F�licitation "+perso.getName()+" ! Tu viens de gagn� : '"+objName+"'.");
-                    perso.removeByTemplateID(19072, 1);
+                    perso.removeItemByTemplateId(19072, 1, false);
                     SocketManager.GAME_SEND_Im_PACKET(perso, "022;" + 1 + "~"
                             + 19072);
                     SocketManager.GAME_SEND_Im_PACKET(perso, "021;" + 1 + "~"
@@ -44,7 +44,7 @@ public class Loterie {
                     GameObject newObjAdded = World.world.getObjTemplate(objIdWin).createNewItem(1, false);
                     if (!perso.addObjetSimiler(newObjAdded, true, -1)) {
                         World.world.addGameObject(newObjAdded);
-                        perso.addObjet(newObjAdded);
+                        perso.addItem(newObjAdded, true);
                     }
                 } else {
                     SocketManager.GAME_SEND_Im_PACKET(perso, "14|43");
@@ -59,7 +59,7 @@ public class Loterie {
         GameObject newObjAdded = World.world.getObjTemplate(objIdWin).createNewItem(1, false);
         if (!perso.addObjetSimiler(newObjAdded, true, -1)) {
             World.world.addGameObject(newObjAdded);
-            perso.addObjet(newObjAdded);
+            perso.addItem(newObjAdded, true);
         }
     }
 

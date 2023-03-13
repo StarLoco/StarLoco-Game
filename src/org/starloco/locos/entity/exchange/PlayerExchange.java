@@ -201,13 +201,13 @@ public class PlayerExchange extends Exchange {
                 this.player1.removeItem(couple.first);
                 couple.second = obj.getQuantity();
                 SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(this.player1, couple.first);
-                if (!this.player2.addObjet(obj, true))//Si le joueur avait un item similaire
+                if (!this.player2.addItem(obj, true, false))//Si le joueur avait un item similaire
                     World.world.removeGameObject(couple.first);//On supprime l'item inutile
             } else {
                 obj.setQuantity(obj.getQuantity() - couple.second);
                 SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(this.player1, obj);
                 GameObject newObj = obj.getClone(couple.second, true);
-                if (this.player2.addObjet(newObj, true))//Si le joueur n'avait pas d'item similaire
+                if (this.player2.addItem(newObj, true, false))//Si le joueur n'avait pas d'item similaire
                     World.world.addGameObject(newObj);//On ajoute l'item au World
             }
         }
@@ -244,12 +244,12 @@ public class PlayerExchange extends Exchange {
             this.player2.removeItem(couple.first);
             couple.second = object.getQuantity();
             SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(this.player2, couple.first);
-            if (!this.player1.addObjet(object, true)) World.world.removeGameObject(couple.first);
+            if (!this.player1.addItem(object, true, false)) World.world.removeGameObject(couple.first);
         } else {
             object.setQuantity(object.getQuantity() - couple.second);
             SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(this.player2, object);
             GameObject newObj = object.getClone(couple.second, true);
-            if (this.player1.addObjet(newObj, true)) World.world.addGameObject(newObj);
+            if (this.player1.addItem(newObj, true, false)) World.world.addGameObject(newObj);
         }
     }
 
@@ -504,7 +504,7 @@ public class PlayerExchange extends Exchange {
                 ObjectTemplate t = World.world.getObjTemplate(couple1.first);
                 
                 GameObject obj1 =t.createNewItem(couple1.second, false);
-                if(this.player.addObjet(obj1, true))
+                if(this.player.addItem(obj1, true, false))
                     World.world.addGameObject(obj1);
                 
                 if(t.getType() == Constant.ITEM_TYPE_CERTIF_MONTURE) {
@@ -594,7 +594,8 @@ public class PlayerExchange extends Exchange {
         }
 
         public synchronized void putAllGiveItem() {
-            ArrayList<Couple<Integer,Integer>> objects = this.npc.checkGetObjects(this.items1);
+            if(this.npc.legacy == null) return;
+            ArrayList<Couple<Integer,Integer>> objects = this.npc.legacy.checkGetObjects(this.items1);
 
             if(objects != null) {
                 this.clearItems();
@@ -737,7 +738,7 @@ public class PlayerExchange extends Exchange {
 
                 if (obj1 == null)
                     continue;
-                if (this.player.addObjet(obj1, true))
+                if (this.player.addItem(obj1, true, false))
                     World.world.addGameObject(obj1);
                 SocketManager.GAME_SEND_Im_PACKET(this.player, "021;"
                         + couple1.second + "~" + couple1.first);

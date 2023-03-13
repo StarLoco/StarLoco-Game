@@ -35,12 +35,14 @@ import org.starloco.locos.hdv.HdvEntry;
 import org.starloco.locos.job.Job;
 import org.starloco.locos.kernel.Config;
 import org.starloco.locos.kernel.Constant;
+import org.starloco.locos.kernel.Main;
 import org.starloco.locos.object.GameObject;
 import org.starloco.locos.object.ObjectSet;
 import org.starloco.locos.object.ObjectTemplate;
 import org.starloco.locos.object.entity.Fragment;
 import org.starloco.locos.object.entity.SoulStone;
 import org.starloco.locos.guild.Guild;
+import org.starloco.locos.script.NpcScriptVM;
 import org.starloco.locos.util.TimerWaiter;
 
 import java.text.SimpleDateFormat;
@@ -273,6 +275,16 @@ public class World {
         return extraMonstre;
     }
 
+
+    public void loadScripts() {
+        logger.debug("Loading script engine");
+        try {
+            NpcScriptVM.init();
+        } catch (Exception e) {
+            logger.error("init NpcScriptVM failed", e);
+            throw new RuntimeException("init NpcScriptVM failed", e);
+        }
+    }
 
     public void createWorld() {
         logger.info("Loading of data..");
@@ -691,10 +703,11 @@ public class World {
     }
 
     public void addNpcTemplate(NpcTemplate temp) {
+        if(npcsTemplate.containsKey(temp.getId()) && temp.legacy == null) {
+            Main.logger.info("Overwriting npc template #{} with script", temp.getId());
+        }
         npcsTemplate.put(temp.getId(), temp);
     }
-
-
 
     public void removePlayer(Player player) {
         if (player.getGuild() != null) {

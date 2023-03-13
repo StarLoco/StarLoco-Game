@@ -5,7 +5,6 @@ import org.starloco.locos.client.Player;
 import org.starloco.locos.common.Formulas;
 import org.starloco.locos.game.scheduler.Updatable;
 import org.starloco.locos.game.world.World;
-import org.starloco.locos.kernel.Constant;
 import org.starloco.locos.object.GameObject;
 import org.starloco.locos.object.ObjectTemplate;
 import org.starloco.locos.util.TimerWaiter;
@@ -18,7 +17,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 
 public class Tavernier extends Updatable {
 
@@ -66,7 +64,7 @@ public class Tavernier extends Updatable {
             if (p.isOnline()){
                 GameObject object = objectTemplate.createNewItem(1, false);
                 if (Formulas.getRandomValue(0, 3) == 0){
-                    if(p.addObjet(object, true))
+                    if(p.addItem(object, true, false))
                         World.world.addGameObject(object);
                     p.send("Im021;1~" + objectTemplate.getId());
                 } else {

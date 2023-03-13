@@ -7,6 +7,7 @@ import org.starloco.locos.area.map.entity.MountPark;
 import org.starloco.locos.area.map.entity.Trunk;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.client.other.Party;
+import org.starloco.locos.database.data.game.SaleOffer;
 import org.starloco.locos.entity.Collector;
 import org.starloco.locos.entity.Prism;
 import org.starloco.locos.entity.monster.MonsterGroup;
@@ -28,10 +29,9 @@ import org.starloco.locos.guild.Guild;
 import org.starloco.locos.guild.GuildMember;
 import org.starloco.locos.quest.Quest;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class SocketManager {
 
@@ -466,7 +466,7 @@ public class SocketManager {
     public static void GAME_SEND_MAP_MOBS_GM_PACKET(GameMap map,
                                                     MonsterGroup current_Mobs) {
         String packet = "GM|";
-        packet += current_Mobs.parseGM(); // Un par un comme sa lors du respawn :)
+        packet += current_Mobs.encodeGM(); // Un par un comme sa lors du respawn :)
         for (Player z : map.getPlayers())
             send(z, packet);
 
@@ -1211,14 +1211,12 @@ public class SocketManager {
 
     }
 
-    public static void GAME_SEND_ITEM_VENDOR_LIST_PACKET(GameClient out, Npc npc) {
-        String packet = "EL" + npc.getTemplate().getItemVendorList();
+    public static void GAME_SEND_ITEM_VENDOR_LIST_PACKET(GameClient out, List<SaleOffer> offers) {
+        String packet = "EL" + offers.stream().map(o -> o.itemTemplate.parseItemTemplateStats()).collect(Collectors.joining("|"));
         send(out, packet);
-
     }
 
-    public static void GAME_SEND_ITEM_LIST_PACKET_PERCEPTEUR(GameClient out,
-                                                             Collector perco) {
+    public static void GAME_SEND_ITEM_LIST_PACKET_PERCEPTEUR(GameClient out, Collector perco) {
         String packet = "EL" + perco.getItemCollectorList();
         send(out, packet);
 
@@ -1241,11 +1239,24 @@ public class SocketManager {
         send(out, packet);
 
     }
+    public static void GAME_SEND_QUESTION_PACKET(GameClient out, int id, List<Integer> answers, String param) {
+        StringBuilder pck = new StringBuilder("DQ");
+        pck.append(id);
+        if(param != null && !param.isEmpty()){
+            pck.append(";");
+            pck.append(param);
+        }
+        if(answers != null && !answers.isEmpty()) {
+            pck.append("|");
+            pck.append(answers.stream().map(Object::toString).collect(Collectors.joining(";")));
+        }
+        send(out, pck.toString());
+    }
 
+    @Deprecated
     public static void GAME_SEND_QUESTION_PACKET(GameClient out, String str) {
         String packet = "DQ" + str;
         send(out, packet);
-
     }
 
     public static void GAME_SEND_END_DIALOG_PACKET(GameClient out) {
@@ -1811,11 +1822,11 @@ public class SocketManager {
 
     public static void GAME_SEND_ADD_NPC_TO_MAP(GameMap map, Npc npc) {
         for (Player z : map.getPlayers())
-            send(z, "GM|" + npc.parse(false, z));
+            send(z, "GM|" + npc.encodeGM(false, z));
     }
 
     public static void GAME_SEND_ADD_NPC(Player player, Npc npc) {
-        send(player, "GM|" + npc.parse(false, player));
+        send(player, "GM|" + npc.encodeGM(false, player));
     }
 
     public static void GAME_SEND_ADD_PERCO_TO_MAP(GameMap map) {
@@ -2585,7 +2596,7 @@ public class SocketManager {
 
     public static void sendPacketToMapGM(GameMap map, Npc npc) {
         for (Player perso : map.getPlayers())
-            send(perso, "GM|" + npc.parse(true, perso));
+            send(perso, "GM|" + npc.encodeGM(true, perso));
     }
 
 }
