@@ -11,405 +11,51 @@ import org.starloco.locos.object.GameObject;
 import java.util.*;
 
 public class MonsterGroup {
+
     public final static MaitreCorbac MAITRE_CORBAC = new MaitreCorbac();
 
     private final int id;
     private int cellId;
     private int orientation = 2;
-    private int align = -1;
+    private int alignment;
     private short starBonus;
     private int aggroDistance = 0;
     private int subarea = -1;
-    private boolean changeAgro = false;
-    private boolean isFix = false;
-    private boolean isExtraGroup = false;
+    private boolean changeAgro = false, isFix = false;
     private Map<Integer, MonsterGrade> mobs = new HashMap<>();
     private String condition = "";
-    private Timer condTimer;
     private ArrayList<GameObject> objects;
 
-    public MonsterGroup(int Aid, int Aalign, ArrayList<MonsterGrade> possibles,
-                        GameMap map, int cell, int fixSize, int minSize, int maxSize,
-                        MonsterGrade extra) {
-
-        id = Aid;
-        align = Aalign;
-        //D�termination du nombre de mob du groupe
-        int rand = 0;
-        int nbr = 0;
-        //region Nombre de monstre
-        if (fixSize > 0 && fixSize < 9) {
-            nbr = fixSize;
-        } else if (minSize != -1 && maxSize != -1 && maxSize != 0
-                && (minSize < maxSize)) {
-            if (minSize == 3 && maxSize == 8) {
-                rand = Formulas.getRandomValue(0, 99);
-                if (rand < 25) //3: 25%
-                {
-                    nbr = 3;
-                } else if (rand < 48) //4:23%
-                {
-                    nbr = 4;
-                } else if (rand < 51) //5:20%
-                {
-                    nbr = 5;
-                } else if (rand < 85) //6:17%
-                {
-                    nbr = 6;
-                } else if (rand < 95) //7:10%
-                {
-                    nbr = 7;
-                } else
-                //8:5%
-                {
-                    nbr = 8;
-                }
-            } else if (minSize == 1 && maxSize == 3) { // 21 - normalement tout astrub
-                rand = Formulas.getRandomValue(0, 99);
-                if (rand < 40) //1: 40%
-                {
-                    nbr = 1;
-                } else if (rand < 75)//2: 35%
-                {
-                    nbr = 2;
-                } else
-                //3: 25%
-                {
-                    nbr = 3;
-                }
-            } else if (minSize == 1 && maxSize == 5) {
-                rand = Formulas.getRandomValue(0, 99);
-                if (rand < 30) //3: 30%
-                {
-                    nbr = 1;
-                } else if (rand < 53) //4:23%
-                {
-                    nbr = 2;
-                } else if (rand < 73) //5:20%
-                {
-                    nbr = 3;
-                } else if (rand < 90) //6:17%
-                {
-                    nbr = 4;
-                } else
-                //8:10%
-                {
-                    nbr = 5;
-                }
-            } else if (minSize == 1 && maxSize == 4) {
-                rand = Formulas.getRandomValue(0, 99);
-                if (rand < 35) //3: 35%
-                {
-                    nbr = 1;
-                } else if (rand < 61) //4:26%
-                {
-                    nbr = 2;
-                } else if (rand < 82) //5:21%
-                {
-                    nbr = 3;
-                } else
-                //8:18%
-                {
-                    nbr = 4;
-                }
-            } else {
-                nbr = Formulas.getRandomValue(minSize, maxSize);
-            }
-        } else if (minSize == -1) {
-            switch (maxSize) {
-                case 0:
-                    return;
-                case 1:
-                    nbr = 1;
-                    break;
-                case 2:
-                    nbr = Formulas.getRandomValue(1, 2); //1:50%	2:50%
-                    break;
-                case 3:
-                    nbr = Formulas.getRandomValue(1, 3); //1:33.3334%	2:33.3334%	3:33.3334%
-                    break;
-                case 4:
-                    rand = Formulas.getRandomValue(0, 99);
-                    if (rand < 22) //1:22%
-                        nbr = 1;
-                    else if (rand < 48) //2:26%
-                        nbr = 2;
-                    else if (rand < 74) //3:26%
-                        nbr = 3;
-                    else
-                        //4:26%
-                        nbr = 4;
-                    break;
-                case 5:
-                    rand = Formulas.getRandomValue(0, 99);
-                    if (rand < 15) //1:15%
-                        nbr = 1;
-                    else if (rand < 35) //2:20%
-                        nbr = 2;
-                    else if (rand < 60) //3:25%
-                        nbr = 3;
-                    else if (rand < 85) //4:25%
-                        nbr = 4;
-                    else
-                        //5:15%
-                        nbr = 5;
-                    break;
-                case 6:
-                    rand = Formulas.getRandomValue(0, 99);
-                    if (rand < 10) //1:10%
-                        nbr = 1;
-                    else if (rand < 25) //2:15%
-                        nbr = 2;
-                    else if (rand < 45) //3:20%
-                        nbr = 3;
-                    else if (rand < 65) //4:20%
-                        nbr = 4;
-                    else if (rand < 85) //5:20%
-                        nbr = 5;
-                    else
-                        //6:15%
-                        nbr = 6;
-                    break;
-                case 7:
-                    rand = Formulas.getRandomValue(0, 99);
-                    if (rand < 9) //1:9%
-                        nbr = 1;
-                    else if (rand < 20) //2:11%
-                        nbr = 2;
-                    else if (rand < 35) //3:15%
-                        nbr = 3;
-                    else if (rand < 55) //4:20%
-                        nbr = 4;
-                    else if (rand < 75) //5:20%
-                        nbr = 5;
-                    else if (rand < 91) //6:16%
-                        nbr = 6;
-                    else
-                        //7:9%
-                        nbr = 7;
-                    break;
-                default:
-                    rand = Formulas.getRandomValue(0, 99);
-                    if (rand < 9) //1:9%
-                        nbr = 1;
-                    else if (rand < 20) //2:11%
-                        nbr = 2;
-                    else if (rand < 33) //3:13%
-                        nbr = 3;
-                    else if (rand < 50) //4:17%
-                        nbr = 4;
-                    else if (rand < 67) //5:17%
-                        nbr = 5;
-                    else if (rand < 80) //6:13%
-                        nbr = 6;
-                    else if (rand < 91) //7:11%
-                        nbr = 7;
-                    else
-                        //8:9%
-                        nbr = 8;
-                    break;
-            }
-        } else {
-            switch (minSize) {
-                case 1:
-                    rand = Formulas.getRandomValue(1, 8);
-                    switch (rand) {
-                        case 1:
-                            nbr = 1;
-                            break;
-                        case 2:
-                            nbr = 2;
-                            break;
-                        case 3:
-                            nbr = 3;
-                            break;
-                        case 4:
-                            nbr = 4;
-                            break;
-                        case 5:
-                            nbr = 5;
-                            break;
-                        case 6:
-                            nbr = 6;
-                            break;
-                        case 7:
-                            nbr = 7;
-                            break;
-                        case 8:
-                            nbr = 8;
-                            break;
-                    }
-                    break;
-                case 2:
-                    rand = Formulas.getRandomValue(2, 8);
-                    switch (rand) {
-                        case 2:
-                            nbr = 2;
-                            break;
-                        case 3:
-                            nbr = 3;
-                            break;
-                        case 4:
-                            nbr = 4;
-                            break;
-                        case 5:
-                            nbr = 5;
-                            break;
-                        case 6:
-                            nbr = 6;
-                            break;
-                        case 7:
-                            nbr = 7;
-                            break;
-                        case 8:
-                            nbr = 8;
-                            break;
-                    }
-                    break;
-                case 3:
-                    rand = Formulas.getRandomValue(3, 8);
-                    switch (rand) {
-                        case 3:
-                            nbr = 3;
-                            break;
-                        case 4:
-                            nbr = 4;
-                            break;
-                        case 5:
-                            nbr = 5;
-                            break;
-                        case 6:
-                            nbr = 6;
-                            break;
-                        case 7:
-                            nbr = 7;
-                            break;
-                        case 8:
-                            nbr = 8;
-                            break;
-                    }
-                    break;
-                case 4:
-                    rand = Formulas.getRandomValue(4, 8);
-                    switch (rand) {
-                        case 4:
-                            nbr = 4;
-                            break;
-                        case 5:
-                            nbr = 5;
-                            break;
-                        case 6:
-                            nbr = 6;
-                            break;
-                        case 7:
-                            nbr = 7;
-                            break;
-                        case 8:
-                            nbr = 8;
-                            break;
-                    }
-                    break;
-                case 5:
-                    rand = Formulas.getRandomValue(5, 8);
-                    switch (rand) {
-                        case 5:
-                            nbr = 5;
-                            break;
-                        case 6:
-                            nbr = 6;
-                            break;
-                        case 7:
-                            nbr = 7;
-                            break;
-                        case 8:
-                            nbr = 8;
-                            break;
-                    }
-                    break;
-                case 6:
-                    rand = Formulas.getRandomValue(6, 8);
-                    switch (rand) {
-                        case 6:
-                            nbr = 6;
-                            break;
-                        case 7:
-                            nbr = 7;
-                            break;
-                        case 8:
-                            nbr = 8;
-                            break;
-                    }
-                    break;
-                case 7:
-                    rand = Formulas.getRandomValue(7, 8);
-                    switch (rand) {
-                        case 7:
-                            nbr = 7;
-                            break;
-                        case 8:
-                            nbr = 8;
-                            break;
-                    }
-                    break;
-                case 8:
-                    nbr = 8;
-                    break;
-                default:
-                    rand = Formulas.getRandomValue(1, 8);
-                    switch (rand) {
-                        case 1:
-                            nbr = 1;
-                            break;
-                        case 2:
-                            nbr = 2;
-                            break;
-                        case 3:
-                            nbr = 3;
-                            break;
-                        case 4:
-                            nbr = 4;
-                            break;
-                        case 5:
-                            nbr = 5;
-                            break;
-                        case 6:
-                            nbr = 6;
-                            break;
-                        case 7:
-                            nbr = 7;
-                            break;
-                        case 8:
-                            nbr = 8;
-                            break;
-                    }
-                    break;
-            }
-        }
-        //endregion
+    public MonsterGroup(int id, int alignment, ArrayList<MonsterGrade> possibles, GameMap map, int cell, int fixSize, MonsterGrade extra) {
+        this.id = id;
+        this.alignment = alignment;
+        int groupSize = fixSize > 0 && fixSize < 9 ? fixSize : Formulas.nextGaussian(1, 8);
         int guid = -1;
         boolean haveSameAlign = false;
 
         if (extra != null) {
-            isExtraGroup = true;
-            nbr--;
+            groupSize--;
             this.mobs.put(guid, extra);
             guid--;
         }
-        //On v�rifie qu'il existe des monstres de l'alignement demand� pour �viter les boucles infinies
-        for (MonsterGrade mob : possibles)
-            if (mob.getTemplate().getAlign() == this.align)
-                haveSameAlign = true;
-        if (!haveSameAlign)
-            return;//S'il n'y en a pas
-        for (int a = 0; a < nbr; a++) {
-            MonsterGrade Mob = null;
-            do {
-                int random = Formulas.getRandomValue(0, possibles.size() - 1);//on prend un mob au hasard dans le tableau
-                Mob = possibles.get(random).getCopy();
-            } while (Mob.getTemplate().getAlign() != this.align);
 
-            if (Mob.getTemplate().getAlign() != align)
-                align = Mob.getTemplate().getAlign();
+        for (MonsterGrade mob : possibles) {
+            if (mob.getTemplate().getAlign() == this.alignment) {
+                haveSameAlign = true;
+                break;
+            }
+        }
+        if (!haveSameAlign) return;
+
+        for (int a = 0; a < groupSize; a++) {
+            MonsterGrade Mob;
+            do {
+                int random = Formulas.getRandomValue(0, possibles.size() - 1);
+                Mob = possibles.get(random).getCopy();
+            } while (Mob.getTemplate().getAlign() != this.alignment);
+
+            if (Mob.getTemplate().getAlign() != this.alignment)
+                this.alignment = Mob.getTemplate().getAlign();
             this.mobs.put(guid, Mob);
             if (Mob.getTemplate().getAggroDistance() > this.aggroDistance)
                 this.aggroDistance = Mob.getTemplate().getAggroDistance();
@@ -417,19 +63,18 @@ public class MonsterGroup {
         }
 
         this.cellId = (cell == -1 ? map.getRandomFreeCellId() : cell);
-
         while (map.containsForbiddenCellSpawn(this.cellId))
             this.cellId = map.getRandomFreeCellId();
         if (this.cellId == 0)
             return;
-        this.orientation = map != null && map.getId() == 11095 ? 3 : (Formulas.getRandomValue(0, 3) * 2) + 1;
+        this.orientation = map.getId() == 11095 ? 3 : Formulas.getRandomValue(0, 3) * 2 + 1;
         this.isFix = false;
         this.starBonus = 0;
     }
 
-    public MonsterGroup(int id, GameMap map, int cellId, String groupData, String objects, short stars) {
+    public MonsterGroup(int id, int cellId, String groupData, String objects, short stars) {
         this.id = id;
-        this.align = Constant.ALIGNEMENT_NEUTRE;
+        this.alignment = Constant.ALIGNEMENT_NEUTRE;
         this.cellId = cellId;
         this.isFix = false;
         this.orientation = (Formulas.getRandomValue(0, 3) * 2) + 1;
@@ -455,8 +100,8 @@ public class MonsterGroup {
                         mgs.add(MG);
                 if (mgs.isEmpty())
                     continue;
-                if (m.getAlign() != align)
-                    align = m.getAlign();
+                if (m.getAlign() != alignment)
+                    alignment = m.getAlign();
                 //On prend un grade au hasard entre 0 et size -1 parmis les mobs possibles
                 this.mobs.put(guid, mgs.get(Formulas.getRandomValue(0, mgs.size() - 1)));
                 if (m.getAggroDistance() > this.aggroDistance)
@@ -479,7 +124,7 @@ public class MonsterGroup {
 
     public MonsterGroup(int id, GameMap map, int cellId, String groupData) {
         this.id = id;
-        this.align = Constant.ALIGNEMENT_NEUTRE;
+        this.alignment = Constant.ALIGNEMENT_NEUTRE;
         this.cellId = cellId;
         this.isFix = true;
         int guid = -1;
@@ -504,8 +149,8 @@ public class MonsterGroup {
                 }
                 if (mgs.isEmpty())
                     continue;
-                if (m.getAlign() != align)
-                    align = m.getAlign();
+                if (m.getAlign() != alignment)
+                    alignment = m.getAlign();
                 //On prend un grade au hasard entre 0 et size -1 parmis les mobs possibles
                 this.mobs.put(guid, mgs.get(Formulas.getRandomValue(0, mgs.size() - 1)));
                 if (m.getAggroDistance() > this.aggroDistance)
@@ -580,7 +225,7 @@ public class MonsterGroup {
     }
 
     public int getAlignement() {
-        return this.align;
+        return this.alignment;
     }
 
     public void addStarBonus() {
@@ -611,20 +256,12 @@ public class MonsterGroup {
         this.isFix = isFix;
     }
 
-    public boolean getIsExtraGroup() {
-        return this.isExtraGroup;
-    }
-
     public Map<Integer, MonsterGrade> getMobs() {
         return this.mobs;
     }
 
     public void setMobs(Map<Integer, MonsterGrade> mobs) {
         this.mobs = mobs;
-    }
-
-    public MonsterGrade getMobGradeById(int id) {
-        return this.mobs.get(id);
     }
 
     public String getCondition() {
@@ -636,20 +273,11 @@ public class MonsterGroup {
     }
 
     public void startCondTimer() {
-        this.condTimer = new Timer();
-        condTimer.schedule(new TimerTask() {
+        new Timer().schedule(new TimerTask() {
             public void run() {
                 condition = "";
             }
         }, 60000 * 10);
-    }
-
-    public void stopConditionTimer() {
-        try {
-            this.condTimer.cancel();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     public ArrayList<GameObject> getObjects() {
@@ -660,33 +288,30 @@ public class MonsterGroup {
         return objects;
     }
 
-    public String parseGM() {
-        StringBuilder mobIDs = new StringBuilder();
-        StringBuilder mobGFX = new StringBuilder();
-        StringBuilder mobLevels = new StringBuilder();
-        StringBuilder colors = new StringBuilder();
-        StringBuilder toreturn = new StringBuilder();
+    public String encodeGM() {
+        final StringBuilder packet = new StringBuilder();
 
-        boolean isFirst = true;
-        if (this.mobs.isEmpty())
-            return "";
+        if (!this.mobs.isEmpty()) {
+            final StringBuilder ids = new StringBuilder(), gfx = new StringBuilder(), levels = new StringBuilder(), colors = new StringBuilder();
+            boolean first = true;
 
-        for (Map.Entry<Integer, MonsterGrade> entry : this.mobs.entrySet()) {
-            if (!isFirst) {
-                mobIDs.append(",");
-                mobGFX.append(",");
-                mobLevels.append(",");
+            for (MonsterGrade monster : this.mobs.values()) {
+                if (!first) {
+                    ids.append(",");
+                    gfx.append(",");
+                    levels.append(",");
+                }
+                ids.append(monster.getTemplate().getId());
+                gfx.append(monster.getTemplate().getGfxId()).append("^").append(monster.getSize());
+                levels.append(monster.getLevel());
+                colors.append(monster.getTemplate().getColors()).append(";0,0,0,0;");
+                first = false;
             }
-            mobIDs.append(entry.getValue().getTemplate().getId());
-            mobGFX.append(entry.getValue().getTemplate().getGfxId()).append("^").append(entry.getValue().getSize());
-            mobLevels.append(entry.getValue().getLevel());
-            colors.append(entry.getValue().getTemplate().getColors()).append(";0,0,0,0;");
-
-            isFirst = false;
+            packet.append("+").append(this.cellId).append(";").append(this.orientation).append(";");
+            packet.append(getStarBonus());// bonus en pourcentage (�toile/20%) // Actuellement 1%/min
+            packet.append(";").append(this.id).append(";").append(ids).append(";-3;").append(gfx).append(";").append(levels).append(";").append(colors);
         }
-        toreturn.append("+").append(this.cellId).append(";").append(this.orientation).append(";");
-        toreturn.append(getStarBonus());// bonus en pourcentage (�toile/20%) // Actuellement 1%/min
-        toreturn.append(";").append(this.id).append(";").append(mobIDs).append(";-3;").append(mobGFX).append(";").append(mobLevels).append(";").append(colors);
-        return toreturn.toString();
+
+        return packet.toString();
     }
 }

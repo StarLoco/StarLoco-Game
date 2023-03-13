@@ -26,6 +26,17 @@ public class Formulas {
 
     public final static Random random = new Random();
 
+    private static final int EMPIRICAL_MIN = -4, EMPIRICAL_MAX = 4;
+
+    public static int nextGaussian(double min, double max) {
+        double next;
+        do {
+            next = random.nextGaussian();
+        } while (next < EMPIRICAL_MIN || next > EMPIRICAL_MAX);
+        return Math.round((float) (min + ((max + 1) - min) * (next-EMPIRICAL_MIN) / (EMPIRICAL_MAX-EMPIRICAL_MIN)));
+    }
+
+
     public static char[] shuffleCharArray(char[] ar)
     {
         // If running on Java 6 or older, use `new Random()` on RHS here

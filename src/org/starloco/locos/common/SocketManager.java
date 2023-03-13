@@ -1,7 +1,5 @@
 package org.starloco.locos.common;
 
-import com.singularsys.jep.functions.Str;
-import com.sun.istack.internal.Nullable;
 import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.area.map.entity.InteractiveObject;
@@ -15,7 +13,6 @@ import org.starloco.locos.entity.Prism;
 import org.starloco.locos.entity.monster.MonsterGroup;
 import org.starloco.locos.entity.mount.Mount;
 import org.starloco.locos.entity.npc.Npc;
-import org.starloco.locos.entity.npc.NpcTemplate;
 import org.starloco.locos.fight.Fight;
 import org.starloco.locos.fight.Fighter;
 import org.starloco.locos.game.GameClient;
@@ -469,7 +466,7 @@ public class SocketManager {
     public static void GAME_SEND_MAP_MOBS_GM_PACKET(GameMap map,
                                                     MonsterGroup current_Mobs) {
         String packet = "GM|";
-        packet += current_Mobs.parseGM(); // Un par un comme sa lors du respawn :)
+        packet += current_Mobs.encodeGM(); // Un par un comme sa lors du respawn :)
         for (Player z : map.getPlayers())
             send(z, packet);
 
