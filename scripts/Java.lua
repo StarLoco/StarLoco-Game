@@ -38,8 +38,9 @@ function Player:modKamas(quantity) end
 ---@param templateID number
 ---@param quantity number
 ---@param isPerfect boolean defaults to true
+---@param display boolean defaults to true
 ---@return void
-function Player:addItem(templateID, quantity, isPerfect) end
+function Player:addItem(templateID, quantity, isPerfect, display) end
 
 ---@param templateID number
 ---@param unitPrice number
@@ -47,6 +48,14 @@ function Player:addItem(templateID, quantity, isPerfect) end
 ---@param isPerfect boolean defaults to true
 ---@return boolean
 function Player:tryBuyItem(templateID, unitPrice, quantity, isPerfect) end
+
+---@return number
+function Player:mapID() end
+---@param actionID number
+---@param actionType number
+---@param actionVal string
+---@return void
+function Player:sendAction(actionID,actionType, actionVal) end
 
 
 ---@class Item

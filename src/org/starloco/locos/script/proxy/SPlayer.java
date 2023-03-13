@@ -88,8 +88,9 @@ public class SPlayer extends DefaultUserdata<Player> {
         int itemID = args.nextInt();
         int quantity = args.nextInt();
         boolean isPerfect = args.nextOptionalBoolean(true);
+        boolean display = args.nextOptionalBoolean(true);
 
-        p.addItem(itemID, quantity, isPerfect, false);
+        p.addItem(itemID, quantity, isPerfect, display);
     }
 
     @SuppressWarnings("unused")
@@ -105,5 +106,23 @@ public class SPlayer extends DefaultUserdata<Player> {
 
         p.addItem(itemID, quantity, isPerfect, true);
         return true;
+    }
+
+    @SuppressWarnings("unused")
+    private static int mapID(Player p, ArgumentIterator args) {
+        //  TODO: Replace with map():SMap
+        return p.getCurMap().getId();
+    }
+
+    @SuppressWarnings("unused")
+    private static void sendAction(Player p, ArgumentIterator args) {
+        int actionID = args.nextInt();
+        String actionIDStr = "";
+        if(actionID != -1) actionIDStr = String.valueOf(actionID);
+
+        int actionType = args.nextInt();
+        ByteString actionValue = args.nextString();
+
+        SocketManager.GAME_SEND_GA_PACKET(p.getGameClient(), actionIDStr, String.valueOf(actionType),  String.valueOf(p.getId()), actionValue.toString());
     }
 }
