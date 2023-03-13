@@ -2,8 +2,6 @@ package org.starloco.locos.entity.npc;
 
 import org.classdump.luna.Table;
 import org.classdump.luna.impl.DefaultTable;
-import org.classdump.luna.impl.ImmutableTable;
-import org.classdump.luna.util.TraversableHashMap;
 import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.common.SocketManager;
@@ -13,7 +11,6 @@ import org.starloco.locos.game.action.ExchangeAction;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.game.world.World.Couple;
 import org.starloco.locos.kernel.Constant;
-import org.starloco.locos.kernel.Main;
 import org.starloco.locos.object.GameObject;
 import org.starloco.locos.object.ObjectTemplate;
 import org.starloco.locos.other.Action;
@@ -137,7 +134,7 @@ public class NpcTemplate {
         }
         Object onTalk = recursiveGet(scriptVal,"onTalk");
         if(onTalk == null) return;
-        NpcScriptVM.getInstance().call(onTalk, scriptVal, player.Scripted(), response);
+        NpcScriptVM.getInstance().call(onTalk, scriptVal, player.scripted(), response);
     }
 
     public List<SaleOffer> salesList(Player player) {
@@ -147,7 +144,7 @@ public class NpcTemplate {
         Object salesList = recursiveGet(scriptVal,"salesList");
         if(salesList == null) return Collections.emptyList();
 
-        Object[] ret = NpcScriptVM.getInstance().call(salesList, scriptVal, player.Scripted());
+        Object[] ret = NpcScriptVM.getInstance().call(salesList, scriptVal, player.scripted());
 
         if(ret == null || ret.length == 0) return Collections.emptyList();
         List<Object> offers = fromLuaTable((Table) ret[0]);
@@ -219,7 +216,7 @@ public class NpcTemplate {
             offer.rawset(i+1, stack);
         }
 
-        Object[] ret = NpcScriptVM.getInstance().call(barterOutcome, scriptVal, player.Scripted(), offer);
+        Object[] ret = NpcScriptVM.getInstance().call(barterOutcome, scriptVal, player.scripted(), offer);
         if(ret == null || ret.length == 0 || ret[0] == null) return null;
         if(ret.length > 1) throw new RuntimeException(String.format("unexpected count(%d) in legacy barterOutcome", ret.length));
 

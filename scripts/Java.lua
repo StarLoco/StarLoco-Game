@@ -38,6 +38,11 @@ function Player:modKamas(quantity) end
 ---@return number,number used,max
 function Player:pods() end
 
+
+---@param pos number
+---@return Item
+function Player:gearAt(pos) end
+
 ---@param template number
 ---@param quantity number
 ---@param isPerfect boolean defaults to true

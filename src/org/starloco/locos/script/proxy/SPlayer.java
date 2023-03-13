@@ -116,7 +116,15 @@ public class SPlayer extends DefaultUserdata<Player> {
     }
     //endregion
 
-    //region Inventory
+    //region Inventory/Gear
+    public static SItem gearAt(Player p, ArgumentIterator args) {
+        int pos = args.nextInt();
+        return p.getEquippedObjects().stream()
+                .filter(i -> i.getPosition() == pos)
+                .findFirst().map(GameObject::scripted)
+                .orElse(null);
+    }
+
     public static Pair<Integer, Integer> pods(Player p, ArgumentIterator args) {
         return new Pair<>(p.getPodUsed(), p.getMaxPod());
     }
@@ -130,7 +138,7 @@ public class SPlayer extends DefaultUserdata<Player> {
             // No item return null
             return null;
         }
-        return item.Scripted();
+        return item.scripted();
     }
 
     @SuppressWarnings("unused")

@@ -5964,7 +5964,7 @@ public class Player {
         return LangEnum.ENGLISH;
     }
 
-    public SPlayer Scripted() {
+    public SPlayer scripted() {
         return this.scriptVal;
     }
 
