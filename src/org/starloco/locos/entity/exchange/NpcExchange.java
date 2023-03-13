@@ -119,8 +119,8 @@ public class NpcExchange {
             if(World.world.getObjTemplate(couple1.first) == null)continue;
             ObjectTemplate t = World.world.getObjTemplate(couple1.first);
 
-            GameObject obj1 =t.createNewItem(couple1.second, false);
-            if(this.player.addObjet(obj1, true))
+            GameObject obj1 = t.createNewItem(couple1.second, false);
+            if(this.player.addItem(obj1, true, false))
                 World.world.addGameObject(obj1);
 
             if(t.getType() == Constant.ITEM_TYPE_CERTIF_MONTURE) {
