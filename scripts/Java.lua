@@ -62,6 +62,11 @@ function Player:sendAction(actionID,actionType, actionVal) end
 local Item = {}
 
 ---@param statID number
+---@return string
+function Item:getTxtStatVal(statID) end
+
+
+---@param statID number
 ---@param val string
 ---@return boolean
 function Item:hasTxtStat(statID, val) end

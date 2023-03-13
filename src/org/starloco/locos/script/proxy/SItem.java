@@ -19,6 +19,11 @@ public class SItem  extends DefaultUserdata<GameObject> {
     }
 
     @SuppressWarnings("unused")
+    private static String getTxtStatVal(GameObject item, ArgumentIterator args) {
+        return item.getTxtStat().get(args.nextInt());
+    }
+
+    @SuppressWarnings("unused")
     private static boolean hasTxtStat(GameObject item, ArgumentIterator args) {
         int stat = args.nextInt();
         String val = args.nextString().toString();
