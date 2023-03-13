@@ -6,6 +6,7 @@ import org.starloco.locos.client.Player;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.database.DatabaseManager;
 import org.starloco.locos.database.data.game.AuctionData;
+import org.starloco.locos.entity.exchange.NpcExchange;
 import org.starloco.locos.entity.exchange.PlayerExchange;
 import org.starloco.locos.entity.npc.Npc;
 import org.starloco.locos.game.scheduler.Updatable;
@@ -264,7 +265,7 @@ public class AuctionManager extends Updatable {
     public void onPlayerCommand(Player player, String[] info) {
         if(!this.isValid(player)) return;
         if(player.getExchangeAction() != null) {
-            PlayerExchange.NpcExchange exchange = ((PlayerExchange.NpcExchange) player.getExchangeAction().getValue());
+            NpcExchange exchange = ((NpcExchange) player.getExchangeAction().getValue());
 
             if(info.length > 1) {
                 if (info[1].equalsIgnoreCase("show")) {
@@ -305,7 +306,7 @@ public class AuctionManager extends Updatable {
         }
     }
 
-    public void onPlayerOpenExchange(Player player, PlayerExchange.NpcExchange exchange) {
+    public void onPlayerOpenExchange(Player player, NpcExchange exchange) {
         if(!this.isValid(player)) return;
 
         player.sendTypeMessage("Auction", player.getLang().trans("game.auction.auctionmanager.infos.1"));
@@ -317,7 +318,7 @@ public class AuctionManager extends Updatable {
         if(!this.isValid(player)) return false;
         if(object != null && object.getTemplate() != null && object.getTemplate().getLevel() <= 50) return true;
         if(player.getExchangeAction() != null) {
-           PlayerExchange.NpcExchange exchange = ((PlayerExchange.NpcExchange) player.getExchangeAction().getValue());
+           NpcExchange exchange = ((NpcExchange) player.getExchangeAction().getValue());
            if(exchange != null) {
                if (exchange.getItems1().size() >= 1) return true;
                else player.sendTypeMessage("Auction", player.getLang().trans("game.auction.auctionmanager.enterprice"));
@@ -326,7 +327,7 @@ public class AuctionManager extends Updatable {
         return false;
     }
 
-    public boolean onPlayerAccept(Player player, PlayerExchange.NpcExchange exchange) {
+    public boolean onPlayerAccept(Player player, NpcExchange exchange) {
         if(player != null)if(!this.isValid(player)) return false;
         if(exchange != null) {
             final Auction auction = exchange.getAuction();
@@ -349,7 +350,7 @@ public class AuctionManager extends Updatable {
     private boolean isValid(Player player) {
         if(!this.map.getPlayers().contains(player)) return false;
         if(player.getFight() != null || player.isDead() == 1 || player.isGhost()
-                || (player.getExchangeAction() != null && !(player.getExchangeAction().getValue() instanceof PlayerExchange.NpcExchange))) {
+                || (player.getExchangeAction() != null && !(player.getExchangeAction().getValue() instanceof NpcExchange))) {
             player.sendTypeMessage("Auction", player.getLang().trans("game.auction.auctionmanager.isvalid"));
             return false;
         }

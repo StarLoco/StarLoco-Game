@@ -22,12 +22,11 @@ public final class NpcScriptVM extends ScriptVM {
 
     private NpcScriptVM() throws LoaderException, IOException, CallException, CallPausedException, InterruptedException {
         super("NPC");
-
-        this.customizeEnv();
-        loadData();
     }
 
     public void loadData() throws CallException, LoaderException, IOException, CallPausedException, InterruptedException {
+        super.loadData();
+        this.customizeEnv();
         this.runFile(Paths.get("scripts", "Npc.lua"));
         this.runDirectory(Paths.get("scripts", "npcs"));
     }

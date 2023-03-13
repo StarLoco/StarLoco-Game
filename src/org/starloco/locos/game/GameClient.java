@@ -6,6 +6,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
 
+import org.starloco.locos.entity.exchange.NpcExchange;
 import org.starloco.locos.script.NpcScriptVM;
 import org.starloco.locos.util.Pair;
 import org.apache.mina.core.session.IoSession;
@@ -1660,8 +1661,8 @@ public class GameClient {
             }
         }
 
-        if (exchangeAction.getType() == ExchangeAction.TRADING_WITH_NPC_EXCHANGE && value instanceof PlayerExchange.NpcExchange)
-            ((PlayerExchange.NpcExchange) value).toogleOK(false);
+        if (exchangeAction.getType() == ExchangeAction.TRADING_WITH_NPC_EXCHANGE && value instanceof NpcExchange)
+            ((NpcExchange) value).toogleOK(false);
 
         if (exchangeAction.getType() == ExchangeAction.TRADING_WITH_NPC_PETS && value instanceof PlayerExchange.NpcExchangePets)
             ((PlayerExchange.NpcExchangePets) value).toogleOK(false);
@@ -1989,7 +1990,7 @@ public class GameClient {
                             try {
                                 int guid = Integer.parseInt(infos[0]);
                                 int qua = Integer.parseInt(infos[1]);
-                                int quaInExch = ((PlayerExchange.NpcExchange) this.player.getExchangeAction().getValue()).getQuaItem(guid, false);
+                                int quaInExch = ((NpcExchange) this.player.getExchangeAction().getValue()).getQuaItem(guid, false);
 
                                 if (!this.player.hasItemGuid(guid)) return;
                                 GameObject obj = this.player.getItems().get(guid);
@@ -2002,7 +2003,7 @@ public class GameClient {
                                 if(AuctionManager.getInstance().onPlayerChangeItemInNpcExchange(this.player, obj))
                                     return;
 
-                                ((PlayerExchange.NpcExchange) this.player.getExchangeAction().getValue()).addItem(guid, qua);
+                                ((NpcExchange) this.player.getExchangeAction().getValue()).addItem(guid, qua);
                             } catch (NumberFormatException e) {
                                 World.world.logger.error("Error Echange NPC '" + packet + "' => " + e.getMessage());
                                 e.printStackTrace();
@@ -2022,10 +2023,10 @@ public class GameClient {
                                 GameObject obj = World.world.getGameObject(guid);
                                 if (obj == null)
                                     return;
-                                if (qua > ((PlayerExchange.NpcExchange) this.player.getExchangeAction().getValue()).getQuaItem(guid, false))
+                                if (qua > ((NpcExchange) this.player.getExchangeAction().getValue()).getQuaItem(guid, false))
                                     return;
 
-                                ((PlayerExchange.NpcExchange) this.player.getExchangeAction().getValue()).removeItem(guid, qua);
+                                ((NpcExchange) this.player.getExchangeAction().getValue()).removeItem(guid, qua);
                             } catch (NumberFormatException e) {
                                 World.world.logger.error("Error Echange NPC '" + packet + "' => " + e.getMessage());
                                 e.printStackTrace();
@@ -2038,7 +2039,7 @@ public class GameClient {
                             long numb = Integer.parseInt(packet.substring(3));
                             if (this.player.getKamas() < numb)
                                 numb = this.player.getKamas();
-                            ((PlayerExchange.NpcExchange) this.player.getExchangeAction().getValue()).setKamas(false, numb);
+                            ((NpcExchange) this.player.getExchangeAction().getValue()).setKamas(false, numb);
                         } catch (NumberFormatException e) {
                             World.world.logger.error("Error Echange NPC '" + packet + "' => " + e.getMessage());
                             e.printStackTrace();
@@ -3092,8 +3093,8 @@ public class GameClient {
         } else if(packet.substring(2, 4).equals("18")) {
             int id = Integer.parseInt(packet.split("\\|")[1]);
             if (this.player.getCurMap().getNpc(id) != null) {
-                PlayerExchange.NpcExchange ech = new PlayerExchange.NpcExchange(this.player, this.player.getCurMap().getNpc(id).getTemplate());
-                ExchangeAction<PlayerExchange.NpcExchange> exchangeAction = new ExchangeAction<>(ExchangeAction.TRADING_WITH_NPC_EXCHANGE, ech);
+                NpcExchange ech = new NpcExchange(this.player, this.player.getCurMap().getNpc(id).getTemplate());
+                ExchangeAction<NpcExchange> exchangeAction = new ExchangeAction<>(ExchangeAction.TRADING_WITH_NPC_EXCHANGE, ech);
                 this.player.setExchangeAction(exchangeAction);
                 SocketManager.GAME_SEND_ECK_PACKET(this.player, 2, String.valueOf(id));
             }
@@ -3152,9 +3153,9 @@ public class GameClient {
             case '2'://Npc Exchange
                 id = Integer.parseInt(packet.substring(4));
                 if (this.player.getCurMap().getNpc(id) != null) {
-                    PlayerExchange.NpcExchange ech = new PlayerExchange.NpcExchange(this.player, this.player.getCurMap().getNpc(id).getTemplate());
+                    NpcExchange ech = new NpcExchange(this.player, this.player.getCurMap().getNpc(id).getTemplate());
 
-                    ExchangeAction<PlayerExchange.NpcExchange> exchangeAction = new ExchangeAction<>(ExchangeAction.TRADING_WITH_NPC_EXCHANGE, ech);
+                    ExchangeAction<NpcExchange> exchangeAction = new ExchangeAction<>(ExchangeAction.TRADING_WITH_NPC_EXCHANGE, ech);
                     this.player.setExchangeAction(exchangeAction);
                     SocketManager.GAME_SEND_ECK_PACKET(this.player, 2, String.valueOf(id));
                 }
@@ -3310,7 +3311,7 @@ public class GameClient {
                 ((PlayerExchange.NpcExchangePets) exchangeAction.getValue()).cancel();
                 break;
             case ExchangeAction.TRADING_WITH_NPC_EXCHANGE:
-                ((PlayerExchange.NpcExchange) exchangeAction.getValue()).cancel();
+                ((NpcExchange) exchangeAction.getValue()).cancel();
                 break;
             case ExchangeAction.CRAFTING_SECURE_WITH:
                 if(exchangeAction.getValue() instanceof Integer) {

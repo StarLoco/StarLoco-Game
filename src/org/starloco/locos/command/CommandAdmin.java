@@ -75,7 +75,9 @@ public class CommandAdmin extends AdminUser {
             }
 
             this.command(command, infos, msg);
-        } catch (Exception ignored) {}
+        } catch (Exception e) {
+            Main.logger.error("Command error: {}", command, e);
+        }
     }
 
     public void command(String command, String[] infos, String msg) {

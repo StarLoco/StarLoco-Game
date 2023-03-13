@@ -810,7 +810,6 @@ public class World {
         return MobTemplates.values();
     }
 
-
     public String getStatOfAlign() {
         int ange = 0;
         int demon = 0;

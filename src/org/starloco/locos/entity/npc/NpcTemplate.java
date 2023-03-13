@@ -1,6 +1,9 @@
 package org.starloco.locos.entity.npc;
 
 import org.classdump.luna.Table;
+import org.classdump.luna.impl.DefaultTable;
+import org.classdump.luna.impl.ImmutableTable;
+import org.classdump.luna.util.TraversableHashMap;
 import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.common.SocketManager;
@@ -10,6 +13,7 @@ import org.starloco.locos.game.action.ExchangeAction;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.game.world.World.Couple;
 import org.starloco.locos.kernel.Constant;
+import org.starloco.locos.kernel.Main;
 import org.starloco.locos.object.GameObject;
 import org.starloco.locos.object.ObjectTemplate;
 import org.starloco.locos.other.Action;
@@ -18,6 +22,7 @@ import org.starloco.locos.quest.Quest;
 import org.starloco.locos.quest.QuestObjective;
 import org.starloco.locos.quest.QuestPlayer;
 import org.starloco.locos.script.NpcScriptVM;
+import org.starloco.locos.script.ScriptVM;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -134,6 +139,7 @@ public class NpcTemplate {
         if(onTalk == null) return;
         NpcScriptVM.getInstance().call(onTalk, scriptVal, player.Scripted(), response);
     }
+
     public List<SaleOffer> salesList(Player player) {
         if(scriptVal == null) {
             return legacy.sales;
@@ -193,6 +199,31 @@ public class NpcTemplate {
         QuestPlayer questPlayer = p.getQuestPersoByQuest(q);
         if (questPlayer == null) return 4;
         return -1;
+    }
+
+    public Couple<Integer,Integer> barterOutcome(Player player, List<Couple<Integer,Integer>> objects) {
+        if(this.legacy != null) {
+            List<Couple<Integer,Integer>> out = this.legacy.checkGetObjects(objects);
+            if(out.size() != 1) throw new RuntimeException(String.format("unexpected count(%d) in legacy barterOutcome", out.size()));
+            return out.get(0);
+        }
+
+        Object barterOutcome = recursiveGet(scriptVal,"barterOutcome");
+        if(barterOutcome == null) return null;
+        logger.info("BARTEROUTCOME: {}", barterOutcome);
+
+
+        DefaultTable offer = new DefaultTable();
+        for(int i=0;i<objects.size();i++){
+            Table stack = ScriptVM.ItemStack(objects.get(i));
+            offer.rawset(i+1, stack);
+        }
+
+        Object[] ret = NpcScriptVM.getInstance().call(barterOutcome, scriptVal, player.Scripted(), offer);
+        if(ret == null || ret.length == 0 || ret[0] == null) return null;
+        if(ret.length > 1) throw new RuntimeException(String.format("unexpected count(%d) in legacy barterOutcome", ret.length));
+
+        return ScriptVM.ItemStackFromLua((Table) ret[0]);
     }
 
     public static class LegacyData {
@@ -290,7 +321,7 @@ public class NpcTemplate {
         }
 
 
-        public ArrayList<Couple<Integer,Integer>> checkGetObjects(ArrayList<Couple<Integer,Integer>> objects) {
+        public ArrayList<Couple<Integer,Integer>> checkGetObjects(List<Couple<Integer,Integer>> objects) {
             if(this.exchanges == null) return null;
             boolean ok;
             int multiple = 0, newMultiple = 0;
@@ -301,7 +332,7 @@ public class NpcTemplate {
                     boolean ok1 = false;
 
                     for(Couple<Integer, Integer> entry2 : objects) {
-                        if (entry1.first == World.world.getGameObject(entry2.first).getTemplate().getId() && (int) (entry2.second) % entry1.second == 0) {
+                        if (Objects.equals(entry1.first, entry2.first) && (int) (entry2.second) % entry1.second == 0) {
                             ok1 = true;
                             newMultiple = entry2.second / entry1.second;
 
