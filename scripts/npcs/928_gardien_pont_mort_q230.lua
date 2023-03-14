@@ -49,4 +49,5 @@ function npc:onTalk(p, answer)
     end
 end
 
-RegisterNPCDef(npc)
+-- Disabled: Quest doesn't complete properly :(
+-- RegisterNPCDef(npc)
