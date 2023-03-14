@@ -61,8 +61,6 @@ end
 function Npc:barterOutcome(player, offer)
     if not offer or not self.barters then return nil end
 
-    JLogF("barterOutcome start 3")
-
     -- Sort offer by templateID to make things simpler
     table.sort(offer, ItemStack.itemIDASC)
 
@@ -75,57 +73,44 @@ function Npc:barterOutcome(player, offer)
             local b = barter.from
             -- Wrong number of provided items
             if #b ~= #offer then
-                JLogF("WRONG NUMBER OF ITEM {} / {}", #b, #offer)
                 return
             end -- This return actually continues the for loop
 
             local tmpCount = nil
             for i in ipairs(b) do
-                JLogF("Check item {}", i)
                 -- Wrong item ID
                 if b[i].itemID ~= offer[i].itemID then
-                    JLogF("WRONG ITEM FOR {} {}, {}", i, b[i].itemID, offer[i].itemID)
                     return
                 end
                 -- Check quantity
                 local bq, oq = b[i].quantity, offer[i].quantity
 
-                JLogF("CHECK REMAINING COUNT FOR {} ", i)
                 -- Remaining is not 0, wrong input
                 if oq % bq ~= 0 then
-                    JLogF("WRONG COUNT FOR {} {}/{}", i, oq, bq)
                     return
                 end
-                JLogF("CHECK STACK COUNT FOR {} ", i)
                 local stackCount = oq/bq -- How many times can we barter with this stack
 
-                JLogF("UPDATE TMP COUNT FOR {} ", i)
                 if not tmpCount then
                     -- no tmpCount stored yet
                     tmpCount = stackCount
-                    JLogF("Updating count to {}", tmpCount)
                 elseif tmpCount ~= stackCount then
                     -- doesn't match stored size count
-                    JLogF("DOESNT MATCH PREVIOUS SLOT COUNT FOR {} ({} / {})", i, tmpCount, stackCount)
                     return
                 end
             end
             -- All itemIDs are good, we found a match
             match = barter
             count = tmpCount
-            JLogF("Setting match/count {}/{}", match, count)
         end)()
         -- We found something, stop iteration
         if match then break end
     end
-    JLogF("barterOutcome post loop {} x{}", match, count)
 
     --  No match
     if not match then
-        JLogF("NO MATCH :(")
         return
     end
-    JLogF("Found matching offer: {}({}) x {}", match.to.itemID, match.to.quantity, count)
 
     return {itemID= match.to.itemID, quantity= match.to.quantity*math.tointeger(count)}
 end
