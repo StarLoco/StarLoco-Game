@@ -1275,7 +1275,7 @@ public class Action {
                 break;
 
             case 70://Park incarnam
-                final MountPark park = (player.getCurMap().getId() != 10332 ? World.world.getMap((short) 8743) : World.world.getMap((short) 8848)).getMountPark();
+                final MountPark park = (player.getCurMap().getId() != 10332 ? World.world.getMap(8743) : World.world.getMap( 8848)).getMountPark();
 
                 if (park != null) {
                     try {

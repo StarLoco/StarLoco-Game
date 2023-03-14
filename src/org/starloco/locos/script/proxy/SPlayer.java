@@ -80,7 +80,7 @@ public class SPlayer extends DefaultUserdata<Player> {
     }
     //endregion
 
-    // Quests
+    //region Quests
 
     @SuppressWarnings("unused")
     private static boolean questAvailable(Player p, ArgumentIterator args) {
