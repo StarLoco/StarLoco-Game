@@ -11,8 +11,8 @@ npc.barters = {
     }}
 }
 
-function npc:onTalk(player, answer)
-    player:ask(364, {})
+function npc:onTalk(p, answer)
+    p:ask(364, {})
 end
 
 RegisterNPCDef(npc)
