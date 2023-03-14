@@ -6,11 +6,17 @@ import org.classdump.luna.impl.ImmutableTable;
 import org.classdump.luna.lib.ArgumentIterator;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.common.SocketManager;
+import org.starloco.locos.database.DatabaseManager;
+import org.starloco.locos.database.data.login.PlayerData;
 import org.starloco.locos.fight.spells.Spell;
 import org.starloco.locos.game.action.ExchangeAction;
 import org.starloco.locos.job.JobStat;
 import org.starloco.locos.kernel.Constant;
 import org.starloco.locos.object.GameObject;
+import org.starloco.locos.quest.Quest;
+import org.starloco.locos.quest.QuestObjective;
+import org.starloco.locos.quest.QuestPlayer;
+import org.starloco.locos.quest.QuestStep;
 import org.starloco.locos.script.ScriptVM;
 import org.starloco.locos.script.types.MetaTables;
 import org.starloco.locos.util.Pair;
@@ -75,6 +81,65 @@ public class SPlayer extends DefaultUserdata<Player> {
     //endregion
 
     // Quests
+
+    @SuppressWarnings("unused")
+    private static boolean questAvailable(Player p, ArgumentIterator args) {
+        return p.getQuestPersoByQuestId(args.nextInt()) == null;
+    }
+
+    @SuppressWarnings("unused")
+    private static boolean questFinished(Player p, ArgumentIterator args) {
+        return Optional.ofNullable(p.getQuestPersoByQuestId(args.nextInt())).map(QuestPlayer::isFinish).orElse(false);
+    }
+
+    @SuppressWarnings("unused")
+    private static boolean questOngoing(Player p, ArgumentIterator args) {
+        return Optional.ofNullable(p.getQuestPersoByQuestId(args.nextInt())).map(s -> !s.isFinish()).orElse(false);
+    }
+
+    @SuppressWarnings("unused")
+    private static boolean startQuest(Player p, ArgumentIterator args) {
+        int id = args.nextInt();
+
+        Quest q = Quest.getQuestById(id);
+        if (q == null) return false;
+
+        if (p.getQuestPersoByQuestId(id) != null) return false;
+
+        return q.applyQuest(p);
+    }
+
+    @SuppressWarnings("unused")
+    private static boolean completeObjective(Player p, ArgumentIterator args) {
+        int qID = args.nextInt();
+        int oID = args.nextInt();
+
+        QuestPlayer qp = p.getQuestPersoByQuestId(qID);
+        if(qp == null) return false;
+
+        Quest q = qp.getQuest();
+        if(q == null) return false;
+
+        QuestObjective qo = q.getQuestObjectives().stream().filter(o -> o.getId() == oID).findFirst().orElse(null);
+        if(qo == null) return false;
+
+        QuestStep qs = QuestStep.getStepById(q.getObjectifCurrent(qp));
+        if(qs == null) return false;
+
+        qp.setQuestObjectiveValidate(qo);
+        SocketManager.GAME_SEND_Im_PACKET(p, "055;" + qID);
+
+        if (q.getNextObjectif(qs) == 0) {
+            // Quest finished
+            SocketManager.GAME_SEND_Im_PACKET(p, "056;" + qID);
+            q.applyButinOfQuest(p, qs);
+            qp.setFinish(true);
+        } else if (qp.overQuestStep(qs))  q.applyButinOfQuest(p, qs);
+
+        ((PlayerData) DatabaseManager.get(PlayerData.class)).update(p);
+        return true;
+    }
+
     //endregion
 
     //region Emotes
