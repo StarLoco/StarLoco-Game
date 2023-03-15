@@ -16,7 +16,6 @@ import org.starloco.locos.kernel.Constant;
 import org.starloco.locos.kernel.Logging;
 import org.starloco.locos.object.entity.Fragment;
 import org.starloco.locos.script.proxy.SItem;
-import org.starloco.locos.script.proxy.SPlayer;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -1202,7 +1201,7 @@ public class GameObject {
     public boolean isMimibiote() {
         return getTxtStat().get(Constant.STATS_MIMIBIOTE) != null;
     }
-    public SItem Scripted() {
+    public SItem scripted() {
         return this.scriptVal;
     }
 }

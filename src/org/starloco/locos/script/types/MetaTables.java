@@ -8,12 +8,21 @@ import org.classdump.luna.impl.ImmutableTable;
 import org.classdump.luna.lib.AbstractLibFunction;
 import org.classdump.luna.lib.ArgumentIterator;
 import org.classdump.luna.runtime.ExecutionContext;
-import org.starloco.locos.kernel.Main;
 import org.starloco.locos.script.ScriptVM;
+import org.starloco.locos.util.Pair;
 
 import java.lang.reflect.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.BiConsumer;
 
 public final class MetaTables {
+    private static Map<Class<?>, BiConsumer<ExecutionContext, Object>> returnValueConsumers = new HashMap<Class<?>, BiConsumer<ExecutionContext, Object>>(){{
+        put(Pair.class, (ctx, v) -> {
+            Pair p = (Pair)v;
+            ctx.getReturnBuffer().setTo(p.first, p.second);
+        });
+    }};
 
     // Creates index table from a POJO using declared methods
     // Only methods with the following signatures are allowed:
@@ -52,7 +61,13 @@ public final class MetaTables {
 
                     try {
                         Object ret = has2ndParam?m.invoke(null, t, args):m.invoke(null, t);
-                        context.getReturnBuffer().setTo(ret);
+                        if(ret==null) {
+                            context.getReturnBuffer().setTo();
+                            return;
+                        }
+                        // Allow some types to be sent back to Lua differently
+                        BiConsumer<ExecutionContext, Object> consumer = returnValueConsumers.getOrDefault(ret.getClass(), (ctx, v) -> ctx.getReturnBuffer().setTo(v));
+                        consumer.accept(context, ret);
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }

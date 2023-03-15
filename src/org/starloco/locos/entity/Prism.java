@@ -21,7 +21,7 @@ public class Prism {
     private int id;
     private byte alignment, state;
     private int level;
-    private short Map;
+    private int Map;
     private int cell;
     private int name;
     private int gfx;
@@ -30,7 +30,7 @@ public class Prism {
     private Fight fight;
     private java.util.Map<Integer, Integer> stats = new HashMap<>();
 
-    public Prism(int id, byte alignment, int level, short Map, int cell, int honor, int area) {
+    public Prism(int id, byte alignment, int level, int Map, int cell, int honor, int area) {
         this.id = id;
         this.alignment = alignment;
         this.state = NEW;
@@ -62,7 +62,7 @@ public class Prism {
                 SocketManager.SEND_CP_INFO_DEFENSEURS_PRISME(player, defenderOfPrisme(prism.getId(), prism.getMap(), prism.getFight().getId()));
     }
 
-    public static String attackerOfPrisme(int id, short MapId, int FightId) {
+    public static String attackerOfPrisme(int id, int MapId, int FightId) {
         String str = "+";
         str += Integer.toString(id, 36);
         GameMap gameMap = World.world.getMap(MapId);
@@ -84,7 +84,7 @@ public class Prism {
         return str;
     }
 
-    public static String defenderOfPrisme(int id, short MapId, int FightId) {
+    public static String defenderOfPrisme(int id, int MapId, int FightId) {
         String str = "+";
         String stra = "";
         str += Integer.toString(id, 36);
@@ -141,7 +141,7 @@ public class Prism {
         this.level = i;
     }
 
-    public short getMap() {
+    public int getMap() {
         return this.Map;
     }
 

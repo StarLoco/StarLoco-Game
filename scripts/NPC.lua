@@ -12,6 +12,8 @@ NPCS = {}
 ---@field colors number[] 3 colors, -1 for default
 ---@field accessories number[] Up to 5 accessories
 ---@field customArtwork number
+---@field sales SaleOffer[] optional
+---@field barters {to:ItemStack, from:ItemStack[]}[] optional
 Npc = {}
 Npc.__index = Npc
 
@@ -27,6 +29,8 @@ setmetatable(Npc, {
         self.accessories = {}
         self.customArtwork = 0
         self.flags = 0
+        self.sales = {}
+        self.barters = {}
 
         -- Register the Npc in the global dict
         if NPCS[self.id] ~= nil then
@@ -44,22 +48,71 @@ setmetatable(Npc, {
 function Npc:onTalk(player, answer) return end
 
 ---@param player Player
----@return {item:number,price:number,currency:number}[]
+---@return SaleOffer[]
 function Npc:salesList(player)
-    return self.sales or {}
+    return self.sales
 end
 
-
+-- Default behavior for NPC barter.
+-- Assumption: self.barters element are sorted by itemID ASC
 ---@param player Player
 ---@param offer ItemStack[]
 ---@return ItemStack
-function Npc:exchangeOutcome(player, offer)
-    if not self.exchanges then return {} end
+function Npc:barterOutcome(player, offer)
+    if not offer or not self.barters then return nil end
 
-    -- TODO
+    -- Sort offer by templateID to make things simpler
+    table.sort(offer, ItemStack.itemIDASC)
 
+    -- Try to find a matching barter
+    --- @type {to:ItemStack, from:ItemStack[]}
+    local match = nil
+    local count = nil
+    for _, barter in ipairs(self.barters) do
+        (function()
+            local b = barter.from
+            -- Wrong number of provided items
+            if #b ~= #offer then
+                return
+            end -- This return actually continues the for loop
 
-    return {}
+            local tmpCount = nil
+            for i in ipairs(b) do
+                -- Wrong item ID
+                if b[i].itemID ~= offer[i].itemID then
+                    return
+                end
+                -- Check quantity
+                local bq, oq = b[i].quantity, offer[i].quantity
+
+                -- Remaining is not 0, wrong input
+                if oq % bq ~= 0 then
+                    return
+                end
+                local stackCount = oq/bq -- How many times can we barter with this stack
+
+                if not tmpCount then
+                    -- no tmpCount stored yet
+                    tmpCount = stackCount
+                elseif tmpCount ~= stackCount then
+                    -- doesn't match stored size count
+                    return
+                end
+            end
+            -- All itemIDs are good, we found a match
+            match = barter
+            count = tmpCount
+        end)()
+        -- We found something, stop iteration
+        if match then break end
+    end
+
+    --  No match
+    if not match then
+        return
+    end
+
+    return {itemID= match.to.itemID, quantity= match.to.quantity*math.tointeger(count)}
 end
 
 ---- Used to show the ! on top of the NPC
@@ -74,3 +127,10 @@ end
 --    return true
 --end
 
+
+
+---@class SaleOffer
+---@field item:number
+---@field price:number
+---@field currency:number
+SaleOffer = {}

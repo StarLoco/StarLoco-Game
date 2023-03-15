@@ -10,14 +10,14 @@ public class MaitreCorbac {
     /*
      * Subarea : 211 Group : 289,120,200;825,90,98;823,90,98;824,80,88
      */
-    private short oldMap;
-    private short map;
+    private int oldMap;
+    private int map;
 
     public MaitreCorbac() {
         repop((short) -1);
     }
 
-    public void repop(short id) {
+    public void repop(int id) {
         if (this.oldMap == id)
             return;
 

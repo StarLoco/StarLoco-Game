@@ -16,7 +16,7 @@ public class NpcMovable extends Npc {
 	private short position = 0;
 	private String[] path;
 
-    public NpcMovable(int id, int cellid, byte orientation, short mapid, int template) {
+    public NpcMovable(int id, int cellid, byte orientation, int mapid, int template) {
 		super(id, cellid, orientation, template);
 		this.map = World.world.getMap(mapid);
 		this.path = getTemplate().legacy.getPath().split(";");

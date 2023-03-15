@@ -87,6 +87,7 @@ public class JobStat {
     }
 
     public void addXp(Player P, long xp) {
+        if(xp<0) throw new IllegalArgumentException("xp must be positive");
         if (this.lvl > 99)
             return;
         int exLvl = this.lvl;

@@ -66,7 +66,7 @@ public class HeroicMobsGroupsData extends FunctionDAO<Object> {
         return HeroicMobsGroupsData.class;
     }
 
-    public void insert(short map, MonsterGroup group) {
+    public void insert(int map, MonsterGroup group) {
         PreparedStatement prepare = null;
         try {
             final StringBuilder objects = new StringBuilder(), groups = new StringBuilder();
@@ -168,7 +168,7 @@ public class HeroicMobsGroupsData extends FunctionDAO<Object> {
         }
     }
 
-    public void insertFix(short map, MonsterGroup group) {
+    public void insertFix(int map, MonsterGroup group) {
         PreparedStatement prepare = null;
         try {
             final StringBuilder objects = new StringBuilder(), groups = new StringBuilder();

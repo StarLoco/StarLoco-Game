@@ -1489,10 +1489,9 @@ public class Fight {
                                                     }
                                                 } else {
                                                     if (player.isOnline()) {
-                                                        String[] split = player.getSavePosition().split(",");
-                                                        player.teleport(Short.parseShort(split[0]), Integer.parseInt(split[1]));
+                                                        player.teleport(player.getSavePosition());
                                                     } else {
-                                                        player.setNeededEndFightAction(new Action(1001, player.getSavePosition(), "", null));
+                                                        player.setNeededEndFightAction(new Action(1001, player.getSavePosition().toString(","), "", null));
                                                     }
                                                 }
                                                 player.setPdv(1);
@@ -1604,9 +1603,9 @@ public class Fight {
                                             }
                                         } else {
                                             if (getType() != Constant.FIGHT_TYPE_PVT)
-                                                player.setNeededEndFightAction(new Action(1001, player.getSavePosition(), "", null));
+                                                player.setNeededEndFightAction(new Action(1001, player.getSavePosition().toString(","), "", null));
                                             else if (!player.getCurMap().hasEndFightAction(0))
-                                                player.setNeededEndFightAction(new Action(1001, player.getSavePosition(), "", null));
+                                                player.setNeededEndFightAction(new Action(1001, player.getSavePosition().toString(","), "", null));
                                         }
                                         player.setPdv(1);
                                     }
@@ -4259,7 +4258,7 @@ public class Fight {
                                 player.setPdv(1);
                             }, 3500);
                         } else {
-                            player.setNeededEndFightAction(new Action(1001, player.getSavePosition(), "", null));
+                            player.setNeededEndFightAction(new Action(1001, player.getSavePosition().toString(","), "", null));
                             player.setPdv(1);
                         }
                     }

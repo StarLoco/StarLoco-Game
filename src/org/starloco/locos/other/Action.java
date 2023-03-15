@@ -1275,7 +1275,7 @@ public class Action {
                 break;
 
             case 70://Park incarnam
-                final MountPark park = (player.getCurMap().getId() != 10332 ? World.world.getMap((short) 8743) : World.world.getMap((short) 8848)).getMountPark();
+                final MountPark park = (player.getCurMap().getId() != 10332 ? World.world.getMap(8743) : World.world.getMap( 8848)).getMountPark();
 
                 if (park != null) {
                     try {
@@ -1942,7 +1942,7 @@ public class Action {
                 int cell = Constant.getClassStatueCell(player.getClasse());
                 SocketManager.GAME_SEND_GA_PACKET(player.getGameClient(), "", "2", player.getId() + "", "7");
                 player.teleport(map, cell);
-                player.set_savePos(map + "," + cell);
+                player.setSavePos(map ,cell);
                 SocketManager.GAME_SEND_Im_PACKET(player, "06");
                 break;
 
@@ -4304,7 +4304,7 @@ public class Action {
                 map = Short.parseShort(this.args.split(",")[0]);
                 cell = Integer.parseInt(this.args.split(",")[1]);
                 player.teleport(map, cell);
-                player.set_savePos(map+","+cell);
+                player.setSavePos(map,cell);
                 SocketManager.GAME_SEND_Im_PACKET(player, "06");
                 break;
 

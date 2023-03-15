@@ -205,7 +205,7 @@ public class PlayerData extends FunctionDAO<Player> {
             p.setString(26, entity.parseSpellToDB());
             p.setString(27, entity.parseObjetsToDB());
             p.setString(28, entity.parseStoreItemstoBD());
-            p.setString(29, entity.getSavePosition());
+            p.setString(29, entity.getSavePosition().toString(","));
             p.setString(30, entity.parseZaaps());
             p.setString(31, entity.parseJobData());
             p.setInt(32, entity.getMountXpGive());
