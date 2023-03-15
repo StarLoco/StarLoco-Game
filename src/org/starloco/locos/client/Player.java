@@ -3987,10 +3987,6 @@ public class Player {
     }
 
     public void modifAlignement(int i) {
-        if(this.getGroupe() == null && this.getGuild() != null) {
-            // Why do we remove user from guild on faction change ?
-            this.getGuild().removeMember(this);
-        }
         _honor = 0;
         _deshonor = 0;
         alignment = (byte) i;
