@@ -170,7 +170,7 @@ public class SPlayer extends DefaultUserdata<Player> {
 
     @SuppressWarnings("unused")
     private static void teleport(Player p, ArgumentIterator args) {
-        short mapID = (short)args.nextInt();
+        int mapID = args.nextInt();
         int cellID = args.nextInt();
         p.teleport(mapID, cellID);
     }

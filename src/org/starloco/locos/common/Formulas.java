@@ -1,5 +1,6 @@
 package org.starloco.locos.common;
 
+import org.starloco.locos.area.map.CellCache;
 import org.starloco.locos.area.map.CellCacheImpl;
 import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.area.map.GameMap;
@@ -1309,7 +1310,7 @@ public class Formulas {
         if(map == null || castID == targetID)
             return true;
 
-        CellCacheImpl cache = map.getCellCache();
+        CellCache cache = map.getCellCache();
 
         if(cache == null)
             return false;

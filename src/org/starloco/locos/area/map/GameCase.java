@@ -967,7 +967,7 @@ public class GameCase {
                     player.getGameClient().removeAction(GA);
                     return;
                 }
-                short mapID = Constant.getStartMap(player.getClasse());
+                int mapID = Constant.getStartMap(player.getClasse());
                 int cellID = Constant.getStartCell(player.getClasse());
                 player.teleport(mapID, cellID);
                 player.getGameClient().removeAction(GA);

@@ -120,7 +120,7 @@ public class Trunk {
         return mapId;
     }
 
-    public void setMapId(short mapId) {
+    public void setMapId(int mapId) {
         this.mapId = mapId;
     }
 

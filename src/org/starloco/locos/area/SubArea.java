@@ -7,7 +7,9 @@ import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.Constant;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class SubArea {
     public static int BONTA = 0, BRAK = 0;
@@ -19,7 +21,7 @@ public class SubArea {
     private Prism prism;
     private boolean conquerable;
 
-    private final List<GameMap> maps = new ArrayList<>();
+    private final HashSet<Integer> mapIDs = new HashSet<>();
     private final List<Short> nearestSubAreas = new ArrayList<>();
 
     public SubArea(int id, String name, int area, String nearest) {
@@ -72,11 +74,11 @@ public class SubArea {
     }
 
     public List<GameMap> getMaps() {
-        return maps;
+        return mapIDs.stream().map(World.world::getMap).collect(Collectors.toList());
     }
 
-    public void addMap(GameMap Map) {
-        this.maps.add(Map);
+    public void addMapID(int mapID) {
+        this.mapIDs.add(mapID);
     }
 
     public boolean ownNearestSubArea(Player player) {
@@ -90,7 +92,8 @@ public class SubArea {
 
     public boolean isMoreThanEnemies(Player player) {
         short bonta = 0, brak = 1;
-        for(GameMap map : this.maps) {
+
+        for(GameMap map : getMaps()) {
             for (Player temp : map.getPlayers()) {
                 if(!temp.isOnline()) continue;
                 if (temp.getAlignment() == Constant.ALIGNEMENT_BONTARIEN) bonta++;
