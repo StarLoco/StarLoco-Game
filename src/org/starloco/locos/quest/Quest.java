@@ -179,7 +179,7 @@ public class Quest {
         return null;
     }
 
-    private int getObjectifCurrent(QuestPlayer questPlayer) {
+    public int getObjectifCurrent(QuestPlayer questPlayer) {
         for (QuestObjective step : questObjectives) {
             if (!questPlayer.isQuestObjectiveIsValidate(step)) {
                 return step.getObjectif();
@@ -201,7 +201,7 @@ public class Quest {
         return 0;
     }
 
-    private int getNextObjectif(QuestStep questStep) {
+    public int getNextObjectif(QuestStep questStep) {
         if (questStep == null)
             return 0;
         for (QuestStep objectif : questStepList) {
@@ -215,13 +215,13 @@ public class Quest {
         return 0;
     }
 
-    public void applyQuest(Player player) {
+    public boolean applyQuest(Player player) {
         if (this.condition != null) {
             switch (this.condition.first) {
                 case 1: // Niveau
                     if (player.getLevel() < this.condition.second) {
                         SocketManager.GAME_SEND_MESSAGE(player, player.getLang().trans("quest.quest.applyquest"));
-                        return;
+                        return false;
                     }
                     break;
             }
@@ -230,7 +230,7 @@ public class Quest {
         QuestPlayer questPlayer = new QuestPlayer(this.id, false, player.getId(), "");
         player.addQuestPerso(questPlayer);
         SocketManager.GAME_SEND_Im_PACKET(player, "054;" + this.id);
-        SocketManager.GAME_SEND_MAP_NPCS_GMS_PACKETS(player.getGameClient(), player.getCurMap());
+        SocketManager.GAME_SEND_MAP_NPCS_GMS_PACKETS(player.getGameClient(), player.getCurMap()); // Hacky. Should be sending a GM|~ only for the quest giver
 
         if (!this.actions.isEmpty()) {
             for (Action aAction : this.actions) {
@@ -239,6 +239,7 @@ public class Quest {
         }
 
         ((PlayerData) DatabaseManager.get(PlayerData.class)).update(player);
+        return true;
     }
 
     public void updateQuestData(Player player, boolean validation, int type) {
@@ -249,10 +250,7 @@ public class Quest {
             if (questObjective.getObjectif() != getObjectifCurrent(questPlayer) || !haveRespectCondition(questPlayer, questObjective))
                 continue;
 
-            boolean refresh = false;
-
-            if (validation)
-                refresh = true;
+            boolean refresh = validation;
             switch (questObjective.getType()) {
                 case 3://Donner item
                     if (player.getExchangeAction() != null && player.getExchangeAction().getType() ==
@@ -361,11 +359,11 @@ public class Quest {
         }
     }
 
-    private boolean haveFinish(QuestPlayer questPlayer, QuestStep questStep) {
+    public boolean haveFinish(QuestPlayer questPlayer, QuestStep questStep) {
         return questPlayer.overQuestStep(questStep) && getNextObjectif(questStep) == 0;
     }
 
-    private void applyButinOfQuest(Player player, QuestStep questStep) {
+    public void applyButinOfQuest(Player player, QuestStep questStep) {
         long xp; int kamas;
 
         if ((xp = questStep.getXp()) > 0) { //Xp a donner

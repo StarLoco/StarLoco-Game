@@ -22,7 +22,7 @@ public class Trunk {
 
     private int id;
     private int houseId;
-    private short mapId;
+    private int mapId;
     private int cellId;
     private String key;
     private int ownerId;
@@ -30,7 +30,7 @@ public class Trunk {
     private Player player = null;
     private Map<Integer, GameObject> object = new HashMap<>();
 
-    public Trunk(int id, int houseId, short mapId, int cellId) {
+    public Trunk(int id, int houseId, int mapId, int cellId) {
         this.id = id;
         this.houseId = houseId;
         this.mapId = mapId;
@@ -116,7 +116,7 @@ public class Trunk {
         this.houseId = houseId;
     }
 
-    public short getMapId() {
+    public int getMapId() {
         return mapId;
     }
 

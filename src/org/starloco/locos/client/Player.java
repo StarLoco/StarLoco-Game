@@ -58,6 +58,7 @@ import org.starloco.locos.guild.Guild;
 import org.starloco.locos.quest.Quest;
 import org.starloco.locos.quest.QuestPlayer;
 import org.starloco.locos.script.proxy.SPlayer;
+import org.starloco.locos.util.Pair;
 import org.starloco.locos.util.TimerWaiter;
 import org.starloco.locos.database.data.game.SaleOffer.Currency;
 
@@ -134,16 +135,16 @@ public class Player {
     private boolean isOnline = false;
     private Party party;
     private int duelId = -1;
-    private Map<Integer, SpellEffect> buffs = new HashMap<Integer, SpellEffect>();
+    private Map<Integer, SpellEffect> buffs = new HashMap<>();
     private final Map<Integer, GameObject> objects = new HashMap<>();
-    private String _savePos;
+    private Pair<Integer,Integer> _savePos;
     private int _emoteActive = 0;
     private int savestat;
     private House _curHouse;
     //Invitation
     private int _inviting = 0;
     private ArrayList<Integer> craftingType = new ArrayList<>();
-    private Map<Integer, JobStat> _metiers = new HashMap<Integer, JobStat>();
+    private Map<Integer, JobStat> _metiers = new HashMap<>();
     //Enclos
 
     //Monture
@@ -151,11 +152,11 @@ public class Player {
     private int _mountXpGive = 0;
     private boolean _onMount = false;
     //Zaap
-    private ArrayList<Short> _zaaps = new ArrayList<Short>();
+    private final ArrayList<Integer> _zaaps = new ArrayList<>();
 
     //Sort
-    private Map<Integer, Spell.SortStats> _sorts = new HashMap<Integer, Spell.SortStats>();
-    private Map<Integer, Character> _sortsPlaces = new HashMap<Integer, Character>();
+    private Map<Integer, Spell.SortStats> _sorts = new HashMap<>();
+    private Map<Integer, Character> _sortsPlaces = new HashMap<>();
     //Titre
     private byte currentTitle = 0;
     //Mariage
@@ -176,7 +177,7 @@ public class Player {
     private Action endFightAction;
     private MonsterGroup hasMonsterGroup = null;
     //Item classe
-    private ArrayList<Integer> objectsClass = new ArrayList<Integer>();
+    private ArrayList<Integer> objectsClass = new ArrayList<>();
     private Map<Integer, World.Couple<Integer, Integer>> objectsClassSpell = new HashMap<>();
     // Taverne
     private long timeTaverne = 0;
@@ -191,8 +192,8 @@ public class Player {
     //FullMorph Stats
     private boolean _morphMode = false;
     private int _morphId;
-    private Map<Integer, Spell.SortStats> _saveSorts = new HashMap<Integer, Spell.SortStats>();
-    private Map<Integer, Character> _saveSortsPlaces = new HashMap<Integer, Character>();
+    private Map<Integer, Spell.SortStats> _saveSorts = new HashMap<>();
+    private Map<Integer, Character> _saveSortsPlaces = new HashMap<>();
     private int _saveSpellPts;
     private int pa = 0,
             pm = 0,
@@ -205,7 +206,7 @@ public class Player {
     private boolean useStats = false;
     private boolean useCac = true;
     // Other ?
-    private short oldMap = 0;
+    private int oldMap = 0;
     private int oldCell = 0;
     private String _allTitle = "";
     private boolean isBlocked = false;
@@ -278,7 +279,8 @@ public class Player {
         savestat = 0;
         this._canaux = canaux;
         this.curMap = World.world.getMap(map);
-        this._savePos = savePos;
+        String[] parts = savePos.split(",");
+        this._savePos = new Pair<>(Integer.valueOf(parts[0]), Integer.valueOf(parts[1]));
         this.regenTime = System.currentTimeMillis();
         this.timeTaverne = timeDeblo;
         try {
@@ -332,7 +334,7 @@ public class Player {
             if (!z.equalsIgnoreCase("")) {
                 for (String str : z.split(",")) {
                     try {
-                        _zaaps.add(Short.parseShort(str));
+                        _zaaps.add(Integer.parseInt(str));
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -509,7 +511,7 @@ public class Player {
         if (!((PlayerData) DatabaseManager.get(PlayerData.class)).insert(player))
             return null;
         if(Config.startMap != 0)
-            player.set_savePos("7411,311");
+            player.setSavePos(7411,311);
 
         SocketManager.GAME_SEND_WELCOME(player);
         World.world.sendMessageToAll("client.player.onjoingame.welcome", player.getName());
@@ -539,7 +541,7 @@ public class Player {
 
     //CLONAGE
     public static Player ClonePerso(Player P, int id, int pdv) {
-        HashMap<Integer, Integer> stats = new HashMap<Integer, Integer>();
+        HashMap<Integer, Integer> stats = new HashMap<>();
         stats.put(Constant.STATS_ADD_VITA, pdv);
         stats.put(Constant.STATS_ADD_FORC, P.getStats().getEffect(Constant.STATS_ADD_FORC));
         stats.put(Constant.STATS_ADD_SAGE, P.getStats().getEffect(Constant.STATS_ADD_SAGE));
@@ -1115,12 +1117,12 @@ public class Player {
         }
     }
 
-    public String getSavePosition() {
+    public Pair<Integer, Integer> getSavePosition() {
         return _savePos;
     }
 
-    public void set_savePos(String savePos) {
-        _savePos = savePos;
+    public void setSavePos(int mapID, int cellID) {
+        _savePos = new Pair<>(mapID, cellID);
     }
 
     public long getKamas() {
@@ -1301,6 +1303,71 @@ public class Player {
         SocketManager.GAME_SEND_SPELL_LIST(this);
     }
 
+    public static class EnsureSpellLevelResult {
+        public final boolean changed;
+        public final int ptsDelta, oldLevel;
+        public final boolean worked; // can only be false when spell/level doesn't exist, or modPoints is true
+
+        public EnsureSpellLevelResult(boolean changed, int ptsDelta, int oldLevel, boolean worked) {
+            this.changed = changed;
+            this.ptsDelta = ptsDelta;
+            this.oldLevel = oldLevel;
+            this.worked = worked;
+        }
+    }
+
+    // returns Couple<ptsDelta,worked> Worked can only be false when spell/level doesn't exist, or modPoints is true.
+    public EnsureSpellLevelResult ensureSpellLevelSilent(int spell, int newLevel, boolean modPoints) {
+        int previousLevel = Optional.ofNullable(_sorts.get(spell)).map(Spell.SortStats::getLevel).orElse(0);
+
+        // Already in the state we want
+        if(previousLevel==newLevel) return new EnsureSpellLevelResult(false, 0, 0, true);
+
+        Spell.SortStats ss = Optional.ofNullable(World.world.getSort(spell)).map(s -> s.getStatsByLevel(newLevel)).orElse(null);
+        if(ss==null) return new EnsureSpellLevelResult(false, 0, 0, false);
+
+        int ptsDelta = 0;
+        if(modPoints) {
+            // Compute price changing from lvl 1 -> N:  Price(N) = SumInt(N-1) with SumInt(n) = n(n+1)/2
+            // modPoints(Old,New) =  Price(Old) - Price(New)
+            ptsDelta = (previousLevel*(previousLevel-1) - (newLevel * (newLevel-1)))/2;
+
+            if(_spellPts < ptsDelta) {
+                // Not enough points
+                return new EnsureSpellLevelResult(false, 0, previousLevel, false);
+            }
+            _spellPts += ptsDelta;
+        }
+
+        // Set spell
+        _sorts.put(spell, ss);
+        return new EnsureSpellLevelResult(true, ptsDelta, previousLevel, true);
+    }
+
+    public boolean ensureSpellLevel(int spell, int level, boolean modPoints, boolean silent) {
+        EnsureSpellLevelResult result = ensureSpellLevelSilent(spell, level, modPoints);
+
+        if(!result.worked) return false;
+        if(silent || !isOnline || !result.changed) return true;
+
+        SocketManager.GAME_SEND_SPELL_LIST(this);
+        if(result.oldLevel == 0) {
+            // Learned // Do we need a different message to show  c
+            SocketManager.GAME_SEND_Im_PACKET(this, "03;" + spell);
+        } else if (level == 0){
+            // Unlearned // Do we need a different message ID for negative deltas ?
+            SocketManager.GAME_SEND_Im_PACKET(this, "0154;" + "<b>" + result.oldLevel + "</b>" + "~" + "<b>" + result.ptsDelta + "</b>");
+        } else {
+            // Change level
+            SocketManager.GAME_SEND_SPELL_UPGRADE_SUCCESS(this.getGameClient(), id, level);
+
+        }
+        if(result.ptsDelta!=0) {
+            SocketManager.GAME_SEND_STATS_PACKET(this);
+        }
+        return true;
+    }
+
     public void learnSpell(int spell, int level, char pos) {
         if (World.world.getSort(spell).getStatsByLevel(level) == null) {
             GameServer.a();
@@ -1317,18 +1384,17 @@ public class Player {
         }
     }
 
-    public boolean learnSpell(int spellID, int level, boolean save,
-                              boolean send, boolean learn) {
+    public boolean learnSpell(int spellID, int level, boolean save, boolean send, boolean learn) {
         if (World.world.getSort(spellID).getStatsByLevel(level) == null) {
             GameServer.a();
             return false;
         }
 
-        if (_sorts.containsKey(Integer.valueOf(spellID)) && learn) {
+        if (_sorts.containsKey(spellID) && learn) {
             SocketManager.GAME_SEND_MESSAGE(this, this.getLang().trans("client.player.learnspell.exist"));
             return false;
         } else {
-            _sorts.put(Integer.valueOf(spellID), World.world.getSort(spellID).getStatsByLevel(level));
+            _sorts.put(spellID, World.world.getSort(spellID).getStatsByLevel(level));
             if (send) {
                 SocketManager.GAME_SEND_SPELL_LIST(this);
                 SocketManager.GAME_SEND_Im_PACKET(this, "03;" + spellID);
@@ -1345,10 +1411,10 @@ public class Player {
             return false;
         }
 
-        if (_saveSorts.containsKey(Integer.valueOf(spellID))) {
+        if (_saveSorts.containsKey(spellID)) {
             return false;
         } else {
-            _saveSorts.put(Integer.valueOf(spellID), World.world.getSort(spellID).getStatsByLevel(level));
+            _saveSorts.put(spellID, World.world.getSort(spellID).getStatsByLevel(level));
             return true;
         }
     }
@@ -1701,7 +1767,7 @@ public class Player {
                 SocketManager.GAME_SEND_OS_PACKET(this, a);
 
         if (this._metiers.size() > 0) {
-            ArrayList<JobStat> list = new ArrayList<JobStat>();
+            ArrayList<JobStat> list = new ArrayList<>();
             list.addAll(this._metiers.values());
             //packet JS
             SocketManager.GAME_SEND_JS_PACKET(this, list);
@@ -2816,7 +2882,7 @@ public class Player {
         _metiers.put(pos, sm);//On apprend le m�tier lvl 1 avec 0 xp
         if (isOnline) {
             //on cr�er la listes des JobStats a envoyer (Seulement celle ci)
-            ArrayList<JobStat> list = new ArrayList<JobStat>();
+            ArrayList<JobStat> list = new ArrayList<>();
             list.add(sm);
 
             SocketManager.GAME_SEND_Im_PACKET(this, "02;" + m.getId());
@@ -3015,7 +3081,11 @@ public class Player {
         }
     }
 
-    public void teleport(short newMapID, int newCellID) {
+    public void teleport(Pair<Integer,Integer> posIDs) {
+        teleport(posIDs.first, posIDs.second);
+    }
+
+    public void teleport(int newMapID, int newCellID) {
         GameClient client = this.getGameClient();
         GameMap map = World.world.getMap(newMapID);
 
@@ -3554,8 +3624,7 @@ public class Player {
 
     public void warpToSavePos() {
         try {
-            String[] infos = _savePos.split(",");
-            this.teleport(Short.parseShort(infos[0]), Integer.parseInt(infos[1]));
+            this.teleport(_savePos);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -3919,6 +3988,7 @@ public class Player {
 
     public void modifAlignement(int i) {
         if(this.getGroupe() == null && this.getGuild() != null) {
+            // Why do we remove user from guild on faction change ?
             this.getGuild().removeMember(this);
         }
         _honor = 0;
@@ -4023,19 +4093,14 @@ public class Player {
 
     public String parseZaapList()//Pour le packet WC
     {
-        String map = curMap.getId() + "";
-        try {
-            map = _savePos.split(",")[0];
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        int map = Optional.ofNullable(_savePos).map(p -> p.first).orElse(curMap.getId());
 
         StringBuilder str = new StringBuilder();
         str.append(map);
 
         if(this.curMap.getSubArea() != null) {
             //int SubAreaID = curMap.getSubArea().getArea().getSuperArea();
-            for (short i : _zaaps) {
+            for (int i : _zaaps) {
                 if (World.world.getMap(i) == null)
                     continue;
                 //if (World.world.getMap(i).getSubArea().getArea().getSuperArea() != SubAreaID)
@@ -4055,7 +4120,7 @@ public class Player {
         for (Prism Prisme : World.world.AllPrisme()) {
             if (Prisme.getAlignment() != alignment)
                 continue;
-            short MapID = Prisme.getMap();
+            int MapID = Prisme.getMap();
             if (World.world.getMap(MapID) == null)
                 continue;
             if (Prisme.getFight() != null) {
@@ -4085,7 +4150,7 @@ public class Player {
         }
     }
 
-    public void verifAndAddZaap(short mapId) {
+    public void verifAndAddZaap(int mapId) {
         if (!verifOtomaiZaap())
             return;
         if (!_zaaps.contains(mapId)) {
@@ -4154,7 +4219,7 @@ public class Player {
         if (this.getExchangeAction() == null || this.getExchangeAction().getType() != ExchangeAction.IN_PRISM)
             return;
         int celdaID = 340;
-        short MapID = 7411;
+        int MapID = 7411;
         for (Prism Prisme : World.world.AllPrisme()) {
             if (Prisme.getMap() == Short.valueOf(packet.substring(2))) {
                 celdaID = Prisme.getCell();
@@ -5565,15 +5630,16 @@ public class Player {
         return emotes;
     }
 
-    public void addStaticEmote(int emote) {
+    public boolean addStaticEmote(int emote) {
         if (this.emotes.contains(emote))
-            return;
+            return false;
         this.emotes.add(emote);
         if (!isOnline())
-            return;
+            return true;
         SocketManager.GAME_SEND_EMOTE_LIST(this, getCompiledEmote(getEmotes()));
         SocketManager.GAME_SEND_STATS_PACKET(this);
         SocketManager.send(this, "eA" + emote);
+        return true;
     }
 
     public String parseEmoteToDB() {
@@ -5848,8 +5914,6 @@ public class Player {
 			this.useCac = false;
 			if (this.fight == null)
 				SocketManager.GAME_SEND_STATS_PACKET(this);
-			
-		
 	}
 
 	public void unsetFullMorphbouf() {
@@ -5900,7 +5964,7 @@ public class Player {
         return LangEnum.ENGLISH;
     }
 
-    public SPlayer Scripted() {
+    public SPlayer scripted() {
         return this.scriptVal;
     }
 

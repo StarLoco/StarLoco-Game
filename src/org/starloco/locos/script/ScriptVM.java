@@ -11,17 +11,15 @@ import org.classdump.luna.exec.CallException;
 import org.classdump.luna.exec.CallPausedException;
 import org.classdump.luna.exec.DirectCallExecutor;
 import org.classdump.luna.impl.ImmutableTable;
-import org.classdump.luna.impl.NonsuspendableFunctionException;
 import org.classdump.luna.impl.StateContexts;
 import org.classdump.luna.lib.*;
 import org.classdump.luna.load.ChunkLoader;
 import org.classdump.luna.load.LoaderException;
-import org.classdump.luna.runtime.AbstractFunction1;
-import org.classdump.luna.runtime.AbstractFunctionAnyArg;
 import org.classdump.luna.runtime.ExecutionContext;
 import org.classdump.luna.runtime.LuaFunction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.starloco.locos.game.world.World.Couple;
 import org.starloco.locos.object.GameObject;
 
 import java.io.IOException;
@@ -31,6 +29,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 import java.util.stream.Stream;
 
 public class ScriptVM {
@@ -56,6 +55,10 @@ public class ScriptVM {
         TableLib.installInto(state, env);
 
         this.env.rawset("JLogF", new LogF());
+        this.loadData();
+    }
+
+    protected void loadData() throws CallException, LoaderException, IOException, CallPausedException, InterruptedException{
         runFile(Paths.get("scripts", "Common.lua"));
     }
 
@@ -75,7 +78,7 @@ public class ScriptVM {
 
         LuaFunction<?,?,?,?,?> fn = loader.loadTextChunk(new Variable(env), path.toString(), new String(bytes)); // May need to UTF-8 decode
 
-        DirectCallExecutor.newExecutor().call(this.state, fn);
+        this.executor.call(this.state, fn);
     }
     public Object[] call(Object val, Object... args) {
         synchronized (_vmLock) {
@@ -158,10 +161,15 @@ public class ScriptVM {
         return out;
     }
 
-    public static Table ItemStack(GameObject stack) {
+    public static Table ItemStack(Couple<Integer,Integer> stack) {
         return new ImmutableTable.Builder()
-            .add("itemID", stack.getTemplate().getId())
-            .add("quantity", stack.getQuantity())
+            .add("itemID", stack.first)
+            .add("quantity", stack.second)
             .build();
+    }
+    public static Couple<Integer,Integer> ItemStackFromLua(Table t) {
+        int id = rawInt(t, "itemID");
+        int qua = rawInt(t, "quantity");
+        return new Couple<>(id, qua);
     }
 }

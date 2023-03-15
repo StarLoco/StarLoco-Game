@@ -356,7 +356,7 @@ public class Constant {
     //ZAAPI <alignID,{mapID,mapID,...,mapID}>
     public static Map<Byte, String> ZAAPI = new HashMap<>();
     //ZAAP <mapID,cellID>
-    public static Map<Integer, Integer> ZAAPS = new HashMap<>();
+    public static final Map<Integer, Integer> ZAAPS = new HashMap<>();
     //Valeur des droits de guilde
     public static int[] G_RIGHTS = new int[]{2, 4, 8, 16, 32, 64, 128, 256, 512, 4096, 8192, 16384};
     public static int G_BOOST = 2;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            //G�rer les boost
