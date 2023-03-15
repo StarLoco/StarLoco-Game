@@ -15,11 +15,11 @@ public class CellCacheImpl implements CellCache {
 
     //private final List<Short> nonWalkableCells;
     private final List<Short> lineBlocker;
-    private final short width,height;
+    private final int width,height;
     //private final Short2ShortAVLTreeMap groundSlope, groundLevel;
     private final Int2IntArrayMap orthogonalProjection;
 
-    public CellCacheImpl(/*List<Short> nonWalkableCells,*/ List<Short> lineBlocker, short width, short height/*, Short2ShortAVLTreeMap groundSlope, Short2ShortAVLTreeMap groundLevel*/) {
+    public CellCacheImpl(/*List<Short> nonWalkableCells,*/ List<Short> lineBlocker, int width, int height/*, Short2ShortAVLTreeMap groundSlope, Short2ShortAVLTreeMap groundLevel*/) {
         //this.nonWalkableCells = nonWalkableCells;
         this.lineBlocker = lineBlocker;
         this.width = width;

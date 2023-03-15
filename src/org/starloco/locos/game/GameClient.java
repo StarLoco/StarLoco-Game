@@ -2610,7 +2610,7 @@ public class GameClient {
             SocketManager.GAME_SEND_Im_PACKET(this.player, "123");
             return;
         }
-        if (SoulStone.isInArenaMap(this.player.getCurMap().getId()) || this.player.getCurMap().noSellers) {
+        if (SoulStone.isInArenaMap(this.player.getCurMap().getId()) || this.player.getCurMap().data.noSellers) {
             SocketManager.GAME_SEND_Im_PACKET(this.player, "113");
             return;
         }
@@ -2644,7 +2644,7 @@ public class GameClient {
     private void offlineExchange() {
         if(EventManager.isInEvent(this.player))
             return;
-        if (SoulStone.isInArenaMap(this.player.getCurMap().getId()) || this.player.getCurMap().noSellers) {
+        if (SoulStone.isInArenaMap(this.player.getCurMap().getId()) || this.player.getCurMap().data.noSellers) {
             SocketManager.GAME_SEND_Im_PACKET(this.player, "113");
             return;
         }
@@ -3637,7 +3637,7 @@ public class GameClient {
         switch (packet.charAt(2)) {
             case 'S'://Teleportation
                 // TP Mariage : mettre une condition de donjon ...
-                if (Wife.getCurMap().noTp || Wife.getCurMap().haveMobFix()) {
+                if (Wife.getCurMap().data.noTp || Wife.getCurMap().haveMobFix()) {
                     SocketManager.GAME_SEND_MESSAGE(this.player, this.player.getLang().trans("game.gameclient.joinwife.no"));
                     return;
                 }
@@ -4153,7 +4153,7 @@ public class GameClient {
             if(this.player.getStalk() != null && player.getStalk().onPlayerTryToFight(player, target))
                 return;
             if (player.getCurMap().getSubArea() != null && player.getCurMap().getSubArea().getArea().getSuperArea() == 3) {
-                if (((player.getAlignment() != 0 && (!player.getCurMap().noAgro)) || target.getDeshonor() > 0)) {
+                if (((player.getAlignment() != 0 && (!player.getCurMap().data.noAgro)) || target.getDeshonor() > 0)) {
                     if (!target.isOnline() || target.getFight() != null || target.getCurMap().getId()
                             != this.player.getCurMap().getId() || target.getAlignment() == this.player.getAlignment() || this.player.
                             getCurMap().getPlaces().equalsIgnoreCase("|") || !target.canAggro() || target.isDead() == 1
@@ -4880,7 +4880,7 @@ public class GameClient {
         }
         if (this.player.getFight() != null || this.player.isAway())
             return;
-        short MapID = Short.parseShort(packet);
+        int MapID = Integer.parseInt(packet);
         MountPark MP = World.world.getMap(MapID).getMountPark();
         if (MP.getGuild().getId() != this.player.getGuild().getId()) {
             SocketManager.GAME_SEND_Im_PACKET(this.player, "1135");
@@ -4974,7 +4974,7 @@ public class GameClient {
             SocketManager.GAME_SEND_Im_PACKET(this.player, "1168;1");
             return;
         }
-        if (map.getPlaces().length() < 5 || SoulStone.isInArenaMap(map.getId()) || map.noCollectors) {//La map ne poss?de pas de "places"
+        if (map.getPlaces().length() < 5 || SoulStone.isInArenaMap(map.getId()) || map.data.noCollectors) {//La map ne poss?de pas de "places"
             SocketManager.GAME_SEND_Im_PACKET(this.player, "113");
             return;
         }
@@ -4985,8 +4985,8 @@ public class GameClient {
         if (World.world.getDelayCollectors().get(map.getId()) != null) {
             long time = World.world.getDelayCollectors().get(map.getId());
 
-            if ((System.currentTimeMillis() - time) < (((10 * guild.getLvl()) * 60) * 1000)) {
-                this.player.send("Im1167;" + ((((((10 * guild.getLvl()) * 60) * 1000) - (System.currentTimeMillis() - time)) / 1000) / 60));
+            if ((System.currentTimeMillis() - time) < (((10L * guild.getLvl()) * 60) * 1000)) {
+                this.player.send("Im1167;" + ((((((10L * guild.getLvl()) * 60) * 1000) - (System.currentTimeMillis() - time)) / 1000) / 60));
                 return;
             }
             World.world.getDelayCollectors().remove(map.getId());

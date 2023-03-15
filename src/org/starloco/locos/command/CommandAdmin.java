@@ -392,7 +392,7 @@ public class CommandAdmin extends AdminUser {
             }
             return;
         } else if (command.equalsIgnoreCase("TP")) {
-            short mapID = -1;
+            int mapID = -1;
             int cellID = -1;
             try {
                 mapID = Short.parseShort(infos[1]);
@@ -718,9 +718,9 @@ public class CommandAdmin extends AdminUser {
             }
             return;
         } else if (command.equalsIgnoreCase("JAIL")) {
-            short mapID = 666;
+            int mapID = 666;
             int cellID = getCellJail();
-            if (mapID == -1 || cellID == -1 || World.world.getMap(mapID) == null) {
+            if (cellID == -1 || World.world.getMap(mapID) == null) {
                 String str = "MapID ou cellID invalide.";
                 if (cellID == -1)
                     str = "cellID invalide.";
@@ -1928,7 +1928,7 @@ public class CommandAdmin extends AdminUser {
                     Config.gameServer.getClients().stream().filter(client -> client != null && client.getPlayer() != null).forEach(client -> ((PlayerData) DatabaseManager.get(PlayerData.class)).reloadGroup(client.getPlayer()));
                     break;
                 case "MAPS":
-                    ((MapData) DatabaseManager.get(MapData.class)).reload();
+                    ((GameMapData) DatabaseManager.get(GameMapData.class)).reload();
                     break;
                 case "MONSTERS":
                     DatabaseManager.get(MonsterData.class).loadFully();
@@ -2102,77 +2102,6 @@ public class CommandAdmin extends AdminUser {
                     this.sendSuccessMessage("The id of position " + position + " is " + object.getGuid());
                     break;
             }
-        } else  if(command.equalsIgnoreCase("MAPSTATE") || command.equalsIgnoreCase("STATE")) {
-            String name = "";
-            byte value = -1;
-
-            if(infos.length > 1) {
-                name = infos[1].toUpperCase();
-            }
-            if(infos.length > 2) {
-                value = (byte) (infos[2].equalsIgnoreCase("true") || infos[2].equalsIgnoreCase("1") ? 1 : 0);
-            }
-
-            final GameMap map = this.getPlayer().getCurMap();
-            switch(name) {
-                case "SELLER":
-                    map.noSellers = value == -1 ? !map.noSellers : value == 1;
-                    if(map.noSellers)
-                        this.sendSuccessMessage("You've enabled sellers on the map (" + map.getId() + ").");
-                    else
-                        this.sendSuccessMessage("You've disabled sellers on the map (" + map.getId() + ").");
-                    break;
-                case "COLLECTOR":
-                    map.noCollectors = value == -1 ? !map.noCollectors : value == 1;
-                    if(map.noCollectors)
-                        this.sendSuccessMessage("You've enabled collectors on the map (" + map.getId() + ").");
-                    else
-                        this.sendSuccessMessage("You've disabled collectors on the map (" + map.getId() + ").");
-                    break;
-                case "PRISM":
-                    map.noPrisms = value == -1 ? !map.noPrisms : value == 1;
-                    if(map.noPrisms)
-                        this.sendSuccessMessage("You've enabled prisms on the map (" + map.getId() + ").");
-                    else
-                        this.sendSuccessMessage("You've disabled prisms on the map (" + map.getId() + ").");
-
-                    break;
-                case "TP":
-                    map.noTp = value == -1 ? !map.noTp : value == 1;
-                    if(map.noTp)
-                        this.sendSuccessMessage("You've enabled sellers on the map (" + map.getId() + ").");
-                    else
-                        this.sendSuccessMessage("You've disabled sellers on the map (" + map.getId() + ").");
-
-                    break;
-                case "DEFY":
-                    map.noDefy = value == -1 ? !map.noDefy : value == 1;
-                    if(map.noDefy)
-                        this.sendSuccessMessage("You've enabled defies on the map (" + map.getId() + ").");
-                    else
-                        this.sendSuccessMessage("You've disabled defies on the map (" + map.getId() + ").");
-                    break;
-
-                case "AGGRESSION":
-                    map.noAgro = value == -1 ? !map.noAgro : value == 1;
-                    if(map.noAgro)
-                        this.sendSuccessMessage("You've enabled aggressions on the map (" + map.getId() + ").");
-                    else
-                        this.sendSuccessMessage("You've disabled aggressions on the map (" + map.getId() + ").");
-
-                    break;
-                case "CHANNEL":
-                    map.noCanal = value == -1 ? !map.noCanal : value == 1;
-                    if(map.noCanal)
-                        this.sendSuccessMessage("You've enabled the channel on the map (" + map.getId() + ").");
-                    else
-                        this.sendSuccessMessage("You've disabled the channel on the map (" + map.getId() + ").");
-                    break;
-                default:
-                    this.sendErrorMessage("You've specified an invalid state, known types :\n- DUBG\n- SURVIVAL \n- DUNGEONS\n- SELLER\n- COLLECTOR\n- PRISM\n- TP\n- DEFY\n- AGGRESSION\n- CHANNEL\nYou can add a second argument to specify exactly the value 'true' or 'false'.\nExample : MAPSTATE DEFY TRUE");
-                    break;
-            }
-            ((MapData)DatabaseManager.get(MapData.class)).update(map);
         } else if (command.equalsIgnoreCase("LSPELL")) {
             int spell = -1;
             try {
@@ -3307,182 +3236,6 @@ public class CommandAdmin extends AdminUser {
                 String code = team1.substring(a, a + 2);
                 mess += World.world.getCryptManager().cellCode_To_ID(code) + ",";
             }
-            this.sendMessage(mess);
-        } else if (command.equalsIgnoreCase("ADDFIGHTPOS")) {
-            int team = -1;
-            int cell = -1;
-            try {
-                team = Integer.parseInt(infos[1]);
-                cell = Integer.parseInt(infos[2]);
-            } catch (Exception e) {
-                // ok
-            }
-
-            if (team < 0 || team > 1) {
-                String str = "Team ou cellID incorects";
-                this.sendMessage(str);
-                return;
-            }
-            if (cell < 0
-                    || this.getPlayer().getCurMap().getCase(cell) == null
-                    || !this.getPlayer().getCurMap().getCase(cell).isWalkable(true)) {
-                cell = this.getPlayer().getCurCell().getId();
-            }
-            String places = this.getPlayer().getCurMap().getPlaces();
-            String[] p = places.split("\\|");
-            boolean already = false;
-            String team0 = "", team1 = "";
-            try {
-                team0 = p[0];
-            } catch (Exception e) {
-                // ok
-            }
-
-            try {
-                team1 = p[1];
-            } catch (Exception e) {
-                // ok
-            }
-
-            for (int a = 0; a <= team0.length() - 2; a += 2)
-                if (cell == World.world.getCryptManager().cellCode_To_ID(team0.substring(a, a + 2)))
-                    already = true;
-            for (int a = 0; a <= team1.length() - 2; a += 2)
-                if (cell == World.world.getCryptManager().cellCode_To_ID(team1.substring(a, a + 2)))
-                    already = true;
-            if (already) {
-                this.sendMessage("La case est deja dans la liste");
-                return;
-            }
-            if (team == 0)
-                team0 += World.world.getCryptManager().cellID_To_Code(cell);
-            else if (team == 1)
-                team1 += World.world.getCryptManager().cellID_To_Code(cell);
-            String newPlaces = team0 + "|" + team1;
-            this.getPlayer().getCurMap().setPlaces(newPlaces);
-            ((MapData) DatabaseManager.get(MapData.class)).update(this.getPlayer().getCurMap());
-            this.sendMessage("Les places ont ete modifiees (" + newPlaces + ")");
-        } else if (command.equalsIgnoreCase("DELFIGHTPOS")) {
-            int cell = -1;
-            try {
-                cell = Integer.parseInt(infos[2]);
-            } catch (Exception e) {
-                // ok
-            }
-
-            if (cell < 0 || this.getPlayer().getCurMap().getCase(cell) == null) {
-                cell = this.getPlayer().getCurCell().getId();
-            }
-            String places = this.getPlayer().getCurMap().getPlaces();
-            String[] p = places.split("\\|");
-            String newPlaces = "";
-            String team0 = "", team1 = "";
-            try {
-                team0 = p[0];
-            } catch (Exception e) {
-                // ok
-            }
-
-            try {
-                team1 = p[1];
-            } catch (Exception e) {
-                // ok
-            }
-
-            for (int a = 0; a <= team0.length() - 2; a += 2) {
-                String c = p[0].substring(a, a + 2);
-                if (cell == World.world.getCryptManager().cellCode_To_ID(c))
-                    continue;
-                newPlaces += c;
-            }
-            newPlaces += "|";
-            for (int a = 0; a <= team1.length() - 2; a += 2) {
-                String c = p[1].substring(a, a + 2);
-                if (cell == World.world.getCryptManager().cellCode_To_ID(c))
-                    continue;
-                newPlaces += c;
-            }
-            this.getPlayer().getCurMap().setPlaces(newPlaces);
-            ((MapData) DatabaseManager.get(MapData.class)).update(this.getPlayer().getCurMap());
-            this.sendMessage("Les places ont ete modifiees (" + newPlaces + ")");
-        } else if (command.equalsIgnoreCase("DELALLFIGHTPOS")) {
-            this.getPlayer().getCurMap().setPlaces("");
-            ((MapData) DatabaseManager.get(MapData.class)).update(this.getPlayer().getCurMap());
-            this.sendMessage("Les places ont ete mis a zero !");
-        } else if (command.equalsIgnoreCase("ADDMOBSUBAREA")) {
-            String monsters = "";
-            String mess = "";
-            if (infos.length > 1)
-                monsters = infos[1];
-            else {
-                mess = "Il manque le premier argument.";
-                this.sendMessage(mess);
-                return;
-            }
-
-            Player perso = this.getPlayer();
-            GameMap map = perso.getCurMap();
-
-            SubArea subArea = map.getSubArea();
-            List<GameMap> maps = subArea.getMaps();
-            int i = 0;
-            int y = 0;
-            for (GameMap m : maps) {
-                if (m.getPlaces().equalsIgnoreCase("") || m.getPlaces().equalsIgnoreCase("|")) {
-                    m.setMobPossibles("");
-                    ((MapData) DatabaseManager.get(MapData.class)).updateMonster(m, "");
-                    y++;
-                } else {
-                    m.setMobPossibles(monsters);
-                    ((MapData) DatabaseManager.get(MapData.class)).updateMonster(m, monsters);
-                    i++;
-                }
-                m.refreshSpawns();
-            }
-
-            mess = i + " maps ont etes modifies et refresh. " + y + "maps ont etes modifies sans monstres et refresh.";
-            this.sendMessage(mess);
-        } else if (command.equalsIgnoreCase("GSMOBSUBAREA")) {
-            byte maxGroup = 0;
-            byte minSize = 0;
-            byte fixSize = 0;
-            byte maxSize = 0;
-            byte def = -1;
-            String mess = "";
-            if (infos.length > 4) {
-                maxGroup = Byte.parseByte(infos[1]);
-                minSize = Byte.parseByte(infos[2]);
-                fixSize = Byte.parseByte(infos[3]);
-                maxSize = Byte.parseByte(infos[4]);
-            } else {
-                mess = "Il manque les arguments.";
-                this.sendMessage(mess);
-                return;
-            }
-
-            Player perso = this.getPlayer();
-            GameMap map = perso.getCurMap();
-
-            SubArea subArea = map.getSubArea();
-            List<GameMap> maps = subArea.getMaps();
-            int i = 0;
-            int y = 0;
-            for (GameMap m : maps) {
-                if (m.getPlaces().equalsIgnoreCase("")
-                        || m.getPlaces().equalsIgnoreCase("|")) {
-                    m.setGs(def, def, def, def);
-                    ((MapData) DatabaseManager.get(MapData.class)).updateGs(m);
-                    y++;
-                } else {
-                    m.setGs(maxGroup, minSize, fixSize, maxSize);
-                    ((MapData) DatabaseManager.get(MapData.class)).updateGs(m);
-                    i++;
-                }
-                m.refreshSpawns();
-            }
-
-            mess = i + " maps ont etes modifies et refresh. " + y
-                    + " maps ont etes modifies e -1 partout et refresh.";
             this.sendMessage(mess);
         } else if (command.equalsIgnoreCase("FINDEXTRAMONSTER")) {
             java.util.Map<Integer, java.util.Map<String, java.util.Map<String, Integer>>> extras = World.world.getExtraMonsters();

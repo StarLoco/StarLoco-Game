@@ -1,9 +1,11 @@
 package org.starloco.locos.common;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.starloco.locos.area.map.CellCache;
 import org.starloco.locos.area.map.CellCacheImpl;
 import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.area.map.GameMap;
+import org.starloco.locos.util.Pair;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -68,20 +70,20 @@ public class CryptManager {
 
     public String key = "8fd8ad4a38cdd0432248a76f8f148ceb";
 
-    private List<Short> cellWalkable(GameMap map){
-        List<Short> limit = new ArrayList<>();
-        short H = map.getH();
-        short W = (short) (map.getW()-1);
-        short val = 0;
-        for (short h = 0; h < H; h++ ){
+    private List<Integer> cellWalkable(int width, int height){
+        List<Integer> limit = new ArrayList<>();
+        int H = height;
+        int W = (width-1);
+        int val = 0;
+        for (int h = 0; h < H; h++ ){
             if (h ==0) val = W;
-            else val = (short) (val + (W * 2) + 1);
+            else val = (val + (W * 2) + 1);
             limit.add(val);
-            limit.add((short) (val-W));
+            limit.add((val-W));
         }
-        for (short w = 1; w < W; w++){
+        for (int w = 1; w < W; w++){
             limit.add(w);
-            limit.add((short) (((H * (W+1)+((H-1)*W))-1)-w));
+            limit.add((((H * (W+1)+((H-1)*W))-1)-w));
         }
         return limit;
     }
@@ -144,20 +146,21 @@ public class CryptManager {
         return (nb > 1000);
     }
 
-    public List<GameCase> decompileMapData(GameMap map, String data, byte sniffed) {
+    // TODO: remove GameMap map param, pass only mapID
+    public Pair<CellCache, List<GameCase>> decompileMapData(GameMap map, String data, String key, int w, int h) {
         List<GameCase> cells = new ArrayList<>();
         List<Short> losCells = new ArrayList<>();
 
-        if(mapCrypted(data) && !map.getKey().isEmpty()) {
+        if(mapCrypted(data) && !key.isEmpty()) {
             try {
-                data = this.decryptMapData(data, map.getKey());
+                data = this.decryptMapData(data, key);
             } catch (Exception e) {
-                System.err.println("Erreur decypher map data : " + map.getId());
+                System.err.println("Cannot decipher map data : " + map.data.id);
                 e.printStackTrace();
             }
         }
-        if(PathFinding.outForbiddenCells.get(map.getW() + "_" + map.getH()) == null)
-            PathFinding.outForbiddenCells.put(map.getW() + "_" + map.getH(), cellWalkable(map));
+        if(PathFinding.outForbiddenCells.get(w + "_" + h) == null)
+            PathFinding.outForbiddenCells.put(w + "_" + h, cellWalkable(w, h));
         try {
             short cellId = 0;
             for (; cellId < data.length()/10; cellId ++ ){
@@ -187,13 +190,12 @@ public class CryptManager {
                 cells.add(new GameCase(map, cellId, walkable, los, obj));
 
             }
-            CellCacheImpl cache = new CellCacheImpl(losCells, map.getW(), map.getH());
-            map.setCellCache(cache);
+            CellCacheImpl cache = new CellCacheImpl(losCells, w, h);
+            return new Pair<>(cache, cells);
         } catch (Exception e) {
-            System.err.println(e.getMessage() + " : mapId : " + map.getId());
-            e.printStackTrace();
+            System.err.println(e.getMessage() + " : mapId : " + map.data.id);
+            throw e;
         }
-        return cells;
     }
 
 

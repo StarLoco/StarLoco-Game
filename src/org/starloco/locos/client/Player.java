@@ -3036,7 +3036,7 @@ public class Player {
         cell.finishAction(this, GA);
     }
 
-    public void teleportD(short newMapID, int newCellID) {
+    public void teleportD(int newMapID, int newCellID) {
         if (this.getFight() != null) return;
         this.curMap = World.world.getMap(newMapID);
         this.curCell = World.world.getMap(newMapID).getCase(newCellID);
@@ -5375,7 +5375,7 @@ public class Player {
         }
     }
 
-    public void teleportWithoutBlocked(short newMapID, int newCellID)//Aucune condition genre <<en_prison>> etc
+    public void teleportWithoutBlocked(int newMapID, int newCellID)//Aucune condition genre <<en_prison>> etc
     {
         GameClient PW = null;
         if (account.getGameClient() != null) {
@@ -5434,7 +5434,7 @@ public class Player {
     }
 
     public void teleportFaction(int factionEnnemy) {
-        short mapID = 0;
+        int mapID = 0;
         int cellID = 0;
         enteredOnEnnemyFaction = System.currentTimeMillis();
         isInEnnemyFaction = true;
@@ -5711,19 +5711,19 @@ public class Player {
     }
 
     public boolean cantDefie() {
-        return getCurMap().noDefy;
+        return curMap.data.noDefy;
     }
 
     public boolean cantAgro() {
-        return getCurMap().noAgro;
+        return curMap.data.noAgro;
     }
 
     public boolean cantCanal() {
-        return getCurMap().noCanal;
+        return curMap.data.noCanal;
     }
 
     public boolean cantTP() {
-        return this.isInPrison() || getCurMap().noTp || EventManager.isInEvent(this);
+        return this.isInPrison() || curMap.data.noTp || EventManager.isInEvent(this);
     }
 
     public boolean isInPrison() {

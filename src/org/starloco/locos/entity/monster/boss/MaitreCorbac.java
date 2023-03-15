@@ -23,10 +23,9 @@ public class MaitreCorbac {
 
         this.oldMap = id;
 
-        ArrayList<GameMap> maps = new ArrayList<>();
-        maps.addAll(World.world.getSubArea(211).getMaps());
-        maps.remove(World.world.getMap((short) 9589));
-        maps.remove(World.world.getMap((short) 9604));
+        ArrayList<GameMap> maps = new ArrayList<>(World.world.getSubArea(211).getMaps());
+        maps.remove(World.world.getMap( 9589));
+        maps.remove(World.world.getMap( 9604));
 
         int index = Formulas.random.nextInt(maps.size());
         GameMap map = maps.get(index);

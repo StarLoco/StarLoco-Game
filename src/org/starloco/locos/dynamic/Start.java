@@ -49,9 +49,9 @@ public class Start {
 		public void run() {
 			/* START : Construction de l'nvironement **/
 			try {
-			mapUse.put(1, World.world.getMap((short) 6824).getMapCopyIdentic(true));
-			mapUse.put(2, World.world.getMap((short) 6826).getMapCopyIdentic(true));
-			mapUse.put(3, World.world.getMap((short) 6828).getMapCopyIdentic(true));
+			mapUse.put(1, World.world.getMap(6824).getMapCopy());
+			mapUse.put(2, World.world.getMap(6826).getMapCopy());
+			mapUse.put(3, World.world.getMap(6828).getMapCopy());
 			
 			mapUse.get(1).getCase(329).addOnCellStopAction(999, "192", "-1", mapUse.get(2));		
 			mapUse.get(1).getCase(325).addOnCellStopAction(999, "224", "-1", World.world.getMap((short) 1863));

@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.starloco.locos.area.Area;
 import org.starloco.locos.area.SubArea;
 import org.starloco.locos.area.map.GameMap;
+import org.starloco.locos.area.map.MapData;
 import org.starloco.locos.area.map.entity.*;
 import org.starloco.locos.area.map.entity.InteractiveObject.InteractiveObjectTemplate;
 import org.starloco.locos.area.map.labyrinth.Minotoror;
@@ -61,7 +62,8 @@ public class World {
 
     private final Map<Integer, Account>    accounts    = new HashMap<>();
     private final Map<Integer, Player>     players     = new HashMap<>();
-    private final Map<Integer, GameMap>    maps        = new HashMap<>();
+    private final Map<Integer, GameMap>    maps        = new ConcurrentHashMap<>();
+    private final Map<Integer, MapData>    mapsData    = new ConcurrentHashMap<>();
     private final Map<Integer, GameObject> objects     = new ConcurrentHashMap<>();
     private final Map<Integer, ExpLevel> experiences = new HashMap<>();
     private final Map<Integer, Spell> spells = new HashMap<>();
@@ -185,15 +187,20 @@ public class World {
         return maps.values();
     }
 
+    public void addMapData(MapData map) {
+        mapsData.put(map.id, map);
+        // Make sure the subArea knows of that map
+        Optional.ofNullable(subAreas.get(map.subAreaID)).ifPresent(s -> s.addMapID(map.id));
+    }
     public GameMap getMap(int id) {
-        return maps.get(id);
+        try {
+            // Atomically get or load map
+            return maps.computeIfAbsent(id, mapID -> new GameMap(mapsData.get(mapID)));
+        }catch (NullPointerException ignored){
+            return null;
+        }
     }
 
-    public void addMap(GameMap map) {
-        if(map.getSubArea() != null && map.getSubArea().getArea().getId() == 42 && !Config.modeChristmas)
-            return;
-        maps.put(map.getId(), map);
-    }
     //endregion
 
     //region Objects data
@@ -372,7 +379,7 @@ public class World {
         DatabaseManager.get(ObjectSetData.class).loadFully();
         logger.debug("The panoplies were loaded successfully.");
 
-        DatabaseManager.get(MapData.class).loadFully();
+        DatabaseManager.get(GameMapData.class).loadFully();
         logger.debug("The maps were loaded successfully.");
 
         DatabaseManager.get(ScriptedCellData.class).loadFully();
@@ -1037,7 +1044,7 @@ public class World {
         return Constant.ZAAPS.getOrDefault(i, -1);
     }
 
-    public int getEncloCellIdByMapId(short i) {
+    public int getEncloCellIdByMapId(int i) {
         GameMap map = getMap(i);
         if(map != null && map.getMountPark() != null && map.getMountPark().getCell() > 0)
             return map.getMountPark().getCell();

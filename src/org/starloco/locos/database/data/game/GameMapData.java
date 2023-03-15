@@ -4,18 +4,37 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.lang.NotImplementedException;
 import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.area.map.GameMap;
+import org.starloco.locos.area.map.SQLMapData;
 import org.starloco.locos.database.data.FunctionDAO;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.Constant;
-import org.starloco.locos.object.GameObject;
+import org.starloco.locos.kernel.Main;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class MapData extends FunctionDAO<GameMap> {
-    public MapData(HikariDataSource dataSource) {
+public class GameMapData extends FunctionDAO<GameMap> {
+    public GameMapData(HikariDataSource dataSource) {
         super(dataSource, "maps");
+    }
+
+    private SQLMapData mapDataFromResultSet(ResultSet result) throws SQLException {
+        return SQLMapData.build(
+                result.getInt("id"),
+                result.getString("date"),
+                result.getInt("width"),
+                result.getInt("heigth"),
+                result.getString("key"),
+                result.getString("mapData"),
+                result.getString("places"),
+                result.getString("monsters"),
+                result.getString("mappos"),
+                result.getInt("numgroup"),
+                result.getByte("fixSize"),
+                result.getByte("minSize"),
+                result.getByte("maxSize"),
+                result.getString("forbidden"));
     }
 
     @Override
@@ -25,7 +44,12 @@ public class MapData extends FunctionDAO<GameMap> {
             result = getData("SELECT * FROM " + getTableName() + " LIMIT " + Constant.DEBUG_MAP_LIMIT + ";");
 
             while (result.next()) {
-                World.world.addMap(new GameMap(result.getShort("id"), result.getString("date"), result.getByte("width"), result.getByte("heigth"), result.getString("key"), result.getString("places"), result.getString("mapData"), result.getString("monsters"), result.getString("mappos"), result.getByte("numgroup"), result.getByte("fixSize"), result.getByte("minSize"), result.getByte("maxSize"), result.getString("forbidden"), result.getByte("sniffed")));
+                try {
+                    World.world.addMapData(mapDataFromResultSet(result));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Main.stop("SQLMapTemplate");
+                }
             }
             close(result);
 
@@ -81,7 +105,7 @@ public class MapData extends FunctionDAO<GameMap> {
 
     @Override
     public Class<?> getReferencedClass() {
-        return MapData.class;
+        return GameMapData.class;
     }
 
     public boolean updateGs(GameMap map) {
@@ -120,22 +144,17 @@ public class MapData extends FunctionDAO<GameMap> {
     }
 
     public void reload() {
-        ResultSet result = null;
-        try {
-            result = getData("SELECT * FROM " + getTableName() + " LIMIT " + Constant.DEBUG_MAP_LIMIT);
-
-            while (result.next()) {
-                GameMap map = World.world.getMap(result.getShort("id"));
-                if (map == null) {
-                    World.world.addMap(new GameMap(result.getShort("id"), result.getString("date"), result.getByte("width"), result.getByte("heigth"), result.getString("key"), result.getString("places"), result.getString("mapData"), result.getString("monsters"), result.getString("mappos"), result.getByte("numgroup"), result.getByte("fixSize"), result.getByte("minSize"), result.getByte("maxSize"), result.getString("forbidden"), result.getByte("sniffed")));
-                    continue;
+        try(ResultSet result = getData("SELECT * FROM " + getTableName() + " LIMIT " + Constant.DEBUG_MAP_LIMIT)) {
+             while (result.next()) {
+                try {
+                    World.world.addMapData(mapDataFromResultSet(result));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Main.stop("SQLMapTemplate");
                 }
-                map.setInfos(result.getString("date"), result.getString("monsters"), result.getString("mappos"), result.getByte("numgroup"), result.getByte("fixSize"), result.getByte("minSize"), result.getByte("maxSize"), result.getString("forbidden"));
-            }
+             }
         } catch (SQLException e) {
             super.sendError(e);
-        } finally {
-            close(result);
         }
     }
 }
