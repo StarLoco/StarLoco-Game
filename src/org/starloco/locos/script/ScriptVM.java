@@ -70,6 +70,8 @@ public class ScriptVM {
             while(it.hasNext()) {
                 this.runFile(it.next());
             }
+        } catch(Exception e){
+            e.printStackTrace();
         }
     }
 
