@@ -11,7 +11,7 @@ import java.util.TreeMap;
 
 public class House {
     private int id;
-    private short mapId;
+    private int mapId;
     private int cellId;
     private int ownerId;
     private int sale;
@@ -24,7 +24,7 @@ public class House {
     //Droits de chaques maisons
     private Map<Integer, Boolean> haveRight = new TreeMap<>();
 
-    public House(int id, short mapId, int cellId, int houseMapId, int houseCellId) {
+    public House(int id, int mapId, int cellId, int houseMapId, int houseCellId) {
         this.id = id;
         this.mapId = mapId;
         this.cellId = cellId;
@@ -56,7 +56,7 @@ public class House {
         return this.id;
     }
 
-    public short getMapId() {
+    public int getMapId() {
         return this.mapId;
     }
 

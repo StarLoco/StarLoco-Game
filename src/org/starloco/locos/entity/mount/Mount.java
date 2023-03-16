@@ -45,7 +45,7 @@ public class Mount {
 	private long exp;
 	
 	private int owner;
-	private short mapId;
+	private int mapId;
 	private int cellId, orientation;
 	
 	private int fatigue, energy, reproduction;
@@ -135,7 +135,7 @@ public class Mount {
 	
 	public Mount(int id, int color, int sexe, int amour, int endurance, int level, long exp, String name, int fatigue,
 			int energy, int reproduction, int maturity, int state, String objects, String ancestors, String capacitys, int size,
-			int cellId, short mapId, int owner, int orientation, long fecundatedHour, int couple, int savage) {
+			int cellId, int mapId, int owner, int orientation, long fecundatedHour, int couple, int savage) {
 		this.id = id;
 		this.color = color;
 		this.sex = sexe;
@@ -339,11 +339,11 @@ public class Mount {
 		this.owner = owner;
 	}
 
-	public short getMapId() {
+	public int getMapId() {
 		return mapId;
 	}
 
-	public void setMapId(short mapId) {
+	public void setMapId(int mapId) {
 		this.mapId = mapId;
 	}
 

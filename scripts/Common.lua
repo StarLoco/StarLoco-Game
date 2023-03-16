@@ -1,5 +1,6 @@
 package.path = package.path .. ";./scripts/?.lua;"
 
+require("Constants")
 
 ---@param n number
 ---@return string

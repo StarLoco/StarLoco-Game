@@ -10,23 +10,22 @@ public class MaitreCorbac {
     /*
      * Subarea : 211 Group : 289,120,200;825,90,98;823,90,98;824,80,88
      */
-    private short oldMap;
-    private short map;
+    private int oldMap;
+    private int map;
 
     public MaitreCorbac() {
         repop((short) -1);
     }
 
-    public void repop(short id) {
+    public void repop(int id) {
         if (this.oldMap == id)
             return;
 
         this.oldMap = id;
 
-        ArrayList<GameMap> maps = new ArrayList<>();
-        maps.addAll(World.world.getSubArea(211).getMaps());
-        maps.remove(World.world.getMap((short) 9589));
-        maps.remove(World.world.getMap((short) 9604));
+        ArrayList<GameMap> maps = new ArrayList<>(World.world.getSubArea(211).getMaps());
+        maps.remove(World.world.getMap( 9589));
+        maps.remove(World.world.getMap( 9604));
 
         int index = Formulas.random.nextInt(maps.size());
         GameMap map = maps.get(index);

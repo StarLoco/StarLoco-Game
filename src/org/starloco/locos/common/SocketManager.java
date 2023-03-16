@@ -998,8 +998,8 @@ public class SocketManager {
 
     }
 
-    public static void GAME_SEND_SPELL_UPGRADE_SUCCED(GameClient _out,
-                                                      int spellID, int level) {
+    public static void GAME_SEND_SPELL_UPGRADE_SUCCESS(GameClient _out,
+                                                       int spellID, int level) {
         String packet = "SUK" + spellID + "~" + level;
         send(_out, packet);
 
@@ -2187,7 +2187,7 @@ public class SocketManager {
 
     }
 
-    public static void GAME_SEND_MERCHANT_LIST(Player P, short mapID) {
+    public static void GAME_SEND_MERCHANT_LIST(Player P, int mapID) {
         StringBuilder packet = new StringBuilder();
         packet.append("GM|");
         if (World.world.getSeller(P.getCurMap().getId()) == null)

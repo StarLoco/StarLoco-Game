@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.starloco.locos.area.Area;
 import org.starloco.locos.area.SubArea;
 import org.starloco.locos.area.map.GameMap;
+import org.starloco.locos.area.map.MapData;
 import org.starloco.locos.area.map.entity.*;
 import org.starloco.locos.area.map.entity.InteractiveObject.InteractiveObjectTemplate;
 import org.starloco.locos.area.map.labyrinth.Minotoror;
@@ -61,7 +62,8 @@ public class World {
 
     private final Map<Integer, Account>    accounts    = new HashMap<>();
     private final Map<Integer, Player>     players     = new HashMap<>();
-    private final Map<Short, GameMap>    maps        = new HashMap<>();
+    private final Map<Integer, GameMap>    maps        = new ConcurrentHashMap<>();
+    private final Map<Integer, MapData>    mapsData    = new ConcurrentHashMap<>();
     private final Map<Integer, GameObject> objects     = new ConcurrentHashMap<>();
     private final Map<Integer, ExpLevel> experiences = new HashMap<>();
     private final Map<Integer, Spell> spells = new HashMap<>();
@@ -81,11 +83,11 @@ public class World {
     private final Map<Integer, Hdv> Hdvs = new HashMap<>();
     private final Map<Integer, Map<Integer, ArrayList<HdvEntry>>> hdvsItems = new HashMap<>();
     private final Map<Integer, Animation> Animations = new HashMap<>();
-    private final Map<Short, org.starloco.locos.area.map.entity.MountPark> MountPark = new HashMap<>();
+    private final Map<Integer, org.starloco.locos.area.map.entity.MountPark> MountPark = new HashMap<>();
     private final Map<Integer, Trunk> Trunks = new HashMap<>();
     private final Map<Integer, Collector> collectors = new HashMap<>();
     private final Map<Integer, House> Houses = new HashMap<>();
-    private final Map<Short, Collection<Integer>> Seller = new HashMap<>();
+    private final Map<Integer, Collection<Integer>> Seller = new HashMap<>();
     private final StringBuilder Challenges = new StringBuilder();
     private final Map<Integer, Prism> Prismes = new HashMap<>();
     private final Map<Integer, Map<String, String>> fullmorphs = new HashMap<>();
@@ -95,9 +97,9 @@ public class World {
     private final Map<Integer, Map<String, Map<String, Integer>>> extraMonstre = new HashMap<>();
     private final Map<Integer, GameMap> extraMonstreOnMap = new HashMap<>();
     private final Map<Integer, org.starloco.locos.area.map.entity.Tutorial> Tutorial = new HashMap<>();
-    private final Map<Short, Long> delayCollectors = new HashMap<>();
+    private final Map<Integer, Long> delayCollectors = new HashMap<>();
 
-    public Map<Short, Long> getDelayCollectors() {
+    public Map<Integer, Long> getDelayCollectors() {
         return delayCollectors;
     }
 
@@ -185,15 +187,20 @@ public class World {
         return maps.values();
     }
 
-    public GameMap getMap(short id) {
-        return maps.get(id);
+    public void addMapData(MapData map) {
+        mapsData.put(map.id, map);
+        // Make sure the subArea knows of that map
+        Optional.ofNullable(subAreas.get(map.subAreaID)).ifPresent(s -> s.addMapID(map.id));
+    }
+    public GameMap getMap(int id) {
+        try {
+            // Atomically get or load map
+            return maps.computeIfAbsent(id, mapID -> new GameMap(mapsData.get(mapID)));
+        }catch (NullPointerException ignored){
+            return null;
+        }
     }
 
-    public void addMap(GameMap map) {
-        if(map.getSubArea() != null && map.getSubArea().getArea().getId() == 42 && !Config.modeChristmas)
-            return;
-        maps.put(map.getId(), map);
-    }
     //endregion
 
     //region Objects data
@@ -251,7 +258,7 @@ public class World {
         return Guildes;
     }
 
-    public Map<Short, MountPark> getMountparks() {
+    public Map<Integer, MountPark> getMountparks() {
         return MountPark;
     }
 
@@ -372,7 +379,7 @@ public class World {
         DatabaseManager.get(ObjectSetData.class).loadFully();
         logger.debug("The panoplies were loaded successfully.");
 
-        DatabaseManager.get(MapData.class).loadFully();
+        DatabaseManager.get(GameMapData.class).loadFully();
         logger.debug("The maps were loaded successfully.");
 
         DatabaseManager.get(ScriptedCellData.class).loadFully();
@@ -1033,15 +1040,11 @@ public class World {
         players.values().stream().filter(player -> player.getAccID() == account.getId()).forEach(player -> player.setAccount(account));
     }
 
-    public int getZaapCellIdByMapId(short i) {
-        for (Entry<Integer, Integer> zaap : Constant.ZAAPS.entrySet()) {
-            if (zaap.getKey() == i)
-                return zaap.getValue();
-        }
-        return -1;
+    public int getZaapCellIdByMapId(int i) {
+        return Constant.ZAAPS.getOrDefault(i, -1);
     }
 
-    public int getEncloCellIdByMapId(short i) {
+    public int getEncloCellIdByMapId(int i) {
         GameMap map = getMap(i);
         if(map != null && map.getMountPark() != null && map.getMountPark().getCell() > 0)
             return map.getMountPark().getCell();
@@ -1238,7 +1241,7 @@ public class World {
         MountPark.put(mp.getMap().getId(), mp);
     }
 
-    public Map<Short, MountPark> getMountPark() {
+    public Map<Integer, MountPark> getMountPark() {
         return MountPark;
     }
 
@@ -1248,7 +1251,7 @@ public class World {
         StringBuilder packet = new StringBuilder();
         packet.append(enclosMax);
 
-        for (Entry<Short, MountPark> mp : MountPark.entrySet()) {
+        for (Entry<Integer, MountPark> mp : MountPark.entrySet()) {
             if (mp.getValue().getGuild() != null
                     && mp.getValue().getGuild().getId() == GuildID) {
                 packet.append("|").append(mp.getValue().getMap().getId()).append(";").append(mp.getValue().getSize()).append(";").append(mp.getValue().getMaxObject());// Nombre d'objets pour le dernier
@@ -1276,7 +1279,7 @@ public class World {
 
     public int totalMPGuild(int GuildID) {
         int i = 0;
-        for (Entry<Short, MountPark> mp : MountPark.entrySet())
+        for (Entry<Integer, MountPark> mp : MountPark.entrySet())
             if (mp.getValue().getGuild() != null && mp.getValue().getGuild().getId() == GuildID)
                 i++;
         return i;
@@ -1647,7 +1650,7 @@ public class World {
         if (player.getStoreItems().isEmpty())
             return;
 
-        short map = player.getCurMap().getId();
+        int map = player.getCurMap().getId();
 
         if (Seller.get(map) == null) {
             ArrayList<Integer> players = new ArrayList<>();
@@ -1662,11 +1665,11 @@ public class World {
         }
     }
 
-    public Collection<Integer> getSeller(short map) {
+    public Collection<Integer> getSeller(int map) {
         return Seller.get(map);
     }
 
-    public void removeSeller(int player, short map) {
+    public void removeSeller(int player, int map) {
         if(getSeller(map) != null)
             Seller.get(map).remove(player);
     }

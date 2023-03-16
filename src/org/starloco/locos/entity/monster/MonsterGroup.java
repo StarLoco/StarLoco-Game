@@ -26,7 +26,7 @@ public class MonsterGroup {
     private String condition = "";
     private ArrayList<GameObject> objects;
 
-    public MonsterGroup(int id, int alignment, ArrayList<MonsterGrade> possibles, GameMap map, int cell, int fixSize, MonsterGrade extra) {
+    public MonsterGroup(int id, int alignment, List<MonsterGrade> possibles, GameMap map, int cell, int fixSize, MonsterGrade extra) {
         this.id = id;
         this.alignment = alignment;
         int groupSize = fixSize > 0 && fixSize < 9 ? fixSize : Formulas.nextGaussian(1, 8);

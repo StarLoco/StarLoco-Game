@@ -24,7 +24,7 @@ public class ScriptedCellData extends FunctionDAO<Object> {
             result = getData("SELECT * FROM " + getTableName() + ";");
 
             while (result.next()) {
-                short mapId = result.getShort("MapID");
+                int mapId = result.getShort("MapID");
                 int cellId = result.getInt("CellID");
 
                 GameMap map = World.world.getMap(mapId);

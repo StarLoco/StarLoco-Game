@@ -2,7 +2,6 @@ package org.starloco.locos.kernel;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
-import org.classdump.luna.load.LoaderException;
 import org.fusesource.jansi.AnsiConsole;
 import org.slf4j.LoggerFactory;
 import org.starloco.locos.area.map.GameMap;
@@ -21,11 +20,9 @@ import org.starloco.locos.game.scheduler.entity.WorldPlayerOption;
 import org.starloco.locos.game.scheduler.entity.WorldPub;
 import org.starloco.locos.game.scheduler.entity.WorldSave;
 import org.starloco.locos.game.world.World;
-import org.starloco.locos.script.NpcScriptVM;
 import org.starloco.locos.util.TimerWaiter;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
