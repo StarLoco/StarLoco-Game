@@ -1,0 +1,51 @@
+local npc = Npc(812, 120)
+
+npc.accessories = {0, 698, 0, 0, 0}
+
+npc.sales = {
+    {item=7520},
+    {item=6716},
+    {item=7415},
+    {item=7518},
+    {item=7519},
+    {item=7522},
+    {item=7524},
+    {item=7704},
+    {item=7705},
+    {item=7706},
+    {item=7707},
+    {item=7708},
+    {item=7709},
+    {item=7710},
+    {item=7711},
+    {item=7712},
+    {item=7713},
+    {item=7714},
+    {item=7892},
+    {item=7911},
+    {item=8000},
+    {item=8151},
+    {item=8153},
+    {item=8155},
+    {item=8211},
+    {item=8561},
+    {item=8677},
+    {item=8693},
+    {item=9594},
+    {item=9617},
+    {item=9619},
+    {item=9620},
+    {item=9623},
+    {item=9624},
+    {item=9785},
+    {item=10106},
+    {item=10107},
+    {item=6978},
+    {item=10865},
+    {item=10866},
+    {item=10802},
+    {item=8071},
+    {item=9582}
+}
+
+RegisterNPCDef(npc)

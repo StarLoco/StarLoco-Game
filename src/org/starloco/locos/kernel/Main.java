@@ -22,6 +22,7 @@ import org.starloco.locos.game.scheduler.entity.WorldPub;
 import org.starloco.locos.game.scheduler.entity.WorldSave;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.script.NpcScriptVM;
+import org.starloco.locos.script.converter.NpcConverter;
 import org.starloco.locos.util.TimerWaiter;
 
 import java.io.File;
@@ -83,6 +84,8 @@ public class Main {
 	        World.world.createWorld();
             // Script engine
             World.world.loadScripts();
+
+            new NpcConverter().convert();
 
             new GameServer().initialize();
             new ExchangeClient().initialize();
