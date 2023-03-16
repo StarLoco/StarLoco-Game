@@ -8,6 +8,8 @@ npc.accessories = {1650, 6741, 945, 0, 0}
 function npc:onTalk(p, answer)
     if answer == 0 then p:ask(1885, {1638})
     elseif answer == 1638 then p:ask(1886, {1639})
+    elseif answer == 1639 then p:ask(1887, {2115})
+    elseif answer == 2115 then p:endDialog()
     end
 end
 

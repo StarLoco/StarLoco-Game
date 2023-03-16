@@ -7,6 +7,8 @@ npc.colors = {12614494, 10843992, 15461834}
 function npc:onTalk(p, answer)
     if answer == 0 then p:ask(402, {320, 319})
     elseif answer == 320 then p:ask(403, {607})
+    elseif answer == 607 then p:ask(678, {608})
+    elseif answer == 608 then p:ask(679)
     elseif answer == 319 then p:ask(403, {607})
     end
 end

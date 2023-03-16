@@ -13,6 +13,7 @@ function npc:onTalk(p, answer)
     elseif answer == 561 then p:ask(659)
     elseif answer == 282 then p:endDialog()
     elseif answer == 283 then p:ask(348, {361})
+    elseif answer == 361 then p:ask(436)
     end
 end
 

@@ -10,6 +10,9 @@ npc.customArtwork = 9099
 function npc:onTalk(p, answer)
     if answer == 0 then p:ask(3706, {3248})
     elseif answer == 3248 then p:ask(3707, {3250, 3249})
+    elseif answer == 3249 then p:ask(3708, {3252, 3251})
+    elseif answer == 3251 then p:ask(3709, {3253})
+    elseif answer == 3253 then p:endDialog()
     end
 end
 

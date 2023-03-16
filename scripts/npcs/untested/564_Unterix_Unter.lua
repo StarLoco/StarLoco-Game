@@ -16,6 +16,9 @@ npc.sales = {
 function npc:onTalk(p, answer)
     if answer == 0 then p:ask(2357, {1962, 1967, 1968})
     elseif answer == 1962 then p:ask(2358, {1963})
+    elseif answer == 1963 then p:ask(2359, {1964})
+    elseif answer == 1964 then p:ask(2361, {1965})
+    elseif answer == 1965 then p:ask(2362, {1966})
     end
 end
 

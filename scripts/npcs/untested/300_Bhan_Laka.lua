@@ -18,6 +18,7 @@ npc.sales = {
 function npc:onTalk(p, answer)
     if answer == 0 then p:ask(1167, {839, 838})
     elseif answer == 838 then p:ask(1168, {840})
+    elseif answer == 840 then p:ask(1170)
     elseif answer == 839 then p:endDialog()
     end
 end

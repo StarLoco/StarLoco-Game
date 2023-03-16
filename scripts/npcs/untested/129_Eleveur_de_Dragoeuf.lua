@@ -5,6 +5,8 @@ local npc = Npc(129, 9003)
 function npc:onTalk(p, answer)
     if answer == 0 then p:ask(433, {359})
     elseif answer == 359 then p:ask(434, {360})
+    elseif answer == 360 then p:ask(435, {4840})
+    elseif answer == 4840 then p:endDialog()
     end
 end
 

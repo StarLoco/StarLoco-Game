@@ -12,6 +12,8 @@ function npc:onTalk(p, answer)
     if answer == 0 then p:ask(2399, {2028, 2027})
     elseif answer == 2027 then p:ask(2400)
     elseif answer == 2028 then p:ask(2401, {2036, 2035})
+    elseif answer == 2035 then p:endDialog()
+    elseif answer == 2036 then p:ask(2402)
     end
 end
 

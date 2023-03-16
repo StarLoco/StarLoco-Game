@@ -30,6 +30,12 @@ function npc:onTalk(p, answer)
     if answer == 0 then p:ask(81, {80, 7453, 7})
     elseif answer == 80 then p:ask(84)
     elseif answer == 7453 then p:ask(7465, {7259, 7260})
+    elseif answer == 7259 then p:ask(7466, {7261})
+    elseif answer == 7261 then p:ask(7468, {7263})
+    elseif answer == 7263 then p:endDialog()
+    elseif answer == 7260 then p:ask(7467, {7262})
+    elseif answer == 7262 then p:ask(7469, {7264})
+    elseif answer == 7264 then p:endDialog()
     end
 end
 

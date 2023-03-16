@@ -22,6 +22,9 @@ npc.sales = {
 function npc:onTalk(p, answer)
     if answer == 0 then p:ask(1150, {818, 819, 1239})
     elseif answer == 818 then p:ask(1151, {3576, 820})
+    elseif answer == 820 then p:ask(1154, {822})
+    elseif answer == 822 then p:ask(1156)
+    elseif answer == 3576 then p:ask(4102)
     elseif answer == 819 then p:ask(1152)
     elseif answer == 1239 then p:ask(1606, {1240})
     end
