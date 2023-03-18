@@ -15,6 +15,7 @@ local questID = 230
 function npc:onTalk(p, answer)
     if answer == 0 then
         if p:questFinished(questID) then  p:ask(4122, {3616})
+        elseif p:questOngoing(questID) then p:ask(4115, {3594, 3592, 3593, 3591})
         else p:ask(4114, {3589, 3590}) end
     elseif answer == 3590 then
         p:endDialog()
@@ -43,11 +44,10 @@ function npc:onTalk(p, answer)
         --elseif answer >= 3606 and answer <= 3609 then fail(p)
     elseif answer == 3610 then
         p:completeObjective(questID, 940)
-        self:OnTalk(p, answer) -- This makes sure we have completed the quest
+        self:onTalk(p, 0) -- This makes sure we have completed the quest
     elseif p:questFinished(questID) and answer == 3616 then p:teleport(10692, 303)
     else fail(p)
     end
 end
 
--- Disabled: Quest doesn't complete properly :(
--- RegisterNPCDef(npc)
+RegisterNPCDef(npc)

@@ -27,7 +27,7 @@ public class Quest {
     public final static Map<Integer, Quest> quests = new HashMap<>();
 
     private final int id;
-    private final NpcTemplate npc;
+    private final int npcID;
     private final boolean delete;
     private Couple<Integer, Integer> condition = null;
     private final List<QuestObjective> objectives = new ArrayList<>();
@@ -36,7 +36,7 @@ public class Quest {
 
     public Quest(int id, int npc, boolean delete, String condition, String steps, String objectives, String action, String args) {
         this.id = id;
-        this.npc = World.world.getNPCTemplate(npc);
+        this.npcID = npc;
         this.delete = delete;
         this.handleObjectives(objectives);
         this.handleSteps(steps);
@@ -49,7 +49,7 @@ public class Quest {
     }
 
     public NpcTemplate getNpcTemplate() {
-        return npc;
+        return World.world.getNPCTemplate(npcID);
     }
 
     public boolean mustBeDeletedWhenFinished() {
@@ -354,7 +354,9 @@ public class Quest {
             first = false;
         }
         str.append(temp).append("|").append(previousObjective > 0 ? previousObjective : "").append("|").append(nextStep > 0 ? nextStep : "");
+        NpcTemplate npc = getNpcTemplate();
         if (npc != null && npc.legacy != null) {
+            // FIXME Get dialog for step
             str.append("|").append(npc.legacy.getInitQuestionId(player.getCurMap().getId())).append("|");
         }
 
