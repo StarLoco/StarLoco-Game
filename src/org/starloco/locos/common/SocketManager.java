@@ -1253,7 +1253,7 @@ public class SocketManager {
         send(out, pck.toString());
     }
 
-    @Deprecated
+    @Deprecated // Use GAME_SEND_QUESTION_PACKET(GameClient, int, List<Integer> String) instead.
     public static void GAME_SEND_QUESTION_PACKET(GameClient out, String str) {
         String packet = "DQ" + str;
         send(out, packet);

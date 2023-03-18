@@ -228,7 +228,7 @@ public class AccountData extends FunctionDAO<Account> {
         }
     }
 
-    @Deprecated
+    @Deprecated // Use modPoints instead
     public void updatePointsWithoutUsersDb(int id, long points) {
         PreparedStatement p = null;
         try {

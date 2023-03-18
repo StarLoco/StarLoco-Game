@@ -176,13 +176,13 @@ public class NpcTemplate {
         return flags;
     }
 
-    @Deprecated
+    @Deprecated // Will be deleted once we fully switch to scripts
     public void setQuest(Quest quest) {
         if(this.legacy==null)return; // Scripted NPC
         this.legacy.quest = quest;
     }
 
-    @Deprecated
+    @Deprecated // Will be deleted once we fully switch to scripts
     public Quest getQuest() {
         if(this.legacy==null)return null; // Scripted NPC
         return this.legacy.quest;
