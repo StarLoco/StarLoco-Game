@@ -147,6 +147,9 @@ public class GameClient {
         if(packet.isEmpty()) return;
 
         switch (packet.charAt(0)) {
+            case 'ù':
+                // Ignore for now
+                break;
             case 'A':
                 parseAccountPacket(packet);
                 break;
