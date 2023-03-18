@@ -25,6 +25,7 @@ public class NpcTemplateData extends FunctionDAO<NpcTemplate> {
             result = getData("SELECT * FROM " + getTableName() + ";");
             while (result.next()) {
                 int id = result.getInt("id");
+                String name = result.getString("name");
                 int bonusValue = result.getInt("bonusValue");
                 int gfxID = result.getInt("gfxID");
                 int scaleX = result.getInt("scaleX");
@@ -41,7 +42,7 @@ public class NpcTemplateData extends FunctionDAO<NpcTemplate> {
                 String quests = result.getString("quests");
                 String exchanges = result.getString("exchanges");
 
-                NpcTemplate template = new NpcTemplate(id, bonusValue, gfxID, scaleX, scaleY, sex, color1, color2, color3, access, extraClip, customArtWork, initQId, ventes, quests, exchanges, result.getString("path"), result.getByte("informations"));
+                NpcTemplate template = new NpcTemplate(id, name, bonusValue, gfxID, scaleX, scaleY, sex, color1, color2, color3, access, extraClip, customArtWork, initQId, ventes, quests, exchanges, result.getString("path"), result.getByte("informations"));
                 World.world.addNpcTemplate(template);
             }
         } catch (SQLException e) {

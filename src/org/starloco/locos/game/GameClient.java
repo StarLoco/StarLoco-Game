@@ -746,7 +746,7 @@ public class GameClient {
             return;
 
         switch (packet.charAt(2)) {
-            case '¤':// Unknow
+            case 0xA4:// Unknow
                 break;
             case '*'://Defaut
                 if (System.currentTimeMillis() - timeLastChatMsg < 500) {

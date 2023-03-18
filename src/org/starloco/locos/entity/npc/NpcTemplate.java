@@ -28,6 +28,7 @@ import static org.starloco.locos.script.ScriptVM.*;
 
 public class NpcTemplate {
     private final int id, gfxId, scaleX, scaleY, sex, color1, color2, color3;
+    private final String name;
     private final int[] accessories;
     private final int customArtWork;
     // private Quest quest;
@@ -36,11 +37,12 @@ public class NpcTemplate {
 
     public final LegacyData legacy;
 
-    public NpcTemplate(int id, int bonus, int gfxId, int scaleX, int scaleY, int sex, int color1, int color2, int color3, String accessories, int extraClip, int customArtWork, String questions,
+    public NpcTemplate(int id, String name, int bonus, int gfxId, int scaleX, int scaleY, int sex, int color1, int color2, int color3, String accessories, int extraClip, int customArtWork, String questions,
                        String sales, String quest, String exchanges, String path, byte flags) {
         this.scriptVal = null;
         this.legacy = new LegacyData(id, questions, sales, quest, exchanges, path);
         this.id = id;
+        this.name = name;
         this.gfxId = gfxId;
         this.scaleX = scaleX;
         this.scaleY = scaleY;
@@ -56,8 +58,8 @@ public class NpcTemplate {
     public NpcTemplate(Table val) {
         this.scriptVal = val;
         this.legacy = null;
-
         this.id = rawInt(val, "id");
+        this.name = "";
         this.gfxId = rawInt(val, "gfxID");
         this.sex = rawInt(val, "gender");
         this.scaleX = rawInt(val, "scaleX");
@@ -75,6 +77,14 @@ public class NpcTemplate {
 
     public int getId() {
         return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int[] getAccessories() {
+        return accessories;
     }
 
     public int getGfxId() {
@@ -288,6 +298,10 @@ public class NpcTemplate {
                     World.world.logger.error("#3# Erreur sur l'exchanges sur le PNJ d'id : " + npcID);
                 }
             }
+        }
+
+        public Map<Integer, Integer> getInitQuestions() {
+            return initQuestions;
         }
 
         public int getInitQuestionId(int id) {

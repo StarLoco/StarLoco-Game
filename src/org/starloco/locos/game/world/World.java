@@ -705,6 +705,10 @@ public class World {
         return questions.get(guid);
     }
 
+    public Map<Integer, NpcTemplate> getNPCTemplates() {
+        return npcsTemplate;
+    }
+
     public NpcTemplate getNPCTemplate(int guid) {
         return npcsTemplate.get(guid);
     }
