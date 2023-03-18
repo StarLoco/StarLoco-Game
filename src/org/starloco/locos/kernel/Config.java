@@ -22,7 +22,7 @@ public class Config {
     public static String databaseLoginName, databaseGameName;
 
     //network
-    public static String gameIp, exchangeIp, version, gameServerKey, startMessage;
+    public static String gameIp, exchangeIp, exchangeKey, version, gameServerKey, startMessage;
     public static int gameServerId, gamePort, exchangePort, startMap, startCell, startKamas, startLevel, limitByIp, timeBetweenEvent;
     public static short rateXp, rateDrop, rateHonor, rateJob, rateKamas, rateFm;
 
@@ -59,6 +59,7 @@ public class Config {
         try {
             Config.exchangeIp = properties.getProperty(Params.EXCHANGE_IP.toString()); i++;
             Config.exchangePort = Integer.parseInt(properties.getProperty(Params.EXCHANGE_PORT.toString())); i++;
+            Config.exchangeKey = properties.getProperty(Params.EXCHANGE_KEY.toString()); i++;
             Config.encryption = Boolean.parseBoolean(properties.getProperty(Params.ENCRYPTION.toString())); i++;
             Config.debug = Boolean.parseBoolean(properties.getProperty(Params.DEBUG.toString())); i++;
             Config.logs = Boolean.parseBoolean(properties.getProperty(Params.LOGS.toString())); i = 12;
@@ -146,6 +147,7 @@ public class Config {
                 .append("#System\n")
                 .append(Params.EXCHANGE_IP).append(" 127.0.0.1\n")
                 .append(Params.EXCHANGE_PORT).append(" 666\n")
+                .append(Params.EXCHANGE_KEY).append(" ChangeMeYn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=\n")
                 .append(Params.ENCRYPTION).append(" false\n")
                 .append(Params.DEBUG).append(" true\n")
                 .append(Params.LOGS).append(" true\n")
@@ -224,6 +226,7 @@ public class Config {
     private enum Params {
         EXCHANGE_IP("system.server.exchange.ip"),
         EXCHANGE_PORT("system.server.exchange.port"),
+        EXCHANGE_KEY("system.server.exchange.key"),
         GAME_IP("system.server.game.ip"),
         GAME_PORT("system.server.game.port"),
         GAME_SERVER_ID("system.server.game.id"),

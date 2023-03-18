@@ -1,10 +1,15 @@
 package org.starloco.locos.game;
 
 import java.net.InetSocketAddress;
+import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
+
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import org.starloco.locos.entity.exchange.NpcExchange;
 import org.starloco.locos.game.action.type.NpcDialogActionData;
 import org.starloco.locos.util.Pair;
@@ -153,6 +158,9 @@ public class GameClient {
             case 'A':
                 parseAccountPacket(packet);
                 break;
+            case 'H':
+                parseAuthPackets(packet);
+                break;
             case 'B':
                 parseBasicsPacket(packet);
                 break;
@@ -280,6 +288,35 @@ public class GameClient {
                 break;
             case 'E':
                 mimibiote(packet);
+                break;
+        }
+    }
+
+    private void switchCharacter() {
+        // 1.39.8 Switch character
+        Instant now = Instant.now();
+        Instant expiry = now.plusSeconds(30); // TODO Make that a config
+        String jws = Jwts.builder()
+                .setIssuer("StarLocoGameServer")
+                .setSubject(String.valueOf(account.getName()))
+                .claim("ip", account.getCurrentIp())
+                .setIssuedAt(Date.from(now))
+                .setExpiration(Date.from(expiry))
+                .signWith(
+                    Keys.hmacShaKeyFor(Base64.getDecoder().decode(Config.exchangeKey)),
+                    SignatureAlgorithm.HS256
+                )
+                .compact();
+
+        send("HS"+jws);
+    }
+
+    private void parseAuthPackets(String packet) {
+        switch (packet.charAt(1)) {
+            case 'S':
+                switchCharacter();
+                break;
+            default:
                 break;
         }
     }
