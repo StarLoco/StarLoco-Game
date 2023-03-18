@@ -111,25 +111,19 @@ public class TrunkData extends FunctionDAO<Trunk> {
     }
 
     public void update(Player player, House house) {
-        PreparedStatement p = null;
-
-        for (Trunk trunk : Trunk.getTrunksByHouse(house)) {
-            if(trunk.getOwnerId() != player.getAccID()) {
-                trunk.setOwnerId(player.getAccID());
-                trunk.setKey("-");
-
-                try {
-                    p = getPreparedStatement("UPDATE " + getTableName() + " SET `owner_id`=?, `key`='-' WHERE `id`=?");
+        Trunk.getTrunksByHouse(house)
+            .filter(t -> t.getOwnerId() != player.getAccID())
+            .peek(t -> t.setOwnerId(player.getAccID()))
+            .peek(t -> t.setKey("-"))
+            .forEach(trunk -> {
+                try(PreparedStatement p = getPreparedStatement("UPDATE " + getTableName() + " SET `owner_id`=?, `key`='-' WHERE `id`=?")) {
                     p.setInt(1, player.getAccID());
                     p.setInt(2, trunk.getId());
                     execute(p);
                 } catch (SQLException e) {
                     super.sendError(e);
-                } finally {
-                    close(p);
                 }
-            }
-        }
+            });
     }
 
 

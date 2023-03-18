@@ -14,9 +14,11 @@ import org.starloco.locos.object.GameObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Trunk {
 
@@ -81,9 +83,8 @@ public class Trunk {
         }
     }
 
-    public static ArrayList<Trunk> getTrunksByHouse(House h) {
-        ArrayList<Trunk> trunks = World.world.getTrunks().entrySet().stream().filter(trunk -> trunk.getValue().getHouseId() == h.getId()).map(Entry::getValue).collect(Collectors.toCollection(ArrayList::new));
-        return trunks;
+    public static Stream<Trunk> getTrunksByHouse(House h) {
+        return World.world.getTrunks().values().stream().filter(trunk -> trunk.getHouseId() == h.getId());
     }
 
     public void setObjects(String object) {

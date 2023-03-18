@@ -3737,7 +3737,7 @@ public class Action {
                     if (qp.isFinished())
                         return true;
 
-                    player.addXp((long) xp);
+                    player.addXp(xp);
                     SocketManager.GAME_SEND_Im_PACKET(player, "08;" + xp);
                     qp.setFinished(true);
                     SocketManager.GAME_SEND_Im_PACKET(player, "055;" + idQuest);
