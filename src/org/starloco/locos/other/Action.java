@@ -40,6 +40,7 @@ import org.starloco.locos.util.TimerWaiter;
 
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 public class Action {
 
@@ -326,6 +327,7 @@ public class Action {
                     }
                     NpcDialogActionData data = (NpcDialogActionData) player.getExchangeAction().getValue();
                     data.setQuestionId(qID);
+                    data.setAnswers(Arrays.stream(quest.getAnwsers().split(";")).map(Integer::parseInt).collect(Collectors.toList()));
                     try {
                         SocketManager.GAME_SEND_QUESTION_PACKET(client, quest.parse(player));
                     } catch (Exception e) {

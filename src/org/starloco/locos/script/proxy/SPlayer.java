@@ -67,6 +67,7 @@ public class SPlayer extends DefaultUserdata<Player> {
 
         NpcDialogActionData data = ((NpcDialogActionData) p.getExchangeAction().getValue());
         data.setQuestionId(question);
+        data.setAnswers(answersInts);
 
         String paramVal = param == null ? null : p.getStringVar(param.toString());
         SocketManager.GAME_SEND_QUESTION_PACKET(p.getGameClient(), question, answersInts, paramVal);

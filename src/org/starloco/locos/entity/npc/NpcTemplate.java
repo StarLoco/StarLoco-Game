@@ -531,7 +531,14 @@ public class NpcTemplate {
             ExchangeAction<NpcDialogActionData> exchangeAction = new ExchangeAction<>(ExchangeAction.TALKING_WITH, data);
             player.setExchangeAction(exchangeAction);
 
-            SocketManager.GAME_SEND_QUESTION_PACKET(player.getGameClient(), question.parse(player));
+            String packet = question.parse(player);
+
+            String[] split = packet.split("\\|");
+            if(split.length > 1) {
+                data.setAnswers(Arrays.stream(split[1].split(";")).map(Integer::parseInt).collect(Collectors.toList()));
+            }
+
+            SocketManager.GAME_SEND_QUESTION_PACKET(player.getGameClient(), packet);
 
             for (QuestPlayer questPlayer :  new ArrayList<>(player.getQuestPerso().values())) {
                 boolean loc1 = false;

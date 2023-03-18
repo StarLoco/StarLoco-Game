@@ -1306,7 +1306,7 @@ public class GameClient {
             int question = Integer.parseInt(infos[0]);
             int answer = Integer.parseInt(infos[1]);
 
-            if(data.getQuestionId() == question) {
+            if(data.getQuestionId() == question && data.hasAnswer(answer)) {
                 npc.getTemplate().onDialog(this.player, question, answer);
                 return;
             }

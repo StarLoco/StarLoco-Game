@@ -2,6 +2,7 @@ package org.starloco.locos.entity.npc;
 
 import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.client.Player;
+import org.starloco.locos.game.action.type.NpcDialogActionData;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.game.world.World.Couple;
 import org.starloco.locos.job.JobStat;
@@ -495,12 +496,18 @@ public class NpcQuestion {
     }
 
     public String parse(Player player) {
+        NpcDialogActionData data = (NpcDialogActionData) player.getExchangeAction().getValue();
+
         if (this.condition != null && !this.condition.equals("")) {
             if (!World.world.getConditionManager().validConditions(player, this.condition)) {
                 if (this.falseQuestion.contains("|")) {
-                    return World.world.getNPCQuestion(Integer.parseInt(this.falseQuestion.split("|")[0])).parse(player);
+                    int question = Integer.parseInt(this.falseQuestion.split("|")[0]);
+                    data.setQuestionId(question);
+                    return World.world.getNPCQuestion(question).parse(player);
                 } else {
-                    return World.world.getNPCQuestion(Integer.parseInt(this.falseQuestion)).parse(player);
+                    int question = Integer.parseInt(this.falseQuestion);
+                    data.setQuestionId(question);
+                    return World.world.getNPCQuestion(question).parse(player);
                 }
             }
         }
@@ -518,7 +525,7 @@ public class NpcQuestion {
                 GameMap map = player.getCurMap();
                 if (map == null) continue;
 
-                Npc npc = map.getNpc((Integer) player.getExchangeAction().getValue());
+                Npc npc = map.getNpc(data.getNpcTemplate().getId());
                 if (npc == null) continue;
 
                 NpcTemplate template = npc.getTemplate();
