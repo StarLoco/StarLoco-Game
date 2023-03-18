@@ -56,7 +56,7 @@ public class SoulStone extends GameObject {
             if (!isFirst)
                 stats.append(",");
             try {
-                stats.append("26f#0#0#").append(Integer.toHexString(coupl.first));
+                stats.append("26f####").append(coupl.first);
             } catch (Exception e) {
                 e.printStackTrace();
                 continue;

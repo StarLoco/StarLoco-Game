@@ -17,10 +17,7 @@ import org.starloco.locos.kernel.Logging;
 import org.starloco.locos.object.entity.Fragment;
 import org.starloco.locos.script.proxy.SItem;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 
 public class GameObject {
@@ -37,7 +34,7 @@ public class GameObject {
     private ArrayList<SpellEffect> Effects = new ArrayList<>();
     private ArrayList<String> SortStats = new ArrayList<>();
     private Map<Integer, String> txtStats = new HashMap<>();
-    private Map<Integer, Integer> SoulStats = new HashMap<>();
+    private Map<Integer, Integer> soulEaterStats = new HashMap<>();
 
     public GameObject(int Guid, int template, int qua, int pos, String strStats, int puit) {
         this.scriptVal = new SItem(this);
@@ -68,7 +65,7 @@ public class GameObject {
         this.position = pos;
         this.Stats = stats;
         this.Effects = effects;
-        this.SoulStats = _SoulStat;
+        this.soulEaterStats = _SoulStat;
         this.txtStats = _txtStats;
         this.obvijevanPos = 0;
         this.obvijevanLook = 0;
@@ -119,7 +116,8 @@ public class GameObject {
     }
 
     public void parseStringToStats(String strStats) {
-        if(this.template != null && this.template.getId() == 7010) return;
+        if(this.template == null) return;
+
         String dj1 = "";
         if (!strStats.equalsIgnoreCase("")) {
             for (String split : strStats.split(",")) {
@@ -165,7 +163,7 @@ public class GameObject {
                         continue;
                     }
                     if (id == Constant.STATS_PETS_SOUL) {
-                        SoulStats.put(Integer.parseInt(stats[1], 16), Integer.parseInt(stats[3], 16)); // put(id_monstre, nombre_tu�)
+                        soulEaterStats.put(Integer.parseInt(stats[1], 16), Integer.parseInt(stats[3], 16)); // put(id_monstre, nombre_tu�)
                         continue;
                     }
                     if (id == Constant.STATS_NAME_DJ) {
@@ -300,7 +298,7 @@ public class GameObject {
     }
 
     public Map<Integer, Integer> getSoulStat() {
-        return SoulStats;
+        return soulEaterStats;
     }
 
     public Map<Integer, String> getTxtStat() {
@@ -335,7 +333,7 @@ public class GameObject {
         return ok;
     }
 
-    public String parseItem() {
+    public String encodeItem() {
         String posi = position == Constant.ITEM_POS_NO_EQUIPED ? "" : Integer.toHexString(position);
         return Integer.toHexString(guid) + "~"
                 + Integer.toHexString(template == null ? 39 : template.getId()) + "~"
@@ -475,7 +473,7 @@ public class GameObject {
             isFirst = false;
         }
 
-        for (Entry<Integer, Integer> entry : SoulStats.entrySet()) {
+        for (Entry<Integer, Integer> entry : soulEaterStats.entrySet()) {
             if (!isFirst)
                 stats.append(",");
 
@@ -633,7 +631,7 @@ public class GameObject {
             }
             isFirst = false;
         }
-        for (Entry<Integer, Integer> entry : SoulStats.entrySet()) {
+        for (Entry<Integer, Integer> entry : soulEaterStats.entrySet()) {
             if (!isFirst)
                 stats.append(",");
             stats.append(Integer.toHexString(Constant.STATS_PETS_SOUL)).append("#").append(Integer.toHexString(entry.getKey())).append("#").append("0").append("#").append(Integer.toHexString(entry.getValue()));
@@ -813,7 +811,7 @@ public class GameObject {
         Effects.clear();
         txtStats.clear();
         SortStats.clear();
-        SoulStats.clear();
+        soulEaterStats.clear();
     }
 
     public void refreshStatsObjet(String newsStats) {
@@ -1122,8 +1120,8 @@ public class GameObject {
             }
         }
         check = false;
-        for(Entry<Integer, Integer> effect0 : this.SoulStats.entrySet()) {
-            for(Entry<Integer, Integer> effect1 : newObj.SoulStats.entrySet()) {
+        for(Entry<Integer, Integer> effect0 : this.soulEaterStats.entrySet()) {
+            for(Entry<Integer, Integer> effect1 : newObj.soulEaterStats.entrySet()) {
                 if(effect0.getKey().intValue() == effect1.getKey().intValue() && effect0.getValue().intValue() == effect1.getValue().intValue()) {
                     check = true;
                     break;

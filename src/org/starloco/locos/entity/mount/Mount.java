@@ -1119,7 +1119,7 @@ public class Mount {
 	public String parseToMountObjects() {
 		StringBuilder packet = new StringBuilder();
 		for(GameObject obj : this.objects.values())
-			packet.append("O").append(obj.parseItem()).append(";");
+			packet.append("O").append(obj.encodeItem()).append(";");
 		return packet.toString();
 	}
 	

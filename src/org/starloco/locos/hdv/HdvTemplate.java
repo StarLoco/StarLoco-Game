@@ -9,7 +9,7 @@ import java.util.Map;
 public class HdvTemplate {
 
     private int templateId;
-    private Map<Integer, HdvLine> lines = new HashMap<Integer, HdvLine>();
+    private Map<Integer, HdvLine> lines = new HashMap<>();
 
     public HdvTemplate(int templateId, HdvEntry toAdd) {
         this.templateId = templateId;

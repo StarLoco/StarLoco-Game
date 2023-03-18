@@ -12,12 +12,9 @@ import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.Constant;
 import org.starloco.locos.object.GameObject;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Trunk {
@@ -208,7 +205,7 @@ public class Trunk {
         StringBuilder packet = new StringBuilder();
 
         for (GameObject obj : this.object.values())
-            packet.append("O").append(obj.parseItem()).append(";");
+            packet.append("O").append(obj.encodeItem()).append(";");
         if (getKamas() != 0)
             packet.append("G").append(getKamas());
         return packet.toString();

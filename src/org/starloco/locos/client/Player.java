@@ -2566,12 +2566,12 @@ public class Player {
         return objects;
     }
 
-    public String parseItemToASK() {
+    public String encodeItemASK() {
         StringBuilder str = new StringBuilder();
         if (objects.isEmpty())
             return "";
         for (GameObject obj : objects.values()) {
-            str.append(obj.parseItem());
+            str.append(obj.encodeItem());
         }
         return str.toString();
     }
@@ -3364,7 +3364,7 @@ public class Player {
     public String parseBankPacket() {
         StringBuilder packet = new StringBuilder();
         for (GameObject entry : account.getBank())
-            packet.append("O").append(entry.parseItem()).append(";");
+            packet.append("O").append(entry.encodeItem()).append(";");
         if (getBankKamas() != 0)
             packet.append("G").append(getBankKamas());
         return packet.toString();

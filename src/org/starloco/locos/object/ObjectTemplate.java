@@ -664,4 +664,15 @@ public class ObjectTemplate {
         }
         return !bannedObjects.contains(this.getId());
     }
+
+    public boolean isFilledSoulStone() {
+        switch (type) {
+            case 85:
+            case 124:
+            case 125:
+                return true;
+        default:
+            return false;
+        }
+    }
 }

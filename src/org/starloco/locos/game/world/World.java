@@ -1078,7 +1078,7 @@ public class World {
 
         if (template == 8378) {
             return new Fragment(id, stats);
-        } else if (getObjTemplate(template).getType() == 85) {
+        } else if (getObjTemplate(template).isFilledSoulStone()) {
             return new SoulStone(id, qua, template, pos, stats);
         } else if (getObjTemplate(template).getType() == 24 && (Constant.isCertificatDopeuls(getObjTemplate(template).getId()) || getObjTemplate(template).getId() == 6653)) {
             try {

@@ -474,7 +474,7 @@ public class Collector {
         StringBuilder items = new StringBuilder();
         if (!this.objects.isEmpty())
             for (GameObject obj : this.objects.values())
-                items.append("O").append(obj.parseItem()).append(";");
+                items.append("O").append(obj.encodeItem()).append(";");
         if (this.kamas != 0)
             items.append("G").append(this.kamas);
         return items.toString();

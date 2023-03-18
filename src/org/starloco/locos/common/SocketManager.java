@@ -46,7 +46,7 @@ public class SocketManager {
 
     public static void GAME_SEND_UPDATE_ITEM(Player P, GameObject obj) // Utilis� pour tours bonbon
     {
-        String packet = "OC|" + obj.parseItem();
+        String packet = "OC|" + obj.encodeItem();
         send(P, packet);
     }
 
@@ -126,7 +126,7 @@ public class SocketManager {
 
     public static void GAME_SEND_UPDATE_OBJECT_DISPLAY_PACKET(Player perso,
                                                               GameObject item) {
-        send(perso, "OCO" + item.parseItem());
+        send(perso, "OCO" + item.encodeItem());
     }
 
     public static void GAME_SEND_Re_PACKET(Player out, String sign,
@@ -154,7 +154,7 @@ public class SocketManager {
             packet.append("|").append(perso.getGfxId()).append("|").append((color1 == -1 ? "-1" : Integer.toHexString(color1)));
             packet.append("|").append((color2 == -1 ? "-1" : Integer.toHexString(color2))).append("|");
             packet.append((color3 == -1 ? "-1" : Integer.toHexString(color3))).append("|");
-            packet.append(perso.parseItemToASK());
+            packet.append(perso.encodeItemASK());
             send(out, packet.toString());
         } catch(Exception e) { e.printStackTrace(); System.out.println("Error occured : " + e.getMessage());}
     }
@@ -1105,7 +1105,7 @@ public class SocketManager {
     }
 
     public static void GAME_SEND_OAKO_PACKET(Player out, GameObject obj) {
-        String packet = "OAKO" + obj.parseItem();
+        String packet = "OAKO" + obj.encodeItem();
         send(out, packet);
     }
 
