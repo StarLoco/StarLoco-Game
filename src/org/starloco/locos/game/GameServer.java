@@ -34,7 +34,7 @@ public class GameServer {
         this.acceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, 60 * 10 /*10 Minutes*/);
         this.acceptor.setHandler(new GameHandler());
 
-        ((Logger)LoggerFactory.getLogger("o.a.m.f.codec.ProtocolCodecFilter")).setLevel(Level.OFF);
+        ((Logger)LoggerFactory.getLogger("org.apache.mina.filter.codec.ProtocolCodecFilter")).setLevel(Level.OFF);
     }
     public void initialize() {
         if (this.acceptor.isActive())

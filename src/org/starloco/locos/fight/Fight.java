@@ -4327,10 +4327,11 @@ public class Fight {
                         continue;
                     if (i.getDouble() != null)
                         continue;//Pas de double dans les gains
-                    if (i.getPdv() == 0 || i.hasLeft())
-                        Packet.append("0;").append(i.getId()).append(";").append(i.getPacketsName()).append(";").append(i.getLvl()).append(";1").append(";").append("0;0;0").append(";;;;|");
-                    else
-                        Packet.append("0;").append(i.getId()).append(";").append(i.getPacketsName()).append(";").append(i.getLvl()).append(";0").append(";").append("0;0;0").append(";;;;|");
+                    Packet.append("0;").append(i.getId()).append(";").append(i.getPacketsName()).append(";").append(i.getLvl()).append(";");
+                    if(i.getPlayer() != null) {
+                        Packet.append(i.getDefaultGfx()).append(";");
+                    }
+                    Packet.append(";").append(i.getPdv() == 0 || i.hasLeft()?1:0).append(";").append("0;0;0").append(";;;;|");
                 }
                 // Fin gagnant
                 for (Fighter i : TEAM2)//Les perdants
@@ -4341,10 +4342,11 @@ public class Fight {
                         continue;
                     if (i.getDouble() != null)
                         continue;//Pas de double dans les gains
-                    if (i.getPdv() == 0 || i.hasLeft())
-                        Packet.append("2;").append(i.getId()).append(";").append(i.getPacketsName()).append(";").append(i.getLvl()).append(";1").append(";").append("0;0;0").append(";;;;|");
-                    else
-                        Packet.append("2;").append(i.getId()).append(";").append(i.getPacketsName()).append(";").append(i.getLvl()).append(";0").append(";").append("0;0;0").append(";;;;|");
+                    Packet.append("2;").append(i.getId()).append(";").append(i.getPacketsName()).append(";").append(i.getLvl()).append(";");
+                    if(i.getPlayer() != null) {
+                        Packet.append(i.getDefaultGfx()).append(";");
+                    }
+                    Packet.append(";").append(i.getPdv() == 0 || i.hasLeft()?1:0).append(";").append("0;0;0").append(";;;;|");
                 }
 
                 return Packet.toString();
@@ -5230,7 +5232,9 @@ public class Fight {
                     p.append(i.getId()).append(";");
                     p.append(i.getPacketsName()).append(";");
                     p.append(i.getLvl()).append(";");
-                    p.append(i.getDefaultGfx()).append(";"); // 1.39
+                    if(i.getPlayer() != null) {
+                        p.append(i.getDefaultGfx()).append(";");
+                    }
                     p.append((i.isDead() ? "1" : "0")).append(";");
                     p.append(i.xpString(";")).append(";");
                     p.append((xpPlayer == 0 ? "" : xpPlayer)).append(";");
@@ -5269,7 +5273,11 @@ public class Fight {
                         if (maxHonor == -1) maxHonor = World.world.getExpLevel(player.getGrade()).pvp;
 
                         StringBuilder temporary = new StringBuilder();
-                        temporary.append("2;").append(i.getId()).append(";").append(i.getPacketsName()).append(";").append(i.getLvl()).append(";").append((i.isDead() ? "1" : "0")).append(";");
+                        temporary.append("2;").append(i.getId()).append(";").append(i.getPacketsName()).append(";").append(i.getLvl()).append(";");
+                        if(i.getPlayer() !=  null) {
+                            temporary.append(i.getDefaultGfx()).append(";");
+                        }
+                        temporary.append((i.isDead() ? "1" : "0")).append(";");
                         temporary.append(player.getAlignment() != Constant.ALIGNEMENT_NEUTRE ? World.world.getExpLevel(player.getGrade()).pvp : 0).append(";");
                         temporary.append(player.get_honor()).append(";");
                         temporary.append(player.getAlignment() != Constant.ALIGNEMENT_NEUTRE ? maxHonor : 0).append(";");
@@ -5308,7 +5316,11 @@ public class Fight {
                                 maxHonor = World.world.getExpLevel(player.getGrade()).pvp;
 
                             StringBuilder temporary = new StringBuilder();
-                            temporary.append("2;").append(i.getId()).append(";").append(i.getPacketsName()).append(";").append(i.getLvl()).append(";").append((i.isDead() ? "1" : "0")).append(";");
+                            temporary.append("2;").append(i.getId()).append(";").append(i.getPacketsName()).append(";").append(i.getLvl()).append(";");
+                            if(i.getPlayer() != null) {
+                                temporary.append(i.getDefaultGfx()).append(";");
+                            }
+                            temporary.append((i.isDead() ? "1" : "0")).append(";");
                             temporary.append(player.getAlignment() != Constant.ALIGNEMENT_NEUTRE ? World.world.getExpLevel(player.getGrade()).pvp : 0).append(";");
                             temporary.append(player.get_honor()).append(";");
                             temporary.append(player.getAlignment() != Constant.ALIGNEMENT_NEUTRE ? maxHonor : 0).append(";");
@@ -5330,7 +5342,11 @@ public class Fight {
                                 maxHonor = World.world.getExpLevel(prism.getLevel()).pvp;
 
                             StringBuilder temporary = new StringBuilder();
-                            temporary.append("2;").append(i.getId()).append(";").append(i.getPacketsName()).append(";").append(i.getLvl()).append(";").append((i.isDead() ? "1" : "0")).append(";");
+                            temporary.append("2;").append(i.getId()).append(";").append(i.getPacketsName()).append(";").append(i.getLvl()).append(";");
+                            if(i.getPlayer() != null) {
+                                temporary.append(i.getDefaultGfx()).append(";");
+                            }
+                            temporary.append((i.isDead() ? "1" : "0")).append(";");
                             temporary.append(World.world.getExpLevel(prism.getLevel()).pvp).append(";");
                             temporary.append(prism.getHonor()).append(";");
                             temporary.append(maxHonor).append(";");
@@ -5371,10 +5387,12 @@ public class Fight {
                     player.calculTurnCandy();
                 if (this.getType() != Constant.FIGHT_TYPE_AGRESSION && this.getType() != Constant.FIGHT_TYPE_CONQUETE) {
                     StringBuilder temporary = new StringBuilder();
-                    if (i.getPdv() == 0 || i.hasLeft() || i.isDead())
-                        temporary.append("0;").append(i.getId()).append(";").append(i.getPacketsName()).append(";").append(i.getLvl()).append(";").append(i.getDefaultGfx()).append(";").append(";1").append(";").append(i.xpString(";")).append(";;;;|");
-                    else
-                        temporary.append("0;").append(i.getId()).append(";").append(i.getPacketsName()).append(";").append(i.getLvl()).append(";").append(i.getDefaultGfx()).append(";").append(";0").append(";").append(i.xpString(";")).append(";;;;|");
+                    temporary.append("0;").append(i.getId()).append(";").append(i.getPacketsName()).append(";").append(i.getLvl()).append(";");
+                    if(i.getPlayer() != null) {
+                        temporary.append(i.getDefaultGfx()).append(";");
+                    }
+                    temporary.append(";").append(i.getPdv() == 0 || i.hasLeft() || i.isDead()?1:0).append(";");
+                    temporary.append(i.xpString(";")).append(";;;;|");
                     packet.append(temporary);
                 } else {
                     // Si c'est un neutre, on ne gagne pas de points
@@ -5398,7 +5416,7 @@ public class Fight {
                         if (maxHonor == -1)
                             maxHonor = World.world.getExpLevel(player.getGrade()).pvp;
 
-                        packet.append("0;").append(i.getId()).append(";").append(i.getPacketsName()).append(";").append(i.getLvl()).append(";").append((i.isDead() ? "1" : "0")).append(";");
+                        packet.append("0;").append(i.getId()).append(";").append(i.getPacketsName()).append(";").append(i.getLvl()).append(";").append(i.getDefaultGfx()).append(";").append((i.isDead() ? "1" : "0")).append(";");
                         packet.append(player.getAlignment() != Constant.ALIGNEMENT_NEUTRE ? World.world.getExpLevel(player.getGrade()).pvp : 0).append(";");
                         packet.append(player.get_honor()).append(";");
                         packet.append(player.getAlignment() != Constant.ALIGNEMENT_NEUTRE ? maxHonor : 0).append(";");
@@ -5419,7 +5437,7 @@ public class Fight {
                                 maxHonor = World.world.getExpLevel(player.getGrade()).pvp;
 
                             player.setDeshonor(player.getDeshonor() - winD);
-                            packet.append("0;").append(i.getId()).append(";").append(i.getPacketsName()).append(";").append(i.getLvl()).append(";").append((i.isDead() ? "1" : "0")).append(";");
+                            packet.append("0;").append(i.getId()).append(";").append(i.getPacketsName()).append(";").append(i.getLvl()).append(";").append(i.getDefaultGfx()).append(";").append((i.isDead() ? "1" : "0")).append(";");
                             packet.append(player.getAlignment() != Constant.ALIGNEMENT_NEUTRE ? World.world.getExpLevel(player.getGrade()).pvp : 0).append(";");
                             packet.append(player.get_honor()).append(";");
                             packet.append(player.getAlignment() != Constant.ALIGNEMENT_NEUTRE ? maxHonor : 0).append(";");
@@ -5438,7 +5456,7 @@ public class Fight {
                                 maxHonor = World.world.getExpLevel(prism.getLevel()).pvp;
 
                             prism.addHonor(winH);
-                            packet.append("0;").append(i.getId()).append(";").append(i.getPacketsName()).append(";").append(i.getLvl()).append(";").append((i.isDead() ? "1" : "0")).append(";");
+                            packet.append("0;").append(i.getId()).append(";").append(i.getPacketsName()).append(";").append(i.getLvl()).append(";").append(i.getDefaultGfx()).append(";").append((i.isDead() ? "1" : "0")).append(";");
                             packet.append(World.world.getExpLevel(prism.getLevel()).pvp).append(";");
                             packet.append(prism.getHonor()).append(";");
                             packet.append(maxHonor).append(";");
