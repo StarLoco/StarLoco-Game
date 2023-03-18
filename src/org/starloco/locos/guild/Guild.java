@@ -243,8 +243,8 @@ public class Guild {
         return String.valueOf(getNbCollectors()) + "|" + Collector.countCollectorGuild(getId()) + "|" + 100 * getLvl() + "|" + getLvl() + "|" + getStats(158) + "|" + getStats(176) + "|" + getStats(124) + "|" + getNbCollectors() + "|" + getCapital() + "|" + (1000 + (10 * getLvl())) + "|" + compileSpell();
     }
 
-    public String parseQuestionTaxCollector() {
-        return "1" + ';' + getName() + ',' + getStats(Constant.STATS_ADD_PODS) + ',' + getStats(Constant.STATS_ADD_PROS) + ',' + getStats(Constant.STATS_ADD_SAGE) + ',' + getNbCollectors();
+    public String encodeTaxCollectorDQ() {
+        return String.join(",","DQ;" + getName(), String.valueOf(getStats(Constant.STATS_ADD_PODS)), String.valueOf(getStats(Constant.STATS_ADD_PROS)), String.valueOf(getStats(Constant.STATS_ADD_SAGE)), String.valueOf(getNbCollectors()));
     }
 
     public String parseMembersToGM() {

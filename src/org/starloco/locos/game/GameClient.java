@@ -6,6 +6,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
 import org.starloco.locos.entity.exchange.NpcExchange;
+import org.starloco.locos.game.action.type.NpcDialogActionData;
 import org.starloco.locos.util.Pair;
 import org.apache.mina.core.session.IoSession;
 import org.starloco.locos.area.Area;
@@ -405,7 +406,7 @@ public class GameClient {
                     isValid = false;
                     break;
                 }
-                if ((curLetter >= 'a' && curLetter <= 'z') || (curLetter >= 'A' && curLetter <= 'Z')) {
+                if (curLetter >= 'a') {
                     exLetterA = exLetterB;
                     exLetterB = curLetter;
                 }
@@ -488,7 +489,7 @@ public class GameClient {
         }
         if(this.language == null) this.language = LangEnum.ENGLISH;
 
-        String gifts = ((GiftData) DatabaseManager.get(GiftData.class)).load(this.account.getId()).getValue();
+        String gifts = ((GiftData) DatabaseManager.get(GiftData.class)).load(this.account.getId()).second;
         if (gifts == null)
             return;
         if (!gifts.isEmpty()) {
@@ -1269,63 +1270,61 @@ public class GameClient {
     private void npcCreateDialog(String packet) {
         int id = Integer.parseInt(packet.substring(2).split((char) 0x0A + "")[0]);
 
-        if (this.player.isMissingSubscription() || this.player.getExchangeAction() != null) {
-            SocketManager.GAME_SEND_DCK_PACKET(this, id);
-            SocketManager.GAME_SEND_EXCHANGE_REQUEST_ERROR(this.player.getGameClient(), 'S');
+        if (player.isMissingSubscription() || player.getExchangeAction() != null) {
+            SocketManager.GAME_SEND_EXCHANGE_REQUEST_ERROR(player.getGameClient(), 'S');
             return;
         }
 
         Collector collector = World.world.getCollector(id);
 
-        if (collector != null && collector.getMap() == this.player.getCurMap().getId()) {
+        if (collector != null && collector.getMap() == player.getCurMap().getId()) {
             SocketManager.GAME_SEND_DCK_PACKET(this, id);
-            SocketManager.GAME_SEND_QUESTION_PACKET(this, World.world.getGuild(collector.getGuildId()).parseQuestionTaxCollector());
+            send(World.world.getGuild(collector.getGuildId()).encodeTaxCollectorDQ());
             return;
         }
 
-        Npc npc = this.player.getCurMap().getNpc(id);
-        if (npc == null) return;
-        int templateID = npc.getTemplate().getId();
+        Npc npc = player.getCurMap().getNpc(id);
 
-        ExchangeAction<Integer> exchangeAction = new ExchangeAction<>(ExchangeAction.TALKING_WITH, templateID);
-        this.player.setExchangeAction(exchangeAction);
-
-
-        SocketManager.GAME_SEND_DCK_PACKET(this, id);
-        npc.getTemplate().onCreateDialog(this.player);
+        if (npc != null) {
+            npc.onCreateDialog(player);
+        }
     }
 
     @SuppressWarnings("unchecked")
     private void npcResponse(String packet) {
+        ExchangeAction<?> action = this.player.getExchangeAction();
+
+        if (action == null || action.getType() != ExchangeAction.TALKING_WITH)
+            return;
+
         String[] infos = packet.substring(2).split("\\|");
-        try {
-            ExchangeAction<?> checkExchangeAction = this.player.getExchangeAction();
-            if (checkExchangeAction == null || checkExchangeAction.getType() != ExchangeAction.TALKING_WITH) return;
 
-            ExchangeAction<Integer> exchangeAction = (ExchangeAction<Integer>) this.player.getExchangeAction();
-            int npcTemplateID = exchangeAction.getValue();
+        NpcDialogActionData data = ((ExchangeAction<NpcDialogActionData>) this.player.getExchangeAction()).getValue();
+        Npc npc = data.getNpc(player);
 
-            // safety check
-            if(player.getCurMap().getNpcByTemplateId(npcTemplateID) == null)return;
+        if (npc != null && infos.length >= 2) {
+            int question = Integer.parseInt(infos[0]);
+            int answer = Integer.parseInt(infos[1]);
 
-            int questionId = Integer.parseInt(infos[0]);
-            int answerId = Integer.parseInt(infos[1]);
-
-
-            World.world.getNPCTemplate(npcTemplateID).onDialog(this.player, questionId, answerId);
-        } catch (Exception e) {
-            e.printStackTrace();
-            this.player.setIsOnDialogAction(-1);
-            this.player.setExchangeAction(null);
-            SocketManager.GAME_SEND_END_DIALOG_PACKET(this);
+            if(data.getQuestionId() == question) {
+                npc.getTemplate().onDialog(this.player, question, answer);
+                return;
+            }
         }
+
+        this.player.setExchangeAction(null);
+        SocketManager.GAME_SEND_END_DIALOG_PACKET(this);
     }
 
     private void quitDialog() {
-        this.player.setAway(false);
+        ExchangeAction<?> action = this.player.getExchangeAction();
+
+        if (action == null || action.getType() != ExchangeAction.TALKING_WITH)
+            return;
+
         this.walk = false;
-        if (this.player.getExchangeAction() != null && this.player.getExchangeAction().getType() == ExchangeAction.TALKING_WITH)
-            this.player.setExchangeAction(null);
+        this.player.setAway(false);
+        this.player.setExchangeAction(null);
         SocketManager.GAME_SEND_END_DIALOG_PACKET(this);
     }
 

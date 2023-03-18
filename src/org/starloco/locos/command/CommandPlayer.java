@@ -404,8 +404,6 @@ public class CommandPlayer {
 
     private static boolean commandHelp(Player player, String msg) {
         player.sendMessage(player.getLang().trans("command.commandplayer.default"));
-        ExchangeAction<Integer> exchangeAction = new ExchangeAction<>(ExchangeAction.TALKING_WITH, player.getId());
-        player.setExchangeAction(exchangeAction);
         return true;
     }
 

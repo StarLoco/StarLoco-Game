@@ -24,7 +24,7 @@ public class ExchangeClient {
     public ExchangeClient() {
         this.ioConnector.setHandler(new ExchangeHandler());
         Config.exchangeClient = this;
-        ExchangeClient.logger.setLevel(Level.ALL);
+        ExchangeClient.logger.setLevel(Level.INFO);
     }
 
     public void setIoSession(IoSession ioSession) {

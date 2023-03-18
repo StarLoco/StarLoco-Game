@@ -10,6 +10,7 @@ import org.starloco.locos.database.DatabaseManager;
 import org.starloco.locos.database.data.login.PlayerData;
 import org.starloco.locos.fight.spells.Spell;
 import org.starloco.locos.game.action.ExchangeAction;
+import org.starloco.locos.game.action.type.NpcDialogActionData;
 import org.starloco.locos.job.JobStat;
 import org.starloco.locos.kernel.Constant;
 import org.starloco.locos.object.GameObject;
@@ -64,6 +65,8 @@ public class SPlayer extends DefaultUserdata<Player> {
         List<Integer> answersInts = ScriptVM.intsFromLuaTable(args.nextOptionalTable(null));
         ByteString param = args.nextOptionalString(null);
 
+        NpcDialogActionData data = ((NpcDialogActionData) p.getExchangeAction().getValue());
+        data.setQuestionId(question);
 
         String paramVal = param == null ? null : p.getStringVar(param.toString());
         SocketManager.GAME_SEND_QUESTION_PACKET(p.getGameClient(), question, answersInts, paramVal);

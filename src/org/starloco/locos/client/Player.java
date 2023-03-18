@@ -38,6 +38,7 @@ import org.starloco.locos.game.GameClient;
 import org.starloco.locos.game.GameServer;
 import org.starloco.locos.game.action.ExchangeAction;
 import org.starloco.locos.game.action.GameAction;
+import org.starloco.locos.game.action.type.NpcDialogActionData;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.guild.GuildMember;
 import org.starloco.locos.job.Job;
@@ -210,7 +211,6 @@ public class Player {
     private int oldCell = 0;
     private String _allTitle = "";
     private boolean isBlocked = false;
-    private int action = -1;
     //Regen hp
     private boolean sitted;
     private int regenRate = 2000;
@@ -3270,8 +3270,9 @@ public class Player {
 
     public void openBank() {
         if(this.getExchangeAction().getType() == ExchangeAction.TALKING_WITH) {
-            NpcTemplate template = World.world.getNPCTemplate((Integer) this.getExchangeAction().getValue());
-            if(!template.isBankClerk()) {
+            NpcDialogActionData data = (NpcDialogActionData) this.getExchangeAction().getValue();
+
+            if(!data.getNpcTemplate().isBankClerk()) {
                 // Opening bank while talking to an NPC is not valid, except when the NPc is a bank clerk
                 return;
             }
@@ -5780,14 +5781,6 @@ public class Player {
 
     public void setInHouse(House h) {
         _curHouse = h;
-    }
-
-    public int getIsOnDialogAction() {
-        return this.action;
-    }
-
-    public void setIsOnDialogAction(int action) {
-        this.action = action;
     }
 
     private ExchangeAction<?> exchangeAction;

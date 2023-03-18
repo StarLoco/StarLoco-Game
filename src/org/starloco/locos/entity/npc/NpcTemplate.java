@@ -8,6 +8,7 @@ import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.database.data.game.SaleOffer;
 import org.starloco.locos.database.data.game.SaleOffer.Currency;
 import org.starloco.locos.game.action.ExchangeAction;
+import org.starloco.locos.game.action.type.NpcDialogActionData;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.game.world.World.Couple;
 import org.starloco.locos.kernel.Constant;
@@ -126,7 +127,9 @@ public class NpcTemplate {
         }
     }
 
-    public void onCreateDialog(Player player) { this.onDialog(player,  0,0);}
+    public void onCreateDialog(Player player) {
+        this.onDialog(player,  0,0);
+    }
     public void onDialog(Player player, int question, int response) {
         if(scriptVal == null) {
             legacy.onDialog(this, player, question, response);
@@ -377,7 +380,6 @@ public class NpcTemplate {
             NpcAnswer answer = World.world.getNpcAnswer(answerId);
 
             if (question == null || answer == null) {
-                player.setIsOnDialogAction(-1);
                 SocketManager.GAME_SEND_END_DIALOG_PACKET(player.getGameClient());
                 return;
             }
@@ -457,14 +459,10 @@ public class NpcTemplate {
             boolean leave = answer.apply(player);
 
             if (!answer.isAnotherDialog()) {
-                if (player.getIsOnDialogAction() == 1) {
-                    player.setIsOnDialogAction(-1);
-                } else {
-                    if (leave) {
-                        SocketManager.GAME_SEND_END_DIALOG_PACKET(player.getGameClient());
-                        if(player.getExchangeAction() != null && player.getExchangeAction().getType() == ExchangeAction.TALKING_WITH)
-                            player.setExchangeAction(null);
-                    }
+                if (leave) {
+                    SocketManager.GAME_SEND_END_DIALOG_PACKET(player.getGameClient());
+                    if (player.getExchangeAction() != null && player.getExchangeAction().getType() == ExchangeAction.TALKING_WITH)
+                        player.setExchangeAction(null);
                 }
             }
         }
@@ -529,21 +527,27 @@ public class NpcTemplate {
                 }
             }
 
-            ExchangeAction<Integer> exchangeAction = new ExchangeAction<>(ExchangeAction.TALKING_WITH, template.id);
+            NpcDialogActionData data = new NpcDialogActionData(template, questionId);
+            ExchangeAction<NpcDialogActionData> exchangeAction = new ExchangeAction<>(ExchangeAction.TALKING_WITH, data);
             player.setExchangeAction(exchangeAction);
 
             SocketManager.GAME_SEND_QUESTION_PACKET(player.getGameClient(), question.parse(player));
 
             for (QuestPlayer questPlayer :  new ArrayList<>(player.getQuestPerso().values())) {
                 boolean loc1 = false;
-                for (QuestObjective questObjective : questPlayer.getQuest().getQuestObjectives())
-                    if (questObjective.getNpc() != null && questObjective.getNpc().getId() == player.getCurMap().getNpc(exchangeAction.getValue()).getTemplate().getId())
+                for (QuestObjective questObjective : questPlayer.getQuest().getQuestObjectives()) {
+                    if (questObjective.getNpc() != null && questObjective.getNpc().getId() == template.getId()) {
                         loc1 = true;
+                        break;
+                    }
+                }
 
                 Quest quest = questPlayer.getQuest();
-                if (quest == null || questPlayer.isFinish()) continue;
+                if (quest == null || questPlayer.isFinish())
+                    continue;
                 NpcTemplate npcTemplate = quest.getNpcTemplate();
-                if (npcTemplate == null && !loc1) continue;
+                if (npcTemplate == null && !loc1)
+                    continue;
 
                 quest.updateQuestData(player, false, 0);
             }

@@ -7,6 +7,7 @@ import org.starloco.locos.database.data.login.ObjectData;
 import org.starloco.locos.database.data.login.PlayerData;
 import org.starloco.locos.entity.npc.NpcTemplate;
 import org.starloco.locos.game.action.ExchangeAction;
+import org.starloco.locos.game.action.type.NpcDialogActionData;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.game.world.World.Couple;
 import org.starloco.locos.kernel.Config;
@@ -253,9 +254,8 @@ public class Quest {
             boolean refresh = validation;
             switch (questObjective.getType()) {
                 case 3://Donner item
-                    if (player.getExchangeAction() != null && player.getExchangeAction().getType() ==
-                            ExchangeAction.TALKING_WITH && player.getCurMap().getNpc((Integer) player
-                            .getExchangeAction().getValue()).getTemplate().getId() == questObjective.getNpc().getId()) {
+                    if (player.getExchangeAction() != null && player.getExchangeAction().getType() == ExchangeAction.TALKING_WITH &&
+                            ((NpcDialogActionData) player.getExchangeAction().getValue()).isValid(player, questObjective.getNpc().getId())) {
                         for (Entry<Integer, Integer> entry : questObjective.getItemNecessaryList().entrySet()) {
                             if (player.hasItemTemplate(entry.getKey(), entry.getValue(), false)) { //Il a l'item et la quantit�
                                 player.removeItemByTemplateId(entry.getKey(), entry.getValue(), false); //On supprime donc
@@ -269,13 +269,15 @@ public class Quest {
                 case 1://Aller voir %
                 case 9://Retourner voir %
                     if (questObjective.getCondition().equalsIgnoreCase("1")) { //Valider les questEtape avant
-                        if (player.getExchangeAction() != null && player.getExchangeAction().getType() == ExchangeAction.TALKING_WITH && player.getCurMap().getNpc((Integer) player.getExchangeAction().getValue()).getTemplate().getId() == questObjective.getNpc().getId()) {
+                        if (player.getExchangeAction() != null && player.getExchangeAction().getType() == ExchangeAction.TALKING_WITH &&
+                                ((NpcDialogActionData) player.getExchangeAction().getValue()).isValid(player, questObjective.getNpc().getId())) {
                             if (haveRespectCondition(questPlayer, questObjective)) {
                                 refresh = true;
                             }
                         }
                     } else {
-                        if (player.getExchangeAction() != null && player.getExchangeAction().getType() == ExchangeAction.TALKING_WITH && player.getCurMap().getNpc((Integer) player.getExchangeAction().getValue()).getTemplate().getId() == questObjective.getNpc().getId())
+                        if (player.getExchangeAction() != null && player.getExchangeAction().getType() == ExchangeAction.TALKING_WITH &&
+                                ((NpcDialogActionData) player.getExchangeAction().getValue()).isValid(player, questObjective.getNpc().getId()))
                             refresh = true;
                     }
                     break;
@@ -287,7 +289,8 @@ public class Quest {
                     break;
 
                 case 10://Ramener prisonnier
-                    if (player.getExchangeAction() != null && player.getExchangeAction().getType() == ExchangeAction.TALKING_WITH && player.getCurMap().getNpc((Integer) player.getExchangeAction().getValue()).getTemplate().getId() == questObjective.getNpc().getId()) {
+                    if (player.getExchangeAction() != null && player.getExchangeAction().getType() == ExchangeAction.TALKING_WITH &&
+                            ((NpcDialogActionData) player.getExchangeAction().getValue()).isValid(player, questObjective.getNpc().getId())) {
                         GameObject follower = player.getObjetByPos(Constant.ITEM_POS_PNJ_SUIVEUR);
                         if (follower != null) {
                             Map<Integer, Integer> itemNecessaryList = questObjective.getItemNecessaryList();

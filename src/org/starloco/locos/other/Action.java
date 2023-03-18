@@ -24,6 +24,7 @@ import org.starloco.locos.entity.pet.PetEntry;
 import org.starloco.locos.game.GameClient;
 import org.starloco.locos.game.GameServer;
 import org.starloco.locos.game.action.ExchangeAction;
+import org.starloco.locos.game.action.type.NpcDialogActionData;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.game.world.World.Couple;
 import org.starloco.locos.job.Job;
@@ -409,7 +410,6 @@ public class Action {
             case 6://Apprendre un m�tier
                 try {
                     if(client == null) return true;
-                    player.setIsOnDialogAction(1);
                     int mID = Integer.parseInt(args.split(",")[0]);
                     int mapId = Integer.parseInt(args.split(",")[1]);
                     int sucess = Integer.parseInt(args.split(",")[2]);
@@ -428,7 +428,6 @@ public class Action {
                             SocketManager.GAME_SEND_Im_PACKET(player, "111");
                             SocketManager.GAME_SEND_END_DIALOG_PACKET(client);
                             player.setExchangeAction(null);
-                            player.setIsOnDialogAction(-1);
                             return true;
                         }
                         if (player.getMetierByID(2) != null
@@ -478,7 +477,6 @@ public class Action {
                             if (sucess == -1 || fail == -1) {
                                 SocketManager.GAME_SEND_END_DIALOG_PACKET(client);
                                 player.setExchangeAction(null);
-                                player.setIsOnDialogAction(-1);
                                 SocketManager.GAME_SEND_Im_PACKET(player, "18;30");
                             } else
                                 SocketManager.send(client, "DQ" + fail + "|4840");
@@ -489,7 +487,6 @@ public class Action {
                             SocketManager.GAME_SEND_Im_PACKET(player, "19");
                             SocketManager.GAME_SEND_END_DIALOG_PACKET(client);
                             player.setExchangeAction(null);
-                            player.setIsOnDialogAction(-1);
                             return true;
                         } else
                         //Si c'est < ou = � 2 on apprend
@@ -508,7 +505,6 @@ public class Action {
                                 if (sucess == -1 || fail == -1) {
                                     SocketManager.GAME_SEND_END_DIALOG_PACKET(client);
                                     player.setExchangeAction(null);
-                                    player.setIsOnDialogAction(-1);
                                 } else
                                     SocketManager.send(client, "DQ" + sucess
                                             + "|4840");
@@ -1131,9 +1127,9 @@ public class Action {
 
                 if (!problem) {
                     quest0.applyQuest(player);
-                    if(player.getExchangeAction().getType() == ExchangeAction.TALKING_WITH) {
-                        Npc npc = player.getCurMap().getNpc(((ExchangeAction<Integer>) player.getExchangeAction()).getValue());
-                        player.send("GM|" + npc.encodeGM(true, player));
+                    if(player.getExchangeAction() != null && player.getExchangeAction().getType() == ExchangeAction.TALKING_WITH) {
+                        NpcDialogActionData data = (NpcDialogActionData) player.getExchangeAction().getValue();
+                        player.send("GM|" + data.getNpc(player).encodeGM(true, player));
                     }
                 }
                 break;
@@ -3243,7 +3239,6 @@ public class Action {
                     SocketManager.GAME_SEND_Im_PACKET(player, "111");
                     SocketManager.GAME_SEND_END_DIALOG_PACKET(client);
                     player.setExchangeAction(null);
-                    player.setIsOnDialogAction(-1);
                     return true;
                 }
 
@@ -3256,7 +3251,6 @@ public class Action {
                     SocketManager.GAME_SEND_Im_PACKET(player, "19");
                     SocketManager.GAME_SEND_END_DIALOG_PACKET(client);
                     player.setExchangeAction(null);
-                    player.setIsOnDialogAction(-1);
                 } else {
                     if (player.hasItemTemplate(459, 20, false) && player.hasItemTemplate(7657, 15, false)) {
                         SocketManager.GAME_SEND_Im_PACKET(player, "022;" + 20 + "~" + 459);
@@ -3768,7 +3762,6 @@ public class Action {
                     if (player.getMetierByID(metierId) != null) {
                         SocketManager.GAME_SEND_END_DIALOG_PACKET(client);
                         player.setExchangeAction(null);
-                        player.setIsOnDialogAction(-1);
                         SocketManager.GAME_SEND_Im_PACKET(player, "111");
                         return true; // Si on a d�j� le m�tier
                     }
@@ -3784,7 +3777,6 @@ public class Action {
                                     && !entry.getValue().getTemplate().isMaging()) {
                                 SocketManager.GAME_SEND_END_DIALOG_PACKET(client);
                                 player.setExchangeAction(null);
-                                player.setIsOnDialogAction(-1);
                                 SocketManager.GAME_SEND_Im_PACKET(player, "18;30");
                                 return true;
                             }
@@ -3828,7 +3820,6 @@ public class Action {
                     if (player.getMetierByID(metierId) != null) {
                         SocketManager.GAME_SEND_END_DIALOG_PACKET(client);
                         player.setExchangeAction(null);
-                        player.setIsOnDialogAction(-1);
                         SocketManager.GAME_SEND_Im_PACKET(player, "111");
                         return true; // Si on a d�j� le m�tier
                     }
@@ -3875,7 +3866,6 @@ public class Action {
                     if (player.getMetierByID(metierId) != null) {
                         SocketManager.GAME_SEND_END_DIALOG_PACKET(client);
                         player.setExchangeAction(null);
-                        player.setIsOnDialogAction(-1);
                         SocketManager.GAME_SEND_Im_PACKET(player, "111");
                         return true; // Si on a d�j� le m�tier
                     }
@@ -3933,7 +3923,6 @@ public class Action {
                             if (player.getMetierByID(36) != null) {
                                 SocketManager.GAME_SEND_END_DIALOG_PACKET(client);
                                 player.setExchangeAction(null);
-                                player.setIsOnDialogAction(-1);
                                 SocketManager.GAME_SEND_Im_PACKET(player, "111");
                                 return true; // Si on a d�j� le m�tier
                             }
@@ -3943,7 +3932,6 @@ public class Action {
                                         && !entry.getValue().getTemplate().isMaging()) {
                                     SocketManager.GAME_SEND_END_DIALOG_PACKET(client);
                                     player.setExchangeAction(null);
-                                    player.setIsOnDialogAction(-1);
                                     SocketManager.GAME_SEND_Im_PACKET(player, "18;30");
                                     return true;
                                 }
@@ -3979,7 +3967,6 @@ public class Action {
                     if (player.getMetierByID(metierId) != null) {
                         SocketManager.GAME_SEND_END_DIALOG_PACKET(client);
                         player.setExchangeAction(null);
-                        player.setIsOnDialogAction(-1);
                         SocketManager.GAME_SEND_Im_PACKET(player, "111");
                         return true; // Si on a d�j� le m�tier
                     }
@@ -4034,7 +4021,6 @@ public class Action {
                                 if (player.getMetierByID(41) != null) {
                                     SocketManager.GAME_SEND_END_DIALOG_PACKET(client);
                                     player.setExchangeAction(null);
-                                    player.setIsOnDialogAction(-1);
                                     SocketManager.GAME_SEND_Im_PACKET(player, "111");
                                     return true; // Si on a d�j� le m�tier
                                 }
@@ -4044,7 +4030,6 @@ public class Action {
                                             && !entry.getValue().getTemplate().isMaging()) {
                                         SocketManager.GAME_SEND_END_DIALOG_PACKET(client);
                                         player.setExchangeAction(null);
-                                        player.setIsOnDialogAction(-1);
                                         SocketManager.GAME_SEND_Im_PACKET(player, "18;30");
                                         return true;
                                     }
@@ -4117,7 +4102,6 @@ public class Action {
                                     && !entry.getValue().getTemplate().isMaging()) {
                                 SocketManager.GAME_SEND_END_DIALOG_PACKET(client);
                                 player.setExchangeAction(null);
-                                player.setIsOnDialogAction(-1);
                                 SocketManager.GAME_SEND_Im_PACKET(player, "18;30");
                                 return true;
                             }

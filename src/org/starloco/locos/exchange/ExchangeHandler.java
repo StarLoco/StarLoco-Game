@@ -15,13 +15,13 @@ public class ExchangeHandler extends IoHandlerAdapter {
     @Override
     public void messageReceived(IoSession arg0, Object arg1) {
         String packet = ioBufferToString(arg1);
-        ExchangeClient.logger.info(packet);
+        ExchangeClient.logger.debug(packet);
         ExchangePacketHandler.parser(packet);
     }
 
     @Override
     public void messageSent(IoSession arg0, Object arg1) {
-        ExchangeClient.logger.info(ioBufferToString(arg1));
+        ExchangeClient.logger.debug(ioBufferToString(arg1));
     }
 
     @Override
