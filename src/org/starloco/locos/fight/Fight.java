@@ -5230,6 +5230,7 @@ public class Fight {
                     p.append(i.getId()).append(";");
                     p.append(i.getPacketsName()).append(";");
                     p.append(i.getLvl()).append(";");
+                    p.append(i.getDefaultGfx()).append(";"); // 1.39
                     p.append((i.isDead() ? "1" : "0")).append(";");
                     p.append(i.xpString(";")).append(";");
                     p.append((xpPlayer == 0 ? "" : xpPlayer)).append(";");
@@ -5371,9 +5372,9 @@ public class Fight {
                 if (this.getType() != Constant.FIGHT_TYPE_AGRESSION && this.getType() != Constant.FIGHT_TYPE_CONQUETE) {
                     StringBuilder temporary = new StringBuilder();
                     if (i.getPdv() == 0 || i.hasLeft() || i.isDead())
-                        temporary.append("0;").append(i.getId()).append(";").append(i.getPacketsName()).append(";").append(i.getLvl()).append(";1").append(";").append(i.xpString(";")).append(";;;;|");
+                        temporary.append("0;").append(i.getId()).append(";").append(i.getPacketsName()).append(";").append(i.getLvl()).append(";").append(i.getDefaultGfx()).append(";").append(";1").append(";").append(i.xpString(";")).append(";;;;|");
                     else
-                        temporary.append("0;").append(i.getId()).append(";").append(i.getPacketsName()).append(";").append(i.getLvl()).append(";0").append(";").append(i.xpString(";")).append(";;;;|");
+                        temporary.append("0;").append(i.getId()).append(";").append(i.getPacketsName()).append(";").append(i.getLvl()).append(";").append(i.getDefaultGfx()).append(";").append(";0").append(";").append(i.xpString(";")).append(";;;;|");
                     packet.append(temporary);
                 } else {
                     // Si c'est un neutre, on ne gagne pas de points

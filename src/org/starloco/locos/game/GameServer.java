@@ -1,11 +1,13 @@
 package org.starloco.locos.game;
 
+import ch.qos.logback.classic.Level;
 import org.apache.mina.core.service.IoAcceptor;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.filter.codec.textline.LineDelimiter;
 import org.apache.mina.filter.codec.textline.TextLineCodecFactory;
 import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
+import org.slf4j.LoggerFactory;
 import org.starloco.locos.client.Account;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.game.world.World;
@@ -16,10 +18,10 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import ch.qos.logback.classic.Logger;
 import java.util.stream.Collectors;
 
 public class GameServer {
-
     public static short MAX_PLAYERS = 10000;
 
     private final ArrayList<Account> waitingClients = new ArrayList<>();
@@ -31,6 +33,8 @@ public class GameServer {
         this.acceptor.getFilterChain().addLast("codec", new ProtocolCodecFilter(new TextLineCodecFactory(StandardCharsets.UTF_8, LineDelimiter.NUL, new LineDelimiter("\n\0"))));
         this.acceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, 60 * 10 /*10 Minutes*/);
         this.acceptor.setHandler(new GameHandler());
+
+        ((Logger)LoggerFactory.getLogger("o.a.m.f.codec.ProtocolCodecFilter")).setLevel(Level.OFF);
     }
     public void initialize() {
         if (this.acceptor.isActive())
