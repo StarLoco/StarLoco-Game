@@ -68,8 +68,6 @@ public class Main {
     public static void start() {
         Main.logger.info("You use " + System.getProperty("java.vendor") + " with the version " + System.getProperty("java.version"));
         Main.logger.debug("Starting of the server : " + new SimpleDateFormat("dd/MM/yyyy - HH:mm:ss", Locale.FRANCE).format(new Date()));
-        Main.logger.debug("Current timestamp ms : " + System.currentTimeMillis());
-        Main.logger.debug("Current timestamp ns : " + System.nanoTime());
 
         Config.verify("game.config.properties");
         Logging.getInstance().initialize();

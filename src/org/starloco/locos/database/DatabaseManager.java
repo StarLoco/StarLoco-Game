@@ -35,6 +35,10 @@ public class DatabaseManager {
      * Construct the two connection database
      */
     public DatabaseManager() {
+        ((Logger) LoggerFactory.getLogger("com.zaxxer.hikari.HikariDataSource")).setLevel(Level.ERROR);
+        ((Logger) LoggerFactory.getLogger("com.zaxxer.hikari.HikariConfig")).setLevel(Level.ERROR);
+        ((Logger) LoggerFactory.getLogger("com.zaxxer.hikari.pool.HikariPool")).setLevel(Level.ERROR);
+
         logger.trace("Reading database config");
         this.login = this.createHikariDataSource(Config.databaseLoginHost, String.valueOf(Config.databaseLoginPort), Config.databaseLoginName, Config.databaseLoginUser, Config.databaseLoginPass);
         logger.debug("Connection to the login database, ok");
@@ -42,7 +46,7 @@ public class DatabaseManager {
         logger.debug("Connection to the game database, ok");
         this.initialize();
         logger.debug("All data have been initialized");
-        logger.setLevel(Level.OFF);
+        logger.setLevel(Level.ERROR);
     }
 
     public boolean isConnected() {
@@ -166,7 +170,7 @@ public class DatabaseManager {
             Main.stop("statics try connection failed");
             return null;
         }
-        logger.error("Connection ok");
+
         return source;
     }
 
