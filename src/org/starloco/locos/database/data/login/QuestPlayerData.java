@@ -53,7 +53,7 @@ public class QuestPlayerData extends FunctionDAO<QuestPlayer> {
         try {
             statement = this.getConnection().prepareStatement("INSERT INTO " + getTableName() + "(`quest`, `finish`, `player`, `stepsValidation`) VALUES (?, ?, ?, ?);", Statement.RETURN_GENERATED_KEYS);
             statement.setInt(1, entity.getQuest().getId());
-            statement.setInt(2, entity.isFinish() ? 1 : 0);
+            statement.setInt(2, entity.isFinished() ? 1 : 0);
             statement.setInt(3, entity.getPlayer().getId());
             statement.setString(4, entity.getQuestObjectivesToString());
             int affectedRows = statement.executeUpdate();
@@ -99,7 +99,7 @@ public class QuestPlayerData extends FunctionDAO<QuestPlayer> {
         try {
             p = getPreparedStatement("UPDATE " + getTableName() + " SET `finish` = ?, `stepsValidation` = ? WHERE `id` = ?;");
             if(p != null) {
-                p.setInt(1, entity.isFinish() ? 1 : 0);
+                p.setInt(1, entity.isFinished() ? 1 : 0);
                 p.setString(2, entity.getQuestObjectivesToString());
                 p.setInt(3, entity.getId());
                 execute(p);

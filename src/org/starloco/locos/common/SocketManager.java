@@ -27,7 +27,6 @@ import org.starloco.locos.object.ObjectSet;
 import org.starloco.locos.object.ObjectTemplate;
 import org.starloco.locos.guild.Guild;
 import org.starloco.locos.guild.GuildMember;
-import org.starloco.locos.quest.Quest;
 
 import java.util.*;
 import java.util.Map.Entry;
@@ -2573,19 +2572,7 @@ public class SocketManager {
         /*
 		 * Explication packet : QL + QuestID ; Finish ? 1 : 0 ;
 		 */
-        String packet = "QL" + perso.getQuestGmPacket();
-        send(out, packet);
-    }
-
-    public static void QuestGep(GameClient out, Quest quest, Player perso) {
-		/*
-		 * Explication packet : aQuestId | aObjectifCurrent |
-		 * aEtapeId,aFinish;aEtapeId,aFinish... | aPreviousObjectif |
-		 * aNextObjectif | aDialogId | aDialogParams
-		 */
-        // String packet = "QS"+"3|6|289,0;421,0|";//TODO suite ...
-        String packet = "QS" + quest.getGmQuestDataPacket(perso);
-        //String packet = "QS181|343|745,0|342|344|3646|";
+        String packet = "QL" + perso.encodeQL();
         send(out, packet);
     }
 

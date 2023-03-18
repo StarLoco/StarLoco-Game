@@ -10,7 +10,7 @@ import java.sql.SQLException;
 
 public class QuestData extends FunctionDAO<Quest> {
     public QuestData(HikariDataSource dataSource) {
-        super(dataSource, "quest_data");
+        super(dataSource, "quest");
     }
 
     @Override
@@ -18,14 +18,14 @@ public class QuestData extends FunctionDAO<Quest> {
         ResultSet result = null;
         try {
             result = getData("SELECT * FROM " + getTableName() + ";");
-            Quest.getQuestList().clear();
+            Quest.quests.clear();
 
             while (result.next()) {
-                Quest quest = new Quest(result.getInt("id"), result.getString("etapes"), result.getString("objectif"), result.getInt("npc"), result.getString("action"), result.getString("args"), (result.getInt("deleteFinish") == 1), result.getString("condition"));
+                Quest quest = new Quest(result.getInt("id"), result.getInt("npc"), (result.getInt("deleteFinish") == 1), result.getString("condition"), result.getString("steps"), result.getString("objectives"), result.getString("action"), result.getString("args"));
                 if (quest.getNpcTemplate() != null) {
                     quest.getNpcTemplate().setQuest(quest);
                 }
-                Quest.addQuest(quest);
+                Quest.quests.put(quest.getId(), quest);
             }
         } catch (SQLException e) {
             super.sendError(e);

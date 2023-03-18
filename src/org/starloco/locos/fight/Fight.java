@@ -4490,10 +4490,10 @@ public class Fight {
                                 if (questP == null) continue;
                                 Quest quest = questP.getQuest();
                                 if (quest == null) continue;
-                                quest.getQuestObjectives().stream().filter(qEtape -> !questP.isQuestObjectiveIsValidate(qEtape) && (qEtape.getType() == 0 || qEtape.getType() == 6)).filter(qEtape -> qEtape.getMonsterId() == ennemy.getMob().getTemplate().getId()).forEach(qEtape -> {
+                                quest.getObjectives().stream().filter(qEtape -> !questP.isQuestObjectiveIsValidate(qEtape) && (qEtape.getType() == 0 || qEtape.getType() == 6)).filter(qEtape -> qEtape.getMonsterId() == ennemy.getMob().getTemplate().getId()).forEach(qEtape -> {
                                     try {
-                                        player.getQuestPersoByQuest(qEtape.getQuestData()).getMonsterKill().put(ennemy.getMob().getTemplate().getId(), (short) 1);
-                                        qEtape.getQuestData().updateQuestData(player, false, 2);
+                                        player.getQuestPersoByQuest(qEtape.getQuest()).getMonsterKill().put(ennemy.getMob().getTemplate().getId(), (short) 1);
+                                        qEtape.getQuest().update(player, false, 2);
                                     } catch (Exception e) {
                                         e.printStackTrace();
                                         player.sendMessage(player.getLang().trans("fight.fight.quest.report.admin") + e.getMessage());

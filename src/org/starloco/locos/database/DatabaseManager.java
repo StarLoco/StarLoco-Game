@@ -130,8 +130,8 @@ public class DatabaseManager {
         this.daos.add(new ObjectActionData(this.game));
         this.daos.add(new PetTemplateData(this.game));
         this.daos.add(new QuestData(this.game));
-        this.daos.add(new QuestStepData(this.game));
         this.daos.add(new QuestObjectiveData(this.game));
+        this.daos.add(new QuestStepData(this.game));
         this.daos.add(new RuneData(this.game));
         this.daos.add(new ScriptedCellData(this.game));
         this.daos.add(new SubAreaData(this.game));

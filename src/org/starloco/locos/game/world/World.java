@@ -34,7 +34,6 @@ import org.starloco.locos.fight.spells.Spell;
 import org.starloco.locos.hdv.Hdv;
 import org.starloco.locos.hdv.HdvEntry;
 import org.starloco.locos.job.Job;
-import org.starloco.locos.kernel.Config;
 import org.starloco.locos.kernel.Constant;
 import org.starloco.locos.kernel.Main;
 import org.starloco.locos.object.GameObject;
@@ -339,10 +338,10 @@ public class World {
         DatabaseManager.get(NpcAnswerData.class).loadFully();
         logger.debug("The n-p-c answers were loaded successfully.");
 
-        DatabaseManager.get(QuestObjectiveData.class).loadFully();
+        DatabaseManager.get(QuestStepData.class).loadFully();
         logger.debug("The quest goals were loaded successfully.");
 
-        DatabaseManager.get(QuestStepData.class).loadFully();
+        DatabaseManager.get(QuestObjectiveData.class).loadFully();
         logger.debug("The quest steps were loaded successfully.");
 
         DatabaseManager.get(QuestData.class).loadFully();

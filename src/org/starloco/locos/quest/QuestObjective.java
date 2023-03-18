@@ -1,5 +1,6 @@
 package org.starloco.locos.quest;
 
+import org.apache.commons.lang.StringUtils;
 import org.starloco.locos.entity.npc.NpcTemplate;
 import org.starloco.locos.game.world.World;
 
@@ -8,69 +9,45 @@ import java.util.Map;
 
 public class QuestObjective {
 
-    //region Static function
-    private static Map<Integer, QuestObjective> objectives = new HashMap<>();
+    public final static Map<Integer, QuestObjective> objectives = new HashMap<>();
 
-    public  static Map<Integer, QuestObjective> getObjectives() {
-        return objectives;
-    }
-
-    public static QuestObjective getObjectiveById(int id) {
-        return objectives.get(id);
-    }
-
-    public static void addObjective(QuestObjective step) {
-        objectives.put(step.getId(), step);
-    }
-    //endregion
-
-    private int id;
-    private short type;
-    private int objectif;
+    private final int id, type, stepId, validationType;
+    private final NpcTemplate npc;
     private Quest quest = null;
-    private Map<Integer, Integer> itemNecessary = new HashMap<>();//ItemId,Qua
-    private NpcTemplate npc = null;
-    private int monsterId;
-    private short qua;
-    private String condition = null;
-    private int validationType;
+    private final String condition;
+    private int monsterId, quantity;
+    private final Map<Integer, Integer> itemsNeeded = new HashMap<>(); //ItemID,Quantity
 
-    public QuestObjective(int id, int type, int objectif, String items, int npc, String monsters, String condition, int validationType) {
+    public QuestObjective(int id, int type, int stepId, int validationType, int npcTemplateId, String condition, String items, String monsters) {
         this.id = id;
-        this.type = (short) type;
-        this.objectif = objectif;
-        this.npc = World.world.getNPCTemplate(npc);
-        this.condition = condition;
+        this.type = type;
+        this.stepId = stepId;
         this.validationType = validationType;
+        this.npc = World.world.getNPCTemplate(npcTemplateId);
+        this.condition = condition;
+        this.handleItems(items);
+        this.handleMonsters(monsters);
 
-        try {
-            if (!items.equalsIgnoreCase("")) {
-                String[] split = items.split(";");
-
-                if (split.length > 0) {
-                    for (String data : split) {
-                        String[] loc1 = data.split(",");
-                        this.itemNecessary.put(Integer.parseInt(loc1[0]), Integer.parseInt(loc1[1]));
-                    }
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        try {
-            if (monsters.contains(",") && !monsters.equals("0")) {
-                String[] loc0 = monsters.split(",");
-                this.setMonsterId(Integer.parseInt(loc0[0]));
-                this.setQua(Short.parseShort(loc0[1])); // Des qu�tes avec le truc vide ! ><
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        QuestStep questStep = QuestStep.getStepById(this.objectif);
+        QuestStep questStep = QuestStep.steps.get(stepId);
         if (questStep != null) {
             questStep.addQuestStep(this);
+        }
+    }
+
+    private void handleMonsters(String monsters) {
+        if (StringUtils.isNotBlank(monsters) && monsters.contains(",") && !monsters.equals("0")) {
+            String[] data = monsters.split(",");
+            this.monsterId = Integer.parseInt(data[0]);
+            this.quantity = Integer.parseInt(data[1]); // Des qu�tes avec le truc vide ! ><
+        }
+    }
+
+    private void handleItems(String items) {
+        if (StringUtils.isNotBlank(items)) {
+            for (String item : items.split(";")) {
+                String[] data = item.split(",");
+                this.itemsNeeded.put(Integer.parseInt(data[0]), Integer.parseInt(data[1]));
+            }
         }
     }
 
@@ -78,28 +55,28 @@ public class QuestObjective {
         return id;
     }
 
-    public short getType() {
+    public int getType() {
         return type;
     }
 
-    public int getObjectif() {
-        return objectif;
+    public int getStepId() {
+        return stepId;
     }
 
-    public Quest getQuestData() {
-        return quest;
-    }
-
-    void setQuestData(Quest aQuest) {
-        quest = aQuest;
-    }
-
-    public Map<Integer, Integer> getItemNecessaryList() {
-        return itemNecessary;
+    public int getValidationType() {
+        return validationType;
     }
 
     public NpcTemplate getNpc() {
         return npc;
+    }
+
+    public Quest getQuest() {
+        return quest;
+    }
+
+    void setQuestData(Quest quest) {
+        this.quest = quest;
     }
 
     public String getCondition() {
@@ -110,19 +87,11 @@ public class QuestObjective {
         return monsterId;
     }
 
-    private void setMonsterId(int monsterId) {
-        this.monsterId = monsterId;
+    public int getQuantity() {
+        return quantity;
     }
 
-    public short getQua() {
-        return qua;
-    }
-
-    public void setQua(short qua) {
-        this.qua = qua;
-    }
-
-    public int getValidationType() {
-        return validationType;
+    public Map<Integer, Integer> getItemsNeeded() {
+        return itemsNeeded;
     }
 }

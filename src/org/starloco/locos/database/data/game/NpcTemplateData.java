@@ -107,7 +107,7 @@ public class NpcTemplateData extends FunctionDAO<NpcTemplate> {
                 if (quests.equalsIgnoreCase(""))
                     continue;
                 NpcTemplate nt = World.world.getNPCTemplate(id);
-                Quest quest = Quest.getQuestById(Integer.parseInt(quests));
+                Quest quest = Quest.quests.get(Integer.parseInt(quests));
                 if (nt == null || quest == null)
                     continue;
                 nt.setQuest(quest);

@@ -164,7 +164,7 @@ public class ConditionParser {
     //Avoir la qu�te en cours
     private boolean haveQa(String req, Player player) {
         int id = Integer.parseInt((req.contains("==") ? req.split("==")[1] : req.split("!=")[1]));
-        Quest q = Quest.getQuestById(id);
+        Quest q = Quest.quests.get(id);
         if (q == null)
             return (!req.contains("=="));
 
@@ -172,20 +172,20 @@ public class ConditionParser {
         if (qp == null)
             return (!req.contains("=="));
 
-        return !qp.isFinish() || (!req.contains("=="));
+        return !qp.isFinished() || (!req.contains("=="));
 
     }
 
     // �tre � l'�tape id. Elle ne doit pas �tre valid� et celle d'avant doivent l'�tre.
     private boolean haveQEt(String req, Player player) {
         int id = Integer.parseInt((req.contains("==") ? req.split("==")[1] : req.split("!=")[1]));
-        QuestObjective qe = QuestObjective.getObjectiveById(id);
+        QuestObjective qe = QuestObjective.objectives.get(id);
         if (qe != null) {
-            Quest q = qe.getQuestData();
+            Quest q = qe.getQuest();
             if (q != null) {
                 QuestPlayer qp = player.getQuestPersoByQuest(q);
                 if (qp != null) {
-                    QuestObjective current = q.getCurrentQuestStep(qp);
+                    QuestObjective current = q.getCurrentObjective(qp);
                     if (current == null)
                         return false;
                     if (current.getId() == qe.getId())
@@ -264,9 +264,9 @@ public class ConditionParser {
         int id = Integer.parseInt((req.contains("==") ? req.split("==")[1] : req.split("!=")[1]));
         QuestPlayer qp = player.getQuestPersoByQuestId(id);
         if (req.contains("==")) {
-            return qp != null && !qp.isFinish();
+            return qp != null && !qp.isFinished();
         } else {
-            return qp == null || qp.isFinish();
+            return qp == null || qp.isFinished();
         }
     }
 
@@ -275,9 +275,9 @@ public class ConditionParser {
 
         QuestPlayer quest = player.getQuestPersoByQuestId(id);
         if (req.contains("=="))
-            return (quest != null && quest.isFinish());
+            return (quest != null && quest.isFinished());
         else
-            return (quest == null || !quest.isFinish());
+            return (quest == null || !quest.isFinished());
     }
 
     private boolean haveNPC(String req, Player perso) {

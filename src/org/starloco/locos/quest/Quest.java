@@ -1,5 +1,6 @@
 package org.starloco.locos.quest;
 
+import org.apache.commons.lang.StringUtils;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.database.DatabaseManager;
@@ -16,239 +17,146 @@ import org.starloco.locos.object.GameObject;
 import org.starloco.locos.object.ObjectTemplate;
 import org.starloco.locos.object.entity.SoulStone;
 import org.starloco.locos.other.Action;
+import org.starloco.locos.util.Pair;
 
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 public class Quest {
 
-    //region Static method
-    private static Map<Integer, Quest> questList = new HashMap<>();
+    public final static Map<Integer, Quest> quests = new HashMap<>();
 
-    public static Map<Integer, Quest> getQuestList() {
-        return questList;
-    }
-
-    public static Quest getQuestById(int id) {
-        return questList.get(id);
-    }
-
-    public static void addQuest(Quest quest) {
-        questList.put(quest.getId(), quest);
-    }
-    //endregion
-
-    private int id;
-    private ArrayList<QuestObjective> questObjectives = new ArrayList<>();
-    private ArrayList<QuestStep> questStepList = new ArrayList<>();
-    private NpcTemplate npc = null;
-    private ArrayList<Action> actions = new ArrayList<>();
-    private boolean delete;
+    private final int id;
+    private final NpcTemplate npc;
+    private final boolean delete;
     private Couple<Integer, Integer> condition = null;
+    private final List<QuestObjective> objectives = new ArrayList<>();
+    private final List<QuestStep> steps = new ArrayList<>();
+    private final List<Action> actions = new ArrayList<>();
 
-    public Quest(int id, String steps, String objectifs, int npc, String action, String args, boolean delete, String condition) {
+    public Quest(int id, int npc, boolean delete, String condition, String steps, String objectifs, String action, String args) {
         this.id = id;
-        this.delete = delete;
-
-        if (!steps.equalsIgnoreCase("")) {
-            String[] split = steps.split(";");
-            if (split.length > 0) {
-                for (String stepId : split) {
-                    QuestObjective step = QuestObjective.getObjectiveById(Integer.parseInt(stepId));
-                    if (step != null) {
-                        step.setQuestData(this);
-                        this.questObjectives.add(step);
-                    }
-                }
-            }
-        }
-
-        if (!objectifs.equalsIgnoreCase("")) {
-            String[] split = objectifs.split(";");
-
-            if (split.length > 0) {
-                for (String qObjectif : split) {
-                    QuestStep objective = QuestStep.getStepById(Integer.parseInt(qObjectif));
-                    if (objective != null) this.questStepList.add(objective);
-                }
-            }
-        }
-
-        if (!condition.equalsIgnoreCase("")) {
-            try {
-                String[] split = condition.split(":");
-                if (split.length > 0) {
-                    this.condition = new Couple<>(Integer.parseInt(split[0]), Integer.parseInt(split[1]));
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
         this.npc = World.world.getNPCTemplate(npc);
-        try {
-            if (!action.equalsIgnoreCase("") && !args.equalsIgnoreCase("")) {
-                String[] arguments = args.split(";");
-                int nbr = 0;
-                for (String loc0 : action.split(",")) {
-                    int actionId = Integer.parseInt(loc0);
-                    String arg = arguments[nbr];
-                    actions.add(new Action(actionId, arg, -1 + "", null));
-                    nbr++;
-                }
-            }
-        } catch (Exception e) {
-            World.world.logger.error("Erreur avec l action et les args de la quete " + this.id + ".", e);
-        }
+        this.delete = delete;
+        this.handleSteps(steps);
+        this.handleObjectives(objectifs);
+        this.handleCondition(condition);
+        this.handleActions(action, args);
     }
 
     public int getId() {
         return id;
     }
 
-    public boolean isDelete() {
-        return this.delete;
-    }
-
     public NpcTemplate getNpcTemplate() {
         return npc;
     }
 
-    public ArrayList<QuestObjective> getQuestObjectives() {
-        return questObjectives;
+    public boolean mustBeDeletedWhenFinished() {
+        return delete;
     }
 
-    private boolean haveRespectCondition(QuestPlayer questPlayer, QuestObjective questObjective) {
-        switch (questObjective.getCondition()) {
-            case "1": //Valider les etapes d'avant
-                boolean loc2 = true;
-                for (QuestObjective step : this.questObjectives) {
-                    if (step != null && step.getId() != questObjective.getId() && !questPlayer.isQuestObjectiveIsValidate(step)) {
-                        loc2 = false;
-                    }
-                }
-                return loc2;
+    public List<QuestObjective> getObjectives() {
+        return objectives;
+    }
 
+    private void handleObjectives(String objectives) {
+        if (StringUtils.isNotBlank(objectives)) {
+            Arrays.stream(objectives.split(";")).map(Integer::parseInt).map(QuestStep.steps::get)
+                    .filter(Objects::nonNull).forEach(steps::add);
+        }
+    }
+
+    private void handleSteps(String steps) {
+        if (StringUtils.isNotBlank(steps)) {
+            Arrays.stream(steps.split(";")).map(Integer::parseInt).map(QuestObjective.objectives::get)
+                    .filter(Objects::nonNull).forEach(s -> {
+                        s.setQuestData(this);
+                        objectives.add(s);
+                    });
+        }
+    }
+
+    private void handleCondition(String condition) {
+        if(StringUtils.isNotBlank(condition)) {
+            String[] data = condition.split(":");
+            if (data.length > 0) {
+                this.condition = new Couple<>(Integer.parseInt(data[0]), Integer.parseInt(data[1]));
+            }
+        }
+    }
+
+    private void handleActions(String action, String args) {
+        if(StringUtils.isNotBlank(action)) {
+            int count = 0;
+            String[] arguments = args.split(";");
+
+            for (String id : action.split(",")) {
+                actions.add(new Action(Integer.parseInt(id), arguments[count], "-1", null));
+                count++;
+            }
+        }
+    }
+
+    private boolean isConditionValid(QuestPlayer questPlayer, QuestObjective objective) {
+        switch (objective.getCondition()) {
+            case "1": // Validate previous step
+                return this.objectives.stream().noneMatch(step -> step != null && step.getId() != objective.getId() && !questPlayer.isQuestObjectiveIsValidate(step));
             case "0":
                 return true;
         }
         return false;
     }
 
-    public String getGmQuestDataPacket(Player player) {
-        QuestPlayer questPlayer = player.getQuestPersoByQuest(this);
-        int loc1 = getObjectifCurrent(questPlayer);
-        int loc2 = getObjectifPrevious(questPlayer);
-        int loc3 = getNextObjectif(QuestStep.getStepById(getObjectifCurrent(questPlayer)));
-        StringBuilder str = new StringBuilder();
-        str.append(id).append("|");
-        str.append(loc1 > 0 ? loc1 : "");
-        str.append("|");
-
-        StringBuilder str_prev = new StringBuilder();
-        boolean loc4 = true;
-        // Il y a une exeption dans le code ici pour la seconde �tape de papotage
-        for (QuestObjective qEtape : questObjectives) {
-            if (qEtape.getObjectif() != loc1)
-                continue;
-            if (!haveRespectCondition(questPlayer, qEtape))
-                continue;
-            if (!loc4)
-                str_prev.append(";");
-            str_prev.append(qEtape.getId());
-            str_prev.append(",");
-            str_prev.append(questPlayer.isQuestObjectiveIsValidate(qEtape) ? 1 : 0);
-            loc4 = false;
-        }
-        str.append(str_prev);
-        str.append("|");
-        str.append(loc2 > 0 ? loc2 : "").append("|");
-        str.append(loc3 > 0 ? loc3 : "");
-        if (npc != null && npc.legacy != null) {
-            str.append("|");
-            str.append(npc.legacy.getInitQuestionId(player.getCurMap().getId())).append("|");
-        }
-        return str.toString();
+    public QuestObjective getCurrentObjective(QuestPlayer questPlayer) {
+        return objectives.stream().filter(o -> !questPlayer.isQuestObjectiveIsValidate(o)).findFirst().orElse(null);
     }
 
-    public QuestObjective getCurrentQuestStep(QuestPlayer questPlayer) {
-        for (QuestObjective step : getQuestObjectives()) {
-            if (!questPlayer.isQuestObjectiveIsValidate(step)) {
-                return step;
-            }
-        }
-        return null;
-    }
-
-    public int getObjectifCurrent(QuestPlayer questPlayer) {
-        for (QuestObjective step : questObjectives) {
-            if (!questPlayer.isQuestObjectiveIsValidate(step)) {
-                return step.getObjectif();
+    public int getCurrentObjectiveId(QuestPlayer questPlayer) {
+        for (QuestObjective objective : objectives) {
+            if (!questPlayer.isQuestObjectiveIsValidate(objective)) {
+                return objective.getStepId();
             }
         }
         return 0;
     }
 
-    private int getObjectifPrevious(QuestPlayer questPlayer) {
-        if (questStepList.size() == 1)
+    private int getPreviousObjectiveId(QuestPlayer questPlayer) {
+        if (steps.size() == 1)
             return 0;
-        else {
-            int previous = 0;
-            for (QuestStep qObjectif : questStepList) {
-                if (qObjectif.getId() == getObjectifCurrent(questPlayer)) return previous;
-                else previous = qObjectif.getId();
-            }
+        int previous = 0;
+        for (QuestStep step : steps) {
+            if (step.getId() == getCurrentObjectiveId(questPlayer))
+                return previous;
+            previous = step.getId();
         }
         return 0;
     }
 
-    public int getNextObjectif(QuestStep questStep) {
-        if (questStep == null)
+    public int getNextStep(QuestStep fromStep) {
+        if (fromStep == null)
             return 0;
-        for (QuestStep objectif : questStepList) {
-            if (objectif.getId() == questStep.getId()) {
-                int index = questStepList.indexOf(objectif);
-                if (questStepList.size() <= index + 1)
+        for (QuestStep toStep : steps) {
+            if (toStep.getId() == fromStep.getId()) {
+                int index = steps.indexOf(toStep);
+                if (steps.size() <= index + 1)
                     return 0;
-                return questStepList.get(index + 1).getId();
+                return steps.get(index + 1).getId();
             }
         }
         return 0;
     }
 
-    public boolean applyQuest(Player player) {
-        if (this.condition != null) {
-            switch (this.condition.first) {
-                case 1: // Niveau
-                    if (player.getLevel() < this.condition.second) {
-                        SocketManager.GAME_SEND_MESSAGE(player, player.getLang().trans("quest.quest.applyquest"));
-                        return false;
-                    }
-                    break;
-            }
-        }
-
-        QuestPlayer questPlayer = new QuestPlayer(this.id, false, player.getId(), "");
-        player.addQuestPerso(questPlayer);
-        SocketManager.GAME_SEND_Im_PACKET(player, "054;" + this.id);
-        SocketManager.GAME_SEND_MAP_NPCS_GMS_PACKETS(player.getGameClient(), player.getCurMap()); // Hacky. Should be sending a GM|~ only for the quest giver
-
-        if (!this.actions.isEmpty()) {
-            for (Action aAction : this.actions) {
-                aAction.apply(player, player, -1, -1);
-            }
-        }
-
-        ((PlayerData) DatabaseManager.get(PlayerData.class)).update(player);
-        return true;
+    public boolean hasFinished(QuestPlayer questPlayer, QuestStep questStep) {
+        return questPlayer.overQuestStep(questStep) && getNextStep(questStep) == 0;
     }
 
-    public void updateQuestData(Player player, boolean validation, int type) {
+    public void update(Player player, boolean validation, int type) {
         QuestPlayer questPlayer = player.getQuestPersoByQuest(this);
-        for (QuestObjective questObjective : this.questObjectives) {
+        for (QuestObjective questObjective : this.objectives) {
             if (questObjective.getValidationType() != type || questPlayer.isQuestObjectiveIsValidate(questObjective)) //On a d�j� valid� la questEtape on passe
                 continue;
-            if (questObjective.getObjectif() != getObjectifCurrent(questPlayer) || !haveRespectCondition(questPlayer, questObjective))
+            if (questObjective.getStepId() != getCurrentObjectiveId(questPlayer) || !isConditionValid(questPlayer, questObjective))
                 continue;
 
             boolean refresh = validation;
@@ -256,7 +164,7 @@ public class Quest {
                 case 3://Donner item
                     if (player.getExchangeAction() != null && player.getExchangeAction().getType() == ExchangeAction.TALKING_WITH &&
                             ((NpcDialogActionData) player.getExchangeAction().getValue()).isValid(player, questObjective.getNpc().getId())) {
-                        for (Entry<Integer, Integer> entry : questObjective.getItemNecessaryList().entrySet()) {
+                        for (Entry<Integer, Integer> entry : questObjective.getItemsNeeded().entrySet()) {
                             if (player.hasItemTemplate(entry.getKey(), entry.getValue(), false)) { //Il a l'item et la quantit�
                                 player.removeItemByTemplateId(entry.getKey(), entry.getValue(), false); //On supprime donc
                                 refresh = true;
@@ -271,7 +179,7 @@ public class Quest {
                     if (questObjective.getCondition().equalsIgnoreCase("1")) { //Valider les questEtape avant
                         if (player.getExchangeAction() != null && player.getExchangeAction().getType() == ExchangeAction.TALKING_WITH &&
                                 ((NpcDialogActionData) player.getExchangeAction().getValue()).isValid(player, questObjective.getNpc().getId())) {
-                            if (haveRespectCondition(questPlayer, questObjective)) {
+                            if (isConditionValid(questPlayer, questObjective)) {
                                 refresh = true;
                             }
                         }
@@ -283,9 +191,12 @@ public class Quest {
                     break;
 
                 case 6: // monstres
-                    for (Entry<Integer, Short> entry : questPlayer.getMonsterKill().entrySet())
-                        if (entry.getKey() == questObjective.getMonsterId() && entry.getValue() >= questObjective.getQua())
+                    for (Entry<Integer, Short> entry : questPlayer.getMonsterKill().entrySet()) {
+                        if (entry.getKey() == questObjective.getMonsterId() && entry.getValue() >= questObjective.getQuantity()) {
                             refresh = true;
+                            break;
+                        }
+                    }
                     break;
 
                 case 10://Ramener prisonnier
@@ -293,7 +204,7 @@ public class Quest {
                             ((NpcDialogActionData) player.getExchangeAction().getValue()).isValid(player, questObjective.getNpc().getId())) {
                         GameObject follower = player.getObjetByPos(Constant.ITEM_POS_PNJ_SUIVEUR);
                         if (follower != null) {
-                            Map<Integer, Integer> itemNecessaryList = questObjective.getItemNecessaryList();
+                            Map<Integer, Integer> itemNecessaryList = questObjective.getItemsNeeded();
                             for (Entry<Integer, Integer> entry2 : itemNecessaryList.entrySet()) {
                                 if (entry2.getKey() == follower.getTemplate().getId()) {
                                     refresh = true;
@@ -304,7 +215,7 @@ public class Quest {
                     }
                     break;
                 case 12: //Pierre d'âme (ocre)
-                    final List<Integer> monsters = questObjective.getItemNecessaryList().entrySet().stream().map(Entry::getKey).collect(Collectors.toList());
+                    final List<Integer> monsters = new ArrayList<>(questObjective.getItemsNeeded().keySet());
                     final List<SoulStone> objects = new ArrayList<>();
                     final List<Integer> valid = new ArrayList<>();
                     final byte[] ok = {0};
@@ -344,15 +255,15 @@ public class Quest {
             }
 
             if (refresh) {
-                QuestStep ansObjectif = QuestStep.getStepById(getObjectifCurrent(questPlayer));
+                QuestStep ansObjectif = QuestStep.steps.get(getCurrentObjectiveId(questPlayer));
                 questPlayer.setQuestObjectiveValidate(questObjective);
                 SocketManager.GAME_SEND_Im_PACKET(player, "055;" + id);
-                if (haveFinish(questPlayer, ansObjectif)) {
+                if (hasFinished(questPlayer, ansObjectif)) {
                     SocketManager.GAME_SEND_Im_PACKET(player, "056;" + id);
                     applyButinOfQuest(player, ansObjectif);
-                    questPlayer.setFinish(true);
+                    questPlayer.setFinished(true);
                 } else {
-                    if (getNextObjectif(ansObjectif) != 0) {
+                    if (getNextStep(ansObjectif) != 0) {
                         if (questPlayer.overQuestStep(ansObjectif))
                             applyButinOfQuest(player, ansObjectif);
                     }
@@ -362,8 +273,33 @@ public class Quest {
         }
     }
 
-    public boolean haveFinish(QuestPlayer questPlayer, QuestStep questStep) {
-        return questPlayer.overQuestStep(questStep) && getNextObjectif(questStep) == 0;
+    public boolean apply(Player player) {
+        if (this.condition != null) {
+            switch (this.condition.first) {
+                case 1: // Niveau
+                    if (player.getLevel() < this.condition.second) {
+                        SocketManager.GAME_SEND_MESSAGE(player, player.getLang().trans("quest.quest.applyquest"));
+                        return false;
+                    }
+                    break;
+                case 2:
+                default:
+                    break;
+            }
+        }
+
+        player.addQuestPerso(new QuestPlayer(this.id, false, player.getId(), ""));
+        SocketManager.GAME_SEND_Im_PACKET(player, "054;" + this.id);
+        SocketManager.GAME_SEND_MAP_NPCS_GMS_PACKETS(player.getGameClient(), player.getCurMap()); // Hacky. Should be sending a GM|~ only for the quest giver
+
+        if (!this.actions.isEmpty()) {
+            for (Action action : this.actions) {
+                action.apply(player, player, -1, -1);
+            }
+        }
+
+        ((PlayerData) DatabaseManager.get(PlayerData.class)).update(player);
+        return true;
     }
 
     public void applyButinOfQuest(Player player, QuestStep questStep) {
@@ -375,10 +311,10 @@ public class Quest {
             SocketManager.GAME_SEND_STATS_PACKET(player);
         }
 
-        if (questStep.getObjects().size() > 0) { //Item a donner
-            for (Entry<Integer, Integer> entry : questStep.getObjects().entrySet()) {
-                ObjectTemplate template = World.world.getObjTemplate(entry.getKey());
-                int quantity = entry.getValue();
+        if (questStep.getItems().size() > 0) { //Item a donner
+            for (Pair<Integer, Integer> entry : questStep.getItems()) {
+                ObjectTemplate template = World.world.getObjTemplate(entry.first);
+                int quantity = entry.second;
                 GameObject object = template.createNewItem(quantity, false);
 
                 if (player.addItem(object, true, false)) {
@@ -394,10 +330,34 @@ public class Quest {
             SocketManager.GAME_SEND_STATS_PACKET(player);
         }
 
-        if (getNextObjectif(questStep) != questStep.getId()) { //On passe au nouveau objectif on applique les actions
+        if (getNextStep(questStep) != questStep.getId()) { //On passe au nouveau objectif on applique les actions
             for (Action action : questStep.getActions()) {
                 action.apply(player, null, 0, 0);
             }
         }
+    }
+
+    public String encodeQS(Player player) {
+        QuestPlayer questPlayer = player.getQuestPersoByQuest(this);
+        int currentObjective = getCurrentObjectiveId(questPlayer), previousObjective = getPreviousObjectiveId(questPlayer);
+        int nextStep = getNextStep(QuestStep.steps.get(getCurrentObjectiveId(questPlayer)));
+
+        boolean first = true;
+        final StringBuilder str = new StringBuilder("QS"), temp = new StringBuilder();
+        str.append(id).append("|").append(currentObjective > 0 ? currentObjective : "").append("|");
+
+        for (QuestObjective objective : objectives) {
+            if (objective.getStepId() != currentObjective || !isConditionValid(questPlayer, objective))
+                continue;
+            if (!first) temp.append(";");
+            temp.append(objective.getId()).append(",").append(questPlayer.isQuestObjectiveIsValidate(objective) ? 1 : 0);
+            first = false;
+        }
+        str.append(temp).append("|").append(previousObjective > 0 ? previousObjective : "").append("|").append(nextStep > 0 ? nextStep : "");
+        if (npc != null && npc.legacy != null) {
+            str.append("|").append(npc.legacy.getInitQuestionId(player.getCurMap().getId())).append("|");
+        }
+
+        return str.toString();
     }
 }

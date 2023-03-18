@@ -74,7 +74,7 @@ public class NpcQuestion {
 
                                     boolean check = true;
 
-                                    for(QuestObjective step : questPlayer.getQuest().getQuestObjectives()) {
+                                    for(QuestObjective step : questPlayer.getQuest().getObjectives()) {
                                         if(step.getValidationType() == answer.getId() && !questPlayer.isQuestObjectiveIsValidate(step)) {
                                             check = false;
                                         }
@@ -144,9 +144,9 @@ public class NpcQuestion {
                     if (!player.getQuestPerso().isEmpty() && ok) // par qu�te
                     {
                         for (QuestPlayer QP : player.getQuestPerso().values()) {
-                            if (QP.isFinish() || QP.getQuest() == null)
+                            if (QP.isFinished() || QP.getQuest() == null)
                                 continue;
-                            for (QuestObjective q : QP.getQuest().getQuestObjectives()) {
+                            for (QuestObjective q : QP.getQuest().getObjectives()) {
                                 if (q == null)
                                     continue;
                                 if (QP.isQuestObjectiveIsValidate(q))
@@ -154,7 +154,7 @@ public class NpcQuestion {
                                 if (q.getValidationType() == answer.getId()) {
                                     switch (q.getType()) {
                                         case 3: // Si on doit donner des items
-                                            for (Entry<Integer, Integer> _entry : q.getItemNecessaryList().entrySet()) {
+                                            for (Entry<Integer, Integer> _entry : q.getItemsNeeded().entrySet()) {
                                                 if (!player.hasItemTemplate(_entry.getKey(), _entry.getValue(), false)) {
                                                     ok = false;
                                                 }
@@ -305,7 +305,7 @@ public class NpcQuestion {
                                     ok = false;
                                 break;
                             case 3355:
-                                Quest q = Quest.getQuestById(198);
+                                Quest q = Quest.quests.get(198);
                                 if (q != null)
                                     if (player.getQuestPersoByQuest(q) != null)
                                         ok = false;

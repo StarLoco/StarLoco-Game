@@ -3,7 +3,6 @@ package org.starloco.locos.command;
 import org.starloco.locos.entity.npc.NpcMovable;
 import org.starloco.locos.script.NpcScriptVM;
 import org.starloco.locos.util.Pair;
-import org.starloco.locos.area.SubArea;
 import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.area.map.entity.MountPark;
@@ -1900,8 +1899,8 @@ public class CommandAdmin extends AdminUser {
                     break;
                 case "QUESTS":
                     DatabaseManager.get(QuestData.class).loadFully();
-                    DatabaseManager.get(QuestObjectiveData.class).loadFully();
                     DatabaseManager.get(QuestStepData.class).loadFully();
+                    DatabaseManager.get(QuestObjectiveData.class).loadFully();
                     break;
                 case "SHOP":
                     DatabaseManager.get(ShopObjectData.class).loadFully();
@@ -3048,7 +3047,7 @@ public class CommandAdmin extends AdminUser {
                 return;
             }
             Player p = World.world.getPlayerByName(perso);
-            Quest q = Quest.getQuestById(id);
+            Quest q = Quest.quests.get(id);
             if (p == null || q == null) {
                 this.sendMessage("La quete ou le joueur est introuvable.");
                 return;
@@ -3080,7 +3079,7 @@ public class CommandAdmin extends AdminUser {
                 return;
             }
             Player p = World.world.getPlayerByName(perso);
-            Quest q = Quest.getQuestById(id);
+            Quest q = Quest.quests.get(id);
             if (p == null || q == null) {
                 this.sendMessage("La quete ou le joueur est introuvable.");
                 return;
@@ -3090,7 +3089,7 @@ public class CommandAdmin extends AdminUser {
                 this.sendMessage("Le personnage a deje la quete.");
                 return;
             }
-            q.applyQuest(p);
+            q.apply(p);
             qp = p.getQuestPersoByQuest(q);
             if (qp == null) {
                 this.sendMessage("Une erreur est survenue.");
@@ -3114,7 +3113,7 @@ public class CommandAdmin extends AdminUser {
                 return;
             }
             Player p = World.world.getPlayerByName(perso);
-            Quest q = Quest.getQuestById(id);
+            Quest q = Quest.quests.get(id);
             if (p == null || q == null) {
                 this.sendMessage("La quete ou le joueur est introuvable.");
                 return;
@@ -3124,8 +3123,8 @@ public class CommandAdmin extends AdminUser {
                 this.sendMessage("Le personnage n'a pas la quete.");
                 return;
             }
-            for (QuestObjective e : q.getQuestObjectives()) {
-                q.updateQuestData(p, true, e.getValidationType());
+            for (QuestObjective e : q.getObjectives()) {
+                q.update(p, true, e.getValidationType());
             }
             ((PlayerData) DatabaseManager.get(PlayerData.class)).update(p);
             this.sendMessage("La quete a ete termine sur le personnage "
@@ -3146,7 +3145,7 @@ public class CommandAdmin extends AdminUser {
                 return;
             }
             Player p = World.world.getPlayerByName(perso);
-            Quest q = Quest.getQuestById(id);
+            Quest q = Quest.quests.get(id);
             if (p == null || q == null) {
                 this.sendMessage("La quete ou le joueur est introuvable.");
                 return;
@@ -3156,11 +3155,11 @@ public class CommandAdmin extends AdminUser {
                 this.sendMessage("Le personnage n'a pas la quete.");
                 return;
             }
-            for (QuestObjective e : q.getQuestObjectives()) {
+            for (QuestObjective e : q.getObjectives()) {
                 if (qp.isQuestObjectiveIsValidate(e))
                     continue;
 
-                q.updateQuestData(p, true, e.getValidationType());
+                q.update(p, true, e.getValidationType());
                 break;
             }
             ((PlayerData) DatabaseManager.get(PlayerData.class)).update(p);
@@ -3179,14 +3178,14 @@ public class CommandAdmin extends AdminUser {
                 this.sendMessage("Le parametre est invalide.");
                 return;
             }
-            Quest q = Quest.getQuestById(id);
+            Quest q = Quest.quests.get(id);
             if (q == null) {
                 this.sendMessage("La quete est introuvable.");
                 return;
             }
 
-            for (QuestObjective e : q.getQuestObjectives()) {
-                for (Entry<Integer, Integer> entry : e.getItemNecessaryList().entrySet()) {
+            for (QuestObjective e : q.getObjectives()) {
+                for (Entry<Integer, Integer> entry : e.getItemsNeeded().entrySet()) {
                     ObjectTemplate objT = World.world.getObjTemplate(entry.getKey());
                     int qua = entry.getValue();
                     GameObject obj = objT.createNewItem(qua, false);

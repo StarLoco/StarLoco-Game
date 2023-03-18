@@ -3,14 +3,15 @@ package org.starloco.locos.database.data.game;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.lang.NotImplementedException;
 import org.starloco.locos.database.data.FunctionDAO;
-import org.starloco.locos.quest.QuestStep;
+import org.starloco.locos.quest.QuestObjective;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class QuestObjectiveData extends FunctionDAO<QuestStep> {
+public class QuestObjectiveData extends FunctionDAO<QuestObjective> {
+
     public QuestObjectiveData(HikariDataSource dataSource) {
-        super(dataSource, "quest_objectifs");
+        super(dataSource, "quest_objective");
     }
 
     @Override
@@ -18,13 +19,12 @@ public class QuestObjectiveData extends FunctionDAO<QuestStep> {
         ResultSet result = null;
         try {
             result = getData("SELECT * FROM " + getTableName() + ";");
-            QuestStep.getSteps().clear();
-
+            QuestObjective.objectives.clear();
             while (result.next()) {
-                QuestStep objective = new QuestStep(result.getInt("id"), result.getInt("xp"), result.getInt("kamas"), result.getString("item"), result.getString("action"));
-                QuestStep.addStep(objective);
+                QuestObjective objective = new QuestObjective(result.getInt("id"), result.getInt("type"), result.getInt("quest_step"),
+                        result.getInt("validationType"), result.getInt("npc"), result.getString("conditions"), result.getString("item"), result.getString("monster"));
+                QuestObjective.objectives.put(objective.getId(), objective);
             }
-            close(result);
         } catch (SQLException e) {
             super.sendError(e);
         } finally {
@@ -33,22 +33,22 @@ public class QuestObjectiveData extends FunctionDAO<QuestStep> {
     }
 
     @Override
-    public QuestStep load(int id) {
+    public QuestObjective load(int id) {
         throw new NotImplementedException();
     }
 
     @Override
-    public boolean insert(QuestStep entity) {
+    public boolean insert(QuestObjective entity) {
         throw new NotImplementedException();
     }
 
     @Override
-    public void delete(QuestStep entity) {
+    public void delete(QuestObjective entity) {
         throw new NotImplementedException();
     }
 
     @Override
-    public void update(QuestStep entity) {
+    public void update(QuestObjective entity) {
         throw new NotImplementedException();
     }
 

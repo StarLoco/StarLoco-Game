@@ -26,7 +26,6 @@ import org.starloco.locos.entity.Collector;
 import org.starloco.locos.entity.Prism;
 import org.starloco.locos.entity.monster.MonsterGroup;
 import org.starloco.locos.entity.mount.Mount;
-import org.starloco.locos.entity.npc.NpcTemplate;
 import org.starloco.locos.entity.pet.Pet;
 import org.starloco.locos.entity.pet.PetEntry;
 import org.starloco.locos.event.EventManager;
@@ -5761,13 +5760,12 @@ public class Player {
         return null;
     }
 
-    public String getQuestGmPacket() {
-        StringBuilder packet = new StringBuilder();
+    public String encodeQL() {
         int nb = 0;
-        packet.append("+");
+        final StringBuilder packet = new StringBuilder("QL+");
         for (QuestPlayer qPerso : questList.values()) {
             packet.append(qPerso.getQuest().getId()).append(";");
-            packet.append(qPerso.isFinish() ? 1 : 0);
+            packet.append(qPerso.isFinished() ? 1 : 0);
             if (nb < questList.size() - 1)
                 packet.append("|");
             nb++;

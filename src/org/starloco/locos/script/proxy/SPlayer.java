@@ -92,24 +92,24 @@ public class SPlayer extends DefaultUserdata<Player> {
 
     @SuppressWarnings("unused")
     private static boolean questFinished(Player p, ArgumentIterator args) {
-        return Optional.ofNullable(p.getQuestPersoByQuestId(args.nextInt())).map(QuestPlayer::isFinish).orElse(false);
+        return Optional.ofNullable(p.getQuestPersoByQuestId(args.nextInt())).map(QuestPlayer::isFinished).orElse(false);
     }
 
     @SuppressWarnings("unused")
     private static boolean questOngoing(Player p, ArgumentIterator args) {
-        return Optional.ofNullable(p.getQuestPersoByQuestId(args.nextInt())).map(s -> !s.isFinish()).orElse(false);
+        return Optional.ofNullable(p.getQuestPersoByQuestId(args.nextInt())).map(s -> !s.isFinished()).orElse(false);
     }
 
     @SuppressWarnings("unused")
     private static boolean startQuest(Player p, ArgumentIterator args) {
         int id = args.nextInt();
 
-        Quest q = Quest.getQuestById(id);
+        Quest q = Quest.quests.get(id);
         if (q == null) return false;
 
         if (p.getQuestPersoByQuestId(id) != null) return false;
 
-        return q.applyQuest(p);
+        return q.apply(p);
     }
 
     @SuppressWarnings("unused")
@@ -123,20 +123,20 @@ public class SPlayer extends DefaultUserdata<Player> {
         Quest q = qp.getQuest();
         if(q == null) return false;
 
-        QuestObjective qo = q.getQuestObjectives().stream().filter(o -> o.getId() == oID).findFirst().orElse(null);
+        QuestObjective qo = q.getObjectives().stream().filter(o -> o.getId() == oID).findFirst().orElse(null);
         if(qo == null) return false;
 
-        QuestStep qs = QuestStep.getStepById(q.getObjectifCurrent(qp));
+        QuestStep qs = QuestStep.steps.get(q.getCurrentObjectiveId(qp));
         if(qs == null) return false;
 
         qp.setQuestObjectiveValidate(qo);
         SocketManager.GAME_SEND_Im_PACKET(p, "055;" + qID);
 
-        if (q.getNextObjectif(qs) == 0) {
+        if (q.getNextStep(qs) == 0) {
             // Quest finished
             SocketManager.GAME_SEND_Im_PACKET(p, "056;" + qID);
             q.applyButinOfQuest(p, qs);
-            qp.setFinish(true);
+            qp.setFinished(true);
         } else if (qp.overQuestStep(qs))  q.applyButinOfQuest(p, qs);
 
         ((PlayerData) DatabaseManager.get(PlayerData.class)).update(p);

@@ -4055,10 +4055,10 @@ public class GameClient {
     }
 
     private void gameCheckSign(String packet) {
-        Quest quest = Quest.getQuestById(Integer.parseInt(packet.substring(5)));
+        Quest quest = Quest.quests.get(Integer.parseInt(packet.substring(5)));
         QuestPlayer questPlayer = this.player.getQuestPersoByQuest(quest);
         if (questPlayer == null)
-            quest.applyQuest(this.player);
+            quest.apply(this.player);
     }
 
     private void gameTryCastSpell(String packet) {
@@ -6757,18 +6757,16 @@ public class GameClient {
      */
     private void parseQuestData(String packet) {
         switch (packet.charAt(1)) {
-            case 'L':
-                SocketManager.QuestList(this, this.player);
+            case 'L': // Quests list
+                player.send(player.encodeQL());
                 break;
 
-            case 'S':
+            case 'S': // Quest steps
                 int id = Integer.parseInt(packet.substring(2));
-                Quest quest = Quest.getQuestById(id);
-                SocketManager.QuestGep(this, quest, this.player);
+                player.send(Quest.quests.get(id).encodeQS(player));
                 break;
         }
     }
-
     /** Fin Quest Packet **/
 
     /**

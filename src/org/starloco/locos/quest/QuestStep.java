@@ -1,77 +1,29 @@
 package org.starloco.locos.quest;
 
+import org.apache.commons.lang.StringUtils;
 import org.starloco.locos.other.Action;
+import org.starloco.locos.util.Pair;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by Locos on 23/01/2017.
  */
 public class QuestStep {
 
+    public final static Map<Integer, QuestStep> steps = new HashMap<>();
 
-    //region Static method
-    private static Map<Integer, QuestStep> steps = new HashMap<>();
+    private final int id, xp, kamas;
+    private final List<Pair<Integer, Integer>> items = new ArrayList<>();
+    private final List<Action> actions = new ArrayList<>();
+    private final List<QuestObjective> objectives = new ArrayList<>();
 
-    public static Map<Integer, QuestStep> getSteps() {
-        return steps;
-    }
-
-    public static QuestStep getStepById(int id) {
-        return steps.get(id);
-    }
-
-    public static void addStep(QuestStep questStep) {
-        steps.put(questStep.getId(), questStep);
-    }
-    //endregion
-
-    private int id;
-    private int xp;
-    private int kamas;
-    private Map<Integer, Integer> objects = new HashMap<>();
-    private ArrayList<Action> actions = new ArrayList<>();
-    private ArrayList<QuestObjective> questObjectives = new ArrayList<>();
-
-    public QuestStep(int id, int xp, int kamas, String objects, String actions) {
+    public QuestStep(int id, int xp, int kamas, String items, String actions) {
         this.id = id;
         this.xp = xp;
         this.kamas = kamas;
-        try {
-            if (!objects.equalsIgnoreCase("")) {
-                String[] split = objects.split(";");
-                if (split.length > 0) {
-                    for (String loc1 : split) {
-                        if (!loc1.equalsIgnoreCase("")) {
-                            if (loc1.contains(",")) {
-                                String[] loc2 = loc1.split(",");
-                                this.objects.put(Integer.parseInt(loc2[0]), Integer.parseInt(loc2[1]));
-                            } else {
-                                this.objects.put(Integer.parseInt(loc1), 1);
-                            }
-                        }
-                    }
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        try {
-            if (actions != null && !actions.equalsIgnoreCase("")) {
-                String[] split = actions.split(";");
-                if (split.length > 0) {
-                    for (String loc1 : split) {
-                        String[] loc2 = loc1.split("\\|");
-                        this.actions.add(new Action(Integer.parseInt(loc2[0]), loc2[1], "-1", null));
-                    }
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        this.handleItems(items);
+        this.handleActions(actions);
     }
 
     public int getId() {
@@ -86,18 +38,45 @@ public class QuestStep {
         return kamas;
     }
 
-    public Map<Integer, Integer> getObjects() {
-        return objects;
+    public List<Pair<Integer, Integer>> getItems() {
+        return items;
     }
 
-    ArrayList<Action> getActions() {
+    private void handleItems(String items) {
+        if (StringUtils.isNotBlank(items)) {
+            for (String item : items.split(";")) {
+                if (item.isEmpty())
+                    continue;
+
+                if (item.contains(",")) {
+                    String[] data = item.split(",");
+                    this.items.add(new Pair<>(Integer.parseInt(data[0]), Integer.parseInt(data[1])));
+                    continue;
+                }
+
+                this.items.add(new Pair<>(Integer.parseInt(item), 1));
+            }
+        }
+    }
+
+    public List<Action> getActions() {
         return actions;
+    }
+
+    private void handleActions(String actions) {
+        if (StringUtils.isNotBlank(actions)) {
+            for (String action : actions.split(";")) {
+                String[] data = action.split("\\|");
+                this.actions.add(new Action(Integer.parseInt(data[0]), data[1], "-1", null));
+            }
+        }
     }
 
     int getSizeUnique() {
         int cpt = 0;
+        //TODO: why not objectives.size() ?
         ArrayList<Integer> id = new ArrayList<>();
-        for (QuestObjective step : this.questObjectives) {
+        for (QuestObjective step : this.objectives) {
             if (!id.contains(step.getId())) {
                 id.add(step.getId());
                 cpt++;
@@ -107,8 +86,8 @@ public class QuestStep {
     }
 
     void addQuestStep(QuestObjective step) {
-        if (!this.questObjectives.contains(step)) {
-            this.questObjectives.add(step);
+        if (!this.objectives.contains(step)) {
+            this.objectives.add(step);
         }
     }
 }

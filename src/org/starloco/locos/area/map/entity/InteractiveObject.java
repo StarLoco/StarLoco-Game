@@ -73,14 +73,14 @@ public class InteractiveObject {
             case 542://Statue Phoenix.
                 if (player.isGhost()) {
                     player.setAlive();
-                    Quest q = Quest.getQuestById(190);
+                    Quest q = Quest.quests.get(190);
                     if (q != null) {
                         QuestPlayer qp = player.getQuestPersoByQuest(q);
                         if (qp != null) {
-                            QuestObjective qe = q.getCurrentQuestStep(qp);
+                            QuestObjective qe = q.getCurrentObjective(qp);
                             if (qe != null)
                                 if(qe.getId() == 783)
-                                    q.updateQuestData(player, true, qe.getValidationType());
+                                    q.update(player, true, qe.getValidationType());
                         }
                     }
                 }

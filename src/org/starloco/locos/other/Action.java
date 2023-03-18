@@ -215,16 +215,16 @@ public class Action {
                             if (qa.isFinished()) {
                                 player.delQuestPerso(entry.getKey());
                                 if (qa.removeQuestPlayer()) {
-                                    Quest q = Quest.getQuestById(dopeuls.get((int) mapActuel.getId()).second);
-                                    q.applyQuest(player);
+                                    Quest q = Quest.quests.get(dopeuls.get((int) mapActuel.getId()).second);
+                                    q.apply(player);
                                 }
                             }
                         }
                     }
                 }
                 if (b) {
-                    Quest q = Quest.getQuestById(dopeuls.get((int) mapActuel.getId()).second);
-                    q.applyQuest(player);
+                    Quest q = Quest.quests.get(dopeuls.get((int) mapActuel.getId()).second);
+                    q.apply(player);
                 }
                 String grp = IDmob + "," + LVLmob + "," + LVLmob + ";";
                 MonsterGroup MG = new MonsterGroup(player.getCurMap().nextObjectId, map, player.getCurCell().getId(), grp);
@@ -1114,7 +1114,7 @@ public class Action {
             case 40: //Donner une qu�te
                 int QuestID = Integer.parseInt(args);
                 boolean problem = false;
-                Quest quest0 = Quest.getQuestById(QuestID);
+                Quest quest0 = Quest.quests.get(QuestID);
                 if (quest0 == null) {
                     SocketManager.GAME_SEND_MESSAGE(player, player.getLang().trans("other.action.apply.error.quest"));
                     problem = true;
@@ -1128,7 +1128,7 @@ public class Action {
                 }
 
                 if (!problem) {
-                    quest0.applyQuest(player);
+                    quest0.apply(player);
                     if(player.getExchangeAction() != null && player.getExchangeAction().getType() == ExchangeAction.TALKING_WITH) {
                         NpcDialogActionData data = (NpcDialogActionData) player.getExchangeAction().getValue();
                         player.send("GM|" + data.getNpc(player).encodeGM(true, player));
@@ -1144,8 +1144,8 @@ public class Action {
                 int questId = Integer.parseInt(split[0]), objectifId = Integer.parseInt(split[1]);
 
                 player.getQuestPerso().values().stream().filter(quest -> quest.getQuest().getId() == questId).forEach(quest -> {
-                    quest.getQuest().getQuestObjectives().stream().filter(step -> step.getObjectif() == objectifId).forEach(step -> {
-                        step.getQuestData().updateQuestData(player, true, step.getValidationType());
+                    quest.getQuest().getObjectives().stream().filter(step -> step.getStepId() == objectifId).forEach(step -> {
+                        step.getQuest().update(player, true, step.getValidationType());
                     });
                 });
                 break;
@@ -3698,15 +3698,15 @@ public class Action {
 
             case 983:
                 try {
-                    Quest q = Quest.getQuestById(193);
+                    Quest q = Quest.quests.get(193);
                     if (q == null)
                         return true;
                     GameMap curMap = player.getCurMap();
                     if (curMap.getId() != (short) 10332)
                         return true;
                     if (player.getQuestPersoByQuest(q) == null)
-                        q.applyQuest(player);
-                    else if (q.getCurrentQuestStep(player.getQuestPersoByQuest(q)).getId() != 793)
+                        q.apply(player);
+                    else if (q.getCurrentObjective(player.getQuestPersoByQuest(q)).getId() != 793)
                         return true;
 
                     Monster petitChef = World.world.getMonstre(984);

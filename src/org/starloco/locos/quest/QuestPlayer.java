@@ -14,25 +14,25 @@ import java.util.Map;
 public class QuestPlayer {
 
     private int id;
-    private Quest quest = null;
-    private boolean finish;
-    private Player player;
-    private Map<Integer, QuestObjective> objectivesValidate = new HashMap<>();
-    private Map<Integer, Short> monsterKill = new HashMap<>();
+    private final Quest quest;
+    private boolean finished;
+    private final Player player;
+    private final Map<Integer, QuestObjective> objectivesValidate = new HashMap<>();
+    private final Map<Integer, Short> monsterKill = new HashMap<>();
 
-    public QuestPlayer(int id, int quest, boolean finish, int player, String steps) {
+    public QuestPlayer(int id, int quest, boolean finished, int player, String objectives) {
         this.id = id;
-        this.quest = Quest.getQuestById(quest);
-        this.finish = finish;
+        this.quest = Quest.quests.get(quest);
+        this.finished = finished;
         this.player = World.world.getPlayer(player);
-        this.parseObjectives(steps);
+        this.handleObjectives(objectives);
     }
 
-    public QuestPlayer(int quest, boolean finish, int player, String steps) {
-        this.quest = Quest.getQuestById(quest);
-        this.finish = finish;
+    public QuestPlayer(int quest, boolean finished, int player, String objectives) {
+        this.quest = Quest.quests.get(quest);
+        this.finished = finished;
         this.player = World.world.getPlayer(player);
-        this.parseObjectives(steps);
+        this.handleObjectives(objectives);
         ((QuestPlayerData) DatabaseManager.get(QuestPlayerData.class)).insert(this);
     }
 
@@ -48,13 +48,13 @@ public class QuestPlayer {
         return quest;
     }
 
-    public boolean isFinish() {
-        return finish;
+    public boolean isFinished() {
+        return finished;
     }
 
-    public void setFinish(boolean finish) {
-        this.finish = finish;
-        if (this.getQuest() != null && this.getQuest().isDelete()) {
+    public void setFinished(boolean finished) {
+        this.finished = finished;
+        if (this.getQuest() != null && this.getQuest().mustBeDeletedWhenFinished()) {
             if (this.player != null && this.player.getQuestPerso() != null && this.player.getQuestPerso().containsKey(this.getId())) {
                 this.player.delQuestPerso(this.getId());
                 this.removeQuestPlayer();
@@ -71,15 +71,13 @@ public class QuestPlayer {
         return player;
     }
 
-    private void parseObjectives(String objectives) {
+    private void handleObjectives(String objectives) {
         try {
             String[] split = objectives.split(";");
-            if (split.length > 0) {
-                for (String data : split) {
-                    if (!data.equalsIgnoreCase("")) {
-                        QuestObjective step = QuestObjective.getObjectiveById(Integer.parseInt(data));
-                        this.objectivesValidate.put(step.getId(), step);
-                    }
+            for (String data : split) {
+                if (!data.isEmpty()) {
+                    QuestObjective objective = QuestObjective.objectives.get(Integer.parseInt(data));
+                    this.objectivesValidate.put(objective.getId(), objective);
                 }
             }
         } catch (Exception e) {
@@ -115,7 +113,7 @@ public class QuestPlayer {
     public boolean overQuestStep(QuestStep step) {
         int nbrQuest = 0;
         for (QuestObjective objective : this.objectivesValidate.values()) {
-            if (objective.getObjectif() == step.getId())
+            if (objective.getStepId() == step.getId())
                 nbrQuest++;
         }
         return step.getSizeUnique() == nbrQuest;
