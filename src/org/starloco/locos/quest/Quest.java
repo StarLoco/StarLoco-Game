@@ -34,12 +34,12 @@ public class Quest {
     private final List<QuestStep> steps = new ArrayList<>();
     private final List<Action> actions = new ArrayList<>();
 
-    public Quest(int id, int npc, boolean delete, String condition, String steps, String objectifs, String action, String args) {
+    public Quest(int id, int npc, boolean delete, String condition, String steps, String objectives, String action, String args) {
         this.id = id;
         this.npc = World.world.getNPCTemplate(npc);
         this.delete = delete;
+        this.handleObjectives(objectives);
         this.handleSteps(steps);
-        this.handleObjectives(objectifs);
         this.handleCondition(condition);
         this.handleActions(action, args);
     }
@@ -60,14 +60,14 @@ public class Quest {
         return objectives;
     }
 
-    private void handleObjectives(String objectives) {
+    private void handleSteps(String objectives) {
         if (StringUtils.isNotBlank(objectives)) {
             Arrays.stream(objectives.split(";")).map(Integer::parseInt).map(QuestStep.steps::get)
                     .filter(Objects::nonNull).forEach(steps::add);
         }
     }
 
-    private void handleSteps(String steps) {
+    private void handleObjectives(String steps) {
         if (StringUtils.isNotBlank(steps)) {
             Arrays.stream(steps.split(";")).map(Integer::parseInt).map(QuestObjective.objectives::get)
                     .filter(Objects::nonNull).forEach(s -> {
