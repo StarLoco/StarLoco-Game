@@ -212,7 +212,7 @@ public class Action {
                         QuestPlayer qa = entry.getValue();
                         if (qa.getQuest().getId() == dopeuls.get((int) mapActuel.getId()).second) {
                             b = false;
-                            if (qa.isFinish()) {
+                            if (qa.isFinished()) {
                                 player.delQuestPerso(entry.getKey());
                                 if (qa.removeQuestPlayer()) {
                                     Quest q = Quest.getQuestById(dopeuls.get((int) mapActuel.getId()).second);
@@ -324,6 +324,8 @@ public class Action {
                         player.setExchangeAction(null);
                         return true;
                     }
+                    NpcDialogActionData data = (NpcDialogActionData) player.getExchangeAction().getValue();
+                    data.setQuestionId(qID);
                     try {
                         SocketManager.GAME_SEND_QUESTION_PACKET(client, quest.parse(player));
                     } catch (Exception e) {
@@ -1158,7 +1160,7 @@ public class Action {
                 if (player.getCurMap().getId() != mapsecu)
                     return true;
                 QuestPlayer questt = player.getQuestPersoByQuestId(questId);
-                if (questt == null || !questt.isFinish())
+                if (questt == null || !questt.isFinished())
                     return true;
                 player.teleport((short) mapid, cellid);
                 break;
@@ -3732,12 +3734,12 @@ public class Action {
                     QuestPlayer qp = player.getQuestPersoByQuestId(idQuest);
                     if (qp == null)
                         return true;
-                    if (qp.isFinish())
+                    if (qp.isFinished())
                         return true;
 
                     player.addXp((long) xp);
                     SocketManager.GAME_SEND_Im_PACKET(player, "08;" + xp);
-                    qp.setFinish(true);
+                    qp.setFinished(true);
                     SocketManager.GAME_SEND_Im_PACKET(player, "055;" + idQuest);
                     SocketManager.GAME_SEND_Im_PACKET(player, "056;" + idQuest);
                 } catch (Exception e) {
