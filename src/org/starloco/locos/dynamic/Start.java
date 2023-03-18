@@ -163,7 +163,7 @@ public class Start {
 			boolean say = false;
 			while(map.getMobGroups().size() > 0) {
 				if(!say)
-					SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(map, "", -1, "Ganymede", "dynamic.start.poutch", null);
+					SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(map, "", -1, "Ganymede", "dynamic.start.poutch");
 				try { Thread.sleep(1000); } catch (InterruptedException ignored) {}
 				say = true;
 			}
