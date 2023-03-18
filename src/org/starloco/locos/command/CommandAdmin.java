@@ -1787,7 +1787,7 @@ public class CommandAdmin extends AdminUser {
             str += ".";
             this.sendMessage(str);
             return;
-        } else if (command.equalsIgnoreCase("ITEM") || command.equalsIgnoreCase("!getitem")) {
+        } else if (command.equalsIgnoreCase("ITEM") || command.equalsIgnoreCase("!getitem") || command.equalsIgnoreCase("getitem")) {
             int tID = 0;
             try {
                 tID = Integer.parseInt(infos[1]);
