@@ -61,23 +61,23 @@ public class EventSmiley extends Event {
         this.animator.setOrientation((byte) 1);
         SocketManager.GAME_SEND_eD_PACKET_TO_MAP(this.map, this.animator.getId(), 1);
         wait(1000);
-        SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(this.map, "", this.animator.getId(), "Event", "event.type.eventsmiley.welcome", null);
+        SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(this.map, "", this.animator.getId(), "Event", "event.type.eventsmiley.welcome");
         wait(3000);
-        SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(this.map, "", this.animator.getId(), "Event", "event.type.eventsmiley.start.1", null);
+        SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(this.map, "", this.animator.getId(), "Event", "event.type.eventsmiley.start.1");
         wait(4000);
-        SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(this.map, "", this.animator.getId(), "Event", "event.type.eventsmiley.start.2", null);
+        SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(this.map, "", this.animator.getId(), "Event", "event.type.eventsmiley.start.2");
         wait(5000);
-        SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(this.map, "", this.animator.getId(), "Event", "event.type.eventsmiley.start.3", null);
+        SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(this.map, "", this.animator.getId(), "Event", "event.type.eventsmiley.start.3");
         wait(1500);
         SocketManager.GAME_SEND_EMOTICONE_TO_MAP(this.map, this.animator.getId(), 10);
         wait(2000);
-        SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(this.map, "", this.animator.getId(), "Event", "event.type.eventsmiley.start.4", null);
+        SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(this.map, "", this.animator.getId(), "Event", "event.type.eventsmiley.start.4");
         wait(3500);
-        SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(this.map, "", this.animator.getId(), "Event", "event.type.eventsmiley.start.5", null);
+        SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(this.map, "", this.animator.getId(), "Event", "event.type.eventsmiley.start.5");
         wait(4000);
-        SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(this.map, "", this.animator.getId(), "Event", "event.type.eventsmiley.start.6", null);
+        SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(this.map, "", this.animator.getId(), "Event", "event.type.eventsmiley.start.6");
         wait(5500);
-        SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(this.map, "", this.animator.getId(), "Event", "event.type.eventsmiley.start.7", null);
+        SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(this.map, "", this.animator.getId(), "Event", "event.type.eventsmiley.start.7");
         this.execute();
     }
 
@@ -111,14 +111,14 @@ public class EventSmiley extends Event {
             this.moveAnimatorToCellId(179);
             wait(1500);
 
-            SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(this.map, "", this.animator.getId(), "Event", "event.type.eventsmiley.run.1", null);
+            SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(this.map, "", this.animator.getId(), "Event", "event.type.eventsmiley.run.1");
             wait(750);
 
             this.initializeTurn((short) (3000 + 1000 * this.count));
             wait(1500 + 650 * this.count);
-            SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(this.map, "", this.animator.getId(), "Event", "event.type.eventsmiley.run.2", null);
+            SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(this.map, "", this.animator.getId(), "Event", "event.type.eventsmiley.run.2");
             wait(1500 + 650 * this.count);
-            SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(this.map, "", this.animator.getId(), "Event", "event.type.eventsmiley.run.3", null);
+            SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(this.map, "", this.animator.getId(), "Event", "event.type.eventsmiley.run.3");
             this.state = 0;
 
             for(World.Couple<Player, List<Byte>> pair : new ArrayList<>(this.answers)) {
@@ -151,7 +151,7 @@ public class EventSmiley extends Event {
 
             wait(1000);
             if(EventManager.getInstance().getParticipants().size() > 1) {
-                SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(this.map, "", this.animator.getId(), "Event", "event.type.eventsmiley.next", null);
+                SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(this.map, "", this.animator.getId(), "Event", "event.type.eventsmiley.next");
             }
             wait(2000);
         }
@@ -164,7 +164,7 @@ public class EventSmiley extends Event {
         if(!EventManager.getInstance().getParticipants().isEmpty()) {
             Player winner = EventManager.getInstance().getParticipants().get(0);
 
-            SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(this.map, "", this.animator.getId(), "Event", "event.type.eventsmiley.win", null);
+            SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(this.map, "", this.animator.getId(), "Event", "event.type.eventsmiley.win");
             winner.sendMessage(winner.getLang().trans("event.type.eventsmiley.winner"));
             ObjectTemplate template = World.world.getObjTemplate(EventManager.TOKEN);
 
@@ -176,7 +176,7 @@ public class EventSmiley extends Event {
                 }
             }
         } else {
-            SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(this.map, "", this.animator.getId(), "Event", "event.type.eventsmiley.win.none", null);
+            SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(this.map, "", this.animator.getId(), "Event", "event.type.eventsmiley.win.none");
         }
 
         wait(2000);

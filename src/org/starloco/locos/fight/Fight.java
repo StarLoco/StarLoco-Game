@@ -611,7 +611,7 @@ public class Fight {
         init2.setFullMorphbouf(1);
 
 
-        SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(perso.getCurMap(), "", -1, "Boumawa", "fight.fight.boufbwal.start.fight", null);
+        SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(perso.getCurMap(), "", -1, "Boumawa", "fight.fight.boufbwal.start.fight");
 
         launchTime = System.currentTimeMillis();
         setType(7);
@@ -698,19 +698,19 @@ public class Fight {
     public static void FightStateAddFlag(GameMap map, Player player) {
         map.getFights().stream().filter(fight -> fight.state == Constant.FIGHT_STATE_PLACE).forEach(fight -> {
             if (fight.type == Constant.FIGHT_TYPE_CHALLENGE) {
-                SocketManager.GAME_SEND_GAME_ADDFLAG_PACKET_TO_PLAYER(player, fight.init0.getPlayer().getCurMap(), 0,
+                SocketManager.GAME_SEND_GAME_ADDFLAG_PACKET_TO_PLAYER(player, 0,
                         fight.init0.getId(), fight.init1.getId(), fight.init0.getPlayer().getCurCell().getId(), "0;-1", fight.init1.getPlayer().getCurCell().getId(), "0;-1");
             } else if (fight.type == Constant.FIGHT_TYPE_AGRESSION) {
-                SocketManager.GAME_SEND_GAME_ADDFLAG_PACKET_TO_PLAYER(player, fight.init0.getPlayer().getCurMap(), 0,
+                SocketManager.GAME_SEND_GAME_ADDFLAG_PACKET_TO_PLAYER(player, 0,
                         fight.init0.getId(), fight.init1.getId(), fight.init0.getPlayer().getCurCell().getId(), "0;" + fight.init0.getPlayer().getAlignment(), fight.init1.getPlayer().getCurCell().getId(), "0;" + fight.init1.getPlayer().getAlignment());
             } else if (fight.type == Constant.FIGHT_TYPE_PVM) {
-                SocketManager.GAME_SEND_GAME_ADDFLAG_PACKET_TO_PLAYER(player, fight.init0.getPlayer().getCurMap(), 4,
+                SocketManager.GAME_SEND_GAME_ADDFLAG_PACKET_TO_PLAYER(player,  4,
                         fight.init0.getId(), fight.monsterGroup.getId(), (fight.init0.getPlayer().getCurCell().getId() + 1), "0;-1", fight.monsterGroup.getCellId(), "1;-1");
             } else if (fight.type == Constant.FIGHT_TYPE_PVT) {
-                SocketManager.GAME_SEND_GAME_ADDFLAG_PACKET_TO_PLAYER(player, fight.init0.getPlayer().getCurMap(), 5,
+                SocketManager.GAME_SEND_GAME_ADDFLAG_PACKET_TO_PLAYER(player, 5,
                         fight.init0.getId(), fight.collector.getId(), (fight.init0.getPlayer().getCurCell().getId() + 1), "0;-1", fight.collector.getCell(), "3;-1");
             } else if (fight.type == Constant.FIGHT_TYPE_CONQUETE) {
-                SocketManager.GAME_SEND_GAME_ADDFLAG_PACKET_TO_PLAYER(player, fight.init0.getPlayer().getCurMap(), 0,
+                SocketManager.GAME_SEND_GAME_ADDFLAG_PACKET_TO_PLAYER(player, 0,
                         fight.init0.getId(), fight.prism.getId(), fight.init0.getPlayer().getCurCell().getId(), "0;" + fight.init0.getPlayer().getAlignment(), fight.prism.getCell(), "0;" + fight.prism.getAlignment());
             }
             SocketManager.GAME_SEND_REFRESH_TEAM_PACKET_TO_MAP(map, fight.init0.getId(), fight.team0.values());
@@ -1802,11 +1802,11 @@ public class Fight {
                 name = fight.getInit1().getPlayer().getName();
             else
                 name = fight.getInit0().getPlayer().getName();
-            SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(fight.getMapOld(), "", -1, "Boumawa", "fight.fight.boufbwal.end.fight", null);
+            SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(fight.getMapOld(), "", -1, "Boumawa", "fight.fight.boufbwal.end.fight");
             int team1 = this.getTeamId(getInit1().getPlayer().getId());
             int team2 = this.getTeamId(getInit0().getPlayer().getId());
-            SocketManager.GAME_SEND_cMK_PACKET_TO_FIGHT(fight, team1, "", -1, "Boumawa", "Le match est terminé l'équipe gagnante est celle de : " + name + " .", null);
-            SocketManager.GAME_SEND_cMK_PACKET_TO_FIGHT(fight, team2, "", -1, "Boumawa", "Le match est terminé l'équipe gagnante est celle de : " + name + " .", null);
+            SocketManager.GAME_SEND_cMK_PACKET_TO_FIGHT(fight, team1, "", -1, "Boumawa", "Le match est terminé l'équipe gagnante est celle de : " + name + " .");
+            SocketManager.GAME_SEND_cMK_PACKET_TO_FIGHT(fight, team2, "", -1, "Boumawa", "Le match est terminé l'équipe gagnante est celle de : " + name + " .");
             return true;
         }
 
@@ -2334,7 +2334,7 @@ public class Fight {
         ArrayList<Fighter> all = new ArrayList<>();
         all.addAll(this.getTeam0().values());
         all.addAll(this.getTeam1().values());
-        all.stream().filter(Fighter::isHide).forEach(f -> SocketManager.GAME_SEND_GA_PACKET(this, p, 150, f.getId() + "", f.getId() + ",4"));
+        all.stream().filter(Fighter::isHide).forEach(f -> SocketManager.GAME_SEND_GA_PACKET(p, 150, f.getId() + "", f.getId() + ",4"));
         if (p.getGroupe() == null)
             SocketManager.GAME_SEND_Im_PACKET_TO_FIGHT(this, 7, "036;" + p.getName());
         if ((getType() == Constant.FIGHT_TYPE_PVM) && (getAllChallenges().size() > 0) || getType() == Constant.FIGHT_TYPE_DOPEUL && getAllChallenges().size() > 0) {
@@ -2347,9 +2347,9 @@ public class Fight {
             }
         }
         for(Glyph glyph : this.getGlyphs()) {
-            SocketManager.GAME_SEND_GA_PACKET(this, p, 999, glyph.getCaster().getId() + "",
+            SocketManager.GAME_SEND_GA_PACKET(p, 999, glyph.getCaster().getId() + "",
                     "GDZ+" + glyph.getCell().getId() + ";" + glyph.getSize() + ";" + glyph.getColor());
-            SocketManager.GAME_SEND_GA_PACKET(this, p, 999, glyph.getCaster().getId() + "",
+            SocketManager.GAME_SEND_GA_PACKET(p, 999, glyph.getCaster().getId() + "",
                     "GDC" + glyph.getCell().getId() + ";Haaaaaaaaa3005;");
         }
     }
@@ -3458,7 +3458,7 @@ public class Fight {
         fighter.getCell().getFighters().clear();
         fighter.setCell(getMap().getCase(cell));
         getMap().getCase(cell).addFighter(fighter);
-        SocketManager.GAME_SEND_FIGHT_CHANGE_PLACE_PACKET_TO_FIGHT(this, 3, getMap(), player.getId(), cell);
+        SocketManager.GAME_SEND_FIGHT_CHANGE_PLACE_PACKET_TO_FIGHT(this, 3, player.getId(), cell);
     }
 
     public boolean isOccuped(int cell) {
@@ -3579,7 +3579,7 @@ public class Fight {
 
         Fighter f = (target.getTeam() == 0 ? getInit0() : getInit1());
         if(f != null)
-            SocketManager.GAME_SEND_ADD_IN_TEAM_PACKET_TO_PLAYER(player, getMap(), f.getId(), target);// Indication de la team
+            SocketManager.GAME_SEND_ADD_IN_TEAM_PACKET_TO_PLAYER(player, f.getId(), target);// Indication de la team
         SocketManager.GAME_SEND_STATS_PACKET(player);
 
         SocketManager.GAME_SEND_MAP_FIGHT_GMS_PACKETS(this, getMap(), player);
@@ -3620,9 +3620,9 @@ public class Fight {
                 if(trap.getCaster().getTeam() == target.getTeam())
                     trap.refresh(target);
             for(Glyph glyph : this.getGlyphs()) {
-                SocketManager.GAME_SEND_GA_PACKET(this, target.getPlayer(), 999, glyph.getCaster().getId() + "",
+                SocketManager.GAME_SEND_GA_PACKET(target.getPlayer(), 999, glyph.getCaster().getId() + "",
                         "GDZ+" + glyph.getCell().getId() + ";" + glyph.getSize() + ";" + glyph.getColor());
-                SocketManager.GAME_SEND_GA_PACKET(this, target.getPlayer(), 999, glyph.getCaster().getId() + "",
+                SocketManager.GAME_SEND_GA_PACKET(target.getPlayer(), 999, glyph.getCaster().getId() + "",
                         "GDC" + glyph.getCell().getId() + ";Haaaaaaaaa3005;");
             }
         }
@@ -3711,7 +3711,7 @@ public class Fight {
                 param = target.getId() + "," + effect.getTurn();
             }
             if(param != null) {
-                SocketManager.GAME_SEND_GA_PACKET(this, reconnectedPlayer, effect.getEffectID(), String.valueOf(effect.getCaster().getId()), param);
+                SocketManager.GAME_SEND_GA_PACKET(reconnectedPlayer, effect.getEffectID(), String.valueOf(effect.getCaster().getId()), param);
             }
         }
 

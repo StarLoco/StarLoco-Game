@@ -118,7 +118,7 @@ public class GameClient {
         this.lastPacketTime = System.currentTimeMillis();
 
         if (packet.length() > 3 && packet.substring(0, 4).equalsIgnoreCase("ping")) {
-            SocketManager.GAME_SEND_PONG(this);
+            this.send("pong");
             return;
         }
         if(Logging.USE_LOG) {
@@ -771,7 +771,7 @@ public class GameClient {
                     int team = this.player.getFight().getTeamId(this.player.getId());
                     if (team == -1)
                         return;
-                    SocketManager.GAME_SEND_cMK_PACKET_TO_FIGHT(this.player.getFight(), team, "#", this.player.getId(), this.player.getName(), msg, null);
+                    SocketManager.GAME_SEND_cMK_PACKET_TO_FIGHT(this.player.getFight(), team, "#", this.player.getId(), this.player.getName(), msg);
                     return;
                 }
                 if (Logging.USE_LOG)
@@ -780,10 +780,10 @@ public class GameClient {
                     if (this.player.getObjetByPos(Constant.ITEM_POS_ROLEPLAY_BUFF).getTemplate().getId() == 10844)
                         msg = Formulas.translateMsg(msg);
                 if (this.player.getFight() == null) {
-                    SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(this.player.getCurMap(), "", this.player.getId(), this.player.getName(), msg, player);
+                    SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(this.player.getCurMap(), "", this.player.getId(), this.player.getName(), msg);
                     AuctionManager.getInstance().onPlayerChat(this.player, msg);
                 } else
-                    SocketManager.GAME_SEND_cMK_PACKET_TO_FIGHT(this.player.getFight(), 7, "", this.player.getId(), this.player.getName(), msg, player);
+                    SocketManager.GAME_SEND_cMK_PACKET_TO_FIGHT(this.player.getFight(), 7, "", this.player.getId(), this.player.getName(), msg);
                 break;
             case '^':// Canal Incarnam
                 msg = packet.split("\\|", 2)[1];
@@ -804,7 +804,7 @@ public class GameClient {
                 if (this.player.getObjetByPos(Constant.ITEM_POS_ROLEPLAY_BUFF) != null)
                     if (this.player.getObjetByPos(Constant.ITEM_POS_ROLEPLAY_BUFF).getTemplate().getId() == 10844)
                         msg = Formulas.translateMsg(msg);
-                SocketManager.GAME_SEND_cMK_PACKET_INCARNAM_CHAT(this.player, "^", this.player.getId(), this.player.getName(), msg);
+                SocketManager.GAME_SEND_cMK_PACKET_INCARNAM_CHAT("^", this.player.getId(), this.player.getName(), msg);
 
                 break;
             case '#'://Canal Equipe
@@ -821,7 +821,7 @@ public class GameClient {
                     if (this.player.getObjetByPos(Constant.ITEM_POS_ROLEPLAY_BUFF) != null)
                         if (this.player.getObjetByPos(Constant.ITEM_POS_ROLEPLAY_BUFF).getTemplate().getId() == 10844)
                             msg = Formulas.translateMsg(msg);
-                    SocketManager.GAME_SEND_cMK_PACKET_TO_FIGHT(this.player.getFight(), team, "#", this.player.getId(), this.player.getName(), msg, player);
+                    SocketManager.GAME_SEND_cMK_PACKET_TO_FIGHT(this.player.getFight(), team, "#", this.player.getId(), this.player.getName(), msg);
                 }
                 break;
 
@@ -2672,7 +2672,7 @@ public class GameClient {
         this.player.setShowSeller(true);
         World.world.addSeller(this.player);
         this.kick();
-        map.getPlayers().stream().filter(player -> player != null && player.isOnline()).forEach(player -> SocketManager.GAME_SEND_MERCHANT_LIST(player, player.getCurMap().getId()));
+        map.getPlayers().stream().filter(player -> player != null && player.isOnline()).forEach(SocketManager::GAME_SEND_MERCHANT_LIST);
     }
 
     private synchronized void putInInventory(String packet) {
@@ -3856,7 +3856,7 @@ public class GameClient {
 
             case 618://Mariage oui
                 this.player.setisOK(Integer.parseInt(packet.substring(5, 6)));
-                SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(this.player.getCurMap(), "", this.player.getId(), this.player.getName(), "game.gameclient.maried.yes", null);
+                SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(this.player.getCurMap(), "", this.player.getId(), this.player.getName(), "game.gameclient.maried.yes");
                 Player boy = (Player) this.player.getCurMap().getCase(282).getPlayers().toArray()[0], girl = (Player) this.player.getCurMap().getCase(297).getPlayers().toArray()[0];
 
                 if (girl.getisOK() > 0 && boy.getisOK() > 0)
@@ -3866,7 +3866,7 @@ public class GameClient {
                 break;
             case 619://Mariage non
                 this.player.setisOK(0);
-                SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(this.player.getCurMap(), "", this.player.getId(), this.player.getName(), "game.gameclient.maried.no", null);
+                SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(this.player.getCurMap(), "", this.player.getId(), this.player.getName(), "game.gameclient.maried.no");
                 boy = (Player) this.player.getCurMap().getCase(282).getPlayers().toArray()[0];
                 girl = (Player) this.player.getCurMap().getCase(297).getPlayers().toArray()[0];
 
@@ -4478,7 +4478,7 @@ public class GameClient {
             // Prism
             SocketManager.SEND_GM_PRISME_TO_MAP(this, this.player.getCurMap());
             // Merchant
-            SocketManager.GAME_SEND_MERCHANT_LIST(this.player, this.player.getCurMap().getId());
+            SocketManager.GAME_SEND_MERCHANT_LIST(this.player);
             // Houses
             World.world.getHouseManager().load(this.player, this.player.getCurMap().getId());
             // Collector

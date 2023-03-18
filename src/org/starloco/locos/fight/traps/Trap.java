@@ -91,9 +91,9 @@ public class Trap {
 
     public void refresh(Fighter f) {
         StringBuilder str2 = new StringBuilder();
-        SocketManager.GAME_SEND_GA_PACKET(this.fight, f.getPlayer(), 999, this.caster.getId() + "", "GDZ+" + this.cell.getId() + ";" + this.size + ";" + this.color);
+        SocketManager.GAME_SEND_GA_PACKET(f.getPlayer(), 999, this.caster.getId() + "", "GDZ+" + this.cell.getId() + ";" + this.size + ";" + this.color);
         str2.append("GDC").append(this.cell.getId()).append(";Haaaaaaaaz3005;");
-        SocketManager.GAME_SEND_GA_PACKET(this.fight, f.getPlayer(), 999, this.caster.getId() + "", str2.toString());
+        SocketManager.GAME_SEND_GA_PACKET(f.getPlayer(), 999, this.caster.getId() + "", str2.toString());
     }
 
     public void onTrapped(Fighter target) {

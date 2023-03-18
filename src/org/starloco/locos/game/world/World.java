@@ -1184,15 +1184,15 @@ public class World {
                 SocketManager.GAME_SEND_MESSAGE_TO_MAP(map, girl.getName() + " est déjà marier !", "B9121B");
                 return;
             }
-            SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(map, "", -1, "Prêtre", "world.world.maried.pietre.ask.accept", null);
-            SocketManager.GAME_SEND_WEDDING(map, 617, (boy == asked ? boy.getId() : girl.getId()), (boy == asked ? girl.getId() : boy.getId()), -1);
+            SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(map, "", -1, "Prêtre", "world.world.maried.pietre.ask.accept");
+            SocketManager.GAME_SEND_WEDDING(617, (boy == asked ? boy.getId() : girl.getId()), (boy == asked ? girl.getId() : boy.getId()), -1);
         }
     }
 
 
     public void wedding(Player boy, Player girl, int isOK) {
         if (isOK > 0) {
-            SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(boy.getCurMap(), "", -1, "Prêtre", "world.world.maried.pietre.ask.ok", null);
+            SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(boy.getCurMap(), "", -1, "Prêtre", "world.world.maried.pietre.ask.ok");
             boy.setWife(girl.getId());
             girl.setWife(boy.getId());
         } else {
