@@ -101,17 +101,17 @@ public class HouseManager {
 
         player.setKamas(player.getKamas() - house.getSale());
 
-        int kamas = 0;
-        for (Trunk trunk : Trunk.getTrunksByHouse(house)) {
+        long kamas = Trunk.getTrunksByHouse(house).mapToLong(trunk -> {
             if (house.getOwnerId() > 0)
                 trunk.moveTrunkToBank(World.world.getAccount(house.getOwnerId()));//D�placement des items vers la banque
 
-            kamas += trunk.getKamas();
+            long trunkKamas = trunk.getKamas();
             trunk.setKamas(0);//Retrait kamas
             trunk.setKey("-");//ResetPass
             trunk.setOwnerId(player.getAccID());//ResetOwner
             ((TrunkData) DatabaseManager.get(TrunkData.class)).update(trunk);
-        }
+            return trunkKamas;
+        }).sum();
 
         //Ajoute des kamas dans la banque du vendeur
         if (house.getOwnerId() > 0) {

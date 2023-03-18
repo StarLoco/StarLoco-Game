@@ -710,7 +710,7 @@ public class World {
 
     public void addNpcTemplate(NpcTemplate temp) {
         if(npcsTemplate.containsKey(temp.getId()) && temp.legacy == null) {
-            Main.logger.info("Overwriting npc template #{} with script", temp.getId());
+            Main.logger.trace("Overwriting npc template #{} with script", temp.getId());
         }
         npcsTemplate.put(temp.getId(), temp);
     }
