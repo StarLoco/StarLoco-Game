@@ -1806,26 +1806,17 @@ public class SocketManager {
     }
 
     public static void GAME_SEND_EHl(Player out, Hdv hdv, int category, int templateId) {
-        List<HdvEntry> entries = hdv.getEntriesByTemplate(category, templateId);
-        int lineTemplateID = hdv.lineTemplateIDOverride(category).orElse(templateId);
-
-        // Group entries by stats
-        String packet = "EHl" + templateId + "|" + entries.stream().collect(Collectors.groupingBy(e -> e.getGameObject().parseStatsString())).entrySet().stream()
-                .map(linesPerStats -> {
-                    int lineId = hdv.lineIDForStats(linesPerStats.getKey());
-
-                    Map<Byte,Optional<HdvEntry>> cheapestByQuantity = linesPerStats.getValue().stream()
-                            .collect(Collectors.groupingBy(HdvEntry::getAmount, Collectors.minBy((o1, o2) -> o2.getPrice()-o1.getPrice())));
-
+        String packet = "EHl" + templateId + "|" + hdv.linesForTemplate(category, templateId).stream()
+                .map(line -> {
                     // Encode lines
                     return String.join(
                             ";",
-                            String.valueOf(lineId),
-                            linesPerStats.getKey(),
-                            Optional.ofNullable(cheapestByQuantity.get((byte)0)).flatMap(Function.identity()).map(e -> String.valueOf(e.getPrice())).orElse(""),
-                            Optional.ofNullable(cheapestByQuantity.get((byte)1)).flatMap(Function.identity()).map(e -> String.valueOf(e.getPrice())).orElse(""),
-                            Optional.ofNullable(cheapestByQuantity.get((byte)2)).flatMap(Function.identity()).map(e -> String.valueOf(e.getPrice())).orElse(""),
-                            String.valueOf(lineTemplateID)
+                            String.valueOf(line.lineId),
+                            line.stats,
+                            line.minPrices[0]==0?"":String.valueOf(line.minPrices[0]),
+                            line.minPrices[1]==0?"":String.valueOf(line.minPrices[1]),
+                            line.minPrices[2]==0?"":String.valueOf(line.minPrices[2]),
+                            String.valueOf(line.itemTemplateId)
                     );
                 })
                 .collect(Collectors.joining("|"));

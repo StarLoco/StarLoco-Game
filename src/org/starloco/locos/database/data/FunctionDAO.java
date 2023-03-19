@@ -57,7 +57,7 @@ public abstract class FunctionDAO<T> implements DAO<T> {
 
     protected void execute(PreparedStatement statement) {
         synchronized (locker) {
-            try (Connection connection = statement.getConnection()){
+            try {
                 statement.execute();
                 logger.debug("SQL request executed successfully {}", statement.toString());
             } catch (SQLException e) {

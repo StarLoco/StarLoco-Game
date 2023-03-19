@@ -8,10 +8,10 @@ public class HdvEntry implements Comparable<HdvEntry> {
     private int id;
     private int hdvId;
     private int lineId;
-    private int owner;
-    private int price;
-    private byte amount;            //Dans le format : 1=1 2=10 3=100
-    private GameObject gameObject;
+    private final int owner;
+    private final int price;
+    private final byte amount;            //Dans le format : 1=1 2=10 3=100
+    private final GameObject gameObject;
 
     public HdvEntry(int id, int price, byte amount, int owner, GameObject gameObject) {
         this.setId(id);
@@ -54,7 +54,7 @@ public class HdvEntry implements Comparable<HdvEntry> {
     }
 
     public byte getAmountExp() {
-        return (byte) (Math.pow(10, amount) / 10);
+        return (byte)Math.pow(10, amount);
     }
 
     public GameObject getGameObject() {
@@ -63,14 +63,14 @@ public class HdvEntry implements Comparable<HdvEntry> {
 
     public String parseToEL() {
         StringBuilder toReturn = new StringBuilder();
-        int count = getAmountExp();//Transf�re dans le format (1,10,100) le montant qui etait dans le format (1,2,3)
+        int count = getAmountExp();//Transf�re dans le format (1,10,100) le montant qui etait dans le format (0,1,2)
         toReturn.append(this.getLineId()).append(";").append(count).append(";").append(this.getGameObject().getTemplate().getId()).append(";").append(this.getGameObject().parseStatsString()).append(";").append(this.price).append(";350");//350 = temps restant
         return toReturn.toString();
     }
 
     public String parseToEmK() {
         StringBuilder toReturn = new StringBuilder();
-        int count = getAmountExp();//Transf�re dans le format (1,10,100) le montant qui etait dans le format (1,2,3)
+        int count = getAmountExp();//Transf�re dans le format (1,10,100) le montant qui etait dans le format (0,1,2)
         toReturn.append(this.getGameObject().getGuid()).append("|").append(count).append("|").append(this.getGameObject().getTemplate().getId()).append("|").append(this.getGameObject().parseStatsString()).append("|").append(this.price).append("|350");//350 = temps restant
         return toReturn.toString();
     }
@@ -88,6 +88,9 @@ public class HdvEntry implements Comparable<HdvEntry> {
         return 0;
     }
 
+    void setLineID(int lineId) {
+        this.lineId = lineId;
+    }
     public int getLineID() {
         return lineId;
     }

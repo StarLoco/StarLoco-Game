@@ -1614,43 +1614,39 @@ public class GameClient {
         switch (packet.charAt(2)) {
             case 'B': //Confirmation d'achat
                 String[] info = packet.substring(3).split("\\|");//ligneID|amount|price
-                // FIXME DIABU
-//                int ligneID = Integer.parseInt(info[0]);
-//                byte amount = Byte.parseByte(info[1]);
-//                HdvLine hL = curHdv.getLine(ligneID);
-//                if (hL == null) {
-//                    SocketManager.GAME_SEND_MESSAGE(this.player, this.player.getLang().trans("game.gameclient.bigstore.error.1"));
-//                    return;
-//                }
-//                HdvEntry hE = hL.doYouHave(amount, Integer.parseInt(info[2]));
-//                if (hE == null) {
-//                    // Intervient lorsque un client ach?te plusieurs fois la m?me ressource.
-//                    // Par exemple une pyrute ? 45'000k trois fois. Au bout d'un moment elle monte ? 100'000k, mais le client
-//                    // voit toujours 45'000k. Il doit il y avoir un manque de paquet envoy?. La 4?me avait bugg?.
-//                    SocketManager.GAME_SEND_MESSAGE(this.player, player.getLang().trans("game.gameclient.bigstore.error.2",hL.getTemplateId()));
-//                    return;
-//                }
-//                Integer owner = hE.getOwner();
-//                if (owner == null) {
-//                    SocketManager.GAME_SEND_MESSAGE(this.player, this.player.getLang().trans("game.gameclient.bigstore.error.3", hL.getTemplateId()));
-//                    return;
-//                }
-//                if (owner == this.player.getAccount().getId()) {
-//                    SocketManager.GAME_SEND_MESSAGE(this.player, this.player.getLang().trans("game.gameclient.bigstore.error.4"));
-//                    return;
-//                }
-//                if (curHdv.buyItem(ligneID, amount, Integer.parseInt(info[2]), this.player)) {
-//
-//                    SocketManager.GAME_SEND_EHm_PACKET(this.player, "-", ligneID + "");//Enleve la ligne
-//                    if (curHdv.getLine(ligneID) != null
-//                            && !curHdv.getLine(ligneID).isEmpty())
-//                        SocketManager.GAME_SEND_EHm_PACKET(this.player, "+", curHdv.getLine(ligneID).parseToEHm());//R?ajthise la ligne si elle n'est pas vide
-//                    this.player.refreshStats();
-//                    SocketManager.GAME_SEND_Ow_PACKET(this.player);
-//                    SocketManager.GAME_SEND_Im_PACKET(this.player, "068");//Envoie le message "Lot achet?"
-//                } else {
-//                    SocketManager.GAME_SEND_Im_PACKET(this.player, "172");//Envoie un message d'erreur d'achat
-//                }
+                int ligneID = Integer.parseInt(info[0]);
+                byte amount = Byte.parseByte(info[1]);
+                int price = Integer.parseInt(info[2]);
+
+                HdvEntry entry = hdv.buyItem(exchangeAction.getCategoryId(), exchangeAction.getTemplateId(), ligneID, amount, price, this.player).orElse(null);
+
+                if (entry == null) {
+                    SocketManager.GAME_SEND_Im_PACKET(this.player, "172");//Envoie un message d'erreur d'achat
+                    return;
+                }
+
+                Optional<Account> seller = Optional.ofNullable(World.world.getAccount(entry.getOwner()));
+
+                String name = seller.map(Account::getName).orElse("undefined");
+                GameObject obj = entry.getGameObject();
+
+                try {
+                    Logging.getInstance().write("Object", "BuyHdv : "
+                        + player.getName() + " : achat de "
+                        + obj.getTemplate().getName() + "(" + obj.getGuid() + ") x"
+                        + obj.getQuantity() + " venant du compte "
+                        + name);
+                } catch(Exception ex) { ex.printStackTrace(); }
+
+                seller.map(Account::getCurrentPlayer).ifPresent(p -> {
+                    SocketManager.GAME_SEND_Im_PACKET(p, "065;"
+                        + price
+                        + "~"
+                        + obj.getTemplate().getId()
+                        + "~" + obj.getTemplate().getId() + "~1");
+                    ((PlayerData) DatabaseManager.get(PlayerData.class)).update(p);
+                });
+
                 break;
             case 'l'://Demande listage d'un template (les prix)
                 templateID = Integer.parseInt(packet.substring(3));

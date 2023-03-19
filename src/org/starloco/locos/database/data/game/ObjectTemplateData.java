@@ -63,7 +63,7 @@ public class ObjectTemplateData extends FunctionDAO<ObjectTemplate> {
     public void update(ObjectTemplate entity) {
         PreparedStatement p = null;
         try {
-            p = getPreparedStatement("UPDATE `" + getTableName() + "` SET sold = ?,avgPrice = ? WHERE id = ?");
+            p = getPreparedStatement("UPDATE " + getTableName() + " SET sold = ?,avgPrice = ? WHERE id = ?");
             p.setLong(1, entity.getSold());
             p.setInt(2, entity.getAvgPrice());
             p.setInt(3, entity.getId());
