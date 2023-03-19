@@ -7,12 +7,10 @@ import org.starloco.locos.database.data.game.HdvObjectData;
 import org.starloco.locos.entity.monster.Monster;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.Constant;
-import org.starloco.locos.kernel.Logging;
 import org.starloco.locos.object.GameObject;
 import org.starloco.locos.object.entity.SoulStone;
 import org.starloco.locos.util.Pair;
 
-import javax.swing.text.html.Option;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -20,18 +18,18 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class Hdv {
+public class BigStore {
     private interface CategoryFilter {
-        boolean apply(int categoryId, HdvEntry entry);
+        boolean apply(int categoryId, BigStoreListing entry);
     }
 
-    public static class Line {
+    public static class CheapestListings {
         public final int lineId;
         public final int itemTemplateId;
         public final String stats;
         public final int[] minPrices;
 
-        public Line(int lineId, int itemTemplateId, String stats, int[] minPrices) {
+        public CheapestListings(int lineId, int itemTemplateId, String stats, int[] minPrices) {
             this.lineId = lineId;
             this.itemTemplateId = itemTemplateId;
             this.stats = stats;
@@ -39,14 +37,14 @@ public class Hdv {
         }
     }
 
-    private static final Comparator<HdvEntry> priceASC = (o1, o2) -> o2.getPrice() - o1.getPrice();
+    private static final Comparator<BigStoreListing> priceASC = (o1, o2) -> o2.getPrice() - o1.getPrice();
     private static final DecimalFormat pattern = new DecimalFormat("0.0");
     // defaultCategoryFilter returns true if categoryId == template.type
     private static final CategoryFilter defaultCategoryFilter = (c, e) -> c == e.getGameObject().getTemplate().getType();
 
     private final int hdvId;
     private final float taxe;
-    private short sellTime;
+    private short sellTime; // TODO Support that
     private final short maxAccountItem;
     private final List<Integer> categories;
     private final short lvlMax;
@@ -55,20 +53,15 @@ public class Hdv {
     // K: LineID, V: Pair<TemplateID, Stats>
     private final HashMap<Integer, Pair<Integer, String>> lineIDToItemDesc = new HashMap<>();
     private final HashMap<Pair<Integer, String>, Integer> statHashToLineID = new HashMap<>();
-    private final LinkedList<HdvEntry> entries = new LinkedList<>();
-    //private final HashMap<Integer, List<HdvEntry>> entriesInCategory = new HashMap<>(); // Just a cache to avoid recomputing the list of entry
-    private final Object entriesLock = new Object();
+    private final LinkedList<BigStoreListing> entries = new LinkedList<>();
+     private final Object entriesLock = new Object();
 
-
-    // private Map<Integer, HdvCategory> categorys = new HashMap<Integer, HdvCategory>();
-    // private Map<Integer, Couple<Integer, Integer>> path = new HashMap<Integer, Couple<Integer, Integer>>(); //<LigneID,<CategID,TemplateID>>
-
-
-    public Hdv(int hdvID, float taxe, short sellTime, short maxItemCompte,
-               short lvlMax, String strCategory) {
+    public BigStore(int hdvID, float taxe, short sellTime, short maxItemCompte,
+                    short lvlMax, String strCategory) {
         this.hdvId = hdvID;
         this.taxe = taxe;
         this.maxAccountItem = maxItemCompte;
+        this.sellTime = sellTime;
         this.categories = Arrays.stream(strCategory.split(",")).map(Integer::parseInt).collect(Collectors.toList());
         this.lvlMax = lvlMax;
     }
@@ -97,32 +90,32 @@ public class Hdv {
         return lvlMax;
     }
 
-    private Stream<HdvEntry> getEntriesByTemplate(int categoryId, int template) {
-        Function<HdvEntry, Stream<Integer>> templateMapper = categoryTemplateMapper(categoryId);
+    private Stream<BigStoreListing> getEntriesByTemplate(int categoryId, int template) {
+        Function<BigStoreListing, Stream<Integer>> templateMapper = categoryTemplateMapper(categoryId);
         return entries.stream().filter(e -> templateMapper.apply(e).anyMatch(i -> i == template));
     }
 
-    public List<Line> linesForTemplate(int category, int templateId) {
+    public List<CheapestListings> linesForTemplate(int category, int templateId) {
         synchronized (entriesLock) {
-            return getEntriesByTemplate(category, templateId).collect(Collectors.groupingBy(HdvEntry::getLineID)).entrySet().stream()
+            return getEntriesByTemplate(category, templateId).collect(Collectors.groupingBy(BigStoreListing::getLineID)).entrySet().stream()
                     .map(lineEntries -> {
                         Pair<Integer, String> desc = lineIDToItemDesc.get(lineEntries.getKey());
 
-                        Map<Byte, Optional<HdvEntry>> cheapestByQuantity = lineEntries.getValue().stream()
-                                .collect(Collectors.groupingBy(HdvEntry::getAmount, Collectors.minBy(priceASC)));
+                        Map<Byte, Optional<BigStoreListing>> cheapestByQuantity = lineEntries.getValue().stream()
+                                .collect(Collectors.groupingBy(BigStoreListing::getAmount, Collectors.minBy(priceASC)));
 
                         int[] cheapest = new int[]{
-                                Optional.ofNullable(cheapestByQuantity.get((byte) 0)).flatMap(Function.identity()).map(HdvEntry::getPrice).orElse(0),
-                                Optional.ofNullable(cheapestByQuantity.get((byte) 1)).flatMap(Function.identity()).map(HdvEntry::getPrice).orElse(0),
-                                Optional.ofNullable(cheapestByQuantity.get((byte) 2)).flatMap(Function.identity()).map(HdvEntry::getPrice).orElse(0),
+                                Optional.ofNullable(cheapestByQuantity.get((byte) 0)).flatMap(Function.identity()).map(BigStoreListing::getPrice).orElse(0),
+                                Optional.ofNullable(cheapestByQuantity.get((byte) 1)).flatMap(Function.identity()).map(BigStoreListing::getPrice).orElse(0),
+                                Optional.ofNullable(cheapestByQuantity.get((byte) 2)).flatMap(Function.identity()).map(BigStoreListing::getPrice).orElse(0),
                         };
 
-                        return new Line(lineEntries.getKey(), desc.first, desc.second, cheapest);
+                        return new CheapestListings(lineEntries.getKey(), desc.first, desc.second, cheapest);
                     }).collect(Collectors.toList());
         }
     }
 
-    private Optional<HdvEntry> cheapestEntry(int category, int templateId, int ligneId, int amountExp) {
+    private Optional<BigStoreListing> cheapestEntry(int category, int templateId, int ligneId, int amountExp) {
         return getEntriesByTemplate(category, templateId)
             .filter(e -> e.getLineID() == ligneId)
             .filter(e -> e.getAmountExp() == amountExp)
@@ -154,19 +147,19 @@ public class Hdv {
         return defaultCategoryFilter;
     }
 
-    private Function<HdvEntry, Stream<Integer>> categoryTemplateMapper(int category) {
+    private Function<BigStoreListing, Stream<Integer>> categoryTemplateMapper(int category) {
         switch (category) {
             case 85:
             case 124:
             case 125:
-                return (HdvEntry e) -> SoulStone.safeCast(e.getGameObject()).map(SoulStone::getMonsterIDs).orElse(Stream.empty());
+                return (BigStoreListing e) -> SoulStone.safeCast(e.getGameObject()).map(SoulStone::getMonsterIDs).orElse(Stream.empty());
             default:
-                return (HdvEntry e) -> Stream.of(e.getGameObject().getTemplate().getId());
+                return (BigStoreListing e) -> Stream.of(e.getGameObject().getTemplate().getId());
         }
 
     }
 
-    public void addEntry(HdvEntry toAdd) {
+    public void addEntry(BigStoreListing toAdd) {
         toAdd.setHdvId(this.getHdvId());
         GameObject obj = Objects.requireNonNull(toAdd.getGameObject());
         synchronized (entriesLock) {
@@ -183,14 +176,14 @@ public class Hdv {
         World.world.addHdvItem(toAdd.getOwner(), this.getHdvId(), toAdd);
     }
 
-    public boolean delEntry(HdvEntry entry) {
+    public boolean delEntry(BigStoreListing entry) {
         if(!this.entries.remove(entry)) return false;
 
         World.world.removeHdvItem(entry.getOwner(), entry.getHdvId(), entry);
         return true;
     }
 
-    public Optional<HdvEntry> buyItem(int category, int templateId, int lineID, byte amount, int price, Player newOwner) {
+    public Optional<BigStoreListing> buyItem(int category, int templateId, int lineID, byte amount, int price, Player newOwner) {
         synchronized (entriesLock) {
             return cheapestEntry(category, templateId, lineID, amount)
                 .filter(e -> e.getGameObject() != null)
@@ -222,7 +215,7 @@ public class Hdv {
 
     public List<Integer> getCategoryContent(int categ) {
         CategoryFilter filter = categoryFilters(categ);
-        Function<HdvEntry, Stream<Integer>> templateMapper = categoryTemplateMapper(categ);
+        Function<BigStoreListing, Stream<Integer>> templateMapper = categoryTemplateMapper(categ);
         synchronized (entriesLock) {
             return entries.stream().filter(c -> filter.apply(categ, c))
                 .flatMap(templateMapper)

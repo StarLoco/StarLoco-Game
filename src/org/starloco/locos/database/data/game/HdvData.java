@@ -4,7 +4,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.lang.NotImplementedException;
 import org.starloco.locos.database.data.FunctionDAO;
 import org.starloco.locos.game.world.World;
-import org.starloco.locos.hdv.Hdv;
+import org.starloco.locos.hdv.BigStore;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -20,7 +20,7 @@ public class HdvData extends FunctionDAO<Object> {
         try {
             result = getData("SELECT * FROM " + getTableName() + " ORDER BY id ASC;");
             while (result.next()) {
-                World.world.addHdv(new Hdv(result.getInt("map"), result.getFloat("sellTaxe"), result.getShort("sellTime"), result.getShort("accountItem"), result.getShort("lvlMax"), result.getString("categories")));
+                World.world.addHdv(new BigStore(result.getInt("map"), result.getFloat("sellTaxe"), result.getShort("sellTime"), result.getShort("accountItem"), result.getShort("lvlMax"), result.getString("categories")));
             }
             close(result);
         } catch (SQLException e) {

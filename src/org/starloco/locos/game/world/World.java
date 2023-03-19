@@ -31,8 +31,8 @@ import org.starloco.locos.entity.npc.NpcTemplate;
 import org.starloco.locos.entity.pet.Pet;
 import org.starloco.locos.entity.pet.PetEntry;
 import org.starloco.locos.fight.spells.Spell;
-import org.starloco.locos.hdv.Hdv;
-import org.starloco.locos.hdv.HdvEntry;
+import org.starloco.locos.hdv.BigStore;
+import org.starloco.locos.hdv.BigStoreListing;
 import org.starloco.locos.job.Job;
 import org.starloco.locos.kernel.Constant;
 import org.starloco.locos.kernel.Main;
@@ -79,8 +79,8 @@ public class World {
     private final Map<Integer, ArrayList<Couple<Integer, Integer>>> Crafts = new HashMap<>();
     private final Map<Integer, ObjectSet> ItemSets = new HashMap<>();
     private final Map<Integer, Guild> Guildes = new HashMap<>();
-    private final Map<Integer, Hdv> Hdvs = new HashMap<>();
-    private final Map<Integer, Map<Integer, ArrayList<HdvEntry>>> hdvsItems = new HashMap<>();
+    private final Map<Integer, BigStore> Hdvs = new HashMap<>();
+    private final Map<Integer, Map<Integer, List<BigStoreListing>>> hdvsItems = new HashMap<>();
     private final Map<Integer, Animation> Animations = new HashMap<>();
     private final Map<Integer, org.starloco.locos.area.map.entity.MountPark> MountPark = new HashMap<>();
     private final Map<Integer, Trunk> Trunks = new HashMap<>();
@@ -1126,7 +1126,7 @@ public class World {
         return map;
     }
 
-    public Hdv getHdv(int map) {
+    public BigStore getHdv(int map) {
         return Hdvs.get(changeHdv(map));
     }
 
@@ -1144,7 +1144,7 @@ public class World {
         return nextLineHdvId;
     }
 
-    public void addHdvItem(int compteID, int hdvID, HdvEntry toAdd) {
+    public void addHdvItem(int compteID, int hdvID, BigStoreListing toAdd) {
         if (hdvsItems.get(compteID) == null) //Si le compte n'est pas dans la memoire
             hdvsItems.put(compteID, new HashMap<>()); //Ajout du compte cl�:compteID et un nouveau Map<hdvID,items<>>
         if (hdvsItems.get(compteID).get(hdvID) == null)
@@ -1152,18 +1152,18 @@ public class World {
         hdvsItems.get(compteID).get(hdvID).add(toAdd);
     }
 
-    public void removeHdvItem(int compteID, int hdvID, HdvEntry toDel) {
+    public void removeHdvItem(int compteID, int hdvID, BigStoreListing toDel) {
         hdvsItems.get(compteID).get(hdvID).remove(toDel);
     }
 
-    public void addHdv(Hdv toAdd) {
+    public void addHdv(BigStore toAdd) {
         Hdvs.put(toAdd.getHdvId(), toAdd);
     }
 
-    public Map<Integer, ArrayList<HdvEntry>> getMyItems(
+    public Map<Integer, List<BigStoreListing>> getMyItems(
             int compteID) {
-        if (hdvsItems.get(compteID) == null)//Si le compte n'est pas dans la memoire
-            hdvsItems.put(compteID, new HashMap<>());//Ajout du compte cl�:compteID et un nouveau Map<hdvID,items
+        //Si le compte n'est pas dans la memoire
+        hdvsItems.computeIfAbsent(compteID, k -> new HashMap<>());//Ajout du compte cl�:compteID et un nouveau Map<hdvID,items
         return hdvsItems.get(compteID);
     }
 

@@ -13,6 +13,7 @@ import io.jsonwebtoken.security.Keys;
 import org.starloco.locos.entity.exchange.NpcExchange;
 import org.starloco.locos.game.action.type.BigStoreActionData;
 import org.starloco.locos.game.action.type.NpcDialogActionData;
+import org.starloco.locos.hdv.BigStore;
 import org.starloco.locos.util.Pair;
 import org.apache.mina.core.session.IoSession;
 import org.starloco.locos.area.Area;
@@ -58,8 +59,7 @@ import org.starloco.locos.game.world.World;
 import org.starloco.locos.game.world.World.Couple;
 import org.starloco.locos.guild.Guild;
 import org.starloco.locos.guild.GuildMember;
-import org.starloco.locos.hdv.Hdv;
-import org.starloco.locos.hdv.HdvEntry;
+import org.starloco.locos.hdv.BigStoreListing;
 import org.starloco.locos.job.Job;
 import org.starloco.locos.job.JobAction;
 import org.starloco.locos.job.JobConstant;
@@ -1608,7 +1608,7 @@ public class GameClient {
         if(exchangeAction == null) {
             return;
         }
-        Hdv hdv = World.world.getHdv(exchangeAction.hdvId);
+        BigStore bigStore = World.world.getHdv(exchangeAction.hdvId);
 
         int templateID;
         switch (packet.charAt(2)) {
@@ -1618,7 +1618,7 @@ public class GameClient {
                 byte amount = Byte.parseByte(info[1]);
                 int price = Integer.parseInt(info[2]);
 
-                HdvEntry entry = hdv.buyItem(exchangeAction.getCategoryId(), exchangeAction.getTemplateId(), ligneID, amount, price, this.player).orElse(null);
+                BigStoreListing entry = bigStore.buyItem(exchangeAction.getCategoryId(), exchangeAction.getTemplateId(), ligneID, amount, price, this.player).orElse(null);
 
                 if (entry == null) {
                     SocketManager.GAME_SEND_Im_PACKET(this.player, "172");//Envoie un message d'erreur d'achat
@@ -1653,7 +1653,7 @@ public class GameClient {
 
 
                 exchangeAction.setTemplateId(templateID);
-                SocketManager.GAME_SEND_EHl(this.player, hdv, exchangeAction.getCategoryId(), templateID);
+                SocketManager.GAME_SEND_EHl(this.player, bigStore, exchangeAction.getCategoryId(), templateID);
 
                 break;
             case 'P'://Demande des prix moyen
@@ -1662,7 +1662,7 @@ public class GameClient {
                 break;
             case 'T'://Demande des template de la categorie
                 int categ = Integer.parseInt(packet.substring(3));
-                List<Integer> catContent = hdv.getCategoryContent(categ);
+                List<Integer> catContent = bigStore.getCategoryContent(categ);
                 exchangeAction.setCategoryId(categ);
                 SocketManager.GAME_SEND_EHL_PACKET(this.player, categ, catContent);
                 break;
@@ -1671,7 +1671,7 @@ public class GameClient {
                 int template = Integer.parseInt(infos[1]);
                 int category = Integer.parseInt(infos[0]);
 
-                catContent = hdv.getCategoryContent(category);
+                catContent = bigStore.getCategoryContent(category);
 
                 if(catContent == null) {
                     this.player.send("EHS");
@@ -1679,7 +1679,7 @@ public class GameClient {
                     this.player.send("EHSK");
                     SocketManager.GAME_SEND_EHL_PACKET(this.player, category, catContent);
                     SocketManager.GAME_SEND_EHP_PACKET(this.player, template);
-                    SocketManager.GAME_SEND_EHl(this.player, hdv, category, template);
+                    SocketManager.GAME_SEND_EHl(this.player, bigStore, category, template);
                 }
                 break;
         }
@@ -2225,6 +2225,11 @@ public class GameClient {
                 break;
 
             case ExchangeAction.AUCTION_HOUSE_SELLING:
+                BigStoreActionData exchangeAction = Optional.ofNullable(this.player.getExchangeAction()).filter(ea -> ea.getType() == ExchangeAction.AUCTION_HOUSE_SELLING)
+                        .map(ExchangeAction::getValue).map(BigStoreActionData.class::cast).orElse(null);
+                if(exchangeAction == null) {
+                    return;
+                }
                 switch (packet.charAt(3)) {
                     case '-'://Retirer un objet de l'HDV
                         int count = 0;
@@ -2244,13 +2249,14 @@ public class GameClient {
                                 + "");
                         break;
                     case '+'://Mettre un objet en vente
+
                         if (Integer.parseInt(packet.substring(4).split("\\|")[1]) > 127) {
                             SocketManager.GAME_SEND_MESSAGE(this.player, this.player.getLang().trans("game.gameclient.movemenitemorkamas.limit"));
                             return;
                         }
 
-                        int itmID,
-                                price = 0;
+                        int itmID;
+                        int price = 0;
                         byte amount = 0;
 
                         try {
@@ -2275,15 +2281,15 @@ public class GameClient {
                                 || packet.substring(3).split("\\|")[2] == "0")
                             return;
 
-                        Hdv curHdv = World.world.getHdv(Math.abs((Integer) this.player.getExchangeAction().getValue()));
-                        int taxe = (int) (price * (curHdv.getTaxe() / 100));
+                        BigStore curBigStore = World.world.getHdv(exchangeAction.hdvId);
+                        int taxe = (int) (price * (curBigStore.getTaxe() / 100));
 
                         if (taxe < 0)
                             return;
 
                         if (!this.player.hasItemGuid(itmID))//V?rifie si le this.playernnage a bien l'item sp?cifi? et l'argent pour payer la taxe
                             return;
-                        if (this.player.getAccount().countHdvEntries(curHdv.getHdvId()) >= curHdv.getMaxAccountItem()) {
+                        if (this.player.getAccount().countHdvEntries(curBigStore.getHdvId()) >= curBigStore.getMaxAccountItem()) {
                             SocketManager.GAME_SEND_Im_PACKET(this.player, "058");
                             return;
                         }
@@ -2293,7 +2299,7 @@ public class GameClient {
                         }
 
                         GameObject obj = World.world.getGameObject(itmID);//R?cup?re l'item
-                        if (obj != null && obj.isAttach()) return;
+                        if (obj == null || obj.isAttach()) return;
 
                         this.player.addKamas(taxe * -1);//Retire le montant de la taxe au this.playernnage
                         SocketManager.GAME_SEND_STATS_PACKET(this.player);//Met a jour les kamas du client
@@ -2316,10 +2322,11 @@ public class GameClient {
                             World.world.addGameObject(newObj);
                             obj = newObj;
                         }
-                        HdvEntry toAdd = new HdvEntry(-1, price, amount, this.player.getAccount().getId(), obj);
-                        // FIXME Diabu curHdv.addEntry(toAdd, false); //Ajthise l'entry dans l'HDV
+                        // Client amount is 1,2,3, we need 0,1,2
+                        BigStoreListing toAdd = new BigStoreListing(-1, price, (byte) (amount-1), this.player.getAccount().getId(), obj);
+                        curBigStore.addEntry(toAdd);
                         SocketManager.GAME_SEND_EXCHANGE_OTHER_MOVE_OK(this, '+', "", toAdd.parseToEmK()); //Envoie un packet pour ajthiser l'item dans la fenetre de l'HDV du client
-                        SocketManager.GAME_SEND_HDVITEM_SELLING(this.player);
+                        SocketManager.GAME_SEND_HDVITEM_SELLING(this.player, toAdd.getHdvId());
                         ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this.player);
                         break;
                 }
@@ -3081,9 +3088,9 @@ public class GameClient {
                 return;
             }
 
-            Hdv hdv = World.world.getHdv(this.player.getCurMap().getId());
-            if (hdv != null) {
-                String info = "1,10,100;" + hdv.getStrCategory() + ";" + hdv.parseTaxe() + ";" + hdv.getLvlMax() + ";" + hdv.getMaxAccountItem() + ";-1;" + hdv.getSellTime();
+            BigStore bigStore = World.world.getHdv(this.player.getCurMap().getId());
+            if (bigStore != null) {
+                String info = "1,10,100;" + bigStore.getStrCategory() + ";" + bigStore.parseTaxe() + ";" + bigStore.getLvlMax() + ";" + bigStore.getMaxAccountItem() + ";-1;" + bigStore.getSellTime();
                 SocketManager.GAME_SEND_ECK_PACKET(this.player, 11, info);
                 ExchangeAction<BigStoreActionData> exchangeAction = new ExchangeAction<>(ExchangeAction.AUCTION_HOUSE_BUYING, new BigStoreActionData(this.player.getCurMap().getId()));
                 this.player.setExchangeAction(exchangeAction);
@@ -3117,13 +3124,14 @@ public class GameClient {
                 return;
             }
 
-            Hdv hdv = World.world.getHdv(this.player.getCurMap().getId());
-            if (hdv != null) {
-                String infos = "1,10,100;" + hdv.getStrCategory() + ";" + hdv.parseTaxe() + ";" + hdv.getLvlMax() + ";" + hdv.getMaxAccountItem() + ";-1;" + hdv.getSellTime();
+            BigStore bigStore = World.world.getHdv(this.player.getCurMap().getId());
+            if (bigStore != null) {
+                String infos = "1,10,100;" + bigStore.getStrCategory() + ";" + bigStore.parseTaxe() + ";" + bigStore.getLvlMax() + ";" + bigStore.getMaxAccountItem() + ";-1;" + bigStore.getSellTime();
                 SocketManager.GAME_SEND_ECK_PACKET(this.player, 10, infos);
-                ExchangeAction<Integer> exchangeAction = new ExchangeAction<>(ExchangeAction.AUCTION_HOUSE_SELLING, - World.world.changeHdv(this.player.getCurMap().getId()));
+                BigStoreActionData data = new BigStoreActionData(this.player.getCurMap().getId());
+                ExchangeAction<BigStoreActionData> exchangeAction = new ExchangeAction<>(ExchangeAction.AUCTION_HOUSE_SELLING, data);
                 this.player.setExchangeAction(exchangeAction);
-                SocketManager.GAME_SEND_HDVITEM_SELLING(this.player);
+                SocketManager.GAME_SEND_HDVITEM_SELLING(this.player, data.hdvId);
             }
             return;
         } else if(packet.substring(2, 4).equals("18")) {

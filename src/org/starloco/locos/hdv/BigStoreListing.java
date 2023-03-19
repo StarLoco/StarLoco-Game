@@ -2,7 +2,7 @@ package org.starloco.locos.hdv;
 
 import org.starloco.locos.object.GameObject;
 
-public class HdvEntry implements Comparable<HdvEntry> {
+public class BigStoreListing implements Comparable<BigStoreListing> {
 
     public boolean buy = false;
     private int id;
@@ -13,7 +13,7 @@ public class HdvEntry implements Comparable<HdvEntry> {
     private final byte amount;            //Dans le format : 1=1 2=10 3=100
     private final GameObject gameObject;
 
-    public HdvEntry(int id, int price, byte amount, int owner, GameObject gameObject) {
+    public BigStoreListing(int id, int price, byte amount, int owner, GameObject gameObject) {
         this.setId(id);
         this.price = price;
         this.amount = amount;
@@ -75,8 +75,8 @@ public class HdvEntry implements Comparable<HdvEntry> {
         return toReturn.toString();
     }
 
-    public int compareTo(HdvEntry o) {
-        HdvEntry e = o;
+    public int compareTo(BigStoreListing o) {
+        BigStoreListing e = o;
         int celuiCi = this.getPrice();
         int autre = e.getPrice();
         if (autre > celuiCi)

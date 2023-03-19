@@ -6,15 +6,15 @@ import org.apache.commons.lang.NotImplementedException;
 import org.starloco.locos.database.DatabaseManager;
 import org.starloco.locos.database.data.FunctionDAO;
 import org.starloco.locos.game.world.World;
-import org.starloco.locos.hdv.Hdv;
-import org.starloco.locos.hdv.HdvEntry;
+import org.starloco.locos.hdv.BigStore;
+import org.starloco.locos.hdv.BigStoreListing;
 import org.starloco.locos.object.GameObject;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class HdvObjectData extends FunctionDAO<HdvEntry> {
+public class HdvObjectData extends FunctionDAO<BigStoreListing> {
     public HdvObjectData(HikariDataSource dataSource) {
         super(dataSource, "hdvs_items");
     }
@@ -25,15 +25,15 @@ public class HdvObjectData extends FunctionDAO<HdvEntry> {
         try {
             result = getData("SELECT * FROM " + getTableName() + ";");
             while (result.next()) {
-                Hdv hdv = World.world.getHdv(result.getInt("map"));
-                if (hdv != null) {
+                BigStore bigStore = World.world.getHdv(result.getInt("map"));
+                if (bigStore != null) {
                     GameObject object = World.world.getGameObject(result.getInt("itemID"));
                     if (object == null) {
-                        this.delete(new HdvEntry(result.getInt("id"), 0, (byte) 0, 0, null));
+                        this.delete(new BigStoreListing(result.getInt("id"), 0, (byte) 0, 0, null));
                         continue;
                     }
-                    HdvEntry entry = new HdvEntry(result.getInt("id"), result.getInt("price"), result.getByte("count"), result.getInt("ownerGuid"), object);
-                    hdv.addEntry(entry);
+                    BigStoreListing entry = new BigStoreListing(result.getInt("id"), result.getInt("price"), result.getByte("count"), result.getInt("ownerGuid"), object);
+                    bigStore.addEntry(entry);
                     World.world.setNextObjectHdvId(result.getInt("id"));
                 }
             }
@@ -45,12 +45,12 @@ public class HdvObjectData extends FunctionDAO<HdvEntry> {
     }
 
     @Override
-    public HdvEntry load(int id) {
+    public BigStoreListing load(int id) {
         throw new NotImplementedException();
     }
 
     @Override
-    public boolean insert(HdvEntry entity) {
+    public boolean insert(BigStoreListing entity) {
         PreparedStatement p = null;
         boolean ok = true;
         try {
@@ -85,7 +85,7 @@ public class HdvObjectData extends FunctionDAO<HdvEntry> {
     }
 
     @Override
-    public void delete(HdvEntry entity) {
+    public void delete(BigStoreListing entity) {
         PreparedStatement p = null;
         try {
             p = getPreparedStatement("DELETE FROM " + getTableName() + " WHERE `id` = ?;");
@@ -104,7 +104,7 @@ public class HdvObjectData extends FunctionDAO<HdvEntry> {
     }
 
     @Override
-    public void update(HdvEntry entity) {
+    public void update(BigStoreListing entity) {
         throw new NotImplementedException();
     }
 

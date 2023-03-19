@@ -17,8 +17,8 @@ import org.starloco.locos.fight.Fight;
 import org.starloco.locos.fight.Fighter;
 import org.starloco.locos.game.GameClient;
 import org.starloco.locos.game.world.World;
-import org.starloco.locos.hdv.Hdv;
-import org.starloco.locos.hdv.HdvEntry;
+import org.starloco.locos.hdv.BigStore;
+import org.starloco.locos.hdv.BigStoreListing;
 import org.starloco.locos.job.JobStat;
 import org.starloco.locos.kernel.Config;
 import org.starloco.locos.kernel.Constant;
@@ -30,9 +30,7 @@ import org.starloco.locos.guild.GuildMember;
 
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class SocketManager {
 
@@ -1805,8 +1803,8 @@ public class SocketManager {
             send(out, "EHP" + id + "|" +  template.getAvgPrice());
     }
 
-    public static void GAME_SEND_EHl(Player out, Hdv hdv, int category, int templateId) {
-        String packet = "EHl" + templateId + "|" + hdv.linesForTemplate(category, templateId).stream()
+    public static void GAME_SEND_EHl(Player out, BigStore bigStore, int category, int templateId) {
+        String packet = "EHl" + templateId + "|" + bigStore.linesForTemplate(category, templateId).stream()
             .map(line -> {
                 // Encode lines
                 return String.join(
@@ -1830,21 +1828,13 @@ public class SocketManager {
         send(out, packet);
     }
 
-    public static void GAME_SEND_HDVITEM_SELLING(Player perso) {
-        StringBuilder packet = new StringBuilder("EL");
-        HdvEntry[] entries = perso.getAccount().getHdvEntries(Math.abs(((Integer) perso.getExchangeAction().getValue()))); //R�cup�re un tableau de tout les items que le personnage � en vente dans l'HDV o� il est
-        boolean isFirst = true;
-        for (HdvEntry curEntry : entries) {
-            if (curEntry == null)
-                break;
-            if (curEntry.buy)
-                continue;
-            if (!isFirst)
-                packet.append("|");
-            packet.append(curEntry.parseToEL());
-            isFirst = false;
-        }
-        send(perso, packet.toString());
+    public static void GAME_SEND_HDVITEM_SELLING(Player perso, int hdvId) {
+        String packet = "EL" + perso.getAccount().getHdvEntries(hdvId).stream()
+            .filter(Objects::nonNull)
+            .filter(e -> e.buy)
+            .map(BigStoreListing::parseToEL)
+            .collect(Collectors.joining("|"));
+        send(perso, packet);
     }
 
     public static void GAME_SEND_WEDDING(int action, int homme, int femme, int parlant) {

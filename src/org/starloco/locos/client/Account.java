@@ -8,13 +8,12 @@ import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.database.DatabaseManager;
 import org.starloco.locos.database.data.game.BankData;
 import org.starloco.locos.database.data.game.GiftData;
-import org.starloco.locos.database.data.game.HdvObjectData;
 import org.starloco.locos.database.data.login.AccountData;
 import org.starloco.locos.database.data.login.MountData;
 import org.starloco.locos.database.data.login.PlayerData;
 import org.starloco.locos.game.GameClient;
 import org.starloco.locos.game.world.World;
-import org.starloco.locos.hdv.HdvEntry;
+import org.starloco.locos.hdv.BigStoreListing;
 import org.starloco.locos.kernel.Main;
 import org.starloco.locos.object.GameObject;
 
@@ -44,7 +43,7 @@ public class Account {
     private List<GameObject> bank = new ArrayList<>();
     private List<Integer> friends = new ArrayList<>();
     private List<Integer> enemys = new ArrayList<>();
-    private Map<Integer, ArrayList<HdvEntry>> hdvsItems;
+    private Map<Integer, List<BigStoreListing>> hdvsItems;
 
     public Account(int guid, String name, String pseudo,
                    String answer, boolean banned,
@@ -497,18 +496,12 @@ public class Account {
 //        return true;
 //    }
 
-    public HdvEntry[] getHdvEntries(int id) {
-        if (this.hdvsItems.get(id) == null) return new HdvEntry[1];
-        HdvEntry[] entries = new HdvEntry[this.hdvsItems.get(id).size()];
-
-        for (int i = 0; i < this.hdvsItems.get(id).size(); i++)
-            entries[i] = this.hdvsItems.get(id).get(i);
-        return entries;
+    public List<BigStoreListing> getHdvEntries(int id) {
+        return Collections.unmodifiableList(Optional.ofNullable(this.hdvsItems.get(id)).orElse(Collections.emptyList()));
     }
 
     public int countHdvEntries(int id) {
-        ArrayList<HdvEntry> hdvEntry = this.hdvsItems.get(id);
-        return hdvEntry == null ? 0 : hdvEntry.size();
+        return Optional.ofNullable(this.hdvsItems.get(id)).orElse(Collections.emptyList()).size();
     }
 
     public void resetAllChars() {
