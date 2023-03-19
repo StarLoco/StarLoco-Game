@@ -21,6 +21,12 @@ import java.util.stream.Stream;
 
 public class BigStore {
 
+    /**
+     * TODO:
+     *  - If items are sold at a too lower price, the server directly buy it for the milice
+     *  - Remove items after X days if not bought
+     */
+
     private interface CategoryFilter {
         boolean apply(int categoryId, BigStoreListing listing);
     }
@@ -46,11 +52,10 @@ public class BigStore {
 
     private final int hdvId;
     private final float taxe;
-    private short sellTime; // TODO Support that
+    private final short duration;
     private final short maxAccountItem;
     private final List<Integer> categories;
     private final short lvlMax;
-
     private final AtomicInteger nextLineID = new AtomicInteger(1);
     // K: LineID, V: Pair<TemplateID, Stats>
     private final HashMap<Integer, Pair<Integer, String>> lineIDToItemDesc = new HashMap<>();
@@ -58,12 +63,11 @@ public class BigStore {
     private final LinkedList<BigStoreListing> listings = new LinkedList<>();
      private final Object listingsLock = new Object();
 
-    public BigStore(int hdvID, float taxe, short sellTime, short maxItemCompte,
-                    short lvlMax, String strCategory) {
+    public BigStore(int hdvID, float taxe, short duration, short maxItemCompte, short lvlMax, String strCategory) {
         this.hdvId = hdvID;
         this.taxe = taxe;
         this.maxAccountItem = maxItemCompte;
-        this.sellTime = sellTime;
+        this.duration = duration;
         this.categories = Arrays.stream(strCategory.split(",")).map(Integer::parseInt).collect(Collectors.toList());
         this.lvlMax = lvlMax;
     }
@@ -76,8 +80,8 @@ public class BigStore {
         return taxe;
     }
 
-    public short getSellTime() {
-        return sellTime;
+    public short getDuration() {
+        return duration;
     }
 
     public short getMaxAccountItem() {
@@ -188,7 +192,7 @@ public class BigStore {
         return true;
     }
 
-    public boolean removeListing(Account account, int listingId, int count) {
+    public boolean removeListing(Account account, int listingId) {
         Player player = account.getCurrentPlayer();
         List<BigStoreListing> accountListings = account.getHdvEntries(this.hdvId);
         if(accountListings.size() == 0) return false;
@@ -229,7 +233,6 @@ public class BigStore {
         synchronized (listingsLock) {
             return cheapestListing(category, templateId, lineID, amount)
                 .filter(e -> e.getGameObject() != null)
-                // PUT IT BACK .filter(e -> e.getOwner() != newOwner.getAccount().getId())
                 .filter(e -> e.getPrice() == price)
                 .map(e -> {
                     if(!newOwner.modKamasDisplay(-price)) {
@@ -240,11 +243,11 @@ public class BigStore {
                     prevOwner.ifPresent(p -> p.setBankKamas(p.getBankKamas() + price));
 
                     GameObject obj = e.getGameObject();
-                    newOwner.addItem(obj, true, false);//Ajoute l'objet au nouveau propri�taire
+                    newOwner.addItem(obj, true, false);
                     obj.setPosition(Constant.ITEM_POS_NO_EQUIPED);
                     obj.getTemplate().newSold(e.getAmountExp(), price);
 
-                    deleteListing(e);//Retire l'item de l'HDV ainsi que de la liste du vendeur
+                    deleteListing(e);
                     return e;
                 });
         }
@@ -254,11 +257,11 @@ public class BigStore {
         return pattern.format(this.getTaxe()).replace(",", ".");
     }
 
-    public List<Integer> getCategoryContent(int categ) {
-        CategoryFilter filter = categoryFilters(categ);
-        Function<BigStoreListing, Stream<Integer>> templateMapper = categoryTemplateMapper(categ);
+    public List<Integer> getCategoryContent(int category) {
+        CategoryFilter filter = categoryFilters(category);
+        Function<BigStoreListing, Stream<Integer>> templateMapper = categoryTemplateMapper(category);
         synchronized (listingsLock) {
-            return listings.stream().filter(c -> filter.apply(categ, c))
+            return listings.stream().filter(c -> filter.apply(category, c))
                 .flatMap(templateMapper)
                 .distinct()
                 .collect(Collectors.toList());

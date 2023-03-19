@@ -2256,7 +2256,7 @@ public class GameClient {
                         if (count <= 0)
                             return;
 
-                        if(!curBigStore.removeListing(this.player.getAccount(), lineId, count)) {
+                        if(!curBigStore.removeListing(this.player.getAccount(), lineId)) {
                             return;
                         }
 
@@ -3104,7 +3104,7 @@ public class GameClient {
 
             BigStore bigStore = World.world.getHdv(this.player.getCurMap().getId());
             if (bigStore != null) {
-                String info = "1,10,100;" + bigStore.getStrCategory() + ";" + bigStore.parseTaxe() + ";" + bigStore.getLvlMax() + ";" + bigStore.getMaxAccountItem() + ";-1;" + bigStore.getSellTime();
+                String info = "1,10,100;" + bigStore.getStrCategory() + ";" + bigStore.parseTaxe() + ";" + bigStore.getLvlMax() + ";" + bigStore.getMaxAccountItem() + ";-1;" + bigStore.getDuration();
                 SocketManager.GAME_SEND_ECK_PACKET(this.player, 11, info);
                 ExchangeAction<BigStoreActionData> exchangeAction = new ExchangeAction<>(ExchangeAction.AUCTION_HOUSE_BUYING, new BigStoreActionData(this.player.getCurMap().getId()));
                 this.player.setExchangeAction(exchangeAction);
@@ -3140,7 +3140,7 @@ public class GameClient {
 
             BigStore bigStore = World.world.getHdv(this.player.getCurMap().getId());
             if (bigStore != null) {
-                String infos = "1,10,100;" + bigStore.getStrCategory() + ";" + bigStore.parseTaxe() + ";" + bigStore.getLvlMax() + ";" + bigStore.getMaxAccountItem() + ";-1;" + bigStore.getSellTime();
+                String infos = "1,10,100;" + bigStore.getStrCategory() + ";" + bigStore.parseTaxe() + ";" + bigStore.getLvlMax() + ";" + bigStore.getMaxAccountItem() + ";-1;" + bigStore.getDuration();
                 SocketManager.GAME_SEND_ECK_PACKET(this.player, 10, infos);
                 BigStoreActionData data = new BigStoreActionData(this.player.getCurMap().getId());
                 ExchangeAction<BigStoreActionData> exchangeAction = new ExchangeAction<>(ExchangeAction.AUCTION_HOUSE_SELLING, data);

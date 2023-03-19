@@ -1,14 +1,15 @@
 package org.starloco.locos.hdv;
 
+import org.starloco.locos.game.world.World;
 import org.starloco.locos.object.GameObject;
 
-public class BigStoreListing implements Comparable<BigStoreListing> {
+public class BigStoreListing {
     private int id;
     private int hdvId;
     private int lineId;
     private final int owner;
     private final int price;
-    private final byte amount;            //Dans le format : 1=1 2=10 3=100
+    private final byte amount; // Format : 0=1 1=10 2=100
     private final GameObject gameObject;
 
     public BigStoreListing(int price, byte amount, int owner, GameObject gameObject) {
@@ -58,8 +59,12 @@ public class BigStoreListing implements Comparable<BigStoreListing> {
         return this.amount;
     }
 
+    /**
+     * Map (0,1,2) to (1,10,100)
+     * @return byte
+     */
     public byte getAmountExp() {
-        return (byte)Math.pow(10, amount);
+        return (byte)Math.pow(10, amount); //
     }
 
     public GameObject getGameObject() {
@@ -69,28 +74,17 @@ public class BigStoreListing implements Comparable<BigStoreListing> {
     public String parseToEL() {
         // For EL packet, we want to be able to identify each listing, so we return the listing ID
         StringBuilder toReturn = new StringBuilder();
-        int count = getAmountExp();//Transf�re dans le format (1,10,100) le montant qui etait dans le format (0,1,2)
-        toReturn.append(this.getId()).append(";").append(count).append(";").append(this.getGameObject().getTemplate().getId()).append(";").append(this.getGameObject().parseStatsString()).append(";").append(this.price).append(";350");//350 = temps restant
+        int count = getAmountExp();
+        int duration = World.world.getHdv(hdvId).getDuration();
+        toReturn.append(this.getId()).append(";").append(count).append(";").append(this.getGameObject().getTemplate().getId()).append(";").append(this.getGameObject().parseStatsString()).append(";").append(this.price).append(";").append(duration);
         return toReturn.toString();
     }
 
     public String parseToEmK() {
         StringBuilder toReturn = new StringBuilder();
-        int count = getAmountExp();//Transf�re dans le format (1,10,100) le montant qui etait dans le format (0,1,2)
-        toReturn.append(this.getGameObject().getGuid()).append("|").append(count).append("|").append(this.getGameObject().getTemplate().getId()).append("|").append(this.getGameObject().parseStatsString()).append("|").append(this.price).append("|350");//350 = temps restant
+        int count = getAmountExp();
+        int duration = World.world.getHdv(hdvId).getDuration();
+        toReturn.append(this.getGameObject().getGuid()).append("|").append(count).append("|").append(this.getGameObject().getTemplate().getId()).append("|").append(this.getGameObject().parseStatsString()).append("|").append(this.price).append("|").append(duration);
         return toReturn.toString();
-    }
-
-    public int compareTo(BigStoreListing o) {
-        BigStoreListing e = o;
-        int celuiCi = this.getPrice();
-        int autre = e.getPrice();
-        if (autre > celuiCi)
-            return -1;
-        if (autre == celuiCi)
-            return 0;
-        if (autre < celuiCi)
-            return 1;
-        return 0;
     }
 }
