@@ -4,12 +4,17 @@ import org.starloco.locos.database.DatabaseManager;
 import org.starloco.locos.database.data.login.ObjectData;
 import org.starloco.locos.game.world.World.Couple;
 import org.starloco.locos.object.GameObject;
+import org.starloco.locos.util.Pair;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class SoulStone extends GameObject {
 
-    private ArrayList<Couple<Integer, Integer>> monsters;
+    private ArrayList<Pair<Integer, Integer>> monsters;
 
     public SoulStone(int id, int quantity, int template, int pos, String strStats) {
         super(id, template, quantity, pos, strStats, 0);
@@ -25,8 +30,12 @@ public class SoulStone extends GameObject {
         ((ObjectData) DatabaseManager.get(ObjectData.class)).insert(this);
     }
 
-    public ArrayList<Couple<Integer, Integer>> getMonsters() {
+    public List<Pair<Integer, Integer>> getMonsters() {
         return monsters;
+    }
+
+    public Stream<Integer> getMonsterIDs() {
+        return monsters.stream().map(Pair::getFirst);
     }
 
     private void stringToStats(String m) {
@@ -39,7 +48,7 @@ public class SoulStone extends GameObject {
                 try {
                     int id = Integer.parseInt(s.split(",")[0]);
                     int level = Integer.parseInt(s.split(",")[1]);
-                    Couple<Integer, Integer> couple = new Couple<>(id, level);
+                    Pair<Integer, Integer> couple = new Pair<>(id, level);
                     this.monsters.add(couple);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -48,28 +57,20 @@ public class SoulStone extends GameObject {
         }
     }
 
+    public static Optional<SoulStone> safeCast(GameObject obj) {
+        if(obj instanceof SoulStone) return Optional.of((SoulStone) obj);
+        return Optional.empty();
+    }
+
     @Override
     public String parseStatsString() {
-        StringBuilder stats = new StringBuilder();
-        boolean isFirst = true;
-        for (Couple<Integer, Integer> coupl : this.monsters) {
-            if (!isFirst)
-                stats.append(",");
-            try {
-                stats.append("26f####").append(coupl.first);
-            } catch (Exception e) {
-                e.printStackTrace();
-                continue;
-            }
-            isFirst = false;
-        }
-        return stats.toString();
+        return this.monsters.stream().map(s -> "26f####"+Integer.toString(s.first, 16)).collect(Collectors.joining(","));
     }
 
     public String parseGroupData() {
         StringBuilder toReturn = new StringBuilder();
         boolean isFirst = true;
-        for (Couple<Integer, Integer> curMob : this.monsters) {
+        for (Pair<Integer, Integer> curMob : this.monsters) {
             if (!isFirst)
                 toReturn.append(";");
             toReturn.append(curMob.first).append(",").append(curMob.second).append(",").append(curMob.second);
@@ -82,7 +83,7 @@ public class SoulStone extends GameObject {
     public String parseToSave() {
         StringBuilder toReturn = new StringBuilder();
         boolean isFirst = true;
-        for (Couple<Integer, Integer> curMob : this.monsters) {
+        for (Pair<Integer, Integer> curMob : this.monsters) {
             if (!isFirst)
                 toReturn.append("|");
             toReturn.append(curMob.first).append(",").append(curMob.second);

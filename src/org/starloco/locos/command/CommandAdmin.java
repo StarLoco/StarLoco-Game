@@ -2534,7 +2534,7 @@ public class CommandAdmin extends AdminUser {
             String gift = template + "," + quantity + "," + jp;
 
             for (Account account : World.world.getAccounts()) {
-                String gifts = ((GiftData) DatabaseManager.get(GiftData.class)).load(account.getId()).getValue();
+                String gifts = ((GiftData) DatabaseManager.get(GiftData.class)).load(account.getId()).getSecond();
                 if (gifts.isEmpty()) {
                     ((GiftData) DatabaseManager.get(GiftData.class)).update(new Pair<>(account, gift));
                 } else {

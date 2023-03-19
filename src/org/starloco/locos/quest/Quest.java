@@ -223,10 +223,10 @@ public class Quest {
                     player.getItems().values().stream().filter(object -> object.getTemplate().getType() == 85)
                             .forEach(object -> {
                         SoulStone soul = (SoulStone) object;
-                        Iterator<Couple<Integer, Integer>> iterator = soul.getMonsters().iterator();
+                        Iterator<Pair<Integer, Integer>> iterator = soul.getMonsters().iterator();
 
                         while (iterator.hasNext()) {
-                            Couple<Integer, Integer> couple = iterator.next();
+                            Pair<Integer, Integer> couple = iterator.next();
 
                             for (Integer monster : monsters) {
                                 if (!valid.contains(monster) && couple.first.equals(monster)) {

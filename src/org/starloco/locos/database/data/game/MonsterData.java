@@ -34,15 +34,17 @@ public class MonsterData extends FunctionDAO<Monster> {
                 String inits = result.getString("inits");
                 int mK = result.getInt("minKamas");
                 int MK = result.getInt("maxKamas");
-                int IAType = result.getInt("AI_Type");
                 String xp = result.getString("exps");
-                int aggroDistance = result.getInt("aggroDistance");
+                int IAType = result.getInt("AI_Type");
                 boolean capturable = result.getInt("capturable") == 1;
+                int aggroDistance = result.getInt("aggroDistance");
+                boolean isBoss = result.getInt("isBoss") == 1;
+                boolean isArchMonster = result.getInt("isBoss") == 1;
 
                 if (World.world.getMonstre(id) == null) {
-                    World.world.addMobTemplate(id, new Monster(id, gfxID, align, colors, grades, spells, stats, statsInfos, pdvs, pts, inits, mK, MK, xp, IAType, capturable, aggroDistance));
+                    World.world.addMobTemplate(id, new Monster(id, gfxID, align, colors, grades, spells, stats, statsInfos, pdvs, pts, inits, mK, MK, xp, IAType, capturable, aggroDistance, isBoss, isArchMonster));
                 } else {
-                    World.world.getMonstre(id).setInfos(gfxID, align, colors, grades, spells, stats, statsInfos, pdvs, pts, inits, mK, MK, xp, IAType, capturable, aggroDistance);
+                    World.world.getMonstre(id).setInfos(gfxID, align, colors, grades, spells, stats, statsInfos, pdvs, pts, inits, mK, MK, xp, IAType, capturable, aggroDistance, isBoss, isArchMonster);
                 }
             }
 

@@ -10,13 +10,11 @@ public class Pair<K, V> implements Serializable {
     public final K first;
     public final V second;
 
-    @Deprecated // Use fields directly
-    public K getKey() {
+    public K getFirst() {
         return this.first;
     }
 
-    @Deprecated // Use fields directly
-    public V getValue() {
+    public V getSecond() {
         return this.second;
     }
 

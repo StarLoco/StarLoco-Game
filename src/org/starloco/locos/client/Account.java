@@ -89,7 +89,7 @@ public class Account {
             }
         }
 
-        if (((GiftData) DatabaseManager.get(GiftData.class)).load(guid).getValue() == null)
+        if (((GiftData) DatabaseManager.get(GiftData.class)).load(guid).getSecond() == null)
             ((GiftData) DatabaseManager.get(GiftData.class)).insert(new Pair<>(this, ""));
     }
 
@@ -453,49 +453,49 @@ public class Account {
         return str.toString();
     }
 
-    public boolean recoverItem(int lineId) {
-        if (this.currentPlayer == null || this.currentPlayer.getExchangeAction() == null)
-            return false;
-        if ((Integer) this.currentPlayer.getExchangeAction().getValue() >= 0)
-            return false;
-
-        int hdvID = Math.abs((Integer) this.currentPlayer.getExchangeAction().getValue());//R�cup�re l'ID de l'HDV
-
-        HdvEntry entry = null;
-        try {
-            ArrayList<HdvEntry> entries = this.hdvsItems.get(hdvID);
-            if (entries == null || entries.isEmpty())
-                return false;
-            for (HdvEntry tempEntry : entries) {//Boucle dans la liste d'entry de l'HDV pour trouver un entry avec le meme cheapestID que sp�cifi�
-                if (tempEntry.getLineId() == lineId) {//Si la boucle trouve un objet avec le meme cheapestID, arrete la boucle
-                    entry = tempEntry;
-                    break;
-                }
-            }
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-            return false;
-        }
-
-        if (entry == null)//Si entry == null cela veut dire que la boucle s'est effectu� sans trouver d'item avec le meme cheapestID
-            return false;
-        if(entry.buy)
-            return false;
-
-        this.hdvsItems.get(hdvID).remove(entry);//Retire l'item de la liste des objets a vendre du compte
-        GameObject obj = entry.getGameObject();
-
-        if (this.currentPlayer.addObjetSimiler(obj, true, -1)) {
-            World.world.removeGameObject(obj.getGuid());
-        } else {
-            this.currentPlayer.addItem(obj, true);
-        }
-        ((HdvObjectData) DatabaseManager.get(HdvObjectData.class)).delete(entry);
-        World.world.getHdv(hdvID).delEntry(entry);//Retire l'item de l'HDV
-
-        ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this.currentPlayer);
-        return true;
-    }
+//    public boolean recoverItem(int lineId) {
+//        if (this.currentPlayer == null || this.currentPlayer.getExchangeAction() == null)
+//            return false;
+//        if ((Integer) this.currentPlayer.getExchangeAction().getValue() >= 0)
+//            return false;
+//
+//        int hdvID = Math.abs((Integer) this.currentPlayer.getExchangeAction().getValue());//R�cup�re l'ID de l'HDV
+//
+//        HdvEntry entry = null;
+//        try {
+//            ArrayList<HdvEntry> entries = this.hdvsItems.get(hdvID);
+//            if (entries == null || entries.isEmpty())
+//                return false;
+//            for (HdvEntry tempEntry : entries) {//Boucle dans la liste d'entry de l'HDV pour trouver un entry avec le meme cheapestID que sp�cifi�
+//                if (tempEntry.getLineId() == lineId) {//Si la boucle trouve un objet avec le meme cheapestID, arrete la boucle
+//                    entry = tempEntry;
+//                    break;
+//                }
+//            }
+//        } catch (NullPointerException e) {
+//            e.printStackTrace();
+//            return false;
+//        }
+//
+//        if (entry == null)//Si entry == null cela veut dire que la boucle s'est effectu� sans trouver d'item avec le meme cheapestID
+//            return false;
+//        if(entry.buy)
+//            return false;
+//
+//        this.hdvsItems.get(hdvID).remove(entry);//Retire l'item de la liste des objets a vendre du compte
+//        GameObject obj = entry.getGameObject();
+//
+//        if (this.currentPlayer.addObjetSimiler(obj, true, -1)) {
+//            World.world.removeGameObject(obj.getGuid());
+//        } else {
+//            this.currentPlayer.addItem(obj, true);
+//        }
+//        ((HdvObjectData) DatabaseManager.get(HdvObjectData.class)).delete(entry);
+//        World.world.getHdv(hdvID).delEntry(entry);//Retire l'item de l'HDV
+//
+//        ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this.currentPlayer);
+//        return true;
+//    }
 
     public HdvEntry[] getHdvEntries(int id) {
         if (this.hdvsItems.get(id) == null) return new HdvEntry[1];
@@ -591,7 +591,7 @@ public class Account {
 
     public void addGift(int template, short quantity, byte jp) {
         String gift = template + "," + quantity + "," + jp;
-        String gifts = ((GiftData) DatabaseManager.get(GiftData.class)).load(this.getId()).getValue();
+        String gifts = ((GiftData) DatabaseManager.get(GiftData.class)).load(this.getId()).getSecond();
         if (gifts.isEmpty()) {
             ((GiftData) DatabaseManager.get(GiftData.class)).update(new Pair<>(this, gift));
         } else {

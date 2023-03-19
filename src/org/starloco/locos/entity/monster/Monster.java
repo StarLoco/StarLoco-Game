@@ -15,14 +15,14 @@ public class Monster {
     private int maxKamas;
     private final Map<Integer, MonsterGrade> grades = new HashMap<>();
     private final ArrayList<Drop> drops = new ArrayList<>();
-    private boolean capturable;
+    private boolean capturable, _isBoss, _isArchMonster;
     private int aggroDistance = 0;
 
     public Monster(int id, int gfxId, int align, String colors,
                    String thisGrades, String thisSpells, String thisStats,
                    String thisStatsInfos, String thisPdvs, String thisPoints,
                    String thisInit, int minKamas, int maxKamas, String thisXp, int ia,
-                   boolean capturable, int aggroDistance) {
+                   boolean capturable, int aggroDistance, boolean isBoss, boolean isArchMonster) {
         this.id = id;
         this.gfxId = gfxId;
         this.align = align;
@@ -32,6 +32,8 @@ public class Monster {
         this.ia = ia;
         this.capturable = capturable;
         this.aggroDistance = aggroDistance;
+        this._isBoss = isBoss;
+        this._isArchMonster = isArchMonster;
         int G = 1;
 
         for (int n = 0; n < 12; n++) {
@@ -93,7 +95,7 @@ public class Monster {
                          String thisGrades, String thisSpells, String thisStats,
                          String thisStatsInfos, String thisPdvs, String thisPoints,
                          String thisInit, int minKamas, int maxKamas, String thisXp, int ia,
-                         boolean capturable, int aggroDistance) {
+                         boolean capturable, int aggroDistance, boolean isBoss, boolean isArchMonster) {
         this.gfxId = gfxId;
         this.align = align;
         this.colors = colors;
@@ -223,4 +225,10 @@ public class Monster {
         return null;
     }
 
+    public boolean isBoss() {
+        return _isBoss;
+    }
+    public boolean isArchMonster() {
+        return _isArchMonster;
+    }
 }

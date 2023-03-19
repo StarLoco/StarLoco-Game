@@ -46,8 +46,8 @@ public class ObvijevanData extends FunctionDAO<Pair<Integer, Integer>> {
         PreparedStatement p = null;
         try {
             p = getPreparedStatement("INSERT INTO " + getTableName() + "(`id`, `template`) VALUES(?, ?);");
-            p.setInt(1, entity.getKey());
-            p.setInt(2, entity.getValue());
+            p.setInt(1, entity.getFirst());
+            p.setInt(2, entity.getSecond());
             execute(p);
         } catch (Exception e) {
             super.sendError(e);
@@ -61,7 +61,7 @@ public class ObvijevanData extends FunctionDAO<Pair<Integer, Integer>> {
     public void delete(Pair<Integer, Integer> entity) {
         PreparedStatement ps = null;
         try {
-            ps = getPreparedStatement("DELETE FROM " + getTableName() + " WHERE id = '" + entity.getKey() + "';");
+            ps = getPreparedStatement("DELETE FROM " + getTableName() + " WHERE id = '" + entity.getFirst() + "';");
             execute(ps);
         } catch (SQLException e) {
             super.sendError(e);

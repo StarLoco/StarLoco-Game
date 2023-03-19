@@ -33,7 +33,7 @@ public class HdvObjectData extends FunctionDAO<HdvEntry> {
                         continue;
                     }
                     HdvEntry entry = new HdvEntry(result.getInt("id"), result.getInt("price"), result.getByte("count"), result.getInt("ownerGuid"), object);
-                    hdv.addEntry(entry, true);
+                    hdv.addEntry(entry);
                     World.world.setNextObjectHdvId(result.getInt("id"));
                 }
             }
@@ -58,7 +58,7 @@ public class HdvObjectData extends FunctionDAO<HdvEntry> {
             p.setInt(1, entity.getHdvId());
             p.setInt(2, entity.getOwner());
             p.setInt(3, entity.getPrice());
-            p.setInt(4, entity.getAmount(false));
+            p.setInt(4, entity.getAmount());
             p.setInt(5, entity.getGameObject().getGuid());
 
             int affectedRows = p.executeUpdate();

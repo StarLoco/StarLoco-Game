@@ -52,10 +52,10 @@ public class NpcData extends FunctionDAO<Pair<Npc, Integer>> {
         boolean ok = true;
         try {
             p = getPreparedStatement("INSERT INTO " + getTableName() + " VALUES (?,?,?,?,?);");
-            p.setInt(1, entity.getValue());
-            p.setInt(2, entity.getKey().getTemplate().getId());
-            p.setInt(3, entity.getKey().getCellId());
-            p.setInt(4, entity.getKey().getOrientation());
+            p.setInt(1, entity.getSecond());
+            p.setInt(2, entity.getFirst().getTemplate().getId());
+            p.setInt(3, entity.getFirst().getCellId());
+            p.setInt(4, entity.getFirst().getOrientation());
             p.setBoolean(5, false);
             execute(p);
         } catch (SQLException e) {
@@ -72,8 +72,8 @@ public class NpcData extends FunctionDAO<Pair<Npc, Integer>> {
         PreparedStatement p = null;
         try {
             p = getPreparedStatement("DELETE FROM " + getTableName() + " WHERE mapid = ? AND cellid = ?;");
-            p.setInt(1, entity.getValue());
-            p.setInt(2, entity.getKey().getCellId());
+            p.setInt(1, entity.getSecond());
+            p.setInt(2, entity.getFirst().getCellId());
             execute(p);
         } catch (SQLException e) {
             super.sendError(e);

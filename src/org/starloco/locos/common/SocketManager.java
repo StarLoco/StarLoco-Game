@@ -30,7 +30,9 @@ import org.starloco.locos.guild.GuildMember;
 
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class SocketManager {
 
@@ -1803,15 +1805,37 @@ public class SocketManager {
             send(out, "EHP" + id + "|" +  template.getAvgPrice());
     }
 
-    public static void GAME_SEND_EHl(Player out, Hdv seller, int templateID) {
-        if(seller == null) return;
-        String packet = "EHl" + seller.parseToEHl(templateID);
+    public static void GAME_SEND_EHl(Player out, Hdv hdv, int category, int templateId) {
+        List<HdvEntry> entries = hdv.getEntriesByTemplate(category, templateId);
+        int lineTemplateID = hdv.lineTemplateIDOverride(category).orElse(templateId);
+
+        // Group entries by stats
+        String packet = "EHl" + templateId + "|" + entries.stream().collect(Collectors.groupingBy(e -> e.getGameObject().parseStatsString())).entrySet().stream()
+                .map(linesPerStats -> {
+                    int lineId = hdv.lineIDForStats(linesPerStats.getKey());
+
+                    Map<Byte,Optional<HdvEntry>> cheapestByQuantity = linesPerStats.getValue().stream()
+                            .collect(Collectors.groupingBy(HdvEntry::getAmount, Collectors.minBy((o1, o2) -> o2.getPrice()-o1.getPrice())));
+
+                    // Encode lines
+                    return String.join(
+                            ";",
+                            String.valueOf(lineId),
+                            linesPerStats.getKey(),
+                            Optional.ofNullable(cheapestByQuantity.get((byte)0)).flatMap(Function.identity()).map(e -> String.valueOf(e.getPrice())).orElse(""),
+                            Optional.ofNullable(cheapestByQuantity.get((byte)1)).flatMap(Function.identity()).map(e -> String.valueOf(e.getPrice())).orElse(""),
+                            Optional.ofNullable(cheapestByQuantity.get((byte)2)).flatMap(Function.identity()).map(e -> String.valueOf(e.getPrice())).orElse(""),
+                            String.valueOf(lineTemplateID)
+                    );
+                })
+                .collect(Collectors.joining("|"));
+
         send(out, packet);
     }
 
-    public static void GAME_SEND_EHL_PACKET(Player out, int categ, String templates) //Packet de listage des templates dans une cat�gorie (En r�ponse au packet EHT)
+    public static void GAME_SEND_EHL_PACKET(Player out, int categ, List<Integer> templates)
     {
-        String packet = "EHL" + categ + "|" + templates;
+        String packet = "EHL" + categ + "|" + templates.stream().map(String::valueOf).collect(Collectors.joining(";"));
         send(out, packet);
     }
 

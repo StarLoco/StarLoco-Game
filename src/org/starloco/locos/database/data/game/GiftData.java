@@ -42,7 +42,7 @@ public class GiftData extends FunctionDAO<Pair<Account, String>> {
         PreparedStatement p = null;
         boolean ok = true;
         try {
-            p = getPreparedStatement("INSERT INTO " + getTableName() + "(`id`, `objects`) VALUES ('" + entity.getKey().getId() + "', '');");
+            p = getPreparedStatement("INSERT INTO " + getTableName() + "(`id`, `objects`) VALUES ('" + entity.getFirst().getId() + "', '');");
             execute(p);
         } catch (SQLException e) {
             ok = false;
@@ -63,8 +63,8 @@ public class GiftData extends FunctionDAO<Pair<Account, String>> {
         PreparedStatement p = null;
         try {
             p = getPreparedStatement("UPDATE " + getTableName() + " SET `objects` = ? WHERE `id` = ?;");
-            p.setString(1, entity.getValue());
-            p.setInt(2, entity.getKey().getId());
+            p.setString(1, entity.getSecond());
+            p.setInt(2, entity.getFirst().getId());
             execute(p);
         } catch (SQLException e) {
             super.sendError(e);
