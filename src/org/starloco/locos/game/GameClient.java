@@ -1660,7 +1660,7 @@ public class GameClient {
                 templateID = Integer.parseInt(packet.substring(3));
                 SocketManager.GAME_SEND_EHP_PACKET(this.player, templateID);
                 break;
-            case 'T'://Demande des template de la cat?gorie
+            case 'T'://Demande des template de la categorie
                 int categ = Integer.parseInt(packet.substring(3));
                 List<Integer> catContent = hdv.getCategoryContent(categ);
                 exchangeAction.setCategoryId(categ);
@@ -1668,7 +1668,7 @@ public class GameClient {
                 break;
             case 'S': //search
                 String[] infos = packet.substring(3).split("\\|");//type | templateId
-                int id = Integer.parseInt(infos[1]);
+                int template = Integer.parseInt(infos[1]);
                 int category = Integer.parseInt(infos[0]);
 
                 catContent = hdv.getCategoryContent(category);
@@ -1678,8 +1678,8 @@ public class GameClient {
                 } else {
                     this.player.send("EHSK");
                     SocketManager.GAME_SEND_EHL_PACKET(this.player, category, catContent);
-                    SocketManager.GAME_SEND_EHP_PACKET(this.player, id);
-                    SocketManager.GAME_SEND_EHl(this.player, hdv, category, id);
+                    SocketManager.GAME_SEND_EHP_PACKET(this.player, template);
+                    SocketManager.GAME_SEND_EHl(this.player, hdv, category, template);
                 }
                 break;
         }

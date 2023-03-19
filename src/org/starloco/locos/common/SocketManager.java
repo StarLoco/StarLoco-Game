@@ -1807,19 +1807,19 @@ public class SocketManager {
 
     public static void GAME_SEND_EHl(Player out, Hdv hdv, int category, int templateId) {
         String packet = "EHl" + templateId + "|" + hdv.linesForTemplate(category, templateId).stream()
-                .map(line -> {
-                    // Encode lines
-                    return String.join(
-                            ";",
-                            String.valueOf(line.lineId),
-                            line.stats,
-                            line.minPrices[0]==0?"":String.valueOf(line.minPrices[0]),
-                            line.minPrices[1]==0?"":String.valueOf(line.minPrices[1]),
-                            line.minPrices[2]==0?"":String.valueOf(line.minPrices[2]),
-                            String.valueOf(line.itemTemplateId)
-                    );
-                })
-                .collect(Collectors.joining("|"));
+            .map(line -> {
+                // Encode lines
+                return String.join(
+                    ";",
+                    String.valueOf(line.lineId),
+                    line.stats,
+                    line.minPrices[0]==0?"":String.valueOf(line.minPrices[0]),
+                    line.minPrices[1]==0?"":String.valueOf(line.minPrices[1]),
+                    line.minPrices[2]==0?"":String.valueOf(line.minPrices[2]),
+                    String.valueOf(line.itemTemplateId)
+                );
+            })
+            .collect(Collectors.joining("|"));
 
         send(out, packet);
     }

@@ -191,19 +191,18 @@ public class Hdv {
     }
 
     public Optional<HdvEntry> buyItem(int category, int templateId, int lineID, byte amount, int price, Player newOwner) {
-        long salePrice = 1L * price; // Price for the stack
         synchronized (entriesLock) {
             return cheapestEntry(category, templateId, lineID, amount)
-                .filter(e -> e.getGameObject()!=null)
-                .filter(e -> e.getOwner() == newOwner.getAccount().getId())
+                .filter(e -> e.getGameObject() != null)
+                .filter(e -> e.getOwner() != newOwner.getAccount().getId())
                 .filter(e -> e.getPrice() == price)
                 .map(e -> {
-                    if(!newOwner.modKamasDisplay(-salePrice)) {
+                    if(!newOwner.modKamasDisplay(-price)) {
                         return null;
                     }
 
                     Optional<Account> prevOwner = Optional.ofNullable(World.world.getAccount(e.getOwner()));
-                    prevOwner.ifPresent(p -> p.setBankKamas(p.getBankKamas() + salePrice));
+                    prevOwner.ifPresent(p -> p.setBankKamas(p.getBankKamas() + price));
 
                     GameObject obj = e.getGameObject();
                     newOwner.addItem(obj, true, false);//Ajoute l'objet au nouveau propri�taire
@@ -216,61 +215,6 @@ public class Hdv {
                 });
         }
     }
-
-//    public boolean buyItem(int category, int lineID, byte amount, int price, Player newOwner) {
-//        boolean toReturn = true;
-//        try {
-//            if (newOwner.getKamas() < price)
-//                return false;
-//
-//            HdvLine ligne = this.getLine(lineID);
-//            HdvEntry toBuy = ligne.doYouHave(amount, price);
-//
-//            if (toBuy.buy) return false;
-//            toBuy.buy = true;
-//
-//            newOwner.addKamas(price * -1);//Retire l'argent � l'acheteur (prix et taxe de vente)
-//
-//            if (toBuy.getOwner() != -1) {
-//                Account C = World.world.getAccount(toBuy.getOwner());
-//                if (C != null)
-//                    C.setBankKamas(C.getBankKamas() + toBuy.getPrice());//Ajoute l'argent au vendeur
-//            }
-//            SocketManager.GAME_SEND_STATS_PACKET(newOwner);//Met a jour les kamas de l'acheteur
-//
-//            toBuy.getGameObject().setPosition(Constant.ITEM_POS_NO_EQUIPED);
-//            newOwner.addItem(toBuy.getGameObject(), true, false);//Ajoute l'objet au nouveau propri�taire
-//            toBuy.getGameObject().getTemplate().newSold(toBuy.getAmountExp(), price);//Ajoute la ventes au statistiques
-//            try {
-//                String name = "undefined";
-//
-//                if(World.world.getAccount(toBuy.getOwner()) != null)
-//                    name = World.world.getAccount(toBuy.getOwner()).getName();
-//
-//                Logging.getInstance().write("Object", "BuyHdv : "
-//                        + newOwner.getName() + " : achat de "
-//                        + toBuy.getGameObject().getTemplate().getName() + "(" + toBuy.getGameObject().getGuid() + ") x"
-//                        + toBuy.getGameObject().getQuantity() + " venant du compte "
-//                        + name);
-//            } catch(Exception e) { e.printStackTrace(); }
-//            delEntry(toBuy);//Retire l'item de l'HDV ainsi que de la liste du vendeur
-//            ((HdvObjectData) DatabaseManager.get(HdvObjectData.class)).delete(toBuy);
-//            if (World.world.getAccount(toBuy.getOwner()) != null
-//                    && World.world.getAccount(toBuy.getOwner()).getCurrentPlayer() != null)
-//                SocketManager.GAME_SEND_Im_PACKET(World.world.getAccount(toBuy.getOwner()).getCurrentPlayer(), "065;"
-//                        + price
-//                        + "~"
-//                        + toBuy.getGameObject().getTemplate().getId()
-//                        + "~" + toBuy.getGameObject().getTemplate().getId() + "~1");
-//            //Si le vendeur est connecter, envoie du packet qui lui annonce la vente de son objet
-//            ((PlayerData) DatabaseManager.get(PlayerData.class)).update(newOwner);
-//        } catch (NullPointerException e) {
-//            e.printStackTrace();
-//            toReturn = false;
-//        }
-//
-//        return toReturn;
-//    }
 
     public String parseTaxe() {
         return pattern.format(this.getTaxe()).replace(",", ".");
