@@ -1615,10 +1615,11 @@ public class GameClient {
             case 'B': //Confirmation d'achat
                 String[] info = packet.substring(3).split("\\|");//ligneID|amount|price
                 int ligneID = Integer.parseInt(info[0]);
-                byte amount = Byte.parseByte(info[1]);
+                int amount = Integer.parseInt(info[1]);
                 int price = Integer.parseInt(info[2]);
 
-                BigStoreListing entry = bigStore.buyItem(exchangeAction.getCategoryId(), exchangeAction.getTemplateId(), ligneID, amount, price, this.player).orElse(null);
+                // Client amount is [1,3], we want [0,2]
+                BigStoreListing entry = bigStore.buyItem(exchangeAction.getCategoryId(), exchangeAction.getTemplateId(), ligneID, amount-1, price, this.player).orElse(null);
 
                 if (entry == null) {
                     SocketManager.GAME_SEND_Im_PACKET(this.player, "172");//Envoie un message d'erreur d'achat
@@ -1647,6 +1648,14 @@ public class GameClient {
                     ((PlayerData) DatabaseManager.get(PlayerData.class)).update(p);
                 });
 
+                Optional<BigStore.CheapestListings> updated = bigStore.getCheapestListings(exchangeAction.getCategoryId(), exchangeAction.getTemplateId(), ligneID);
+                SocketManager.GAME_SEND_EHm_DEL_PACKET(this.player, ligneID);
+                // Refresh line if there is still one
+                updated.ifPresent(c -> SocketManager.GAME_SEND_EHm_ADD_PACKET(this.player, c));
+                this.player.refreshStats();
+                SocketManager.GAME_SEND_Ow_PACKET(this.player);
+                SocketManager.GAME_SEND_Im_PACKET(this.player, "068");//Envoie le message "Lot achet?"
+
                 break;
             case 'l'://Demande listage d'un template (les prix)
                 templateID = Integer.parseInt(packet.substring(3));
@@ -1673,7 +1682,7 @@ public class GameClient {
 
                 catContent = bigStore.getCategoryContent(category);
 
-                if(catContent == null) {
+                if(catContent == null || catContent.isEmpty()) {
                     this.player.send("EHS");
                 } else {
                     this.player.send("EHSK");
@@ -2230,12 +2239,14 @@ public class GameClient {
                 if(exchangeAction == null) {
                     return;
                 }
+                BigStore curBigStore = World.world.getHdv(exchangeAction.hdvId);
+
                 switch (packet.charAt(3)) {
                     case '-'://Retirer un objet de l'HDV
                         int count = 0;
-                        int  cheapestID = 0;
+                        int  lineId = 0;
                         try {
-                            cheapestID = Integer.parseInt(packet.substring(4).split("\\|")[0]);
+                            lineId = Integer.parseInt(packet.substring(4).split("\\|")[0]);
                             count = Integer.parseInt(packet.substring(4).split("\\|")[1]);
                         } catch (Exception e) {
                             World.world.logger.error("Error Echange HDV '" + packet + "' => " + e.getMessage());
@@ -2244,12 +2255,14 @@ public class GameClient {
                         }
                         if (count <= 0)
                             return;
-                        // FIXME Diabu this.player.getAccount().recoverItem(cheapestID);//Retire l'objet de la liste de vente du compte
-                        SocketManager.GAME_SEND_EXCHANGE_OTHER_MOVE_OK(this, '-', "", cheapestID
-                                + "");
+
+                        if(!curBigStore.removeListing(this.player.getAccount(), lineId, count)) {
+                            return;
+                        }
+
+                        SocketManager.GAME_SEND_EXCHANGE_OTHER_MOVE_OK(this, '-', "", lineId + "");
                         break;
                     case '+'://Mettre un objet en vente
-
                         if (Integer.parseInt(packet.substring(4).split("\\|")[1]) > 127) {
                             SocketManager.GAME_SEND_MESSAGE(this.player, this.player.getLang().trans("game.gameclient.movemenitemorkamas.limit"));
                             return;
@@ -2281,7 +2294,6 @@ public class GameClient {
                                 || packet.substring(3).split("\\|")[2] == "0")
                             return;
 
-                        BigStore curBigStore = World.world.getHdv(exchangeAction.hdvId);
                         int taxe = (int) (price * (curBigStore.getTaxe() / 100));
 
                         if (taxe < 0)
@@ -2323,8 +2335,10 @@ public class GameClient {
                             obj = newObj;
                         }
                         // Client amount is 1,2,3, we need 0,1,2
-                        BigStoreListing toAdd = new BigStoreListing(-1, price, (byte) (amount-1), this.player.getAccount().getId(), obj);
-                        curBigStore.addEntry(toAdd);
+                        BigStoreListing toAdd = new BigStoreListing(price, (byte) (amount-1), this.player.getAccount().getId(), obj);
+                        if(!curBigStore.addEntry(toAdd)) {
+                            return;
+                        }
                         SocketManager.GAME_SEND_EXCHANGE_OTHER_MOVE_OK(this, '+', "", toAdd.parseToEmK()); //Envoie un packet pour ajthiser l'item dans la fenetre de l'HDV du client
                         SocketManager.GAME_SEND_HDVITEM_SELLING(this.player, toAdd.getHdvId());
                         ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this.player);

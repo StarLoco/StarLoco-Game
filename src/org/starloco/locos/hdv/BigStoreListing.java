@@ -3,8 +3,6 @@ package org.starloco.locos.hdv;
 import org.starloco.locos.object.GameObject;
 
 public class BigStoreListing implements Comparable<BigStoreListing> {
-
-    public boolean buy = false;
     private int id;
     private int hdvId;
     private int lineId;
@@ -13,8 +11,12 @@ public class BigStoreListing implements Comparable<BigStoreListing> {
     private final byte amount;            //Dans le format : 1=1 2=10 3=100
     private final GameObject gameObject;
 
+    public BigStoreListing(int price, byte amount, int owner, GameObject gameObject) {
+        this(-1, price, amount, owner, gameObject);
+    }
+
     public BigStoreListing(int id, int price, byte amount, int owner, GameObject gameObject) {
-        this.setId(id);
+        this.id = id;
         this.price = price;
         this.amount = amount;
         this.gameObject = gameObject;
@@ -37,8 +39,11 @@ public class BigStoreListing implements Comparable<BigStoreListing> {
         this.hdvId = id;
     }
 
+    void setLineId(int lineId) {
+        this.lineId = lineId;
+    }
     public int getLineId() {
-        return this.lineId;
+        return lineId;
     }
 
     public int getOwner() {
@@ -62,9 +67,10 @@ public class BigStoreListing implements Comparable<BigStoreListing> {
     }
 
     public String parseToEL() {
+        // For EL packet, we want to be able to identify each listing, so we return the listing ID
         StringBuilder toReturn = new StringBuilder();
         int count = getAmountExp();//Transf�re dans le format (1,10,100) le montant qui etait dans le format (0,1,2)
-        toReturn.append(this.getLineId()).append(";").append(count).append(";").append(this.getGameObject().getTemplate().getId()).append(";").append(this.getGameObject().parseStatsString()).append(";").append(this.price).append(";350");//350 = temps restant
+        toReturn.append(this.getId()).append(";").append(count).append(";").append(this.getGameObject().getTemplate().getId()).append(";").append(this.getGameObject().parseStatsString()).append(";").append(this.price).append(";350");//350 = temps restant
         return toReturn.toString();
     }
 
@@ -86,12 +92,5 @@ public class BigStoreListing implements Comparable<BigStoreListing> {
         if (autre < celuiCi)
             return 1;
         return 0;
-    }
-
-    void setLineID(int lineId) {
-        this.lineId = lineId;
-    }
-    public int getLineID() {
-        return lineId;
     }
 }

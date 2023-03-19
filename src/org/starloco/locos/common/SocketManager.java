@@ -1785,14 +1785,20 @@ public class SocketManager {
         String packet = "gUF";
         send(perso, packet);
     }
-    
-    public static void GAME_SEND_EHm_PACKET(Player out, String sign, String str) {
-        String packet = "EHm" + sign + str;
+
+    public static void GAME_SEND_EHm_DEL_PACKET(Player out, int id) {
+        String packet = "EHm-" + id;
         send(out, packet);
     }
-
-    public static void GAME_SEND_EHM_PACKET(Player out, String sign, String str) {
-        String packet = "EHM" + sign + str;
+    public static void GAME_SEND_EHm_ADD_PACKET(Player out, BigStore.CheapestListings c) {
+        String packet = "EHm+" + String.join("|",
+            String.valueOf(c.lineId),
+            String.valueOf(c.itemTemplateId),
+            String.valueOf(c.stats),
+            c.minPrices[0]==0?"":String.valueOf(c.minPrices[0]),
+            c.minPrices[1]==0?"":String.valueOf(c.minPrices[1]),
+            c.minPrices[2]==0?"":String.valueOf(c.minPrices[2])
+        );
         send(out, packet);
     }
 
@@ -1831,7 +1837,6 @@ public class SocketManager {
     public static void GAME_SEND_HDVITEM_SELLING(Player perso, int hdvId) {
         String packet = "EL" + perso.getAccount().getHdvEntries(hdvId).stream()
             .filter(Objects::nonNull)
-            .filter(e -> e.buy)
             .map(BigStoreListing::parseToEL)
             .collect(Collectors.joining("|"));
         send(perso, packet);

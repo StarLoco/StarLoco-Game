@@ -96,7 +96,7 @@ public class DatabaseManager {
         this.daos.add(new BankData(this.game));
         this.daos.add(new TrunkData(this.game));
         this.daos.add(new GuildMemberData(this.game));
-        this.daos.add(new HdvObjectData(this.game));
+        this.daos.add(new BigStoreListingData(this.game));
         this.daos.add(new HouseData(this.game));
         this.daos.add(new MountParkData(this.game));
         this.daos.add(new CollectorData(this.game));

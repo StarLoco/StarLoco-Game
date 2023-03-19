@@ -14,8 +14,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class HdvObjectData extends FunctionDAO<BigStoreListing> {
-    public HdvObjectData(HikariDataSource dataSource) {
+public class BigStoreListingData extends FunctionDAO<BigStoreListing> {
+    public BigStoreListingData(HikariDataSource dataSource) {
         super(dataSource, "hdvs_items");
     }
 
@@ -34,7 +34,6 @@ public class HdvObjectData extends FunctionDAO<BigStoreListing> {
                     }
                     BigStoreListing entry = new BigStoreListing(result.getInt("id"), result.getInt("price"), result.getByte("count"), result.getInt("ownerGuid"), object);
                     bigStore.addEntry(entry);
-                    World.world.setNextObjectHdvId(result.getInt("id"));
                 }
             }
         } catch (SQLException e) {
@@ -110,6 +109,6 @@ public class HdvObjectData extends FunctionDAO<BigStoreListing> {
 
     @Override
     public Class<?> getReferencedClass() {
-        return HdvObjectData.class;
+        return BigStoreListingData.class;
     }
 }

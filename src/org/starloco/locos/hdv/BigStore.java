@@ -3,7 +3,8 @@ package org.starloco.locos.hdv;
 import org.starloco.locos.client.Account;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.database.DatabaseManager;
-import org.starloco.locos.database.data.game.HdvObjectData;
+import org.starloco.locos.database.data.game.BigStoreListingData;
+import org.starloco.locos.database.data.login.PlayerData;
 import org.starloco.locos.entity.monster.Monster;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.Constant;
@@ -19,8 +20,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class BigStore {
+
     private interface CategoryFilter {
-        boolean apply(int categoryId, BigStoreListing entry);
+        boolean apply(int categoryId, BigStoreListing listing);
     }
 
     public static class CheapestListings {
@@ -37,7 +39,7 @@ public class BigStore {
         }
     }
 
-    private static final Comparator<BigStoreListing> priceASC = (o1, o2) -> o2.getPrice() - o1.getPrice();
+    private static final Comparator<BigStoreListing> priceASC = (o1, o2) -> o1.getPrice() - o2.getPrice();
     private static final DecimalFormat pattern = new DecimalFormat("0.0");
     // defaultCategoryFilter returns true if categoryId == template.type
     private static final CategoryFilter defaultCategoryFilter = (c, e) -> c == e.getGameObject().getTemplate().getType();
@@ -53,8 +55,8 @@ public class BigStore {
     // K: LineID, V: Pair<TemplateID, Stats>
     private final HashMap<Integer, Pair<Integer, String>> lineIDToItemDesc = new HashMap<>();
     private final HashMap<Pair<Integer, String>, Integer> statHashToLineID = new HashMap<>();
-    private final LinkedList<BigStoreListing> entries = new LinkedList<>();
-     private final Object entriesLock = new Object();
+    private final LinkedList<BigStoreListing> listings = new LinkedList<>();
+     private final Object listingsLock = new Object();
 
     public BigStore(int hdvID, float taxe, short sellTime, short maxItemCompte,
                     short lvlMax, String strCategory) {
@@ -92,12 +94,12 @@ public class BigStore {
 
     private Stream<BigStoreListing> getEntriesByTemplate(int categoryId, int template) {
         Function<BigStoreListing, Stream<Integer>> templateMapper = categoryTemplateMapper(categoryId);
-        return entries.stream().filter(e -> templateMapper.apply(e).anyMatch(i -> i == template));
+        return listings.stream().filter(e -> templateMapper.apply(e).anyMatch(i -> i == template));
     }
 
     public List<CheapestListings> linesForTemplate(int category, int templateId) {
-        synchronized (entriesLock) {
-            return getEntriesByTemplate(category, templateId).collect(Collectors.groupingBy(BigStoreListing::getLineID)).entrySet().stream()
+        synchronized (listingsLock) {
+            return getEntriesByTemplate(category, templateId).collect(Collectors.groupingBy(BigStoreListing::getLineId)).entrySet().stream()
                     .map(lineEntries -> {
                         Pair<Integer, String> desc = lineIDToItemDesc.get(lineEntries.getKey());
 
@@ -115,13 +117,12 @@ public class BigStore {
         }
     }
 
-    private Optional<BigStoreListing> cheapestEntry(int category, int templateId, int ligneId, int amountExp) {
+    private Optional<BigStoreListing> cheapestListing(int category, int templateId, int ligneId, int amount) {
         return getEntriesByTemplate(category, templateId)
-            .filter(e -> e.getLineID() == ligneId)
-            .filter(e -> e.getAmountExp() == amountExp)
+            .filter(e -> e.getLineId() == ligneId)
+            .filter(e -> e.getAmount() == amount)
             .min(priceASC);
     }
-
 
     protected CategoryFilter categoryFilters(int category) {
         switch (category) {
@@ -159,35 +160,76 @@ public class BigStore {
 
     }
 
-    public void addEntry(BigStoreListing toAdd) {
+    public boolean addEntry(BigStoreListing toAdd) {
         toAdd.setHdvId(this.getHdvId());
         GameObject obj = Objects.requireNonNull(toAdd.getGameObject());
-        synchronized (entriesLock) {
+        synchronized (listingsLock) {
+            // If it doesn't have a guid yet, save it and get one
+            if(toAdd.getId() == -1) {
+                boolean saved = ((BigStoreListingData) DatabaseManager.get(BigStoreListingData.class)).insert(toAdd);
+                if(!saved) {
+                    // We failed to save, the listing didn't get a guid.
+                    return false;
+                }
+            }
+
             Pair<Integer, String> key = new Pair<>(obj.getTemplate().getId(), obj.parseStatsString());
             int lineId = statHashToLineID.computeIfAbsent(key, (ignored) -> {
                 int id = nextLineID.getAndIncrement();
                 lineIDToItemDesc.put(id, key);
                 return id;
             });
-            toAdd.setLineID(lineId);
+            toAdd.setLineId(lineId);
             if (lineId == 0) throw new IllegalStateException("LineID should not be 0");
-            entries.add(toAdd);
+            listings.add(toAdd);
+
         }
         World.world.addHdvItem(toAdd.getOwner(), this.getHdvId(), toAdd);
-    }
-
-    public boolean delEntry(BigStoreListing entry) {
-        if(!this.entries.remove(entry)) return false;
-
-        World.world.removeHdvItem(entry.getOwner(), entry.getHdvId(), entry);
         return true;
     }
 
-    public Optional<BigStoreListing> buyItem(int category, int templateId, int lineID, byte amount, int price, Player newOwner) {
-        synchronized (entriesLock) {
-            return cheapestEntry(category, templateId, lineID, amount)
+    public boolean removeListing(Account account, int listingId, int count) {
+        Player player = account.getCurrentPlayer();
+        List<BigStoreListing> accountListings = account.getHdvEntries(this.hdvId);
+        if(accountListings.size() == 0) return false;
+        if(player == null) return false;
+        
+        synchronized (listingsLock) {
+            Optional<BigStoreListing> listing = accountListings.stream()
+                .filter(e -> e.getId() == listingId)
+                .findFirst();
+            if(!listing.isPresent() || !this.listings.contains(listing.get())) return false;
+            if(!deleteListing(listing.get())) return false;
+
+            GameObject obj = listing.get().getGameObject();
+            if (account.getCurrentPlayer().addObjetSimiler(obj, true, -1)) {
+                World.world.removeGameObject(obj.getGuid());
+            } else {
+                account.getCurrentPlayer().addItem(obj, true);
+            }
+
+            ((PlayerData) DatabaseManager.get(PlayerData.class)).update(player);
+            return true;
+        }
+    }
+
+    private boolean deleteListing(BigStoreListing listing) {
+        if(!this.listings.remove(listing)) return false;
+
+        World.world.removeHdvItem(listing.getOwner(), listing.getHdvId(), listing);
+        ((BigStoreListingData) DatabaseManager.get(BigStoreListingData.class)).delete(listing);
+        return true;
+    }
+
+    public Optional<CheapestListings> getCheapestListings(int categoryId, int templateId, int lineId) {
+        return linesForTemplate(categoryId, templateId).stream().filter(c -> c.lineId == lineId).findFirst();
+    }
+
+    public Optional<BigStoreListing> buyItem(int category, int templateId, int lineID, int amount, int price, Player newOwner) {
+        synchronized (listingsLock) {
+            return cheapestListing(category, templateId, lineID, amount)
                 .filter(e -> e.getGameObject() != null)
-                .filter(e -> e.getOwner() != newOwner.getAccount().getId())
+                // PUT IT BACK .filter(e -> e.getOwner() != newOwner.getAccount().getId())
                 .filter(e -> e.getPrice() == price)
                 .map(e -> {
                     if(!newOwner.modKamasDisplay(-price)) {
@@ -202,8 +244,7 @@ public class BigStore {
                     obj.setPosition(Constant.ITEM_POS_NO_EQUIPED);
                     obj.getTemplate().newSold(e.getAmountExp(), price);
 
-                    delEntry(e);//Retire l'item de l'HDV ainsi que de la liste du vendeur
-                    ((HdvObjectData) DatabaseManager.get(HdvObjectData.class)).delete(e);
+                    deleteListing(e);//Retire l'item de l'HDV ainsi que de la liste du vendeur
                     return e;
                 });
         }
@@ -216,8 +257,8 @@ public class BigStore {
     public List<Integer> getCategoryContent(int categ) {
         CategoryFilter filter = categoryFilters(categ);
         Function<BigStoreListing, Stream<Integer>> templateMapper = categoryTemplateMapper(categ);
-        synchronized (entriesLock) {
-            return entries.stream().filter(c -> filter.apply(categ, c))
+        synchronized (listingsLock) {
+            return listings.stream().filter(c -> filter.apply(categ, c))
                 .flatMap(templateMapper)
                 .distinct()
                 .collect(Collectors.toList());

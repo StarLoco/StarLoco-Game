@@ -102,27 +102,23 @@ public class World {
         return delayCollectors;
     }
 
-    private HouseManager houseManager = new HouseManager();
+    private final HouseManager houseManager = new HouseManager();
 
     public HouseManager getHouseManager() {
         return houseManager;
     }
 
-    private CryptManager cryptManager = new CryptManager();
+    private final CryptManager cryptManager = new CryptManager();
 
     public CryptManager getCryptManager() {
         return cryptManager;
     }
 
-    private ConditionParser conditionManager = new ConditionParser();
+    private final ConditionParser conditionManager = new ConditionParser();
 
     public ConditionParser getConditionManager() {
         return conditionManager;
     }
-
-
-
-    private int nextObjectHdvId, nextLineHdvId;
 
     //region Accounts data
     public void addAccount(Account account) {
@@ -449,7 +445,7 @@ public class World {
         DatabaseManager.get(HdvData.class).loadFully();
         logger.debug("The hotels of sales were loaded successfully.");
 
-        DatabaseManager.get(HdvObjectData.class).loadFully();
+        DatabaseManager.get(BigStoreListingData.class).loadFully();
         logger.debug("The objects of hotels were loaded successfully.");
 
         DatabaseManager.get(DungeonData.class).loadFully();
@@ -1130,26 +1126,10 @@ public class World {
         return Hdvs.get(changeHdv(map));
     }
 
-    public synchronized int getNextObjectHdvId() {
-        nextObjectHdvId++;
-        return nextObjectHdvId;
-    }
-
-    public synchronized void setNextObjectHdvId(int id) {
-        nextObjectHdvId = id;
-    }
-
-    public synchronized int getNextLineHdvId() {
-        nextLineHdvId++;
-        return nextLineHdvId;
-    }
-
     public void addHdvItem(int compteID, int hdvID, BigStoreListing toAdd) {
-        if (hdvsItems.get(compteID) == null) //Si le compte n'est pas dans la memoire
-            hdvsItems.put(compteID, new HashMap<>()); //Ajout du compte cl�:compteID et un nouveau Map<hdvID,items<>>
-        if (hdvsItems.get(compteID).get(hdvID) == null)
-            hdvsItems.get(compteID).put(hdvID, new ArrayList<>());
-        hdvsItems.get(compteID).get(hdvID).add(toAdd);
+        //Si le compte n'est pas dans la memoire
+        hdvsItems.computeIfAbsent(compteID, k -> new HashMap<>()); //Ajout du compte cle:compteID et un nouveau Map<hdvID,items<>>
+        hdvsItems.get(compteID).computeIfAbsent(hdvID, k -> new ArrayList<>()).add(toAdd);
     }
 
     public void removeHdvItem(int compteID, int hdvID, BigStoreListing toDel) {
@@ -1783,8 +1763,11 @@ public class World {
     }
 
     public static class Drop {
-        private int objectId, ceil, action, level;
-        private String condition;
+        private final int objectId;
+        private final int ceil;
+        private final int action;
+        private final int level;
+        private final String condition;
         private ArrayList<Double> percents;
         private double localPercent;
 
