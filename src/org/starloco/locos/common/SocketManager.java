@@ -40,8 +40,9 @@ public class SocketManager {
     }
 
     public static void send(GameClient client, String packet) {
-        if (client != null && client.getSession() != null && !client.getSession().isClosing() && client.getSession().isConnected())
+        if (client != null && client.getSession() != null && !client.getSession().isClosing() && client.getSession().isConnected()) {
             client.send(packet);
+        }
     }
 
     public static void GAME_SEND_UPDATE_ITEM(Player P, GameObject obj) // Utilis� pour tours bonbon
