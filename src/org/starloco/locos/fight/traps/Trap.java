@@ -9,6 +9,8 @@ import org.starloco.locos.fight.spells.Spell.SortStats;
 import org.starloco.locos.kernel.Constant;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class Trap {
 
@@ -99,14 +101,14 @@ public class Trap {
     public void onTrapped(Fighter target) {
         if (target.isDead())
             return;
-        this.fight.getTraps().remove(this);//On efface le pieges
-        disappear();//On d�clenche ses effets
+        this.fight.getTraps().remove(this);
+        disappear();
         String str = this.spell + "," + this.cell.getId() + ",0,1,1," + this.caster.getId();
         SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(this.fight, 7, 307, target.getId() + "", str);
 
         ArrayList<GameCase> cells = new ArrayList<>();
         cells.add(this.cell);
-        //on ajoute les cases
+
         for (int a = 0; a < this.size; a++) {
             char[] dirs = {'b', 'd', 'f', 'h'};
 
@@ -119,16 +121,19 @@ public class Trap {
                 }
             }
         }
-        Fighter fakeCaster;
-        if (this.caster.getPlayer() == null)
-            fakeCaster = new Fighter(this.fight, this.caster.getMob());
-        else
-            fakeCaster = new Fighter(this.fight, this.caster.getPlayer());
-        fakeCaster.setCell(this.cell);
-        target.setTrapped(true);
-        this.trapSpell.applySpellEffectToFight(this.fight, fakeCaster, target.getCell(), cells, false);
+
+        Fighter caster = this.caster.getPlayer() == null ?
+                new Fighter(this.fight, this.caster.getMob()) :
+                new Fighter(this.fight, this.caster.getPlayer());
+        caster.setCell(this.cell);
+
+        List<Fighter> targets = cells.stream().flatMap(cell -> cell.getFighters().stream()).collect(Collectors.toList());
+
+        targets.forEach(t -> t.setTrapped(true));
+        this.trapSpell.applySpellEffectToFight(this.fight, caster, target.getCell(), cells, false);
+        targets.forEach(t -> t.setTrapped(false));
+
         this.fight.verifIfTeamAllDead();
-        target.setTrapped(false);
     }
 
 }
