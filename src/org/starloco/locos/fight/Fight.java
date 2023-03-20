@@ -3151,239 +3151,246 @@ public class Fight {
     }
 
     public void onFighterDie(Fighter target, Fighter caster) {
-        final Fighter current = this.getFighterByGameOrder();
+        Runnable runnable = () -> {
+            final Fighter current = this.getFighterByGameOrder();
 
-        if (current == null)
-            return;
+            if (current == null)
+                return;
 
-        Player player;
-        //region Statistics
-        if (Config.modeHeroic) {
-            Player p = caster.getPlayer(), deadPlayer = target.getPlayer();
-            if (deadPlayer != null) {
-                byte type = caster.isMob() ? (byte) 2 : p == deadPlayer ? (byte) -1 : (byte) 1;
-                long id = type == 1 ? p.getId() : type == 2 ? caster.getMob().getTemplate().getId() : 0;
-                target.killedBy = new Couple<>(type, id);
-            }
-            if (p != null && target != caster && deadPlayer != null) p.increaseTotalKills();
-        }
-        if((player = target.getPlayer()) != null) {
-             if(caster != target) {
-                 Player temp = null;
-                 boolean ok = false;
-                 if(caster != null && (this.type == Constant.FIGHT_TYPE_AGRESSION || this.type == Constant.FIGHT_TYPE_CONQUETE || this.type == Constant.FIGHT_TYPE_ROYAL)) {
-                     if(caster.getMob() != null && caster.getInvocator() != null && caster.getInvocator().getPlayer() != null) {
-                         ok = true;
-                         temp = caster.getInvocator().getPlayer();
-                     } else if(caster.getPlayer() != null) {
-                         temp = caster.getPlayer();
-                         if(temp != player) {
-                             ok = true;
-                         }
-                     }
-                     if(ok && temp != null) {
-                         GameObject object = World.world.getObjTemplate(10275).createNewItem(1, false);
-                         if(temp.addItem(object, true, false))
-                             World.world.addGameObject(object);
-                         SocketManager.GAME_SEND_Im_PACKET(temp, "021;1~10275");
-                     }
-                 }
-             }
-        }
-        //endregion
-
-        if (!target.hasLeft())
-            this.getDeadList().put(target.getId(), target);
-        target.setIsDead(true);
-        target.getCell().getFighters().clear();
-
-        if (target.haveState(Constant.ETAT_PORTEUR)) {
-            Fighter f = target.getIsHolding();
-            f.setCell(f.getCell());
-            f.getCell().addFighter(f);// Le bug venait par manque de ceci, il ni avait plus de firstFighter
-            f.setState(Constant.ETAT_PORTE, 0);// J'ajoute ceci quand m�me pour signaler qu'ils ne sont plus en �tat port�/porteur
-            target.setState(Constant.ETAT_PORTEUR, 0);
-            f.setHoldedBy(null);
-            target.setIsHolding(null);
-            SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(this, 7, 950, f.getId() + "", f.getId() + "," + Constant.ETAT_PORTE + ",0");
-            SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(this, 7, 950, target.getId() + "", target.getId() + "," + Constant.ETAT_PORTEUR + ",0");
-        }
-        if ((this.getType() == Constant.FIGHT_TYPE_PVM) && (this.getAllChallenges().size() > 0) || this.getType() == Constant.FIGHT_TYPE_DOPEUL && this.getAllChallenges().size() > 0)
-            this.getAllChallenges().values().stream().filter(Objects::nonNull).forEach(challenge -> challenge.onFighterDie(target));
-
-        if (target.getTeam() == 0) {
-            HashMap<Integer, Fighter> team = new HashMap<>(this.getTeam0());
-
-            for (Fighter entry : team.values()) {
-                if (entry.getInvocator() == null)
-                    continue;
-                if (entry.getPdv() == 0 || entry.isDead())
-                    continue;
-
-                if (entry.getInvocator().getId() == target.getId()) {
-                    this.onFighterDie(entry, caster);
-
-                    try {
-                        if(entry.getPlayer() == null) {
-                        if (this.getOrderPlaying() != null) {
-                            int index = this.getOrderPlaying().indexOf(entry);
-                            if (index != -1)
-                                this.getOrderPlaying().remove(index);
-                        }
-                            if (this.getTeam0().containsKey(entry.getId()))
-                                this.getTeam0().remove(entry.getId());
-                            else if (this.getTeam1().containsKey(entry.getId()))
-                                this.getTeam1().remove(entry.getId());
-                        }
-
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(this, 7, 999, target.getId() + "", this.getGTL());
+            Player player;
+            //region Statistics
+            if (Config.modeHeroic) {
+                Player p = caster.getPlayer(), deadPlayer = target.getPlayer();
+                if (deadPlayer != null) {
+                    byte type = caster.isMob() ? (byte) 2 : p == deadPlayer ? (byte) -1 : (byte) 1;
+                    long id = type == 1 ? p.getId() : type == 2 ? caster.getMob().getTemplate().getId() : 0;
+                    target.killedBy = new Couple<>(type, id);
                 }
+                if (p != null && target != caster && deadPlayer != null) p.increaseTotalKills();
             }
-        } else if (target.getTeam() == 1) {
-            HashMap<Integer, Fighter> team = new HashMap<>(this.getTeam1());
-
-            for (Fighter fighter : team.values()) {
-                if (fighter.getInvocator() == null)
-                    continue;
-                if (fighter.getPdv() == 0 || fighter.isDead())
-                    continue;
-                if (fighter.getInvocator().getId() == target.getId()) {// si il a �t� invoqu� par le joueur mort
-                    fighter.setLevelUp(true);
-                    this.onFighterDie(fighter, caster);
-
-                    if(fighter.getPlayer() == null) {
-                        if (this.getOrderPlaying() != null && !this.getOrderPlaying().isEmpty()) {
-                            try {
-                                int index = this.getOrderPlaying().indexOf(fighter);
-                                if (index != -1)
-                                    this.getOrderPlaying().remove(index);
-                            } catch (Exception e) {
-                                e.printStackTrace();
+            if ((player = target.getPlayer()) != null) {
+                if (caster != target) {
+                    Player temp = null;
+                    boolean ok = false;
+                    if (caster != null && (this.type == Constant.FIGHT_TYPE_AGRESSION || this.type == Constant.FIGHT_TYPE_CONQUETE || this.type == Constant.FIGHT_TYPE_ROYAL)) {
+                        if (caster.getMob() != null && caster.getInvocator() != null && caster.getInvocator().getPlayer() != null) {
+                            ok = true;
+                            temp = caster.getInvocator().getPlayer();
+                        } else if (caster.getPlayer() != null) {
+                            temp = caster.getPlayer();
+                            if (temp != player) {
+                                ok = true;
                             }
                         }
-                        if (this.getTeam0().containsKey(fighter.getId()))
-                            this.getTeam0().remove(fighter.getId());
-                        else if (this.getTeam1().containsKey(fighter.getId()))
-                            this.getTeam1().remove(fighter.getId());
+                        if (ok && temp != null) {
+                            GameObject object = World.world.getObjTemplate(10275).createNewItem(1, false);
+                            if (temp.addItem(object, true, false))
+                                World.world.addGameObject(object);
+                            SocketManager.GAME_SEND_Im_PACKET(temp, "021;1~10275");
+                        }
                     }
-                    SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(this, 7, 999, target.getId() + "", getGTL());
                 }
             }
-        }
-        if (target.getMob() != null) {
-            try {
-                if (target.isInvocation() && !target.isStatique) {
-                    target.getInvocator().nbrInvoc--;
-                    // Il ne peut plus jouer, et est mort on revient au joueur
-                    // pr�cedent pour que le startTurn passe au suivant
+            //endregion
 
-                    if(current.getId() == target.getId()) {
-                        if (!target.canPlay()) {
-                            this.setCurAction("");
-                            this.setCurPlayer(getCurPlayer() - 1);
-                            this.endTurn(false, current);
-                        }
-                        // Il peut jouer, et est mort alors on passe son tour
-                        // pour que l'autre joue, puis on le supprime de l'index
-                        // sans probl�mes
-                        else if (target.canPlay()) {
-                            this.setCurAction("");
-                            this.endTurn(false, current);
-                        }
-                    }
+            if (!target.hasLeft())
+                this.getDeadList().put(target.getId(), target);
+            target.setIsDead(true);
+            target.getCell().getFighters().clear();
 
-                    if (this.getOrderPlaying() != null && !this.getOrderPlaying().isEmpty()) {
-                        int index = this.getOrderPlaying().indexOf(target);
-                        // Si le joueur courant a un index plus �lev�, on le
-                        // diminue pour �viter le outOfBound
-                        if (index != -1) {
-                            if (getCurPlayer() > index && getCurPlayer() > 0)
-                                this.setCurPlayer(getCurPlayer() - 1);
-                            this.getOrderPlaying().remove(index);
-                        }
-
-                        if (this.getCurPlayer() < 0)
-                            return;
-                        if (this.getTeam0().containsKey(target.getId()))
-                            this.getTeam0().remove(target.getId());
-                        else if (this.getTeam1().containsKey(target.getId()))
-                            this.getTeam1().remove(target.getId());
-                        //SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(this, 7, 999, target.getId() + "", this.getGTL());
-                    }
-                    this.setCurAction("");
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
+            if (target.haveState(Constant.ETAT_PORTEUR)) {
+                Fighter f = target.getIsHolding();
+                f.setCell(f.getCell());
+                f.getCell().addFighter(f);// Le bug venait par manque de ceci, il ni avait plus de firstFighter
+                f.setState(Constant.ETAT_PORTE, 0);// J'ajoute ceci quand m�me pour signaler qu'ils ne sont plus en �tat port�/porteur
+                target.setState(Constant.ETAT_PORTEUR, 0);
+                f.setHoldedBy(null);
+                target.setIsHolding(null);
+                SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(this, 7, 950, f.getId() + "", f.getId() + "," + Constant.ETAT_PORTE + ",0");
+                SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(this, 7, 950, target.getId() + "", target.getId() + "," + Constant.ETAT_PORTEUR + ",0");
             }
-        }
+            if ((this.getType() == Constant.FIGHT_TYPE_PVM) && (this.getAllChallenges().size() > 0) || this.getType() == Constant.FIGHT_TYPE_DOPEUL && this.getAllChallenges().size() > 0)
+                this.getAllChallenges().values().stream().filter(Objects::nonNull).forEach(challenge -> challenge.onFighterDie(target));
 
+            if (target.getTeam() == 0) {
+                HashMap<Integer, Fighter> team = new HashMap<>(this.getTeam0());
 
-        final Fighter casterFinal = caster;
-        if ((getType() == Constant.FIGHT_TYPE_PVM || getType() == Constant.FIGHT_TYPE_DOPEUL) && getAllChallenges().size() > 0)
-            this.getAllChallenges().values().stream().filter(Objects::nonNull).forEach(challenge -> challenge.onMobDie(target, casterFinal));
-
-        new ArrayList<>(this.getGlyphs()).stream().filter(glyph -> glyph.getCaster().getId() == target.getId()).forEach(glyph -> {
-            SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(this, 7, 999, casterFinal.getId() + "", "GDZ-" + glyph.getCell().getId() + ";" + glyph.getSize() + ";" + glyph.getColor());
-            SocketManager.GAME_SEND_GDC_PACKET_TO_FIGHT(this, 7, glyph.getCell().getId());
-            this.getGlyphs().remove(glyph);
-        });
-
-        new ArrayList<>(this.getTraps()).stream().filter(trap -> trap.getCaster().getId() == target.getId()).forEach(trap -> {
-            trap.disappear();
-            this.traps.remove(trap);
-        });
-
-        if (caster != null && target.getId() == caster.getId()) {
-            SocketManager.GAME_SEND_FIGHT_PLAYER_DIE_TO_FIGHT(this, 7, target.getId());
-            SocketManager.GAME_SEND_GTL_PACKET_TO_FIGHT(this, 7);
-
-            if (target.canPlay() && current.getId() == target.getId() && !current.hasLeft())
-                this.endTurn(false, current);
-        } else {
-            SocketManager.GAME_SEND_FIGHT_PLAYER_DIE_TO_FIGHT(this, 7, target.getId());
-            SocketManager.GAME_SEND_GTL_PACKET_TO_FIGHT(this, 7);
-
-            if (target.canPlay() && current.getId() == target.getId() && !current.hasLeft())
-                this.endTurn(false, current);
-        }
-
-        if (target.isCollector()) {// Le percepteur viens de mourrir on met fin au
-            this.getFighters(target.getTeam2()).stream().filter(f -> !f.isDead()).forEach(f -> {
-                this.onFighterDie(f, target);
-                this.verifIfTeamAllDead();
-            });
-        }
-        if (target.isPrisme()) {
-            this.getFighters(target.getTeam2()).stream().filter(f -> !f.isDead()).forEach(f -> {
-                this.onFighterDie(f, target);
-                this.verifIfTeamAllDead();
-            });
-        }
-
-        for (Fighter fighter : getFighters(3)) {
-            ArrayList<SpellEffect> newBuffs = new ArrayList<>();
-            for (SpellEffect entry : fighter.getFightBuff()) {
-                switch (entry.getSpell()) {
-                    case 78:
-                    case 431:
-                    case 433:
-                    case 437:
-                    case 441:
-                    case 443:
-                        newBuffs.add(entry);
+                for (Fighter entry : team.values()) {
+                    if (entry.getInvocator() == null)
                         continue;
+                    if (entry.getPdv() == 0 || entry.isDead())
+                        continue;
+
+                    if (entry.getInvocator().getId() == target.getId()) {
+                        this.onFighterDie(entry, caster);
+
+                        try {
+                            if (entry.getPlayer() == null) {
+                                if (this.getOrderPlaying() != null) {
+                                    int index = this.getOrderPlaying().indexOf(entry);
+                                    if (index != -1)
+                                        this.getOrderPlaying().remove(index);
+                                }
+                                if (this.getTeam0().containsKey(entry.getId()))
+                                    this.getTeam0().remove(entry.getId());
+                                else if (this.getTeam1().containsKey(entry.getId()))
+                                    this.getTeam1().remove(entry.getId());
+                            }
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(this, 7, 999, target.getId() + "", this.getGTL());
+                    }
                 }
-                if (entry.getCaster().getId() != target.getId())
-                    newBuffs.add(entry);
+            } else if (target.getTeam() == 1) {
+                HashMap<Integer, Fighter> team = new HashMap<>(this.getTeam1());
+
+                for (Fighter fighter : team.values()) {
+                    if (fighter.getInvocator() == null)
+                        continue;
+                    if (fighter.getPdv() == 0 || fighter.isDead())
+                        continue;
+                    if (fighter.getInvocator().getId() == target.getId()) {// si il a �t� invoqu� par le joueur mort
+                        fighter.setLevelUp(true);
+                        this.onFighterDie(fighter, caster);
+
+                        if (fighter.getPlayer() == null) {
+                            if (this.getOrderPlaying() != null && !this.getOrderPlaying().isEmpty()) {
+                                try {
+                                    int index = this.getOrderPlaying().indexOf(fighter);
+                                    if (index != -1)
+                                        this.getOrderPlaying().remove(index);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                            if (this.getTeam0().containsKey(fighter.getId()))
+                                this.getTeam0().remove(fighter.getId());
+                            else if (this.getTeam1().containsKey(fighter.getId()))
+                                this.getTeam1().remove(fighter.getId());
+                        }
+                        SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(this, 7, 999, target.getId() + "", getGTL());
+                    }
+                }
             }
-            fighter.getFightBuff().clear();
-            fighter.getFightBuff().addAll(newBuffs);
+            if (target.getMob() != null) {
+                try {
+                    if (target.isInvocation() && !target.isStatique) {
+                        target.getInvocator().nbrInvoc--;
+                        // Il ne peut plus jouer, et est mort on revient au joueur
+                        // pr�cedent pour que le startTurn passe au suivant
+
+                        if (current.getId() == target.getId()) {
+                            if (!target.canPlay()) {
+                                this.setCurAction("");
+                                this.setCurPlayer(getCurPlayer() - 1);
+                                this.endTurn(false, current);
+                            }
+                            // Il peut jouer, et est mort alors on passe son tour
+                            // pour que l'autre joue, puis on le supprime de l'index
+                            // sans probl�mes
+                            else if (target.canPlay()) {
+                                this.setCurAction("");
+                                this.endTurn(false, current);
+                            }
+                        }
+
+                        if (this.getOrderPlaying() != null && !this.getOrderPlaying().isEmpty()) {
+                            int index = this.getOrderPlaying().indexOf(target);
+                            // Si le joueur courant a un index plus �lev�, on le
+                            // diminue pour �viter le outOfBound
+                            if (index != -1) {
+                                if (getCurPlayer() > index && getCurPlayer() > 0)
+                                    this.setCurPlayer(getCurPlayer() - 1);
+                                this.getOrderPlaying().remove(index);
+                            }
+
+                            if (this.getCurPlayer() < 0)
+                                return;
+                            if (this.getTeam0().containsKey(target.getId()))
+                                this.getTeam0().remove(target.getId());
+                            else if (this.getTeam1().containsKey(target.getId()))
+                                this.getTeam1().remove(target.getId());
+                            //SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(this, 7, 999, target.getId() + "", this.getGTL());
+                        }
+                        this.setCurAction("");
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            final Fighter casterFinal = caster;
+            if ((getType() == Constant.FIGHT_TYPE_PVM || getType() == Constant.FIGHT_TYPE_DOPEUL) && getAllChallenges().size() > 0)
+                this.getAllChallenges().values().stream().filter(Objects::nonNull).forEach(challenge -> challenge.onMobDie(target, casterFinal));
+
+            new ArrayList<>(this.getGlyphs()).stream().filter(glyph -> glyph.getCaster().getId() == target.getId()).forEach(glyph -> {
+                SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(this, 7, 999, casterFinal.getId() + "", "GDZ-" + glyph.getCell().getId() + ";" + glyph.getSize() + ";" + glyph.getColor());
+                SocketManager.GAME_SEND_GDC_PACKET_TO_FIGHT(this, 7, glyph.getCell().getId());
+                this.getGlyphs().remove(glyph);
+            });
+
+            new ArrayList<>(this.getTraps()).stream().filter(trap -> trap.getCaster().getId() == target.getId()).forEach(trap -> {
+                trap.disappear();
+                this.traps.remove(trap);
+            });
+
+            if (caster != null && target.getId() == caster.getId()) {
+                SocketManager.GAME_SEND_FIGHT_PLAYER_DIE_TO_FIGHT(this, 7, target.getId());
+                SocketManager.GAME_SEND_GTL_PACKET_TO_FIGHT(this, 7);
+
+                if (target.canPlay() && current.getId() == target.getId() && !current.hasLeft())
+                    this.endTurn(false, current);
+            } else {
+                SocketManager.GAME_SEND_FIGHT_PLAYER_DIE_TO_FIGHT(this, 7, target.getId());
+                SocketManager.GAME_SEND_GTL_PACKET_TO_FIGHT(this, 7);
+
+                if (target.canPlay() && current.getId() == target.getId() && !current.hasLeft())
+                    this.endTurn(false, current);
+            }
+
+            if (target.isCollector()) {// Le percepteur viens de mourrir on met fin au
+                this.getFighters(target.getTeam2()).stream().filter(f -> !f.isDead()).forEach(f -> {
+                    this.onFighterDie(f, target);
+                    this.verifIfTeamAllDead();
+                });
+            }
+            if (target.isPrisme()) {
+                this.getFighters(target.getTeam2()).stream().filter(f -> !f.isDead()).forEach(f -> {
+                    this.onFighterDie(f, target);
+                    this.verifIfTeamAllDead();
+                });
+            }
+
+            for (Fighter fighter : getFighters(3)) {
+                ArrayList<SpellEffect> newBuffs = new ArrayList<>();
+                for (SpellEffect entry : fighter.getFightBuff()) {
+                    switch (entry.getSpell()) {
+                        case 78:
+                        case 431:
+                        case 433:
+                        case 437:
+                        case 441:
+                        case 443:
+                            newBuffs.add(entry);
+                            continue;
+                    }
+                    if (entry.getCaster().getId() != target.getId())
+                        newBuffs.add(entry);
+                }
+                fighter.getFightBuff().clear();
+                fighter.getFightBuff().addAll(newBuffs);
+            }
+            SocketManager.GAME_SEND_GTL_PACKET_TO_FIGHT(this, 7);
+            this.verifIfTeamAllDead();
+        };
+
+        if(target.getId() != caster.getId()) {
+            runnable.run();
+        } else {
+            TimerWaiter.addNext(runnable, 3000);
         }
-        SocketManager.GAME_SEND_GTL_PACKET_TO_FIGHT(this, 7);
-        this.verifIfTeamAllDead();
     }
 
     public ArrayList<Fighter> getFighters(int teams) {// Entre 0 et 7, binaire([spec][t2][t1]).
