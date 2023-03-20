@@ -121,7 +121,7 @@ public class PlayerData extends FunctionDAO<Player> {
             statement.setInt(15, entity.getAccID());
             statement.setInt(16, entity.getCurCell().getId());
             statement.setInt(17, entity.getCurMap().getId());
-            statement.setString(18, entity.parseSpellToDB());
+            statement.setString(18, entity.encodeSpellsToDB());
             statement.setInt(19, Config.gameServerId);
 
             int affectedRows = statement.executeUpdate();
@@ -202,7 +202,7 @@ public class PlayerData extends FunctionDAO<Player> {
             if (entity.getCurCell() != null) p.setInt(24, entity.getCurCell().getId());
             else p.setInt(24, 311);
             p.setInt(25, entity.get_pdvper());
-            p.setString(26, entity.parseSpellToDB());
+            p.setString(26, entity.encodeSpellsToDB());
             p.setString(27, entity.parseObjetsToDB());
             p.setString(28, entity.parseStoreItemstoBD());
             p.setString(29, entity.getSavePosition().toString(","));

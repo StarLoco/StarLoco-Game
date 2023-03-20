@@ -575,68 +575,68 @@ public class Constant {
         return pos;
     }
 
-    public static HashMap<Integer, Character> getStartSortsPlaces(int classID) {
-        HashMap<Integer, Character> start = new HashMap<Integer, Character>();
+    public static HashMap<Integer, Integer> getStartSortsPlaces(int classID) {
+        HashMap<Integer, Integer> start = new HashMap<>();
         switch (classID) {
             case CLASS_FECA:
-                start.put(3, 'b');//Attaque Naturelle
-                start.put(6, 'c');//Armure Terrestre
-                start.put(17, 'd');//Glyphe Agressif
+                start.put(3, 1);//Attaque Naturelle
+                start.put(6, 2);//Armure Terrestre
+                start.put(17, 3);//Glyphe Agressif
                 break;
             case CLASS_SRAM:
-                start.put(61, 'b');//Sournoiserie
-                start.put(72, 'c');//Invisibilit�
-                start.put(65, 'd');//Piege sournois
+                start.put(61, 1);//Sournoiserie
+                start.put(72, 2);//Invisibilit�
+                start.put(65, 3);//Piege sournois
                 break;
             case CLASS_ENIRIPSA:
-                start.put(125, 'b');//Mot Interdit
-                start.put(128, 'c');//Mot de Frayeur
-                start.put(121, 'd');//Mot Curatif
+                start.put(125, 1);//Mot Interdit
+                start.put(128, 2);//Mot de Frayeur
+                start.put(121, 3);//Mot Curatif
                 break;
             case CLASS_ECAFLIP:
-                start.put(102, 'b');//Pile ou Face
-                start.put(103, 'c');//Chance d'ecaflip
-                start.put(105, 'd');//Bond du felin
+                start.put(102, 1);//Pile ou Face
+                start.put(103, 2);//Chance d'ecaflip
+                start.put(105, 3);//Bond du felin
                 break;
             case CLASS_CRA:
-                start.put(161, 'b');//Fleche Magique
-                start.put(169, 'c');//Fleche de Recul
-                start.put(164, 'd');//Fleche Empoisonn�e(ex Fleche chercheuse)
+                start.put(161, 1);//Fleche Magique
+                start.put(169, 2);//Fleche de Recul
+                start.put(164, 3);//Fleche Empoisonn�e(ex Fleche chercheuse)
                 break;
             case CLASS_IOP:
-                start.put(143, 'b');//Intimidation
-                start.put(141, 'c');//Pression
-                start.put(142, 'd');//Bond
+                start.put(143, 1);//Intimidation
+                start.put(141, 2);//Pression
+                start.put(142, 3);//Bond
                 break;
             case CLASS_SADIDA:
-                start.put(183, 'b');//Ronce
-                start.put(200, 'c');//Poison Paralysant
-                start.put(193, 'd');//La bloqueuse
+                start.put(183, 1);//Ronce
+                start.put(200, 2);//Poison Paralysant
+                start.put(193, 3);//La bloqueuse
                 break;
             case CLASS_OSAMODAS:
-                start.put(34, 'b');//Invocation de tofu
-                start.put(21, 'c');//Griffe Spectrale
-                start.put(23, 'd');//Cri de l'ours
+                start.put(34, 1);//Invocation de tofu
+                start.put(21, 2);//Griffe Spectrale
+                start.put(23, 3);//Cri de l'ours
                 break;
             case CLASS_XELOR:
-                start.put(82, 'b');//Contre
-                start.put(81, 'c');//Ralentissement
-                start.put(83, 'd');//Aiguille
+                start.put(82, 1);//Contre
+                start.put(81, 2);//Ralentissement
+                start.put(83, 3);//Aiguille
                 break;
             case CLASS_PANDAWA:
-                start.put(686, 'b');//Picole
-                start.put(692, 'c');//Gueule de bois
-                start.put(687, 'd');//Poing enflamm�
+                start.put(686, 1);//Picole
+                start.put(692, 2);//Gueule de bois
+                start.put(687, 3);//Poing enflamm�
                 break;
             case CLASS_ENUTROF:
-                start.put(51, 'b');//Lancer de Piece
-                start.put(43, 'c');//Lancer de Pelle
-                start.put(41, 'd');//Sac anim�
+                start.put(51, 1);//Lancer de Piece
+                start.put(43, 2);//Lancer de Pelle
+                start.put(41, 3);//Sac anim�
                 break;
             case CLASS_SACRIEUR:
-                start.put(432, 'b');//Pied du Sacrieur
-                start.put(431, 'c');//Chatiment Os�
-                start.put(434, 'd');//Attirance
+                start.put(432, 1);//Pied du Sacrieur
+                start.put(431, 2);//Chatiment Os�
+                start.put(434, 3);//Attirance
                 break;
         }
         return start;

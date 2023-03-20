@@ -6839,7 +6839,7 @@ public class GameClient {
                 forgetSpell(packet);
                 break;
             case 'M':
-                moveToUsed(packet);
+                moveSpell(packet);
                 break;
         }
     }
@@ -6873,13 +6873,20 @@ public class GameClient {
         }
     }
 
-    private void moveToUsed(String packet) {
+    private void moveSpell(String packet) {
         try {
-            int SpellID = Integer.parseInt(packet.substring(2).split("\\|")[0]);
-            int Position = Integer.parseInt(packet.substring(2).split("\\|")[1]);
-            Spell.SortStats Spell = this.player.getSortStatBySortIfHas(SpellID);
-            if (Spell != null) {
-                this.player.set_SpellPlace(SpellID, World.world.getCryptManager().getHashedValueByInt(Position));
+            String[] parts = packet.substring(2).split("\\|");
+
+            int SpellID = Integer.parseInt(parts[0]);
+            int position = World.world.getCryptManager().getIntByHashedValue(parts[1].charAt(0)); // Will return -1
+            // We only allow 30 slots, so if base64 result is > 30, assume it's a decimal digit
+            if(parts[1].length() > 1 || position > 30) {
+                position =  Integer.parseInt(parts[1]);
+            }
+
+            Spell.SortStats spellStats = this.player.getSortStatBySortIfHas(SpellID);
+            if (spellStats != null) {
+                this.player.setSpellShortcuts(SpellID, position);
             }
             SocketManager.GAME_SEND_BN(this);
         } catch (Exception e) {

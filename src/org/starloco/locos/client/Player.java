@@ -67,6 +67,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 public class Player {
     private final SPlayer scriptVal;
@@ -156,7 +157,7 @@ public class Player {
 
     //Sort
     private Map<Integer, Spell.SortStats> _sorts = new HashMap<>();
-    private Map<Integer, Character> _sortsPlaces = new HashMap<>();
+    private Map<Integer, Integer> _sortsPlaces = new HashMap<>(); // K: SpellID, V: Position
     //Titre
     private byte currentTitle = 0;
     //Mariage
@@ -193,7 +194,7 @@ public class Player {
     private boolean _morphMode = false;
     private int _morphId;
     private Map<Integer, Spell.SortStats> _saveSorts = new HashMap<>();
-    private Map<Integer, Character> _saveSortsPlaces = new HashMap<>();
+    private Map<Integer, Integer> _saveSortsPlaces = new HashMap<>();
     private int _saveSpellPts;
     private int pa = 0,
             pm = 0,
@@ -1015,7 +1016,7 @@ public class Player {
         this.party = party;
     }
 
-    public String parseSpellToDB() {
+    public String encodeSpellsToDB() {
         StringBuilder sorts = new StringBuilder();
 
         if (_morphMode) {
@@ -1060,9 +1061,14 @@ public class Player {
                 _saveSortsPlaces.clear();
                 for (String e : spells) {
                     try {
-                        int id = Integer.parseInt(e.split(";")[0]);
-                        int lvl = Integer.parseInt(e.split(";")[1]);
-                        char place = e.split(";")[2].charAt(0);
+                        String[] parts = e.split(";");
+                        int id = Integer.parseInt(parts[0]);
+                        int lvl = Integer.parseInt(parts[1]);
+                        int place = World.world.getCryptManager().getIntByHashedValue(parts[2].charAt(0)); // May return -1
+                        if(parts[2].length() > 1 || place > 30) {
+                            place =  Integer.parseInt(parts[2]);
+                        }
+
                         learnSpell(id, lvl);
                         this._saveSortsPlaces.put(id, place);
                     } catch (NumberFormatException e1) {
@@ -1075,14 +1081,19 @@ public class Player {
                 _sortsPlaces.clear();
                 for (String e : spells) {
                     try {
-                        int id = Integer.parseInt(e.split(";")[0]);
-                        int lvl = Integer.parseInt(e.split(";")[1]);
-                        char place = e.split(";")[2].charAt(0);
+                        String[] parts = e.split(";");
+                        int id = Integer.parseInt(parts[0]);
+                        int lvl = Integer.parseInt(parts[1]);
+                        int position = World.world.getCryptManager().getIntByHashedValue(parts[2].charAt(0)); // May return -1
+                        if(parts[2].length() > 1 || position > 30) {
+                            position =  Integer.parseInt(parts[2]);
+                        }
+
                         if (!_morphMode)
                             learnSpell(id, lvl, false, false, false);
                         else
                             learnSpell(id, lvl, false, send, false);
-                        _sortsPlaces.put(id, place);
+                        _sortsPlaces.put(id, position);
                     } catch (NumberFormatException e1) {
                         e1.printStackTrace();
                     }
@@ -1102,9 +1113,10 @@ public class Player {
         _sortsPlaces.clear();
         for (String e : spells) {
             try {
-                int id = Integer.parseInt(e.split(";")[0]);
-                int lvl = Integer.parseInt(e.split(";")[1]);
-                char place = e.split(";")[2].charAt(0);
+                String[] parts = e.split(";");
+                int id = Integer.parseInt(parts[0]);
+                int lvl = Integer.parseInt(parts[1]);
+                int place = Integer.parseInt(parts[2]);
                 if (!_morphMode)
                     learnSpell(id, lvl, false, false, false);
                 else
@@ -1367,15 +1379,15 @@ public class Player {
         return true;
     }
 
-    public void learnSpell(int spell, int level, char pos) {
+    public void learnSpell(int spell, int level, int pos) {
         if (World.world.getSort(spell).getStatsByLevel(level) == null) {
             GameServer.a();
             return;
         }
 
-        if (!_sorts.containsKey(Integer.valueOf(spell))) {
-            _sorts.put(Integer.valueOf(spell), World.world.getSort(spell).getStatsByLevel(level));
-            replace_SpellInBook(pos);
+        if (!_sorts.containsKey(spell)) {
+            _sorts.put(spell, World.world.getSort(spell).getStatsByLevel(level));
+            removeSpellShortcutAtPosition(pos);
             _sortsPlaces.remove(spell);
             _sortsPlaces.put(spell, pos);
             SocketManager.GAME_SEND_SPELL_LIST(this);
@@ -1639,7 +1651,7 @@ public class Player {
         _spellPts = _saveSpellPts;
         _sorts.putAll(_saveSorts);
         _sortsPlaces.putAll(_saveSortsPlaces);
-        parseSpells(parseSpellToDB(), true);
+        parseSpells(encodeSpellsToDB(), true);
 
         setMorphId(0);
         if (this.getFight() == null) {
@@ -1650,27 +1662,28 @@ public class Player {
         ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this);
     }
 
-    public String parseSpellList() {
-        StringBuilder packet = new StringBuilder();
-        packet.append("SL");
-        for (Iterator<Spell.SortStats> i = _sorts.values().iterator(); i.hasNext(); ) {
-            Spell.SortStats SS = i.next();
-            packet.append(SS.getSpellID()).append("~").append(SS.getLevel()).append("~").append(_sortsPlaces.get(SS.getSpellID())).append(";");
-        }
-        return packet.toString();
+    public String encodeSpellList() {
+        return "SL" + _sorts.values().stream().map(s -> {
+            String pos = Optional.ofNullable(_sortsPlaces.get(s.getSpellID())).map(String::valueOf).orElse("_");
+            return String.join("~",
+                String.valueOf(s.getSpellID()),
+                String.valueOf(s.getLevel()),
+                pos
+            );
+        }).collect(Collectors.joining(";"));
     }
 
-    public void set_SpellPlace(int SpellID, char Place) {
-        replace_SpellInBook(Place);
+    public void setSpellShortcuts(int SpellID, int Place) {
+        removeSpellShortcutAtPosition(Place);
         _sortsPlaces.remove(SpellID);
         _sortsPlaces.put(SpellID, Place);
         ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this);
     }
 
-    private void replace_SpellInBook(char Place) {
+    private void removeSpellShortcutAtPosition(int position) {
         for (int key : _sorts.keySet())
             if (_sortsPlaces.get(key) != null)
-                if (_sortsPlaces.get(key).equals(Place))
+                if (_sortsPlaces.get(key).equals(position))
                     _sortsPlaces.remove(key);
     }
 
@@ -5938,7 +5951,7 @@ public class Player {
 		this.color2 = Integer.parseInt(color[1]);
 		this.color3 = Integer.parseInt(color[2]);
 		
-		parseSpells(parseSpellToDB(), true);
+		parseSpells(encodeSpellsToDB(), true);
 		SocketManager.GAME_SEND_SPELL_LIST(this);
 		SocketManager.GAME_SEND_STATS_PACKET(this);
 		SocketManager.GAME_SEND_ALTER_GM_PACKET(this.curMap, this);
