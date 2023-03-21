@@ -17,7 +17,13 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+/**
+ * ItemHash makes it easier to find similar items(same template, same stats).
+ * It can be used as a map key.
+ * DO NOT STORE IN DATABASE. We may want to change how we compute the hashes later on.
+ * */
 public class ItemHash {
+
     private static final MessageDigest digest;
     private static final Charset charset = StandardCharsets.UTF_8;
 
@@ -40,13 +46,13 @@ public class ItemHash {
     }
 
     private static String hash(int templateID, Stats stats, Map<Integer, String> txtStats) {
-        // Sort stats in effectID order
+        // Sort stats in effectID order, we need determinism
         List<Pair<Integer, Integer>> sortedStats = stats.getEffects().entrySet().stream()
                 .sorted(Comparator.comparingInt(Map.Entry::getKey))
                 .map(e -> new Pair<>(e.getKey(), e.getValue()))
                 .collect(Collectors.toList());
 
-        // Sort txtStats in effectID order
+        // Sort txtStats in effectID order, we need determinism
         // TODO: Maybe we need to also sort the txt stats values ?
         List<Pair<Integer, String>> sortedTxtStats = txtStats.entrySet().stream()
                 .sorted(Comparator.comparingInt(Map.Entry::getKey))
