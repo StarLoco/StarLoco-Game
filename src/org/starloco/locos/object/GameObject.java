@@ -338,10 +338,10 @@ public class GameObject {
         return Integer.toHexString(guid) + "~"
                 + Integer.toHexString(template == null ? 39 : template.getId()) + "~"
                 + Integer.toHexString(quantity) + "~" + posi + "~"
-                + parseStatsString() + ";";
+                + encodeStats() + ";";
     }
 
-    public String parseStatsString() {
+    public String encodeStats() {
         if (this.getTemplate().getType() == 83) //Si c'est une pierre d'�me vide
             return this.getTemplate().getStrTemplate();
 
@@ -666,7 +666,7 @@ public class GameObject {
         upPacket = upPacket + Integer.toHexString(getTemplate().getId()) + "~";
         upPacket = upPacket + Integer.toHexString(getQuantity()) + "~";
         upPacket = upPacket + strPos + "~";
-        upPacket = upPacket + parseStatsString();
+        upPacket = upPacket + encodeStats();
         return upPacket;
     }
 

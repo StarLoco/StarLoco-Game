@@ -1,12 +1,9 @@
 package org.starloco.locos.entity.exchange;
 
-import org.starloco.locos.auction.Auction;
-import org.starloco.locos.auction.AuctionManager;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.database.DatabaseManager;
 import org.starloco.locos.database.data.login.PlayerData;
-import org.starloco.locos.entity.mount.Mount;
 import org.starloco.locos.entity.npc.NpcTemplate;
 import org.starloco.locos.entity.pet.PetEntry;
 import org.starloco.locos.game.world.World;
@@ -299,7 +296,7 @@ public class PlayerExchange extends Exchange {
         }
 
         String add = "|" + obj.getTemplate().getId() + "|"
-                + obj.parseStatsString();
+                + obj.encodeStats();
         SocketManager.GAME_SEND_EXCHANGE_OK(this.player1.getGameClient(), ok1, this.player1.getId());
         SocketManager.GAME_SEND_EXCHANGE_OK(this.player2.getGameClient(), ok1, this.player1.getId());
         SocketManager.GAME_SEND_EXCHANGE_OK(this.player1.getGameClient(), ok2, this.player2.getId());
@@ -351,7 +348,7 @@ public class PlayerExchange extends Exchange {
 
         GameObject object = World.world.getGameObject(guid);
         if (object == null) return;
-        String add = "|" + object.getTemplate().getId() + "|" + object.parseStatsString();
+        String add = "|" + object.getTemplate().getId() + "|" + object.encodeStats();
 
         if (i == 1) {
             Couple<Integer, Integer> couple = getCoupleInList(items1, guid);
@@ -540,7 +537,7 @@ public class PlayerExchange extends Exchange {
                     if (id == -1)
                         return;
                     String str1 = id + "|" + 1 + "|" + id + "|"
-                            + objet.parseStatsString();
+                            + objet.encodeStats();
                     this.items2.add(new Couple<Integer, Integer>(id, 1));
                     SocketManager.GAME_SEND_EXCHANGE_OTHER_MOVE_OK(this.player.getGameClient(), 'O', "+", str1);
                     this.ok2 = true;
@@ -594,7 +591,7 @@ public class PlayerExchange extends Exchange {
                     if (id == -1)
                         return;
                     String str = id + "|" + 1 + "|" + id + "|"
-                            + objet.parseStatsString();
+                            + objet.encodeStats();
                     this.items2.add(new Couple<Integer, Integer>(id, 1));
                     SocketManager.GAME_SEND_EXCHANGE_OTHER_MOVE_OK(this.player.getGameClient(), 'O', "+", str);
                     this.ok2 = true;
@@ -787,7 +784,7 @@ public class PlayerExchange extends Exchange {
                     if (id == -1 || objet == null)
                         return;
                     String str1 = id + "|" + 1 + "|" + id + "|"
-                            + objet.parseStatsString();
+                            + objet.encodeStats();
                     this.items2.add(new Couple<Integer, Integer>(id, 1));
                     SocketManager.GAME_SEND_EXCHANGE_OTHER_MOVE_OK(this.perso.getGameClient(), 'O', "+", str1);
                     this.ok2 = true;
@@ -844,7 +841,7 @@ public class PlayerExchange extends Exchange {
                         return;
 
                     String str = id + "|" + 1 + "|" + id + "|"
-                            + objet.parseStatsString();
+                            + objet.encodeStats();
                     this.items2.add(new Couple<Integer, Integer>(id, 1));
                     SocketManager.GAME_SEND_EXCHANGE_OTHER_MOVE_OK(this.perso.getGameClient(), 'O', "+", str);
                     this.ok2 = true;

@@ -7,7 +7,6 @@ import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.database.DatabaseManager;
 import org.starloco.locos.database.data.game.AuctionData;
 import org.starloco.locos.entity.exchange.NpcExchange;
-import org.starloco.locos.entity.exchange.PlayerExchange;
 import org.starloco.locos.entity.npc.Npc;
 import org.starloco.locos.game.scheduler.Updatable;
 import org.starloco.locos.game.world.World;
@@ -80,7 +79,7 @@ public class AuctionManager extends Updatable {
     }
 
     private String getTalkStringObject(GameObject object, String msg) {
-        return "°0" + msg + "|" + object.getTemplate().getId() + "!" + object.parseStatsString();
+        return "°0" + msg + "|" + object.getTemplate().getId() + "!" + object.encodeStats();
     }
 
     private boolean currentIsAvailable() {
@@ -277,7 +276,7 @@ public class AuctionManager extends Updatable {
 
                         GameObject object = auction.getObject();
                         String str = object.getGuid() + "|" + object.getQuantity() + "|" + object.getTemplate().getId() + "|" +
-                                auction.getObject().parseStatsString() + ",3db#0#0#0#" + auction.getOwner().getName() + ",c2#" + Integer.toHexString(auction.getPrice()) + "#0#0#0";
+                                auction.getObject().encodeStats() + ",3db#0#0#0#" + auction.getOwner().getName() + ",c2#" + Integer.toHexString(auction.getPrice()) + "#0#0#0";
 
                         TimerWaiter.addNext(() -> SocketManager.GAME_SEND_EXCHANGE_OTHER_MOVE_OK(player.getGameClient(), 'O', "+", str), count * 100);
                     }

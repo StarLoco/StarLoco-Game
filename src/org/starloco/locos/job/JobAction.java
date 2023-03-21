@@ -374,7 +374,7 @@ public class JobAction {
             if (signed) newObj.addTxtStat(988, this.player.getName());
             int guid = this.addCraftObject(receiver, newObj);
             if(guid == -1) guid = newObj.getGuid();
-            String stats = newObj.parseStatsString();
+            String stats = newObj.encodeStats();
 
             this.player.send("ErKO+" + guid + "|1|" + template + "|" + stats);
             receiver.send("ErKO+" + guid + "|1|" + template + "|" + stats);
@@ -505,7 +505,7 @@ public class JobAction {
                     }
                     SocketManager.GAME_SEND_Ow_PACKET(this.player);
                     if (signed) newObj.addTxtStat(988, this.player.getName());
-                    SocketManager.GAME_SEND_Em_PACKET(this.player, "KO+" + newObj.getGuid() + "|1|" + templateId + "|" + newObj.parseStatsString().replace(";", "#"));
+                    SocketManager.GAME_SEND_Em_PACKET(this.player, "KO+" + newObj.getGuid() + "|1|" + templateId + "|" + newObj.encodeStats().replace(";", "#"));
                     SocketManager.GAME_SEND_Ec_PACKET(this.player, "K;" + templateId);
                     SocketManager.GAME_SEND_IO_PACKET_TO_MAP(this.player.getCurMap(), this.player.getId(), "+" + templateId);
                 }
@@ -546,7 +546,7 @@ public class JobAction {
                 if (signed) newObj.addTxtStat(988, this.player.getName());
 
                 SocketManager.GAME_SEND_Ow_PACKET(this.player);
-                SocketManager.GAME_SEND_Em_PACKET(this.player, "KO+" + newObj.getGuid() + "|1|" + templateId + "|" + newObj.parseStatsString().replace(";", "#"));
+                SocketManager.GAME_SEND_Em_PACKET(this.player, "KO+" + newObj.getGuid() + "|1|" + templateId + "|" + newObj.encodeStats().replace(";", "#"));
                 SocketManager.GAME_SEND_Ec_PACKET(this.player, "K;" + templateId);
                 SocketManager.GAME_SEND_IO_PACKET_TO_MAP(this.player.getCurMap(), this.player.getId(), "+" + templateId);
             }
@@ -1196,7 +1196,7 @@ public class JobAction {
 
         int chance, lvlJob = SM.get_lvl(), currentWeightTotal = 1, pwrPerte;
         int objTemplateID = template.getId();
-        String statStringObj = objectFm.parseStatsString();
+        String statStringObj = objectFm.encodeStats();
 
         if (lvlElementRune > 0 && lvlQuaStatsRune == 0) {
             chance = Formulas.calculChanceByElement(lvlJob, template.getLevel(), lvlElementRune);
@@ -1371,7 +1371,7 @@ public class JobAction {
                 }
             }
 
-            String data = objectFm.getGuid() + "|1|" + objectFm.getTemplate().getId() + "|" + objectFm.parseStatsString();
+            String data = objectFm.getGuid() + "|1|" + objectFm.getTemplate().getId() + "|" + objectFm.encodeStats();
 
             if (!this.isRepeat)
                 this.reConfigingRunes = -1;
@@ -1443,7 +1443,7 @@ public class JobAction {
                 objectFm.parseStringToStats(statsStr);
             }
 
-            String data = objectFm.getGuid() + "|1|" + objectFm.getTemplate().getId() + "|" + objectFm.parseStatsString();
+            String data = objectFm.getGuid() + "|1|" + objectFm.getTemplate().getId() + "|" + objectFm.encodeStats();
             if (!this.isRepeat)
                 this.reConfigingRunes = -1;
             if (this.reConfigingRunes != 0 || this.broken)
@@ -1472,7 +1472,7 @@ public class JobAction {
                 pwrPerte = currentWeightTotal - currentTotalWeigthBase(statsStr, objectFm);
             }
 
-            String data = objectFm.getGuid() + "|1|" + objectFm.getTemplate().getId() + "|" + objectFm.parseStatsString();
+            String data = objectFm.getGuid() + "|1|" + objectFm.getTemplate().getId() + "|" + objectFm.encodeStats();
             if (!this.isRepeat)
                 this.reConfigingRunes = -1;
             if (this.reConfigingRunes != 0 || this.broken)
@@ -1531,7 +1531,7 @@ public class JobAction {
                 }
             }
 
-            String stats = objectFm.parseStatsString();
+            String stats = objectFm.encodeStats();
             this.player.send("ErKO+" + objectFm.getGuid() + "|1|" + template + "|" + stats);
             receiver.send("ErKO+" + objectFm.getGuid() + "|1|" + template + "|" + stats);
             this.player.send("EcK;" + template + ";T" + receiver.getName() + ";" + stats);
@@ -1925,7 +1925,7 @@ public class JobAction {
 
     public static byte viewActualStatsItem(GameObject obj, String stats)//retourne vrai si le stats est actuellement sur l'item
     {
-        if (!obj.parseStatsString().isEmpty()) {
+        if (!obj.encodeStats().isEmpty()) {
             for (Entry<Integer, Integer> entry : obj.getStats().getEffects().entrySet()) {
                 if (Integer.toHexString(entry.getKey()).compareTo(stats) > 0)//Effets inutiles
                 {
@@ -2339,7 +2339,7 @@ public class JobAction {
 
             //region Initialisation des variables principales
             String[] originalSplitStats = gameObject.getTemplate().getStrTemplate().split(",");
-            String[] actualObjectSplitStats = gameObject.parseStatsString().split(","); // Liste toutes les stats originale de l'objet
+            String[] actualObjectSplitStats = gameObject.encodeStats().split(","); // Liste toutes les stats originale de l'objet
 
             String concernedOriginalJet = null, concernedActualJet = null; // Jet originale concerner
             float PWRGmin = 0, PWRGactual = 0, PWRGmax = 0;
@@ -2585,7 +2585,7 @@ public class JobAction {
 
                 SocketManager.GAME_SEND_Ow_PACKET(this.player);
 
-                this.player.send("EmKO+" + newObject.getGuid() + "|1|" + newObject.getTemplate().getId() + "|" + newObject.parseStatsString());
+                this.player.send("EmKO+" + newObject.getGuid() + "|1|" + newObject.getTemplate().getId() + "|" + newObject.encodeStats());
                 this.player.send("IO" + this.player.getId() + "|+" + newObject.getTemplate().getId()); // Icon tête joueur :  +/-
                 this.player.send("EcK;" + newObject.getTemplate().getId());//Vous avez crée...
 
@@ -2662,7 +2662,7 @@ public class JobAction {
                             PWGLoose = PWGLoose - (PWRGJet - (rune.getWeight() * value));
                             if(old < 0) PWGLoose += -old * rune.getWeight();
                         }
-                        actualObjectSplitStats = gameObject.parseStatsString().split(",");
+                        actualObjectSplitStats = gameObject.encodeStats().split(",");
                         stats = getStatsToLoose(runeTemplate, actualObjectSplitStats, originalSplitStats, blacklist);
                     }
 
@@ -2692,7 +2692,7 @@ public class JobAction {
 
                     PWGLoose = PWGLoose - (PWRGJet - (rune.getWeight() * value));
                     if(old < 0) PWGLoose += -old * rune.getWeight();
-                    actualObjectSplitStats = gameObject.parseStatsString().split(",");
+                    actualObjectSplitStats = gameObject.encodeStats().split(",");
                     stats = getStatsToLoose(runeTemplate, actualObjectSplitStats, originalSplitStats, null);
                 }
 
@@ -2736,7 +2736,7 @@ public class JobAction {
 
             SocketManager.GAME_SEND_Ow_PACKET(this.player);
 
-            this.player.send("EmKO+" + newObject.getGuid() + "|1|" + newObject.getTemplate().getId() + "|" + newObject.parseStatsString());
+            this.player.send("EmKO+" + newObject.getGuid() + "|1|" + newObject.getTemplate().getId() + "|" + newObject.encodeStats());
 
             this.player.send("IO" + this.player.getId() + "|-" + newObject.getTemplate().getId()); // Icon tête joueur :  +/-
 

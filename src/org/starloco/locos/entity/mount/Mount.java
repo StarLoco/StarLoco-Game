@@ -956,7 +956,7 @@ public class Mount {
 				P.removeItem(playerObj.getGuid());
 				//On met l'objet du sac dans le coffre, avec la meme quantite
 				this.objects.put(playerObj.getGuid() ,playerObj);
-				str = "O+"+playerObj.getGuid()+"|"+playerObj.getQuantity()+"|"+playerObj.getTemplate().getId()+"|"+playerObj.parseStatsString();
+				str = "O+"+playerObj.getGuid()+"|"+playerObj.getQuantity()+"|"+playerObj.getTemplate().getId()+"|"+playerObj.encodeStats();
 				SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(P, guid);
 			}else//S'il reste des objets au joueur
 			{
@@ -968,7 +968,7 @@ public class Mount {
 				this.objects.put(TrunkObj.getGuid() ,TrunkObj);
 				
 				//Envoie des packets
-				str = "O+"+TrunkObj.getGuid()+"|"+TrunkObj.getQuantity()+"|"+TrunkObj.getTemplate().getId()+"|"+TrunkObj.parseStatsString();
+				str = "O+"+TrunkObj.getGuid()+"|"+TrunkObj.getQuantity()+"|"+TrunkObj.getTemplate().getId()+"|"+TrunkObj.encodeStats();
 				SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(P, playerObj);
 			}
 		}else // S'il y avait un item du meme template
@@ -983,7 +983,7 @@ public class Mount {
 				//On ajoute la quantite a l'objet dans le coffre
 				TrunkObj.setQuantity(TrunkObj.getQuantity() + playerObj.getQuantity());
 				//On envoie l'ajout au coffre de l'objet
-			    str = "O+"+TrunkObj.getGuid()+"|"+TrunkObj.getQuantity()+"|"+TrunkObj.getTemplate().getId()+"|"+TrunkObj.parseStatsString();
+			    str = "O+"+TrunkObj.getGuid()+"|"+TrunkObj.getQuantity()+"|"+TrunkObj.getTemplate().getId()+"|"+TrunkObj.encodeStats();
 				//On envoie la supression de l'objet du sac au joueur
 				SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(P, guid);
 			}else //S'il restait des objets
@@ -991,7 +991,7 @@ public class Mount {
 				//On modifie la quantite d'item du sac
 				playerObj.setQuantity(newQua);
 				TrunkObj.setQuantity(TrunkObj.getQuantity() + qua);
-				str = "O+"+TrunkObj.getGuid()+"|"+TrunkObj.getQuantity()+"|"+TrunkObj.getTemplate().getId()+"|"+TrunkObj.parseStatsString();
+				str = "O+"+TrunkObj.getGuid()+"|"+TrunkObj.getQuantity()+"|"+TrunkObj.getTemplate().getId()+"|"+TrunkObj.encodeStats();
 				SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(P, playerObj);
 			}
 		}
@@ -1042,7 +1042,7 @@ public class Mount {
 				//On envoie les packets
 				SocketManager.GAME_SEND_OAKO_PACKET(P,playerObj);
 				SocketManager.GAME_SEND_Ew_PACKET(P, this.getActualPods(), this.getMaxPods());
-				str = "O+"+TrunkObj.getGuid()+"|"+TrunkObj.getQuantity()+"|"+TrunkObj.getTemplate().getId()+"|"+TrunkObj.parseStatsString();
+				str = "O+"+TrunkObj.getGuid()+"|"+TrunkObj.getQuantity()+"|"+TrunkObj.getTemplate().getId()+"|"+TrunkObj.encodeStats();
 			}
 		}else // Le joueur avait deja� un item similaire
 		{
@@ -1069,7 +1069,7 @@ public class Mount {
 				//On envoie les packets
 				SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(P,playerObj);
 				SocketManager.GAME_SEND_Ew_PACKET(P, this.getActualPods(), this.getMaxPods());
-				str = "O+"+TrunkObj.getGuid()+"|"+TrunkObj.getQuantity()+"|"+TrunkObj.getTemplate().getId()+"|"+TrunkObj.parseStatsString();
+				str = "O+"+TrunkObj.getGuid()+"|"+TrunkObj.getQuantity()+"|"+TrunkObj.getTemplate().getId()+"|"+TrunkObj.encodeStats();
 
 			}
 		}

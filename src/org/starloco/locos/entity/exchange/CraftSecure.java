@@ -191,7 +191,7 @@ public class CraftSecure extends PlayerExchange {
 
         ArrayList<Couple<Integer, Integer>> items = (type == 1 ? this.payItems : this.payItemsIfSuccess);
         Couple<Integer, Integer> couple = getCoupleInList(items, object.getGuid());
-        String add = "|" + object.getTemplate().getId() + "|" + object.parseStatsString();
+        String add = "|" + object.getTemplate().getId() + "|" + object.encodeStats();
 
         if (couple != null) {
             couple.second += quantity;
@@ -219,7 +219,7 @@ public class CraftSecure extends PlayerExchange {
         } else {
             couple.second = newQua;
             this.player2.send("Ep" + type + ";O+" + object.getGuid() + "|" + newQua);
-            this.player1.send("Ep" + type + ";O+" + object.getGuid() + "|" + newQua + "|" + object.getTemplate().getId() + "|" + object.parseStatsString());
+            this.player1.send("Ep" + type + ";O+" + object.getGuid() + "|" + newQua + "|" + object.getTemplate().getId() + "|" + object.encodeStats());
         }
     }
 

@@ -50,6 +50,7 @@ import org.starloco.locos.kernel.Main;
 import org.starloco.locos.kernel.Reboot;
 import org.starloco.locos.lang.LangEnum;
 import org.starloco.locos.object.GameObject;
+import org.starloco.locos.object.ItemHash;
 import org.starloco.locos.object.ObjectSet;
 import org.starloco.locos.object.ObjectTemplate;
 import org.starloco.locos.other.Action;
@@ -158,7 +159,7 @@ public class Player {
     //Sort
     private Map<Integer, Spell.SortStats> _sorts = new HashMap<>();
     private Map<Integer, Integer> _sortsPlaces = new HashMap<>(); // K: SpellID, V: Position
-    private Map<Integer, Integer> _itemShortcuts = new HashMap<>(); // K: Position, V: Item GUID // TODO: Use ItemHash(Template+Stats) as value instead
+    private Map<Integer, ItemHash> _itemShortcuts = new HashMap<>(); // K: Position, V: Item Hash
 
     //Titre
     private byte currentTitle = 0;
@@ -2043,7 +2044,7 @@ public class Player {
         object = getObjetByPos(Constant.ITEM_POS_COIFFE);
 
         if (object != null) {
-            object.parseStatsString();
+            object.encodeStats();
 
             Integer obvi = object.getStats().getEffects().get(970);
             if (obvi == null) {
@@ -2058,7 +2059,7 @@ public class Player {
         object = getObjetByPos(Constant.ITEM_POS_CAPE);
 
         if (object != null) {
-            object.parseStatsString();
+            object.encodeStats();
 
             Integer obvi = object.getStats().getEffects().get(970);
             if (obvi == null) {
@@ -3407,7 +3408,7 @@ public class Player {
                 String str = "O+" + PersoObj.getGuid() + "|"
                         + PersoObj.getQuantity() + "|"
                         + PersoObj.getTemplate().getId() + "|"
-                        + PersoObj.parseStatsString();
+                        + PersoObj.encodeStats();
                 SocketManager.GAME_SEND_EsK_PACKET(this, str);
                 SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(this, guid);
             } else
@@ -3421,7 +3422,7 @@ public class Player {
                 String str = "O+" + BankObj.getGuid() + "|"
                         + BankObj.getQuantity() + "|"
                         + BankObj.getTemplate().getId() + "|"
-                        + BankObj.parseStatsString();
+                        + BankObj.encodeStats();
                 SocketManager.GAME_SEND_EsK_PACKET(this, str); //Envoie des packets
                 SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(this, PersoObj);
             }
@@ -3437,7 +3438,7 @@ public class Player {
                 String str = "O+" + BankObj.getGuid() + "|"
                         + BankObj.getQuantity() + "|"
                         + BankObj.getTemplate().getId() + "|"
-                        + BankObj.parseStatsString(); //on envoie l'ajout a la banque de l'objet
+                        + BankObj.encodeStats(); //on envoie l'ajout a la banque de l'objet
                 SocketManager.GAME_SEND_EsK_PACKET(this, str);
                 SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(this, guid); //on envoie la supression de l'objet du sac au joueur
             } else
@@ -3448,7 +3449,7 @@ public class Player {
                 String str = "O+" + BankObj.getGuid() + "|"
                         + BankObj.getQuantity() + "|"
                         + BankObj.getTemplate().getId() + "|"
-                        + BankObj.parseStatsString();
+                        + BankObj.encodeStats();
                 SocketManager.GAME_SEND_EsK_PACKET(this, str);
                 SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(this, PersoObj);
             }
@@ -3513,7 +3514,7 @@ public class Player {
                 String str = "O+" + BankObj.getGuid() + "|"
                         + BankObj.getQuantity() + "|"
                         + BankObj.getTemplate().getId() + "|"
-                        + BankObj.parseStatsString();
+                        + BankObj.encodeStats();
                 SocketManager.GAME_SEND_EsK_PACKET(this, str);
             }
         } else {
@@ -3543,7 +3544,7 @@ public class Player {
                 String str = "O+" + BankObj.getGuid() + "|"
                         + BankObj.getQuantity() + "|"
                         + BankObj.getTemplate().getId() + "|"
-                        + BankObj.parseStatsString();
+                        + BankObj.encodeStats();
                 SocketManager.GAME_SEND_EsK_PACKET(this, str);
             }
         }
@@ -4839,7 +4840,7 @@ public class Player {
             if (O == null)
                 continue;
             //O.getPoidOfBaseItem(O.getPlayerId());
-            list.append(O.getGuid()).append(";").append(O.getQuantity()).append(";").append(O.getTemplate().getId()).append(";").append(O.parseStatsString()).append(";").append(obj.getValue()).append("|");
+            list.append(O.getGuid()).append(";").append(O.getQuantity()).append(";").append(O.getTemplate().getId()).append(";").append(O.encodeStats()).append(";").append(obj.getValue()).append("|");
         }
 
         return (list.length() > 0 ? list.toString().substring(0, list.length() - 1) : list.toString());
@@ -5965,10 +5966,25 @@ public class Player {
     }
 
     public boolean moveItemShortcutSend(int oldPos, int newPos) {
-        int guid = _itemShortcuts.getOrDefault(oldPos, -1);
-        if(guid == -1) return false;
+        ItemHash hash = _itemShortcuts.getOrDefault(oldPos, null);
+        if(hash == null) return false;
 
-        return addItemShortcutSend(newPos, guid);
+        return addItemHashShortcutSend(newPos, hash);
+    }
+
+    private boolean addItemHashShortcutSend(int position, ItemHash hash) {
+        // Free up previously used slot if needed
+        removeItemShortcutByHash(hash).ifPresent(p -> {
+            send("OrR"+p);
+        });
+
+        _itemShortcuts.put(position, hash);
+        send("OrA"+ String.join(";",
+                String.valueOf(position),
+                String.valueOf(hash.templateId),
+                hash.strStats
+        ));
+        return true;
     }
 
     public boolean addItemShortcutSend(int position, int itemID) {
@@ -5976,18 +5992,8 @@ public class Player {
         GameObject item = objects.get(itemID);
         if(item == null) return false;
 
-        // Free up previously used slot if needed
-        removeItemShortcutByID(itemID).ifPresent(p -> {
-            send("OrR"+p);
-        });
-
-        _itemShortcuts.put(position, itemID);
-        send("OrA"+ String.join(";",
-                String.valueOf(position),
-                String.valueOf(item.getTemplate().getId()),
-                item.parseStatsString()
-        ));
-        return true;
+        ItemHash hash = new ItemHash(item);
+        return addItemHashShortcutSend(position, hash);
     }
 
     public boolean removeItemShortcutSend(int position) {
@@ -5999,8 +6005,8 @@ public class Player {
         return false;
     }
 
-    public Optional<Integer> removeItemShortcutByID(int itemGUID) {
-        Optional<Integer> position = _itemShortcuts.entrySet().stream().filter(e -> e.getValue() == itemGUID)
+    public Optional<Integer> removeItemShortcutByHash(ItemHash hash) {
+        Optional<Integer> position = _itemShortcuts.entrySet().stream().filter(e -> hash.equals(e.getValue()))
                             .map(Map.Entry::getKey).findFirst();
         position.ifPresent(_itemShortcuts::remove);
         return position;
@@ -6008,12 +6014,12 @@ public class Player {
 
     public void sendItemShortcuts() {
         _itemShortcuts.entrySet().stream()
-            .map(e -> new Pair<Integer,GameObject>(e.getKey(), objects.get(e.getValue())))
+            .map(e -> new Pair<>(e.getKey(), e.getValue()))
             .filter(e -> e.getSecond() != null)
             .map(e ->  "OrA"+ String.join(";",
-                        String.valueOf(e.first),
-                        String.valueOf(e.second.getTemplate().getId()),
-                        e.second.parseStatsString())
+                String.valueOf(e.first),
+                String.valueOf(e.second.templateId),
+                e.second.strStats)
             ).forEach(this::send);
     }
 }

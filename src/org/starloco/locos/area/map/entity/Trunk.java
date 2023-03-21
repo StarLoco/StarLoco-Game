@@ -248,7 +248,7 @@ public class Trunk {
                 this.object.put(PersoObj.getGuid(), PersoObj);
                 str = "O+" + PersoObj.getGuid() + "|" + PersoObj.getQuantity()
                         + "|" + PersoObj.getTemplate().getId() + "|"
-                        + PersoObj.parseStatsString();
+                        + PersoObj.encodeStats();
                 SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(P, guid);
             } else
             //S'il reste des objets au joueur
@@ -262,7 +262,7 @@ public class Trunk {
                 //Envoie des packets
                 str = "O+" + TrunkObj.getGuid() + "|" + TrunkObj.getQuantity()
                         + "|" + TrunkObj.getTemplate().getId() + "|"
-                        + TrunkObj.parseStatsString();
+                        + TrunkObj.encodeStats();
                 SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(P, PersoObj);
             }
         } else
@@ -280,7 +280,7 @@ public class Trunk {
                 //on envoie l'ajout au coffre de l'objet
                 str = "O+" + TrunkObj.getGuid() + "|" + TrunkObj.getQuantity()
                         + "|" + TrunkObj.getTemplate().getId() + "|"
-                        + TrunkObj.parseStatsString();
+                        + TrunkObj.encodeStats();
                 //on envoie la supression de l'objet du sac au joueur
                 SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(P, guid);
             } else
@@ -291,7 +291,7 @@ public class Trunk {
                 TrunkObj.setQuantity(TrunkObj.getQuantity() + qua);
                 str = "O+" + TrunkObj.getGuid() + "|" + TrunkObj.getQuantity()
                         + "|" + TrunkObj.getTemplate().getId() + "|"
-                        + TrunkObj.parseStatsString();
+                        + TrunkObj.encodeStats();
                 SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(P, PersoObj);
             }
         }
@@ -351,7 +351,7 @@ public class Trunk {
                 SocketManager.GAME_SEND_OAKO_PACKET(P, PersoObj);
                 str = "O+" + TrunkObj.getGuid() + "|" + TrunkObj.getQuantity()
                         + "|" + TrunkObj.getTemplate().getId() + "|"
-                        + TrunkObj.parseStatsString();
+                        + TrunkObj.encodeStats();
             }
         } else {
             //S'il ne reste rien dans le coffre
@@ -378,7 +378,7 @@ public class Trunk {
                 SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(P, PersoObj);
                 str = "O+" + TrunkObj.getGuid() + "|" + TrunkObj.getQuantity()
                         + "|" + TrunkObj.getTemplate().getId() + "|"
-                        + TrunkObj.parseStatsString();
+                        + TrunkObj.encodeStats();
             }
         }
 

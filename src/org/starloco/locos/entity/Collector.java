@@ -520,7 +520,7 @@ public class Collector {
                 String str = "O+" + CollectorObj.getGuid() + "|"
                         + CollectorObj.getQuantity() + "|"
                         + CollectorObj.getTemplate().getId() + "|"
-                        + CollectorObj.parseStatsString();
+                        + CollectorObj.encodeStats();
                 SocketManager.GAME_SEND_EsK_PACKET(P, str);
             }
         } else {
@@ -550,7 +550,7 @@ public class Collector {
                 String str = "O+" + CollectorObj.getGuid() + "|"
                         + CollectorObj.getQuantity() + "|"
                         + CollectorObj.getTemplate().getId() + "|"
-                        + CollectorObj.parseStatsString();
+                        + CollectorObj.encodeStats();
                 SocketManager.GAME_SEND_EsK_PACKET(P, str);
             }
         }

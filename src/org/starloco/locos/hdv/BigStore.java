@@ -177,7 +177,7 @@ public class BigStore {
                 }
             }
 
-            Pair<Integer, String> key = new Pair<>(obj.getTemplate().getId(), obj.parseStatsString());
+            Pair<Integer, String> key = new Pair<>(obj.getTemplate().getId(), obj.encodeStats());
             int lineId = statHashToLineID.computeIfAbsent(key, (ignored) -> {
                 int id = nextLineID.getAndIncrement();
                 lineIDToItemDesc.put(id, key);

@@ -1,7 +1,6 @@
 package org.starloco.locos.common;
 
 import org.starloco.locos.area.map.CellCache;
-import org.starloco.locos.area.map.CellCacheImpl;
 import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.client.Player;
@@ -757,7 +756,7 @@ public class Formulas {
 
     public static Couple<Integer, Integer> decompPierreAme(GameObject toDecomp) {
         Couple<Integer, Integer> toReturn;
-        String[] stats = toDecomp.parseStatsString().split("#");
+        String[] stats = toDecomp.encodeStats().split("#");
         int lvlMax = Integer.parseInt(stats[3], 16);
         int chance = Integer.parseInt(stats[1], 16);
         toReturn = new Couple<Integer, Integer>(chance, lvlMax);

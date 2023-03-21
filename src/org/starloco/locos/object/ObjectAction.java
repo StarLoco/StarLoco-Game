@@ -134,10 +134,10 @@ public class ObjectAction {
                             int val, statId1;
                             if (arg.contains(";")) {
                                 statId1 = Integer.parseInt(arg.split(";")[0]);
-                                val = World.world.getGameObject(objet).getRandomValue(World.world.getGameObject(objet).parseStatsString(), Integer.parseInt(arg.split(";")[0]));
+                                val = World.world.getGameObject(objet).getRandomValue(World.world.getGameObject(objet).encodeStats(), Integer.parseInt(arg.split(";")[0]));
                             } else {
                                 statId1 = Integer.parseInt(arg0);
-                                val = World.world.getGameObject(objet).getRandomValue(World.world.getGameObject(objet).parseStatsString(), Integer.parseInt(arg0));
+                                val = World.world.getGameObject(objet).getRandomValue(World.world.getGameObject(objet).encodeStats(), Integer.parseInt(arg0));
                             }
                             switch (statId1) {
                                 case 110://Vie.
@@ -533,7 +533,7 @@ public class ObjectAction {
                         object0 = World.world.getGameObject(objet);
                         id0 = object0.getTemplate().getId();
 
-                        int resist = object0.getResistance(object0.parseStatsString());
+                        int resist = object0.getResistance(object0.encodeStats());
                         int resistMax = object0.getResistanceMax(object0.getTemplate().getStrTemplate());
                         if (map0.getMountPark() == null)
                             return;

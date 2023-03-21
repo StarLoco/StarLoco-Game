@@ -63,7 +63,7 @@ public class SoulStone extends GameObject {
     }
 
     @Override
-    public String parseStatsString() {
+    public String encodeStats() {
         return this.monsters.stream().map(s -> "26f####"+Integer.toString(s.first, 16)).collect(Collectors.joining(","));
     }
 

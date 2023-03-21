@@ -76,7 +76,7 @@ public class BigStoreListing {
         StringBuilder toReturn = new StringBuilder();
         int count = getAmountExp();
         int duration = World.world.getHdv(hdvId).getDuration();
-        toReturn.append(this.getId()).append(";").append(count).append(";").append(this.getGameObject().getTemplate().getId()).append(";").append(this.getGameObject().parseStatsString()).append(";").append(this.price).append(";").append(duration);
+        toReturn.append(this.getId()).append(";").append(count).append(";").append(this.getGameObject().getTemplate().getId()).append(";").append(this.getGameObject().encodeStats()).append(";").append(this.price).append(";").append(duration);
         return toReturn.toString();
     }
 
@@ -84,7 +84,7 @@ public class BigStoreListing {
         StringBuilder toReturn = new StringBuilder();
         int count = getAmountExp();
         int duration = World.world.getHdv(hdvId).getDuration();
-        toReturn.append(this.getGameObject().getGuid()).append("|").append(count).append("|").append(this.getGameObject().getTemplate().getId()).append("|").append(this.getGameObject().parseStatsString()).append("|").append(this.price).append("|").append(duration);
+        toReturn.append(this.getGameObject().getGuid()).append("|").append(count).append("|").append(this.getGameObject().getTemplate().getId()).append("|").append(this.getGameObject().encodeStats()).append("|").append(this.price).append("|").append(duration);
         return toReturn.toString();
     }
 }
