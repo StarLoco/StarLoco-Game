@@ -1061,7 +1061,7 @@ public class Player {
 
                 learnSpell(id, lvl);
 
-                if(parts[2].equalsIgnoreCase("")) continue;
+                if(parts.length < 3 || parts[2].equalsIgnoreCase("")) continue;
                 int position = World.world.getCryptManager().getIntByHashedValue(parts[2].charAt(0)); // may return -1
                 if(position == 63) continue; // It was "_" which means no shortcut
                 if(position > 30) {
