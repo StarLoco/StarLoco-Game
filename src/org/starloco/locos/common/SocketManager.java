@@ -861,7 +861,7 @@ public class SocketManager {
     }
 
     public static void GAME_SEND_SPELL_LIST(Player perso) {
-        String packet = perso.encodeSpellList();
+        String packet = "SL" + perso.encodeSpellListForSL();
         send(perso, packet);
     }
 

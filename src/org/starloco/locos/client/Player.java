@@ -1019,91 +1019,69 @@ public class Player {
     public String encodeSpellsToDB() {
         StringBuilder sorts = new StringBuilder();
 
+        Map<Integer, Spell.SortStats> spells = _sorts;
+        Map<Integer, Integer> positions = _sortsPlaces;
+
         if (_morphMode) {
-            if (_saveSorts.isEmpty())
-                return "";
-            for (int key : _saveSorts.keySet()) {
-                //3;1;a,4;3;b
-                Spell.SortStats SS = _saveSorts.get(key);
-                if (SS == null)
-                    continue;
-                sorts.append(SS.getSpellID()).append(";").append(SS.getLevel()).append(";");
-                if (_saveSortsPlaces.get(key) != null)
-                    sorts.append(_saveSortsPlaces.get(key));
-                else
-                    sorts.append("_");
-                sorts.append(",");
-            }
-        } else {
-            if (_sorts.isEmpty())
-                return "";
-            for (int key : _sorts.keySet()) {
-                //3;1;a,4;3;b
-                Spell.SortStats SS = _sorts.get(key);
-                if (SS == null)
-                    continue;
-                sorts.append(SS.getSpellID()).append(";").append(SS.getLevel()).append(";");
-                if (_sortsPlaces.get(key) != null)
-                    sorts.append(_sortsPlaces.get(key));
-                else
-                    sorts.append("_");
-                sorts.append(",");
-            }
+            spells = _saveSorts;
+            positions = _saveSortsPlaces;
+        }
+
+        if (spells.isEmpty())
+            return "";
+        for (int key : spells.keySet()) {
+            Spell.SortStats SS = spells.get(key);
+            if (SS == null)
+                continue;
+            sorts.append(SS.getSpellID()).append(";").append(SS.getLevel()).append(";");
+            int position = positions.getOrDefault(key, 126);
+            if (position < 30 && position > 1)
+                sorts.append(position);
+            sorts.append(",");
         }
         return sorts.substring(0, sorts.length() - 1);
     }
 
     public void parseSpells(String str, boolean send) {
-        if (!str.equalsIgnoreCase("")) {
-            if (_morphMode) {
-                String[] spells = str.split(",");
-                _saveSorts.clear();
-                _saveSortsPlaces.clear();
-                for (String e : spells) {
-                    try {
-                        String[] parts = e.split(";");
-                        int id = Integer.parseInt(parts[0]);
-                        int lvl = Integer.parseInt(parts[1]);
-                        int place = World.world.getCryptManager().getIntByHashedValue(parts[2].charAt(0)); // May return -1
-                        if(parts[2].length() > 1 || place > 30) {
-                            place =  Integer.parseInt(parts[2]);
-                        }
-
-                        learnSpell(id, lvl);
-                        this._saveSortsPlaces.put(id, place);
-                    } catch (NumberFormatException e1) {
-                        e1.printStackTrace();
-                    }
-                }
-            } else {
-                String[] spells = str.split(",");
-                _sorts.clear();
-                _sortsPlaces.clear();
-                for (String e : spells) {
-                    try {
-                        String[] parts = e.split(";");
-                        int id = Integer.parseInt(parts[0]);
-                        int lvl = Integer.parseInt(parts[1]);
-                        int position = World.world.getCryptManager().getIntByHashedValue(parts[2].charAt(0)); // May return -1
-                        if(parts[2].length() > 1 || position > 30) {
-                            position =  Integer.parseInt(parts[2]);
-                        }
-
-                        if (!_morphMode)
-                            learnSpell(id, lvl, false, false, false);
-                        else
-                            learnSpell(id, lvl, false, send, false);
-                        _sortsPlaces.put(id, position);
-                    } catch (NumberFormatException e1) {
-                        e1.printStackTrace();
-                    }
-                }
-            }
-        } else {
+        if(str.equalsIgnoreCase("")) {
             _sorts = Constant.getStartSorts(classe);
             for (int a = 1; a <= this.getLevel(); a++)
                 Constant.onLevelUpSpells(this, a);
             this._sortsPlaces = Constant.getStartSortsPlaces(this.classe);
+            return;
+        }
+
+        Map<Integer, Integer> positions = new HashMap<>();
+        String[] spells = str.split(",");
+        for (String e : spells) {
+            try {
+                String[] parts = e.split(";");
+                int id = Integer.parseInt(parts[0]);
+                int lvl = Integer.parseInt(parts[1]);
+
+                learnSpell(id, lvl);
+
+                if(parts[2].equalsIgnoreCase("")) continue;
+                int position = World.world.getCryptManager().getIntByHashedValue(parts[2].charAt(0)); // may return -1
+                if(position == 63) continue; // It was "_" which means no shortcut
+                if(position > 30) {
+                    // Too high to be a valid base64 position
+                    position =  Integer.parseInt(parts[2]);
+                }
+                positions.put(id, position);
+            } catch (NumberFormatException e1) {
+                e1.printStackTrace();
+            }
+        }
+
+        if (_morphMode) {
+            _saveSorts.clear();
+            _saveSortsPlaces.clear();
+            _saveSortsPlaces = positions;
+        } else {
+            _sorts.clear();
+            _sortsPlaces.clear();
+            _sortsPlaces = positions;
         }
     }
 
@@ -1116,12 +1094,19 @@ public class Player {
                 String[] parts = e.split(";");
                 int id = Integer.parseInt(parts[0]);
                 int lvl = Integer.parseInt(parts[1]);
-                int place = Integer.parseInt(parts[2]);
+                int position = World.world.getCryptManager().getIntByHashedValue(parts[2].charAt(0)); // May return -1
+                if(position == 63) continue; // base64 '_' -> decimal 63: Placeholder for "No shortcut"
+
+                // Are we using the new 1.39 way: (Only decimals)
+                if(parts[2].length() > 1 || position > 30) {
+                    position =  Integer.parseInt(parts[2]);
+                }
+
                 if (!_morphMode)
                     learnSpell(id, lvl, false, false, false);
                 else
                     learnSpell(id, lvl, false, true, false);
-                _sortsPlaces.put(id, place);
+                _sortsPlaces.put(id, position);
             } catch (NumberFormatException e1) {
                 e1.printStackTrace();
             }
@@ -1662,21 +1647,22 @@ public class Player {
         ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this);
     }
 
-    public String encodeSpellList() {
-        return "SL" + _sorts.values().stream().map(s -> {
-            String pos = Optional.ofNullable(_sortsPlaces.get(s.getSpellID())).map(String::valueOf).orElse("_");
+    public String encodeSpellListForSL() {
+        return _sorts.values().stream().map(s -> {
+            // Official servers send position 126 for spells without shortcuts
+            int pos = Optional.ofNullable(_sortsPlaces.get(s.getSpellID())).orElse(126);
             return String.join("~",
                 String.valueOf(s.getSpellID()),
                 String.valueOf(s.getLevel()),
-                pos
+                Integer.toHexString(pos)
             );
         }).collect(Collectors.joining(";"));
     }
 
-    public void setSpellShortcuts(int SpellID, int Place) {
-        removeSpellShortcutAtPosition(Place);
-        _sortsPlaces.remove(SpellID);
-        _sortsPlaces.put(SpellID, Place);
+    public void setSpellShortcuts(int spellId, int position) {
+        removeSpellShortcutAtPosition(position);
+        _sortsPlaces.remove(spellId);
+        if(position <= 30) _sortsPlaces.put(spellId, position);
         ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this);
     }
 

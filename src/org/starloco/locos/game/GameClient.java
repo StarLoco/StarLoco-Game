@@ -6878,17 +6878,13 @@ public class GameClient {
             String[] parts = packet.substring(2).split("\\|");
 
             int SpellID = Integer.parseInt(parts[0]);
-            int position = World.world.getCryptManager().getIntByHashedValue(parts[1].charAt(0)); // Will return -1
-            // We only allow 30 slots, so if base64 result is > 30, assume it's a decimal digit
-            if(parts[1].length() > 1 || position > 30) {
-                position =  Integer.parseInt(parts[1]);
-            }
+            int position = Integer.parseInt(parts[1]); // Will return -1
 
             Spell.SortStats spellStats = this.player.getSortStatBySortIfHas(SpellID);
             if (spellStats != null) {
                 this.player.setSpellShortcuts(SpellID, position);
+                SocketManager.GAME_SEND_BN(this);
             }
-            SocketManager.GAME_SEND_BN(this);
         } catch (Exception e) {
             e.printStackTrace();
         }
