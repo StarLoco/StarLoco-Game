@@ -158,6 +158,8 @@ public class Player {
     //Sort
     private Map<Integer, Spell.SortStats> _sorts = new HashMap<>();
     private Map<Integer, Integer> _sortsPlaces = new HashMap<>(); // K: SpellID, V: Position
+    private Map<Integer, Integer> _itemShortcuts = new HashMap<>(); // K: Position, V: Item GUID // TODO: Use ItemHash(Template+Stats) as value instead
+
     //Titre
     private byte currentTitle = 0;
     //Mariage
@@ -1785,6 +1787,7 @@ public class Player {
         if (_guildMember != null)
             SocketManager.GAME_SEND_gS_PACKET(this, _guildMember);
         SocketManager.GAME_SEND_ZONE_ALLIGN_STATUT(client);
+        sendItemShortcuts();
         SocketManager.GAME_SEND_EMOTE_LIST(this, getCompiledEmote(this.emotes));
         SocketManager.GAME_SEND_RESTRICTIONS(client);
         SocketManager.GAME_SEND_Ow_PACKET(this);
@@ -5959,5 +5962,58 @@ public class Player {
         if(cur == Currency.POINTS) return account.modPoints(-qua);
         if(cur.isItem()) return removeItemByTemplateId(cur.item().getId(), (int)qua, false);
         throw new RuntimeException("unknown currency type");
+    }
+
+    public boolean moveItemShortcutSend(int oldPos, int newPos) {
+        int guid = _itemShortcuts.getOrDefault(oldPos, -1);
+        if(guid == -1) return false;
+
+        return addItemShortcutSend(newPos, guid);
+    }
+
+    public boolean addItemShortcutSend(int position, int itemID) {
+        // Ensure user owns items
+        GameObject item = objects.get(itemID);
+        if(item == null) return false;
+
+        // Free up previously used slot if needed
+        removeItemShortcutByID(itemID).ifPresent(p -> {
+            send("OrR"+p);
+        });
+
+        _itemShortcuts.put(position, itemID);
+        send("OrA"+ String.join(";",
+                String.valueOf(position),
+                String.valueOf(item.getTemplate().getId()),
+                item.parseStatsString()
+        ));
+        return true;
+    }
+
+    public boolean removeItemShortcutSend(int position) {
+        if(_itemShortcuts.remove(position) != null) {
+            // GOOD
+            send("OrR"+position);
+            return true;
+        }
+        return false;
+    }
+
+    public Optional<Integer> removeItemShortcutByID(int itemGUID) {
+        Optional<Integer> position = _itemShortcuts.entrySet().stream().filter(e -> e.getValue() == itemGUID)
+                            .map(Map.Entry::getKey).findFirst();
+        position.ifPresent(_itemShortcuts::remove);
+        return position;
+    }
+
+    public void sendItemShortcuts() {
+        _itemShortcuts.entrySet().stream()
+            .map(e -> new Pair<Integer,GameObject>(e.getKey(), objects.get(e.getValue())))
+            .filter(e -> e.getSecond() != null)
+            .map(e ->  "OrA"+ String.join(";",
+                        String.valueOf(e.first),
+                        String.valueOf(e.second.getTemplate().getId()),
+                        e.second.parseStatsString())
+            ).forEach(this::send);
     }
 }

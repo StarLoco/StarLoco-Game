@@ -5653,6 +5653,8 @@ public class GameClient {
             case 's':
                 setSkinObvi(packet);
                 break;
+            case 'r':
+                setItemShortcut(packet.substring(2));
         }
     }
 
@@ -6189,6 +6191,28 @@ public class GameClient {
             e.printStackTrace();
             SocketManager.GAME_SEND_DELETE_OBJECT_FAILED_PACKET(this);
         }
+    }
+
+
+    private void setItemShortcut(String packet) {
+        // Official client seems to store Position -> Template+Stats rather than Position->guid
+        // Maybe it's time for ItemHash (String) representing a TemplateID+Stats pair as a Comparable
+        char action = packet.charAt(0);
+        packet = packet.substring(1);
+        String[] parts = packet.split(";");
+        int position = Integer.parseInt(parts[0]);
+        switch(action) {
+            case 'A':
+                int itemGUID = Integer.parseInt(parts[1]);
+                if(player.addItemShortcutSend(position, itemGUID)) return;
+            case 'M':
+                int otherPos = Integer.parseInt(parts[1]);
+                if(player.moveItemShortcutSend(position, otherPos)) return;
+            case 'R':
+                if(player.removeItemShortcutSend(position)) return;
+        }
+        send("BN"); // Error
+        return;
     }
 
     private void useObject(String packet) {
