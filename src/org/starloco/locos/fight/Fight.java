@@ -3386,7 +3386,7 @@ public class Fight {
             this.verifIfTeamAllDead();
         };
 
-        if(target.getId() != caster.getId()) {
+        if(target.getId() != caster.getId() || (target.hasLeft() && caster.hasLeft())) {
             runnable.run();
         } else {
             TimerWaiter.addNext(runnable, 3000);
