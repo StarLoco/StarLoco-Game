@@ -1029,8 +1029,7 @@ public class Player {
                 int id = Integer.parseInt(parts[0]);
                 int lvl = Integer.parseInt(parts[1]);
 
-                //FIXME: Not sure of the replacement
-                learnSpell(id, lvl, false, false, false);
+                learnSpell(id, lvl);
 
                 if(parts.length < 3 || parts[2].equalsIgnoreCase("")) continue;
                 int position = World.world.getCryptManager().getIntByHashedValue(parts[2].charAt(0)); // may return -1
@@ -1041,7 +1040,7 @@ public class Player {
                 }
                 positions.put(id, position);
             } catch (NumberFormatException e1) {
-                e1.printStackTrace();
+                Main.logger.error("Cannot load player's spell", e1);
             }
         }
 
@@ -1328,6 +1327,20 @@ public class Player {
             }
             if (save)
                 ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this);
+            return true;
+        }
+    }
+
+    public boolean learnSpell(int spellID, int level) {
+        if (World.world.getSort(spellID).getStatsByLevel(level) == null) {
+            GameServer.a();
+            return false;
+        }
+
+        if (_sorts.containsKey(spellID)) {
+            return false;
+        } else {
+            _sorts.put(spellID, World.world.getSort(spellID).getStatsByLevel(level));
             return true;
         }
     }
