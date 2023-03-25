@@ -2871,7 +2871,7 @@ public class CommandAdmin extends AdminUser {
                     + type + " dans votre inventaire." + count);
             return;
         } else if (command.equalsIgnoreCase("FULLMORPH")) {
-            this.getPlayer().setFullMorph(Integer.parseInt(infos[1]), false, false);
+            this.getPlayer().transform(Integer.parseInt(infos[1]), false, false);
             this.sendMessage("Vous avez ete transforme en crocoburio.");
             return;
         } else if (command.equalsIgnoreCase("UNFULLMORPH")) {

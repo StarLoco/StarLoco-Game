@@ -13,6 +13,7 @@ import org.starloco.locos.area.map.labyrinth.Minotoror;
 import org.starloco.locos.area.map.labyrinth.PigDragon;
 import org.starloco.locos.client.Account;
 import org.starloco.locos.client.Player;
+import org.starloco.locos.client.other.MorphMode;
 import org.starloco.locos.client.other.Stats;
 import org.starloco.locos.common.ConditionParser;
 import org.starloco.locos.common.CryptManager;
@@ -89,7 +90,7 @@ public class World {
     private final Map<Integer, Collection<Integer>> Seller = new HashMap<>();
     private final StringBuilder Challenges = new StringBuilder();
     private final Map<Integer, Prism> Prismes = new HashMap<>();
-    private final Map<Integer, Map<String, String>> fullmorphs = new HashMap<>();
+    private final Map<Integer, MorphMode> morphModes = new HashMap<>();
     private final Map<Integer, Pet> Pets = new HashMap<>();
     private final Map<Integer, PetEntry> PetsEntry = new HashMap<>();
     private final Map<String, Map<String, String>> mobsGroupsFix = new HashMap<>();
@@ -909,34 +910,12 @@ public class World {
         return Crafts.get(i);
     }
 
-    public void addFullMorph(int morphID, String name, int gfxID,
-                                    String spells, String[] args) {
-        if (fullmorphs.get(morphID) != null)
-            return;
-
-        fullmorphs.put(morphID, new HashMap<>());
-
-        fullmorphs.get(morphID).put("name", name);
-        fullmorphs.get(morphID).put("gfxid", gfxID + "");
-        fullmorphs.get(morphID).put("spells", spells);
-        if (args != null) {
-            fullmorphs.get(morphID).put("vie", args[0]);
-            fullmorphs.get(morphID).put("pa", args[1]);
-            fullmorphs.get(morphID).put("pm", args[2]);
-            fullmorphs.get(morphID).put("vitalite", args[3]);
-            fullmorphs.get(morphID).put("sagesse", args[4]);
-            fullmorphs.get(morphID).put("terre", args[5]);
-            fullmorphs.get(morphID).put("feu", args[6]);
-            fullmorphs.get(morphID).put("eau", args[7]);
-            fullmorphs.get(morphID).put("air", args[8]);
-            fullmorphs.get(morphID).put("initiative", args[9]);
-            fullmorphs.get(morphID).put("stats", args[10]);
-            fullmorphs.get(morphID).put("donjon", args[11]);
-        }
+    public Map<Integer, MorphMode> getMorphModes() {
+        return morphModes;
     }
 
-    public Map<String, String> getFullMorph(int morphID) {
-        return fullmorphs.get(morphID);
+    public MorphMode getMorphMode(int id) {
+        return morphModes.get(id);
     }
 
     public int getObjectByIngredientForJob(ArrayList<Integer> list,

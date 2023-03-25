@@ -127,7 +127,7 @@ public class ConditionParser {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        if (p.getMorphId() == morph)
+        if (p.getMorphMode() != null && p.getMorphMode().getId() == morph)
             return c.contains("==");
         else
             return !c.contains("==");

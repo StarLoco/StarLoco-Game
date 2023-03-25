@@ -8,6 +8,7 @@ import org.starloco.locos.area.map.entity.InteractiveObject;
 import org.starloco.locos.area.map.entity.MountPark;
 import org.starloco.locos.area.map.labyrinth.Minotoror;
 import org.starloco.locos.area.map.labyrinth.PigDragon;
+import org.starloco.locos.client.other.MorphMode;
 import org.starloco.locos.client.other.Party;
 import org.starloco.locos.client.other.Stalk;
 import org.starloco.locos.client.other.Stats;
@@ -86,7 +87,6 @@ public class Player {
     //Prison Alignement :
     public boolean isInEnnemyFaction;
     public long enteredOnEnnemyFaction;
-    public boolean donjon;
     //Commande h�h�
     public int thatMap = -1;
     public int thatCell = -1;
@@ -109,7 +109,7 @@ public class Player {
     private int maxPdv;
     private Stats statsParcho = new Stats(true);
     private long kamas;
-    private int _spellPts;
+    private int spellPoints;
     private int _capital;
     private int _size;
     private int gfxId;
@@ -141,7 +141,6 @@ public class Player {
     private final Map<Integer, GameObject> objects = new HashMap<>();
     private Pair<Integer,Integer> _savePos;
     private int _emoteActive = 0;
-    private int savestat;
     private House _curHouse;
     //Invitation
     private int _inviting = 0;
@@ -194,21 +193,8 @@ public class Player {
     private Stalk _traqued;
     private boolean doAction;
     //FullMorph Stats
-    private boolean _morphMode = false;
-    private int _morphId;
-    private Map<Integer, Spell.SortStats> _saveSorts = new HashMap<>();
-    private Map<Integer, Integer> _saveSortsPlaces = new HashMap<>();
-    private int _saveSpellPts;
-    private int pa = 0,
-            pm = 0,
-            vitalite = 0,
-            sagesse = 0,
-            terre = 0,
-            feu = 0,
-            eau = 0,
-            air = 0, initiative = 0;
-    private boolean useStats = false;
-    private boolean useCac = true;
+    private MorphMode morphMode;
+
     // Other ?
     private int oldMap = 0;
     private int oldCell = 0;
@@ -227,9 +213,6 @@ public class Player {
     private boolean changeName;
     public boolean afterFight = false;
 
-    private String Savecolors;
-    private String Savestats;
-    
     public ArrayList<Integer> getIsCraftingType() {
         return craftingType;
     }
@@ -304,17 +287,9 @@ public class Player {
                 for (String i : emotes.split(";"))
                     this.addStaticEmote(Integer.parseInt(i));
             if (!morphMode.equals("")) {
-                if (morphMode.equals("0"))
-                    morphMode = "0;0";
-                String[] i = morphMode.split(";");
-                _morphMode = i[0].equals("1");
-                if (!i[1].equals(""))
-                    _morphId = Integer.parseInt(i[1]);
+                this.morphMode = World.world.getMorphMode(Integer.parseInt(morphMode));
             }
-            if (_morphMode)
-                this._saveSpellPts = pts;
-            else
-                this._spellPts = pts;
+            this.spellPoints = pts;
             if (prison != 0) {
                 this.isInEnnemyFaction = true;
                 this.enteredOnEnnemyFaction = prison;
@@ -706,10 +681,7 @@ public class Player {
     }
 
     public Stats getStats() {
-        if (useStats)
-            return newStatsMorph();
-        else
-            return this.stats;
+        return morphMode != null && morphMode.getStats() != null ? morphMode.getStats() : stats;
     }
 
     public Stats getStatsParcho() {
@@ -1025,11 +997,6 @@ public class Player {
         Map<Integer, Spell.SortStats> spells = _sorts;
         Map<Integer, Integer> positions = _sortsPlaces;
 
-        if (_morphMode) {
-            spells = _saveSorts;
-            positions = _saveSortsPlaces;
-        }
-
         if (spells.isEmpty())
             return "";
         for (int key : spells.keySet()) {
@@ -1062,7 +1029,8 @@ public class Player {
                 int id = Integer.parseInt(parts[0]);
                 int lvl = Integer.parseInt(parts[1]);
 
-                learnSpell(id, lvl);
+                //FIXME: Not sure of the replacement
+                learnSpell(id, lvl, false, false, false);
 
                 if(parts.length < 3 || parts[2].equalsIgnoreCase("")) continue;
                 int position = World.world.getCryptManager().getIntByHashedValue(parts[2].charAt(0)); // may return -1
@@ -1077,43 +1045,9 @@ public class Player {
             }
         }
 
-        if (_morphMode) {
-            _saveSorts.clear();
-            _saveSortsPlaces.clear();
-            _saveSortsPlaces = positions;
-        } else {
-            _sorts.clear();
-            _sortsPlaces.clear();
-            _sortsPlaces = positions;
-        }
-    }
-
-    private void parseSpellsFullMorph(String str) {
-        String[] spells = str.split(",");
         _sorts.clear();
         _sortsPlaces.clear();
-        for (String e : spells) {
-            try {
-                String[] parts = e.split(";");
-                int id = Integer.parseInt(parts[0]);
-                int lvl = Integer.parseInt(parts[1]);
-                int position = World.world.getCryptManager().getIntByHashedValue(parts[2].charAt(0)); // May return -1
-                if(position == 63) continue; // base64 '_' -> decimal 63: Placeholder for "No shortcut"
-
-                // Are we using the new 1.39 way: (Only decimals)
-                if(parts[2].length() > 1 || position > 30) {
-                    position =  Integer.parseInt(parts[2]);
-                }
-
-                if (!_morphMode)
-                    learnSpell(id, lvl, false, false, false);
-                else
-                    learnSpell(id, lvl, false, true, false);
-                _sortsPlaces.put(id, position);
-            } catch (NumberFormatException e1) {
-                e1.printStackTrace();
-            }
-        }
+        _sortsPlaces = positions;
     }
 
     public Pair<Integer, Integer> getSavePosition() {
@@ -1144,18 +1078,12 @@ public class Player {
         account = c;
     }
 
-    public int get_spellPts() {
-        if (_morphMode)
-            return _saveSpellPts;
-        else
-            return _spellPts;
+    public int getSpellPoints(boolean save) {
+        return morphMode != null ? 0 : spellPoints;
     }
 
-    public void setSpellPoints(int pts) {
-        if (_morphMode)
-            _saveSpellPts = pts;
-        else
-            _spellPts = pts;
+    public void setSpellPoints(int spellPoints) {
+        this.spellPoints = spellPoints;
     }
 
     public Guild getGuild() {
@@ -1331,11 +1259,11 @@ public class Player {
             // modPoints(Old,New) =  Price(Old) - Price(New)
             ptsDelta = (previousLevel*(previousLevel-1) - (newLevel * (newLevel-1)))/2;
 
-            if(_spellPts < ptsDelta) {
+            if(spellPoints < ptsDelta) {
                 // Not enough points
                 return new EnsureSpellLevelResult(false, 0, previousLevel, false);
             }
-            _spellPts += ptsDelta;
+            spellPoints += ptsDelta;
         }
 
         // Set spell
@@ -1404,20 +1332,6 @@ public class Player {
         }
     }
 
-    public boolean learnSpell(int spellID, int level) {
-        if (World.world.getSort(spellID).getStatsByLevel(level) == null) {
-            GameServer.a();
-            return false;
-        }
-
-        if (_saveSorts.containsKey(spellID)) {
-            return false;
-        } else {
-            _saveSorts.put(spellID, World.world.getSort(spellID).getStatsByLevel(level));
-            return true;
-        }
-    }
-
     public boolean unlearnSpell(int spell) {
         if (World.world.getSort(spell) == null) {
             GameServer.a();
@@ -1470,9 +1384,9 @@ public class Player {
         int AncLevel = getSortStatBySortIfHas(spellID).getLevel();
         if (AncLevel == 6)
             return false;
-        if (_spellPts >= AncLevel && World.world.getSort(spellID).getStatsByLevel(AncLevel + 1).getReqLevel() <= this.getLevel()) {
+        if (spellPoints >= AncLevel && World.world.getSort(spellID).getStatsByLevel(AncLevel + 1).getReqLevel() <= this.getLevel()) {
             if (learnSpell(spellID, AncLevel + 1, true, false, false)) {
-                _spellPts -= AncLevel;
+                spellPoints -= AncLevel;
                 ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this);
                 return true;
             } else {
@@ -1481,7 +1395,7 @@ public class Player {
         } else
         //Pas le niveau ou pas les Points
         {
-            if (_spellPts < AncLevel)
+            if (spellPoints < AncLevel)
                 if (World.world.getSort(spellID).getStatsByLevel(AncLevel + 1).getReqLevel() > this.getLevel())
                     return false;
         }
@@ -1506,7 +1420,7 @@ public class Player {
             return false;
 
         if (learnSpell(spellID, 1, true, false, false)) {
-            _spellPts += Formulas.spellCost(AncLevel);
+            spellPoints += Formulas.spellCost(AncLevel);
             ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this);
             return true;
         } else {
@@ -1514,107 +1428,56 @@ public class Player {
         }
     }
 
-    public void demorph() {
-        if (this.getMorphMode()) {
-            int morphID = this.getClasse() * 10 + this.getSexe();
-            this.setGfxId(morphID);
-            SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(this.getCurMap(), this.getId());
-            SocketManager.GAME_SEND_ADD_PLAYER_TO_MAP(this.getCurMap(), this);
+    public MorphMode getMorphMode() {
+        return morphMode;
+    }
+
+    public void transform(int id, boolean isLoad, boolean join) {
+        MorphMode mode = World.world.getMorphMode(id);
+        if(mode != null) {
+            this.transform(mode, isLoad, join);
         }
     }
 
-    public boolean getMorphMode() {
-        return _morphMode;
-    }
-
-    public int getMorphId() {
-        return _morphId;
-    }
-
-    public void setMorphId(int id) {
-        this._morphId = id;
-    }
-
-    public void setFullMorph(int morphid, boolean isLoad, boolean join) {
+    public void transform(MorphMode morphMode, boolean isLoad, boolean join) {
+        if(morphMode == null) return;
         if (this.isOnMount()) this.toogleOnMount();
-        if (_morphMode && !join)
-            unsetFullMorph();
+        if (this.morphMode != null && !join) unsetFullMorph();
         if (this.isGhost) {
             SocketManager.send(this, "Im1185");
             return;
         }
 
-        Map<String, String> fullMorph = World.world.getFullMorph(morphid);
+        this.morphMode = morphMode;
+        this.gfxId = morphMode.getGfxId();
+        this.maxPdv = morphMode.getHp();
+        this.parseSpells(morphMode.getSpells(), false);
 
-        if (fullMorph == null) return;
-
-        if (!join) {
-            if (!_morphMode) {
-                _saveSpellPts = _spellPts;
-                _saveSorts.putAll(_sorts);
-                _saveSortsPlaces.putAll(_sortsPlaces);
-            }
-            if (isLoad) {
-                _saveSpellPts = _spellPts;
-                _saveSorts.putAll(_sorts);
-                _saveSortsPlaces.putAll(_sortsPlaces);
+        if (this.getObjetByPos(Constant.ITEM_POS_ARME) != null) {
+            if (Constant.isIncarnationWeapon(this.getObjetByPos(Constant.ITEM_POS_ARME).getTemplate().getId())) {
+                for (int i = 0; i <= this.getObjetByPos(Constant.ITEM_POS_ARME).getSoulStat().get(Constant.STATS_NIVEAU); i++) {
+                    if (i == 10 || i == 20 || i == 30 || i == 40 || i == 50) {
+                        boostSpellIncarnation();
+                    }
+                }
             }
         }
-
-        _morphMode = true;
-        _sorts.clear();
-        _sortsPlaces.clear();
-        _spellPts = 0;
-
-
-        setGfxId(Integer.parseInt(fullMorph.get("gfxid")));
-        if (this.fight == null) SocketManager.GAME_SEND_ALTER_GM_PACKET(this.getCurMap(), this);
-        parseSpellsFullMorph(fullMorph.get("spells"));
-        setMorphId(morphid);
-
-        if (this.getObjetByPos(Constant.ITEM_POS_ARME) != null)
-            if (Constant.isIncarnationWeapon(this.getObjetByPos(Constant.ITEM_POS_ARME).getTemplate().getId()))
-                for (int i = 0; i <= this.getObjetByPos(Constant.ITEM_POS_ARME).getSoulStat().get(Constant.STATS_NIVEAU); i++)
-                    if (i == 10 || i == 20 || i == 30 || i == 40 || i == 50)
-                        boostSpellIncarnation();
         if (this.fight == null) {
+            SocketManager.GAME_SEND_ALTER_GM_PACKET(this.getCurMap(), this);
             SocketManager.GAME_SEND_ASK(this.getGameClient(), this);
             SocketManager.GAME_SEND_SPELL_LIST(this);
         }
 
-
-        if (fullMorph.get("vie") != null) {
-            try {
-                this.maxPdv = Integer.parseInt(fullMorph.get("vie"));
-                this.setPdv(this.getMaxPdv());
-                this.pa = Integer.parseInt(fullMorph.get("pa"));
-                this.pm = Integer.parseInt(fullMorph.get("pm"));
-                this.vitalite = Integer.parseInt(fullMorph.get("vitalite"));
-                this.sagesse = Integer.parseInt(fullMorph.get("sagesse"));
-                this.terre = Integer.parseInt(fullMorph.get("terre"));
-                this.feu = Integer.parseInt(fullMorph.get("feu"));
-                this.eau = Integer.parseInt(fullMorph.get("eau"));
-                this.air = Integer.parseInt(fullMorph.get("air"));
-                this.initiative = Integer.parseInt(fullMorph.get("initiative")) + this.sagesse + this.terre + this.feu + this.eau + this.air;
-                this.useStats = fullMorph.get("stats").equals("1");
-                this.donjon = fullMorph.get("donjon").equals("1");
-                this.useCac = false;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        if (this.fight == null) {
+            SocketManager.GAME_SEND_STATS_PACKET(this);
         }
-
-        if (this.fight == null) SocketManager.GAME_SEND_STATS_PACKET(this);
-        if (!join)
+        if (!join) {
             ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this);
+        }
     }
 
     public boolean isMorph() {
         return (this.gfxId != 8004 && this.gfxId != (this.getClasse() * 10 + this.getSexe()));
-    }
-
-    public boolean canCac() {
-        return this.useCac;
     }
 
     public void unsetMorph() {
@@ -1624,24 +1487,20 @@ public class Player {
     }
 
     public void unsetFullMorph() {
-        if (!_morphMode)
+        if (morphMode == null)
             return;
 
         int morphID = this.getClasse() * 10 + this.getSexe();
         setGfxId(morphID);
 
-        useStats = false;
-        donjon = false;
-        _morphMode = false;
-        this.useCac = true;
+        morphMode = null;
+        //useStats = false;
+        //donjon = false;
+        //this.useCac = true;
         _sorts.clear();
         _sortsPlaces.clear();
-        _spellPts = _saveSpellPts;
-        _sorts.putAll(_saveSorts);
-        _sortsPlaces.putAll(_saveSortsPlaces);
         parseSpells(encodeSpellsToDB(), true);
 
-        setMorphId(0);
         if (this.getFight() == null) {
             SocketManager.GAME_SEND_SPELL_LIST(this);
             SocketManager.GAME_SEND_STATS_PACKET(this);
@@ -1853,8 +1712,8 @@ public class Player {
             }
         }
 
-        if (_morphMode)
-            setFullMorph(_morphId, true, true);
+        if (morphMode != null)
+            transform(morphMode.getId(), true, true);
 
         if (Config.autoReboot)
             this.send(Reboot.toStr());
@@ -1915,7 +1774,7 @@ public class Player {
         SocketManager.GAME_SEND_GAME_CREATE(client, this.getName());
         SocketManager.GAME_SEND_STATS_PACKET(this);
         ((PlayerData) DatabaseManager.get(PlayerData.class)).updateLogged(this.id, 1);
-        this.verifEquiped();
+        this.checkWeaponAndShieldConditions();
 
         if (this.needEndFight() == -1) {
             SocketManager.GAME_SEND_MAPDATA(client, this.curMap.getId(), this.curMap.getDate(), this.curMap.getKey());
@@ -2092,7 +1951,7 @@ public class Player {
         StringBuilder ASData = new StringBuilder();
         ASData.append("As").append(xpString(",")).append("|");
         ASData.append(kamas);
-        ASData.append("|").append(_capital).append("|").append(_spellPts).append("|");
+        ASData.append("|").append(_capital).append("|").append(spellPoints).append("|");
         ASData.append(alignment).append("~").append(alignment).append(",").append(_aLvl).append(",").append(getGrade()).append(",").append(_honor).append(",").append(_deshonor).append(",").append((_showWings ? "1" : "0")).append("|");
         int pdv = this.curPdv;
         int pdvMax = this.maxPdv;
@@ -2166,7 +2025,7 @@ public class Player {
     }
 
     public String xpString(String c) {
-        if (!_morphMode) {
+        if (morphMode == null) {
             return this.getExp() + c + World.world.getPersoXpMin(this.getLevel()) + c + World.world.getPersoXpMax(this.getLevel());
         } else {
             if (this.getObjetByPos(Constant.ITEM_POS_ARME) != null)
@@ -2190,7 +2049,7 @@ public class Player {
     }
 
     public Stats getStuffStats() {
-        if (this.useStats) return new Stats();
+        if (morphMode != null && morphMode.getStats() != null) return new Stats();
 
         Stats stats = new Stats(false, null);
         ArrayList<Integer> itemSetApplied = new ArrayList<>();
@@ -2241,65 +2100,37 @@ public class Player {
     }
 
     public int getInitiative() {
-        if (!useStats) {
-            int fact = 4;
-            int maxPdv = this.maxPdv - 55;
-            int curPdv = this.curPdv - 55;
-            if (this.getClasse() == Constant.CLASS_SACRIEUR)
-                fact = 8;
-            double coef = maxPdv / fact;
+        int fact = this.getClasse() == Constant.CLASS_SACRIEUR ? 8 :4, maxPdv = this.maxPdv - 55, curPdv = this.curPdv - 55;
+        double coef = (double) maxPdv / fact;
 
-            coef += getStuffStats().getEffect(Constant.STATS_ADD_INIT);
-            coef += getTotalStats(false).getEffect(Constant.STATS_ADD_AGIL);
-            coef += getTotalStats(false).getEffect(Constant.STATS_ADD_CHAN);
-            coef += getTotalStats(false).getEffect(Constant.STATS_ADD_INTE);
-            coef += getTotalStats(false).getEffect(Constant.STATS_ADD_FORC);
+        Stats total = getTotalStats(false);
+        coef += getStuffStats().getEffect(Constant.STATS_ADD_INIT);
+        coef += total.getEffect(Constant.STATS_ADD_AGIL);
+        coef += total.getEffect(Constant.STATS_ADD_CHAN);
+        coef += total.getEffect(Constant.STATS_ADD_INTE);
+        coef += total.getEffect(Constant.STATS_ADD_FORC);
 
-            int init = 1;
-            if (maxPdv != 0)
-                init = (int) (coef * ((double) curPdv / (double) maxPdv));
-            if (init < 0)
-                init = 0;
-            return init;
-        } else {
-            return this.initiative;
-        }
+        int init = maxPdv != 0 ? (int) (coef * ((double) curPdv / (double) maxPdv)) : 1;
+        return Math.max(init, 0);
+
     }
 
     public Stats getTotalStats(boolean lessBuff) {
         Stats total = new Stats(false, null);
-        if (!useStats) {
-            total = Stats.cumulStat(total, this.getStats());
+        total = Stats.cumulStat(total, this.getStats());
+
+        if (morphMode == null || morphMode.getStats() == null) {
             total = Stats.cumulStat(total, this.getStuffStats());
             total = Stats.cumulStat(total, this.getDonsStats());
-            if (fight != null && !lessBuff)
-                total = Stats.cumulStat(total, this.getBuffsStats());
-        } else {
-            return newStatsMorph();
+        }
+        if (fight != null && !lessBuff) {
+            total = Stats.cumulStat(total, this.getBuffsStats());
         }
         return total;
     }
 
     public Stats getDonsStats() {
-        Stats stats = new Stats(false, null);
-        return stats;
-    }
-
-    public Stats newStatsMorph() {
-        Stats stats = new Stats();
-        stats.addOneStat(Constant.STATS_ADD_PA, this.pa);
-        stats.addOneStat(Constant.STATS_ADD_PM, this.pm);
-        stats.addOneStat(Constant.STATS_ADD_VITA, this.vitalite);
-        stats.addOneStat(Constant.STATS_ADD_SAGE, this.sagesse);
-        stats.addOneStat(Constant.STATS_ADD_FORC, this.terre);
-        stats.addOneStat(Constant.STATS_ADD_INTE, this.feu);
-        stats.addOneStat(Constant.STATS_ADD_CHAN, this.eau);
-        stats.addOneStat(Constant.STATS_ADD_AGIL, this.air);
-        stats.addOneStat(Constant.STATS_ADD_INIT, this.initiative);
-        stats.addOneStat(Constant.STATS_ADD_PROS, 100);
-        stats.addOneStat(Constant.STATS_CREATURE, 1);
-        this.useCac = false;
-        return stats;
+        return new Stats(false, null);
     }
 
     public int getPodUsed() {
@@ -2714,7 +2545,7 @@ public class Player {
 
     public void refreshStats() {
         double actPdvPer = (100 * (double) this.curPdv) / (double) this.maxPdv;
-        if (!useStats)
+        if (morphMode == null || morphMode.getStats() == null)
             this.maxPdv = (this.getLevel() - 1) * 5 + 50 + getTotalStats(false).getEffect(Constant.STATS_ADD_VITA);
         this.curPdv = (int) Math.round(maxPdv * actPdvPer / 100);
     }
@@ -2724,7 +2555,7 @@ public class Player {
             return false;
         this.level++;
         _capital += 5;
-        _spellPts++;
+        spellPoints++;
         this.maxPdv += 5;
         this.setPdv(this.getMaxPdv());
         if (this.getLevel() == 100)
@@ -2928,27 +2759,20 @@ public class Player {
             SocketManager.GAME_SEND_OS_PACKET(this, oTpl.getPanoId());
     }
 
-    public void verifEquiped() {
-        if (this.getMorphMode())
+    public void checkWeaponAndShieldConditions() {
+        if (morphMode != null)
             return;
-        GameObject arme = this.getObjetByPos(Constant.ITEM_POS_ARME);
-        GameObject bouclier = this.getObjetByPos(Constant.ITEM_POS_BOUCLIER);
-        if (arme != null) {
-            if (arme.getTemplate().isTwoHanded() && bouclier != null) {
-                this.unequipedObjet(arme);
-                SocketManager.GAME_SEND_Im_PACKET(this, "119|44");
-            } else if (!arme.getTemplate().getConditions().equalsIgnoreCase("")
-                    && !World.world.getConditionManager().validConditions(this, arme.getTemplate().getConditions())) {
-                this.unequipedObjet(arme);
-                SocketManager.GAME_SEND_Im_PACKET(this, "119|44");
-            }
+
+        final GameObject weapon = this.getObjetByPos(Constant.ITEM_POS_ARME), shield = this.getObjetByPos(Constant.ITEM_POS_BOUCLIER);
+
+        if (weapon != null && ((weapon.getTemplate().isTwoHanded() && shield != null) || (!weapon.getTemplate().getConditions().isEmpty() && !World.world.getConditionManager().validConditions(this, weapon.getTemplate().getConditions())))) {
+            this.unequipedObjet(weapon);
+            SocketManager.GAME_SEND_Im_PACKET(this, "119|44");
         }
-        if (bouclier != null) {
-            /*if (!bouclier.getTemplate().getConditions().equalsIgnoreCase("")
-                    && !World.world.getConditionManager().validConditions(this, bouclier.getTemplate().getConditions())) {
-                this.unequipedObjet(bouclier);
-                SocketManager.GAME_SEND_Im_PACKET(this, "119|44");
-            }*/
+
+        if (shield != null && !shield.getTemplate().getConditions().isEmpty() && !World.world.getConditionManager().validConditions(this, shield.getTemplate().getConditions())) {
+            this.unequipedObjet(shield);
+            SocketManager.GAME_SEND_Im_PACKET(this, "119|44");
         }
     }
 
@@ -3377,11 +3201,8 @@ public class Player {
         _capital += pts;
     }
 
-    public void addSpellPoint(int pts) {
-        if (_morphMode)
-            _saveSpellPts += pts;
-        else
-            _spellPts += pts;
+    public void addSpellPoint(int spellPoints) {
+        this.spellPoints += spellPoints;
     }
 
     public void addInBank(int guid, int qua, boolean outside) {
@@ -4685,7 +4506,7 @@ public class Player {
             this.curMap = World.world.getMap((short) 7411);
             this.curCell = World.world.getMap((short) 7411).getCase(311);
         } else {
-            if(this._morphMode) this.unsetFullMorph();
+            if(morphMode != null) this.unsetFullMorph();
             if (this.getParty() != null) this.getParty().leave(this);
             this.resetVars();
             this.getStats().addOneStat(125, -this.getStats().getEffect(125));
@@ -5021,14 +4842,6 @@ public class Player {
 
     public void setSpeed(int _Speed) {
         this._Speed = _Speed;
-    }
-
-    public int get_savestat() {
-        return this.savestat;
-    }
-
-    public void set_savestat(int stat) {
-        this.savestat = stat;
     }
 
     public boolean getMetierPublic() {
@@ -5844,7 +5657,7 @@ public class Player {
 	public void setFullMorphbouf(int team) {
 		
 		if (this.isOnMount()) this.toogleOnMount();
-		if (_morphMode)
+		if (morphMode != null)
 			unsetFullMorph();
 		if (this.isGhost)
 		{
@@ -5852,16 +5665,16 @@ public class Player {
 			return;
 		}
 	
-		_saveSpellPts = _spellPts;
+		/*_saveSpellPts = spellPoints;
 		_saveSorts.putAll(_sorts);
-		_saveSortsPlaces.putAll(_sortsPlaces);
+		_saveSortsPlaces.putAll(_sortsPlaces);*/
 		
-
-		_morphMode = true;
+        //FIXME: Add morphMode in database
+		//morphMode = true;
 		_sorts.clear();
 		_sortsPlaces.clear();
-		_spellPts = 0;
-		this.Savecolors = this.color1 + "," + this.color2 + "," + this.color3;
+		spellPoints = 0;
+		//this.Savecolors = this.color1 + "," + this.color2 + "," + this.color3;
 		
 		
 		if(team == 0)//rouge
@@ -5877,14 +5690,14 @@ public class Player {
 		}
 		if (this.fight == null)
 			SocketManager.GAME_SEND_ALTER_GM_PACKET(this.getCurMap(), this);
-		parseSpellsFullMorph("143;5;b,689;5;c,151;5;d,50;5;e,449;1;f");
+		//parseSpellsFullMorph("143;5;b,689;5;c,151;5;d,50;5;e,449;1;f");
 		if (this.fight == null) {
 			//SocketManager.GAME_SEND_ALTER_GM_PACKET(this.getCurMap(), this);
 			//SocketManager.GAME_SEND_ASK(this.getGameClient(), this);
 			SocketManager.GAME_SEND_SPELL_LIST(this);
 		}
 		
-		this.Savestats = this.maxPdv + "," + this.pa + ","
+		/*this.Savestats = this.maxPdv + "," + this.pa + ","
 		+ this.pm + ","  + this.vitalite + "," + this.sagesse + ","
 		+ this.terre + "," + this.feu + "," + this.eau + "," + this.air
 		+ "," + this.initiative;
@@ -5899,33 +5712,34 @@ public class Player {
 			this.eau = 0;
 			this.air = 0;
 			this.initiative = Formulas.getRandomValue(1, 100);
-			this.useStats = true;
-			this.donjon = false;
-			this.useCac = false;
+			this.useStats = true;*/
+			//this.donjon = false;
+			//this.useCac = false;
 			if (this.fight == null)
 				SocketManager.GAME_SEND_STATS_PACKET(this);
 	}
 
 	public void unsetFullMorphbouf() {
-		if (!_morphMode)
+		if (morphMode == null)
 			return;
 
 		int morphID = this.getClasse() * 10 + this.getSexe();
 		setGfxId(morphID);
 
-		useStats = false;
-		donjon = false;
-		_morphMode = false;
-		this.useCac = true;
+		//useStats = false;
+		//donjon = false;
+        //FIXME: Add morphMode in database
+		//morphMode = false;
+		//this.useCac = true;
 		_sorts.clear();
 		_sortsPlaces.clear();
-		_spellPts = _saveSpellPts;
+		/*spellPoints = _saveSpellPts;
 		_sorts.putAll(_saveSorts);
-		_sortsPlaces.putAll(_saveSortsPlaces);
-		String[] stats = this.Savestats.split(",");
+		_sortsPlaces.putAll(_saveSortsPlaces);*/
+		//String[] stats = this.Savestats.split(",");
 		
-		this.maxPdv = Integer.parseInt(stats[0]);
-		this.pa = Integer.parseInt(stats[1]);
+		//this.maxPdv = Integer.parseInt(stats[0]);
+		/*this.pa = Integer.parseInt(stats[1]);
 		this.pm = Integer.parseInt(stats[2]);
 		this.vitalite = Integer.parseInt(stats[3]);
 		this.sagesse = Integer.parseInt(stats[4]);
@@ -5933,13 +5747,13 @@ public class Player {
 		this.feu = Integer.parseInt(stats[6]);
 		this.eau = Integer.parseInt(stats[7]);
 		this.air = Integer.parseInt(stats[8]);
-		this.initiative = Integer.parseInt(stats[9]);
+		this.initiative = Integer.parseInt(stats[9]);*/
 		
-		String[] color = this.Savecolors.split(",");
+		/*String[] color = this.Savecolors.split(",");
 		
 		this.color1 = Integer.parseInt(color[0]);
 		this.color2 = Integer.parseInt(color[1]);
-		this.color3 = Integer.parseInt(color[2]);
+		this.color3 = Integer.parseInt(color[2]);*/
 		
 		parseSpells(encodeSpellsToDB(), true);
 		SocketManager.GAME_SEND_SPELL_LIST(this);

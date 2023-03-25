@@ -2842,7 +2842,7 @@ public class Action {
                     }
                 }
                 player.teleport((short) mapId, cellId);
-                player.setFullMorph(id, false, false);
+                player.transform(id, false, false);
                 break;
 
             case 518://D�morph + TP : Donjon abra, familier
@@ -3282,11 +3282,11 @@ public class Action {
                 if (player.getCurMap().getId() == (short) 8715) // Abra
                 {
                     player.teleport((short) 8716, 366);
-                    player.setFullMorph(11, false, false);
+                    player.transform(11, false, false);
                 } else if (player.getCurMap().getId() == (short) 9120) // CM
                 {
                     player.teleport((short) 9121, 69);
-                    player.setFullMorph(11, false, false);
+                    player.transform(11, false, false);
                 }
                 break;
 

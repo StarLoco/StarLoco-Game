@@ -479,7 +479,7 @@ public class GameClient {
 
     private void boost(String packet) {
         try {
-            if (this.player.getMorphMode()) {
+            if (this.player.getMorphMode() != null) {
                 this.player.sendMessage(this.player.getLang().trans("game.gameclient.boost.incarne"));
                 return;
             }
@@ -4004,15 +4004,14 @@ public class GameClient {
                 return;
             }
             if (this.player.getMount() != null && !this.player.isGhost()) {
-                if (!this.player.getMorphMode() && (this.player.getPodUsed() > this.player.getMaxPod() || this.player.getMount().getActualPods() > this.player.getMount().getMaxPods())) {
+                if (this.player.getMorphMode() == null && (this.player.getPodUsed() > this.player.getMaxPod() || this.player.getMount().getActualPods() > this.player.getMount().getMaxPods())) {
                     SocketManager.GAME_SEND_Im_PACKET(this.player, "112");
                     SocketManager.GAME_SEND_GA_PACKET(this, "", "0", "", "");
                     removeAction(GA);
                     return;
                 }
             }
-            if (this.player.getPodUsed() > this.player.getMaxPod() && !this.player.isGhost()
-                    && !this.player.getMorphMode()) {
+            if (this.player.getPodUsed() > this.player.getMaxPod() && !this.player.isGhost() && this.player.getMorphMode() == null) {
                 SocketManager.GAME_SEND_Im_PACKET(this.player, "112");
                 SocketManager.GAME_SEND_GA_PACKET(this, "", "0", "", "");
                 removeAction(GA);
@@ -5585,22 +5584,7 @@ public class GameClient {
         switch (packet.charAt(2)) {
             case '0'://Envoi du code || Boost
                 packet = packet.substring(4);
-                if (this.player.get_savestat() > 0) {
-                    try {
-                        int code = 0;
-                        code = Integer.parseInt(packet);
-                        if (code < 0)
-                            return;
-                        if (this.player.getCapital() < code)
-                            code = this.player.getCapital();
-                        this.player.boostStatFixedCount(this.player.get_savestat(), code);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    } finally {
-                        this.player.set_savestat(0);
-                        SocketManager.GAME_SEND_KODE(this.player, "V");
-                    }
-                } else if (this.player.getExchangeAction() != null && this.player.getExchangeAction().getType() == ExchangeAction.IN_TRUNK) {
+                if (this.player.getExchangeAction() != null && this.player.getExchangeAction().getType() == ExchangeAction.IN_TRUNK) {
                     Trunk.open(this.player, packet, false);
                 } else {
                     if (this.player.getInHouse() != null) {
@@ -6069,31 +6053,31 @@ public class GameClient {
                     //Incarnation
                     {
                         case 9544: // Tourmenteur t?nebres
-                            this.player.setFullMorph(1, false, false);
+                            this.player.transform(1, false, false);
                             break;
                         case 9545: // Tourmenteur feu
-                            this.player.setFullMorph(5, false, false);
+                            this.player.transform(5, false, false);
                             break;
                         case 9546: // Tourmenteur feuille
-                            this.player.setFullMorph(4, false, false);
+                            this.player.transform(4, false, false);
                             break;
                         case 9547: // Tourmenteur gthiste
-                            this.player.setFullMorph(3, false, false);
+                            this.player.transform(3, false, false);
                             break;
                         case 9548: // Tourmenteur terre
-                            this.player.setFullMorph(2, false, false);
+                            this.player.transform(2, false, false);
                             break;
                         case 10125: // Bandit Archer
-                            this.player.setFullMorph(7, false, false);
+                            this.player.transform(7, false, false);
                             break;
                         case 10126: // Bandit Fine Lame
-                            this.player.setFullMorph(6, false, false);
+                            this.player.transform(6, false, false);
                             break;
                         case 10127: // Bandit Baroudeur
-                            this.player.setFullMorph(8, false, false);
+                            this.player.transform(8, false, false);
                             break;
                         case 10133: // Bandit Ensorcelleur
-                            this.player.setFullMorph(9, false, false);
+                            this.player.transform(9, false, false);
                             break;
                     }
                 } else {// Tourmenteur ; on d?morphe
@@ -6185,7 +6169,7 @@ public class GameClient {
                 SocketManager.GAME_SEND_STATS_PACKET(this.player);
             }
 
-            this.player.verifEquiped();
+            this.player.checkWeaponAndShieldConditions();
             ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this.player);
         } catch (Exception e) {
             e.printStackTrace();

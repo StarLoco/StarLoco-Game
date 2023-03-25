@@ -239,7 +239,7 @@ public class ObjectAction {
                                     }
                                     break;
                                 case 7://Point de Sort.
-                                    player.setSpellPoints(player.get_spellPts()
+                                    player.setSpellPoints(player.getSpellPoints(false)
                                             + val);
                                     break;
                             }

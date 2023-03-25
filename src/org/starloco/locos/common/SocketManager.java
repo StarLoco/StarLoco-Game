@@ -151,7 +151,7 @@ public class SocketManager {
                 }
             }
             packet.append("ASK|").append(perso.getId()).append("|").append(perso.getName()).append("|");
-            packet.append(perso.getLevel()).append("|").append(perso.getMorphMode() ? -1 : perso.getClasse()).append("|").append(perso.getSexe());
+            packet.append(perso.getLevel()).append("|").append(perso.getMorphMode() != null ? -1 : perso.getClasse()).append("|").append(perso.getSexe());
             packet.append("|").append(perso.getGfxId()).append("|").append((color1 == -1 ? "-1" : Integer.toHexString(color1)));
             packet.append("|").append((color2 == -1 ? "-1" : Integer.toHexString(color2))).append("|");
             packet.append((color3 == -1 ? "-1" : Integer.toHexString(color3))).append("|");

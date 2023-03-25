@@ -111,7 +111,7 @@ public class PlayerData extends FunctionDAO<Player> {
             statement.setInt(5, entity.getColor2());
             statement.setInt(6, entity.getColor3());
             statement.setLong(7, entity.getKamas());
-            statement.setInt(8, entity.get_spellPts());
+            statement.setInt(8, entity.getSpellPoints(false));
             statement.setInt(9, entity.getCapital());
             statement.setInt(10, entity.getEnergy());
             statement.setInt(11, entity.getLevel());
@@ -176,7 +176,7 @@ public class PlayerData extends FunctionDAO<Player> {
         try {
             p = getPreparedStatement("UPDATE " + getTableName() + " SET `kamas`= ?, `spellboost`= ?, `capital`= ?, `energy`= ?, `level`= ?, `xp`= ?, `size` = ?, `gfx`= ?, `alignement`= ?, `honor`= ?, `deshonor`= ?, `alvl`= ?, `vitalite`= ?, `force`= ?, `sagesse`= ?, `intelligence`= ?, `chance`= ?, `agilite`= ?, `seeFriend`= ?, `seeAlign`= ?, `seeSeller`= ?, `canaux`= ?, `map`= ?, `cell`= ?, `pdvper`= ?, `spells`= ?, `objets`= ?, `storeObjets`= ?, `savepos`= ?, `zaaps`= ?, `jobs`= ?, `mountxpgive`= ?, `mount`= ?, `title`= ?, `wife`= ?, `morphMode`= ?, `allTitle` = ?, `emotes` = ?, `prison` = ?, `parcho` = ?, `timeDeblo` = ?, `noall` = ?, `deadInformation` = ?, `deathCount` = ?, `totalKills` = ? WHERE `id` = ? LIMIT 1");
             p.setLong(1, entity.getKamas());
-            p.setInt(2, entity.get_spellPts());
+            p.setInt(2, entity.getSpellPoints(false));
             p.setInt(3, entity.getCapital());
             p.setInt(4, entity.getEnergy());
             p.setInt(5, entity.getLevel());
@@ -212,7 +212,7 @@ public class PlayerData extends FunctionDAO<Player> {
             p.setInt(33, (entity.getMount() != null ? entity.getMount().getId() : -1));
             p.setByte(34, (entity.getCurrentTitle()));
             p.setInt(35, entity.getWife());
-            p.setString(36, (entity.getMorphMode() ? 1 : 0) + ";" + entity.getMorphId());
+            p.setInt(36, entity.getMorphMode() != null ? entity.getMorphMode().getId() : -1);
             p.setString(37, entity.getAllTitle());
             p.setString(38, entity.parseEmoteToDB());
             p.setLong(39, (entity.isInEnnemyFaction ? entity.enteredOnEnnemyFaction : 0));
