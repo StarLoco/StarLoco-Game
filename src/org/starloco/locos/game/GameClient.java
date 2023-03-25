@@ -6898,19 +6898,15 @@ public class GameClient {
     }
 
     private void moveSpell(String packet) {
-        try {
-            String[] parts = packet.substring(2).split("\\|");
+        String[] parts = packet.substring(2).split("\\|");
 
-            int SpellID = Integer.parseInt(parts[0]);
-            int position = Integer.parseInt(parts[1]); // Will return -1
+        int SpellID = Integer.parseInt(parts[0]);
+        int position = Integer.parseInt(parts[1]); // May return -1
 
-            Spell.SortStats spellStats = this.player.getSortStatBySortIfHas(SpellID);
-            if (spellStats != null) {
-                this.player.setSpellShortcuts(SpellID, position);
-                SocketManager.GAME_SEND_BN(this);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        Spell.SortStats spellStats = this.player.getSortStatBySortIfHas(SpellID);
+        if (spellStats != null) {
+            this.player.setSpellShortcuts(SpellID, position);
+            SocketManager.GAME_SEND_BN(this);
         }
     }
 

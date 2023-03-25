@@ -1073,7 +1073,7 @@ public class Player {
                 }
                 positions.put(id, position);
             } catch (NumberFormatException e1) {
-                e1.printStackTrace();
+                Main.logger.error("Cannot load player's spell", e1);
             }
         }
 
@@ -1410,10 +1410,10 @@ public class Player {
             return false;
         }
 
-        if (_saveSorts.containsKey(spellID)) {
+        if (_sorts.containsKey(spellID)) {
             return false;
         } else {
-            _saveSorts.put(spellID, World.world.getSort(spellID).getStatsByLevel(level));
+            _sorts.put(spellID, World.world.getSort(spellID).getStatsByLevel(level));
             return true;
         }
     }
