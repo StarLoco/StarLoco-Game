@@ -1,55 +1,51 @@
 package org.starloco.locos.script;
 
 import org.classdump.luna.Table;
-import org.classdump.luna.Userdata;
 import org.classdump.luna.exec.CallException;
 import org.classdump.luna.exec.CallPausedException;
-import org.classdump.luna.exec.DirectCallExecutor;
 import org.classdump.luna.impl.NonsuspendableFunctionException;
 import org.classdump.luna.load.LoaderException;
 import org.classdump.luna.runtime.*;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.area.map.ScriptMapData;
 import org.starloco.locos.entity.npc.NpcTemplate;
 import org.starloco.locos.game.world.World;
 
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
-public final class NpcScriptVM extends ScriptVM {
-    private static NpcScriptVM instance;
+public final class DataScriptVM extends ScriptVM {
+    private static DataScriptVM instance;
 
-    private NpcScriptVM() throws LoaderException, IOException, CallException, CallPausedException, InterruptedException {
-        super("NPC");
+    private DataScriptVM() throws LoaderException, IOException, CallException, CallPausedException, InterruptedException {
+        super("Data");
     }
 
     public void loadData() throws CallException, LoaderException, IOException, CallPausedException, InterruptedException {
         super.loadData();
         this.customizeEnv();
-        this.runFile(Paths.get("scripts", "Npc.lua"));
-        this.runDirectory(Paths.get("scripts", "npcs"));
+        this.runFile(Paths.get("scripts", "Data.lua"));
     }
 
     public void safeLoadData() {
         try {
             this.loadData();
         } catch (Exception e) {
-            ScriptVM.logger.error("Failed to load NPC data", e);
+            ScriptVM.logger.error("Failed to load static data", e);
         }
     }
 
     private void customizeEnv() {
         this.env.rawset("RegisterNPCDef", new RegisterNpcTemplate());
+        this.env.rawset("RegisterMapDef", new RegisterMapTemplate());
     }
 
     public static synchronized void init() throws LoaderException, IOException, CallException, CallPausedException, InterruptedException {
         if(instance != null) return;
 
-        instance = new NpcScriptVM();
+        instance = new DataScriptVM();
     }
 
-    public static NpcScriptVM getInstance()  {
+    public static DataScriptVM getInstance()  {
         return instance;
     }
 
@@ -57,6 +53,19 @@ public final class NpcScriptVM extends ScriptVM {
         @Override
         public void invoke(ExecutionContext context, Table val) {
             World.world.addNpcTemplate(new NpcTemplate(val));
+            context.getReturnBuffer().setTo();
+        }
+
+        @Override
+        public void resume(ExecutionContext context, Object suspendedState) {
+            throw new NonsuspendableFunctionException();
+        }
+    }
+
+    static class RegisterMapTemplate extends AbstractFunction1<Table> {
+        @Override
+        public void invoke(ExecutionContext context, Table val) {
+            World.world.addMapData(ScriptMapData.build(val));
             context.getReturnBuffer().setTo();
         }
 

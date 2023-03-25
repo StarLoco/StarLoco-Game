@@ -1,7 +1,7 @@
 package org.starloco.locos.command;
 
 import org.starloco.locos.entity.npc.NpcMovable;
-import org.starloco.locos.script.NpcScriptVM;
+import org.starloco.locos.script.DataScriptVM;
 import org.starloco.locos.util.Pair;
 import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.area.map.GameMap;
@@ -1918,9 +1918,10 @@ public class CommandAdmin extends AdminUser {
                     DatabaseManager.get(NpcQuestionData.class).loadFully();
                     World.world.getNpcAnswers().clear();
                     DatabaseManager.get(NpcAnswerData.class).loadFully();
-                    // Reload lua
-                    NpcScriptVM.getInstance().safeLoadData();
                     break;
+                case "SCRIPTS":
+                    // Reload lua
+                    DataScriptVM.getInstance().safeLoadData();
                 case "ADMIN":
                     Command.reload();
                     Group.reload();

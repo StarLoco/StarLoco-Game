@@ -94,7 +94,6 @@ public class Fight {
     private Prism prism;
     private GameMap map, mapOld;
     private Fighter init0, init1;
-    private SoulStone fullSoul;
     private Turn turn;
 
     private int totalTurns = 0;
@@ -1055,14 +1054,6 @@ public class Fight {
 
     void setInit1(Fighter init1) {
         this.init1 = init1;
-    }
-
-    SoulStone getFullSoul() {
-        return fullSoul;
-    }
-
-    void setFullSoul(SoulStone fullSoul) {
-        this.fullSoul = fullSoul;
     }
 
     String getDefenders() {
@@ -4421,6 +4412,7 @@ public class Fight {
             }
 
             //region Capture d'�mes
+            SoulStone fullSoul = null;
             boolean mobCapturable = true;
             for (Fighter fighter : loosers) {
                 if (fighter.getMob() == null || fighter.getMob().getTemplate() == null || !fighter.getMob().getTemplate().isCapturable()) {
@@ -4449,11 +4441,12 @@ public class Fight {
                         maxLvl = fighter.getLvl();
                 }
 
-                this.setFullSoul(new SoulStone(1, 7010, Constant.ITEM_POS_NO_EQUIPED, stats)); // Cr�e la pierre d'�me
                 winners.stream().filter(F -> !F.isInvocation() && F.haveState(Constant.ETAT_CAPT_AME)).forEach(F -> getCapturer().add(F));
 
                 if (this.getCapturer().size() > 0 && !SoulStone.isInArenaMap(this.getMapOld().getId())) // S'il y a des captureurs
                 {
+                    // FIXME Change template based on content
+                    fullSoul = new SoulStone(1, 7010, Constant.ITEM_POS_NO_EQUIPED, stats); // Cr�e la pierre d'�me
                     for (int i = 0; i < this.getCapturer().size(); i++) {
                         try {
                             Fighter f = this.getCapturer().get(Formulas.getRandomValue(0, this.getCapturer().size() - 1)); // R�cup�re un captureur au hasard dans la liste
@@ -5062,12 +5055,12 @@ public class Fight {
                                         break;
                                 }
                             }
-                            if (i.getId() == this.getCaptWinner() && this.getFullSoul() != null) {
+                            if (i.getId() == this.getCaptWinner() && fullSoul != null) {
                                 if (drops.length() > 0)
                                     drops.append(",");
-                                drops.append(this.getFullSoul().getTemplate().getId()).append("~").append(1);
-                                if (player.addItem(this.getFullSoul(), false, false))
-                                    World.world.addGameObject(this.getFullSoul());
+                                drops.append(fullSoul.getTemplate().getId()).append("~").append(1);
+                                if (player.addItem(fullSoul, false, false))
+                                    World.world.addGameObject(fullSoul);
                             }
                             if (list != null) {
                                 String value = list.get(i.getPlayer());

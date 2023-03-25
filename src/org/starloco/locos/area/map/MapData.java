@@ -57,10 +57,6 @@ public abstract class MapData {
     // TODO: Replace with Pair<List<Integer>,List<Integer>>
     public String getPlaces() { return placesStr; }
 
-    public abstract Optional<GameCase> getCase(int id);
-    public abstract List<GameCase> getCases();
-
-
     public abstract List<Integer> getNPCs();
     public String getForbidden() {
         return (noSellers ? 1 : 0) + ";" + (noCollectors ? 1 : 0) + ";" + (noPrisms ? 1 : 0) + ";" + (noTp ? 1 : 0) +

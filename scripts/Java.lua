@@ -1,6 +1,14 @@
 --- DO NOT USE TYPES DEFINED HERE
 --- THOSE ARE ONLY FOR AUTO-COMPLETION
 
+---@param path string
+local function loadDir(path)  end
+
+---@param def Npc
+local function RegisterNPCDef(def)  end
+---@param def MapDef
+local function RegisterMapDef(def)  end
+
 ---@class Player
 local Player = {}
 
@@ -141,3 +149,8 @@ function Item:hasTxtStat(stat, val) end
 ---@param val string
 ---@return boolean
 function Item:consumeTxtStat(stat, val) end
+
+-- Map instance
+---@class Map
+local Map = {}
+

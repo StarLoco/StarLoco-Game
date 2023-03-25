@@ -1,20 +1,24 @@
 package org.starloco.locos.area.map;
 
 import org.starloco.locos.client.Player;
+import org.starloco.locos.entity.monster.MobGroupDef;
 import org.starloco.locos.entity.monster.MonsterGrade;
 import org.starloco.locos.entity.monster.MonsterGroup;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.Config;
 import org.starloco.locos.other.Action;
+import org.starloco.locos.util.Pair;
 
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class SQLMapData extends MapData {
+    // TODO: Remove GameCase/CellCache completely
     private List<GameCase> cases = new ArrayList<>();
     private final HashMap<Integer,List<Action>> moveEndActions = new HashMap<>();
     private final List<Integer> npcs = new ArrayList<>();
+    private final List<MobGroupDef> staticMobGroups = new LinkedList<>();
 
     protected SQLMapData(int id, String date, String key, String data, int width, int height, int x, int y,
                          int subAreaID, boolean noSellers, boolean noCollectors, boolean noPrisms,
@@ -114,17 +118,6 @@ public class SQLMapData extends MapData {
     }
 
     @Override
-    public Optional<GameCase> getCase(int id) {
-        // Replace with direct array access. We just need to make sure there is no missing cells
-        return this.cases.stream().filter(c -> c.getId() == id).findFirst();
-    }
-
-    @Override
-    public List<GameCase> getCases() {
-        return Collections.unmodifiableList(this.cases);
-    }
-
-    @Override
     public List<Integer> getNPCs() {
         return npcs;
     }
@@ -135,6 +128,11 @@ public class SQLMapData extends MapData {
         if (cell == null) return;
 
         this.moveEndActions.getOrDefault(cell.getId(), Collections.emptyList()).forEach(action -> action.apply(player, null, -1, -1));
+    }
+
+
+    public void addStaticGroup(int cellID, String groupData) {
+        this.staticMobGroups.add(new MobGroupDef(cellID, MonsterGroup.parseMobGroup(groupData)));
     }
 
     public String getForbidden() {

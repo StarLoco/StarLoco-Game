@@ -42,7 +42,7 @@ import org.starloco.locos.object.ObjectTemplate;
 import org.starloco.locos.object.entity.Fragment;
 import org.starloco.locos.object.entity.SoulStone;
 import org.starloco.locos.guild.Guild;
-import org.starloco.locos.script.NpcScriptVM;
+import org.starloco.locos.script.DataScriptVM;
 import org.starloco.locos.util.TimerWaiter;
 
 import java.text.SimpleDateFormat;
@@ -187,6 +187,10 @@ public class World {
         // Make sure the subArea knows of that map
         Optional.ofNullable(subAreas.get(map.subAreaID)).ifPresent(s -> s.addMapID(map.id));
     }
+    public Optional<MapData> getMapData(int id) {
+        return Optional.ofNullable(mapsData.get(id));
+    }
+
     public GameMap getMap(int id) {
         try {
             // Atomically get or load map
@@ -281,7 +285,7 @@ public class World {
     public void loadScripts() {
         logger.debug("Loading script engine");
         try {
-            NpcScriptVM.init();
+            DataScriptVM.init();
         } catch (Exception e) {
             logger.error("init NpcScriptVM failed", e);
             throw new RuntimeException("init NpcScriptVM failed", e);
