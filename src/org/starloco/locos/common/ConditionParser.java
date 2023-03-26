@@ -508,7 +508,7 @@ public class ConditionParser {
     }
 
     public boolean haveDV() {
-        return World.world.getMap((short) 325).getMobGroups().size() > 0;
+        return World.world.getMap( 325).getMobGroups().size() > 0;
     }
 
     public String canPJ(String cond, Player perso)//On remplace le PJ par 1 et si le metier correspond == 1 sinon == 0

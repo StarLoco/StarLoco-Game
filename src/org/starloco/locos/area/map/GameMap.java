@@ -35,12 +35,32 @@ import org.starloco.locos.util.TimerWaiter;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 public class GameMap {
 
     public static final Map<String, ArrayList<GameObject>> fixMobGroupObjects = new HashMap<>();
     public static final Updatable updatable = new Updatable(30000) {
         private final ArrayList<RespawnGroup> groups = new ArrayList<>();
+
+        private MobGroupDef randomizeMobGroup(int cellID, String data) {
+           List<Pair<Integer,Integer>> grades = Arrays.stream(data.split(";")).map(mob -> {
+                String[] infos = mob.split(",");
+                int idMonster = Integer.parseInt(infos[0]);
+                int min = Integer.parseInt(infos[1]);
+                int max = Integer.parseInt(infos[2]);
+
+                List<MonsterGrade> mgs = Optional.ofNullable(World.world.getMonstre(idMonster))
+                    .map(Monster::getGrades).map(Map::values).orElse(Collections.emptyList()).stream()
+                    .filter(mg -> mg.getLevel() >= min && mg.getLevel() <= max)
+                    .collect(Collectors.toList());
+
+                int idx = Formulas.getRandomValue(0, mgs.size() - 1);
+                return new Pair<>(idMonster, mgs.get(idx).getGrade());
+            }).collect(Collectors.toList());
+
+            return new MobGroupDef(cellID, grades);
+        }
 
         @Override
         public void update() {
@@ -53,7 +73,8 @@ public class GameMap {
                         Map<String, String> data = World.world.getGroupFix(respawnGroup.map.data.id, respawnGroup.cell);
 
                         if(data != null && time - respawnGroup.lastTime > Long.parseLong(data.get("timer"))) {
-                            respawnGroup.m.spawnMobGroup(respawnGroup.cell, data.get("groupData"), true);
+                            MobGroupDef def = randomizeMobGroup(respawnGroup.cell, data.get("groupData"));
+                            respawnGroup.map.spawnMobGroup(def, true);
                             this.groups.remove(respawnGroup);
                         }
                     } else if(time - respawnGroup.lastTime > random) {

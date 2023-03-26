@@ -12,9 +12,6 @@ import org.starloco.locos.util.Pair;
 import java.util.*;
 
 public class MonsterGroup {
-
-    public final static MaitreCorbac MAITRE_CORBAC = new MaitreCorbac();
-
     private final int id;
     private int cellId;
     private int orientation = 2;
@@ -139,7 +136,7 @@ public class MonsterGroup {
                 int min = Integer.parseInt(infos[1]);
                 int max = Integer.parseInt(infos[2]);
                 Monster m = World.world.getMonstre(idMonster);
-                List<MonsterGrade> mgs = new ArrayList<MonsterGrade>();
+                List<MonsterGrade> mgs = new ArrayList<>();
                 //on ajoute a la liste les grades possibles
 
                 for (MonsterGrade MG : m.getGrades().values()) {

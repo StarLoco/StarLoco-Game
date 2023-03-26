@@ -2739,7 +2739,7 @@ public class GameClient {
             int id = -1;
             MountPark park = this.player.getCurMap().getMountPark();
 
-            park = park == null ? (player.getCurMap().getId() != 10332 ? World.world.getMap((short) 8743) : World.world.getMap((short) 8848)).getMountPark() : park;
+            park = park == null ? (player.getCurMap().getId() != 10332 ? World.world.getMap( 8743) : World.world.getMap( 8848)).getMountPark() : park;
             if(park == null) return;
 
             try { id = Integer.parseInt(packet.substring(3)); } catch (Exception ignored) {}

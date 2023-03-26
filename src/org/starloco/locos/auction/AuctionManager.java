@@ -40,7 +40,7 @@ public class AuctionManager extends Updatable {
 
     public AuctionManager() {
         super(10000);
-        this.map = World.world.getMap((short) 10111);
+        this.map = World.world.getMap( 10111);
         this.npc = this.map.getNpcByTemplateId(9605);
     }
 

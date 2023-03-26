@@ -983,7 +983,7 @@ public class GameCase {
                 if (house == null)
                     return;
 
-                GameMap mapHouse = World.world.getMap((short) house.getHouseMapId());
+                GameMap mapHouse = World.world.getMap( house.getHouseMapId());
                 if (mapHouse == null) {
                     SocketManager.GAME_SEND_MESSAGE(player, player.getLang().trans("area.map.gamecase.startaction.house.broken"));
                     return;

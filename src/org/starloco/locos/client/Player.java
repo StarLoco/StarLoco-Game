@@ -131,7 +131,7 @@ public class Player {
     private String _canaux;
     private Fight fight;
     private boolean away;
-    private GameMap curMap;
+    private GameMap curMap; // Will become mapInstance GUID
     private GameCase curCell;
     private boolean ready = false;
     private boolean isOnline = false;
@@ -387,15 +387,15 @@ public class Player {
                 this.enteredOnEnnemyFaction = prison;
             }
             this._showWings = this.getAlignment() != 0 && seeAlign == 1;
-            if (curMap == null && World.world.getMap((short) 7411) != null) {
-                this.curMap = World.world.getMap((short) 7411);
+            if (curMap == null && World.world.getMap(7411) != null) {
+                this.curMap = World.world.getMap( 7411);
                 this.curCell = curMap.getCase(311);
-            } else if (curMap == null && World.world.getMap((short) 7411) == null) {
+            } else if (curMap == null && World.world.getMap(7411) == null) {
                 throw new IllegalStateException("Cannot find map 7411");
             } else if (curMap != null) {
                 this.curCell = curMap.getCase(cell);
                 if (curCell == null) {
-                    this.curMap = World.world.getMap((short) 7411);
+                    this.curMap = World.world.getMap( 7411);
                     this.curCell = curMap.getCase(311);
                 }
             }
@@ -4717,8 +4717,8 @@ public class Player {
         byte revive = ((PlayerData) DatabaseManager.get(PlayerData.class)).canRevive(this);
 
         if(revive == 1) {
-            this.curMap = World.world.getMap((short) 7411);
-            this.curCell = World.world.getMap((short) 7411).getCase(311);
+            this.curMap = World.world.getMap( 7411);
+            this.curCell = World.world.getMap( 7411).getCase(311);
         } else {
             if(this._morphMode) this.unsetFullMorph();
             if (this.getParty() != null) this.getParty().leave(this);

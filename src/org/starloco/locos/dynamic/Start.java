@@ -54,8 +54,8 @@ public class Start {
 			mapUse.put(3, World.world.getMap(6828).getMapCopy());
 			
 			mapUse.get(1).getCase(329).addOnCellStopAction(999, "192", "-1", mapUse.get(2));		
-			mapUse.get(1).getCase(325).addOnCellStopAction(999, "224", "-1", World.world.getMap((short) 1863));
-			mapUse.get(3).getCase(192).addOnCellStopAction(999, "389", "-1", World.world.getMap((short) 6829));
+			mapUse.get(1).getCase(325).addOnCellStopAction(999, "224", "-1", World.world.getMap( 1863));
+			mapUse.get(3).getCase(192).addOnCellStopAction(999, "389", "-1", World.world.getMap( 6829));
 			
 			/* MAP 1 : Talk & Walk to begin Fight **/
 			try { Thread.sleep(2000); } catch (InterruptedException ignored) {}

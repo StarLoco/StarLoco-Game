@@ -190,9 +190,9 @@ public class HouseManager {
                     else
                         packet += World.world.getPlayer(house.getValue().getOwnerId()).getAccount().getPseudo()
                                 + ";";
-                    packet += World.world.getMap((short) house.getValue().getHouseMapId()).getX()
+                    packet += World.world.getMap( house.getValue().getHouseMapId()).getX()
                             + ","
-                            + World.world.getMap((short) house.getValue().getHouseMapId()).getY()
+                            + World.world.getMap( house.getValue().getHouseMapId()).getY()
                             + ";";
                     packet += "0;";
                     packet += house.getValue().getGuildRights();
@@ -205,9 +205,9 @@ public class HouseManager {
                     else
                         packet += World.world.getPlayer(house.getValue().getOwnerId()).getAccount().getPseudo()
                                 + ";";
-                    packet += World.world.getMap((short) house.getValue().getHouseMapId()).getX()
+                    packet += World.world.getMap( house.getValue().getHouseMapId()).getX()
                             + ","
-                            + World.world.getMap((short) house.getValue().getHouseMapId()).getY()
+                            + World.world.getMap( house.getValue().getHouseMapId()).getY()
                             + ";";
                     packet += "0;";
                     packet += house.getValue().getGuildRights();

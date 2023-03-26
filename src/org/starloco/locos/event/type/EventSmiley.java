@@ -30,7 +30,7 @@ public class EventSmiley extends Event {
 
     public EventSmiley(byte id, byte maxPlayers, String name, String description) {
         super(id, maxPlayers, name, description);
-        this.map = World.world.getMap((short) 9862);
+        this.map = World.world.getMap( 9862);
     }
 
     @Override

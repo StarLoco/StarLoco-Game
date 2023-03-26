@@ -7,7 +7,7 @@ import org.starloco.locos.game.world.World;
 public class Town {
 
     public static Town[] TOWNS = {
-            new Town(1, World.world.getArea(23), World.world.getMap((short) 7951), 10, World.world.getMap((short) 7951), 1),
+            new Town(1, World.world.getArea(23), World.world.getMap( 7951), 10, World.world.getMap( 7951), 1),
             //new Town(2, World.world.getArea(1), World.world.getMap(1), 10, World.world.getMap(1), 1),
             //new Town(3, World.world.getArea(1), World.world.getMap(1), 10, World.world.getMap(1), 1),
             //new Town(4, World.world.getArea(1), World.world.getMap(1), 10, World.world.getMap(1), 1),

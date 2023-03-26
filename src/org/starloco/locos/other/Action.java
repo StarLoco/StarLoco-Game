@@ -2949,48 +2949,48 @@ public class Action {
                 }
                 break;
 
-            case 524://R�ponse Maitre corbac
-                if(client == null) return true;
-                int qID = MonsterGroup.MAITRE_CORBAC.check();
-                NpcQuestion quest = World.world.getNPCQuestion(qID);
-                if (quest == null) {
-                    SocketManager.GAME_SEND_END_DIALOG_PACKET(client);
-                    player.setExchangeAction(null);
-                    return true;
-                }
-                SocketManager.GAME_SEND_QUESTION_PACKET(client, quest.parse(player));
-                return false;
-
-            case 525://EndFight Action Maitre Corbac
-                MonsterGroup group = player.hasMobGroup();
-
-                split = args.split(";");
-
-                for (MonsterGrade mb : group.getMobs().values()) {
-                    switch (mb.getTemplate().getId()) {
-                        case 289:
-                            player.teleport((short) 9604, 403);
-                            return true;
-                        case 819:
-                            player.teleport(Short.parseShort(split[0].split(",")[0]), Integer.parseInt(split[0].split(",")[1]));
-                            return true;
-                        case 820:
-                            player.teleport(Short.parseShort(split[1].split(",")[0]), Integer.parseInt(split[1].split(",")[1]));
-                            return true;
-                    }
-                }
-                break;
-
-            case 526://Fin donjon maitre corbac
-                if (player.getCurMap().getId() != 9604)
-                    return true;
-
-                obj1 = World.world.getObjTemplate(7703).createNewItem(1, false);
-                if (player.addItem(obj1, true, false))
-                    World.world.addGameObject(obj1);
-                player.send("Im021;1~7703");
-                player.teleport((short) 2985, 279);
-                break;
+//            case 524://R�ponse Maitre corbac
+//                if(client == null) return true;
+//                int qID = MonsterGroup.MAITRE_CORBAC.check();
+//                NpcQuestion quest = World.world.getNPCQuestion(qID);
+//                if (quest == null) {
+//                    SocketManager.GAME_SEND_END_DIALOG_PACKET(client);
+//                    player.setExchangeAction(null);
+//                    return true;
+//                }
+//                SocketManager.GAME_SEND_QUESTION_PACKET(client, quest.parse(player));
+//                return false;
+//
+//            case 525://EndFight Action Maitre Corbac
+//                MonsterGroup group = player.hasMobGroup();
+//
+//                split = args.split(";");
+//
+//                for (MonsterGrade mb : group.getMobs().values()) {
+//                    switch (mb.getTemplate().getId()) {
+//                        case 289:
+//                            player.teleport((short) 9604, 403);
+//                            return true;
+//                        case 819:
+//                            player.teleport(Short.parseShort(split[0].split(",")[0]), Integer.parseInt(split[0].split(",")[1]));
+//                            return true;
+//                        case 820:
+//                            player.teleport(Short.parseShort(split[1].split(",")[0]), Integer.parseInt(split[1].split(",")[1]));
+//                            return true;
+//                    }
+//                }
+//                break;
+//
+//            case 526://Fin donjon maitre corbac
+//                if (player.getCurMap().getId() != 9604)
+//                    return true;
+//
+//                obj1 = World.world.getObjTemplate(7703).createNewItem(1, false);
+//                if (player.addItem(obj1, true, false))
+//                    World.world.addGameObject(obj1);
+//                player.send("Im021;1~7703");
+//                player.teleport((short) 2985, 279);
+//                break;
 
             case 527://Donjon ensabl� fin
                 if (player.getCurMap().getId() != 10165)
@@ -3048,7 +3048,7 @@ public class Action {
                     World.world.addGameObject(obj2);
                 }
 
-                quest = World.world.getNPCQuestion(Integer.parseInt(this.args));
+                NpcQuestion quest = World.world.getNPCQuestion(Integer.parseInt(this.args));
                 if (quest == null) {
                     SocketManager.GAME_SEND_END_DIALOG_PACKET(client);
                     player.setExchangeAction(null);

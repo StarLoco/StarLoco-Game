@@ -5158,10 +5158,6 @@ public class Fight {
                                     case 794:
                                         tofu++;
                                         break;
-                                    case 289:
-                                        if (player.getCurMap().getSubArea().getId() == 211)
-                                            MonsterGroup.MAITRE_CORBAC.repop(player.getCurMap().getId());
-                                        break;
                                 }
                             }
 

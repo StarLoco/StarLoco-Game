@@ -1487,7 +1487,7 @@ public class CommandAdmin extends AdminUser {
                 this.sendMessage("Impossible d'ajouter le trigger, veuillez utiliser la commande STRIGGER avant.");
                 return;
             }
-            World.world.getMap((short) this.getPlayer().thatMap).getCase(this.getPlayer().thatCell).addOnCellStopAction(0, this.getPlayer().getCurMap().getId()
+            World.world.getMap( this.getPlayer().thatMap).getCase(this.getPlayer().thatCell).addOnCellStopAction(0, this.getPlayer().getCurMap().getId()
                     + "," + this.getPlayer().getCurCell().getId(), "-1", null);
             ((ScriptedCellData) DatabaseManager.get(ScriptedCellData.class)).update(this.getPlayer().thatMap, this.getPlayer().thatCell, 0, 1, this.getPlayer().getCurMap().getId()
                     + "," + this.getPlayer().getCurCell().getId(), "-1");
