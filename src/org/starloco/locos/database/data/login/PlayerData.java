@@ -3,7 +3,7 @@ package org.starloco.locos.database.data.login;
 import com.mysql.jdbc.Statement;
 import com.zaxxer.hikari.HikariDataSource;
 import org.starloco.locos.client.Account;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.command.administration.Group;
 import org.starloco.locos.database.DatabaseManager;
 
@@ -20,7 +20,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Objects;
 
-public class PlayerData extends FunctionDAO<Player> {
+public class PlayerData extends FunctionDAO<BasePlayer> {
 
     public PlayerData(HikariDataSource dataSource) {
         super(dataSource, "world_players");
@@ -32,7 +32,7 @@ public class PlayerData extends FunctionDAO<Player> {
         try {
             result = getData("SELECT * FROM " + getTableName() + " WHERE server = " + Config.gameServerId + ";");
             while (result.next()) {
-                Player player = new Player(result.getInt("id"), result.getString("name"), result.getInt("groupe"),
+                BasePlayer player = new BasePlayer(result.getInt("id"), result.getString("name"), result.getInt("groupe"),
                         result.getInt("sexe"), result.getInt("class"), result.getInt("color1"), result.getInt("color2"),
                         result.getInt("color3"), result.getLong("kamas"), result.getInt("spellboost"),
                         result.getInt("capital"), result.getInt("energy"), result.getInt("level"), result.getLong("xp"),
@@ -42,7 +42,7 @@ public class PlayerData extends FunctionDAO<Player> {
                         result.getString("storeObjets"), result.getInt("pdvper"), result.getString("spells"), result.getString("savepos"),
                         result.getString("jobs"), result.getInt("mountxpgive"), result.getInt("mount"), result.getInt("honor"),
                         result.getInt("deshonor"), result.getInt("alvl"), result.getString("zaaps"), result.getByte("title"),
-                        result.getInt("wife"), result.getString("morphMode"), result.getString("allTitle"), result.getString("emotes"),
+                        result.getInt("wife"), result.getInt("morphMode"), result.getString("allTitle"), result.getString("emotes"),
                         result.getLong("prison"), false, result.getString("parcho"), result.getLong("timeDeblo"),
                         result.getBoolean("noall"), result.getString("deadInformation"), result.getByte("deathCount"),
                         result.getLong("totalKills"));
@@ -61,14 +61,14 @@ public class PlayerData extends FunctionDAO<Player> {
     }
 
     @Override
-    public Player load(int id) {
+    public BasePlayer load(int id) {
         ResultSet result = null;
-        Player player = null;
+        BasePlayer player = null;
         try {
             result = getData("SELECT * FROM " + getTableName() + " WHERE id = '" + id + "' AND server = " + Config.gameServerId + ";");
             while (result.next()) {
-                Player oldPlayer = World.world.getPlayer((int) id);
-                player = new Player(result.getInt("id"), result.getString("name"), result.getInt("groupe"), result.getInt("sexe"),
+                BasePlayer oldPlayer = World.world.getPlayer((int) id);
+                player = new BasePlayer(result.getInt("id"), result.getString("name"), result.getInt("groupe"), result.getInt("sexe"),
                         result.getInt("class"), result.getInt("color1"), result.getInt("color2"), result.getInt("color3"), result.getLong("kamas"),
                         result.getInt("spellboost"), result.getInt("capital"), result.getInt("energy"), result.getInt("level"), result.getLong("xp"),
                         result.getInt("size"), result.getInt("gfx"), result.getByte("alignement"), result.getInt("account"), this.getStats(result),
@@ -77,7 +77,7 @@ public class PlayerData extends FunctionDAO<Player> {
                         result.getInt("pdvper"), result.getString("spells"), result.getString("savepos"), result.getString("jobs"),
                         result.getInt("mountxpgive"), result.getInt("mount"), result.getInt("honor"), result.getInt("deshonor"),
                         result.getInt("alvl"), result.getString("zaaps"), result.getByte("title"), result.getInt("wife"),
-                        result.getString("morphMode"), result.getString("allTitle"), result.getString("emotes"), result.getLong("prison"),
+                        result.getInt("morphMode"), result.getString("allTitle"), result.getString("emotes"), result.getLong("prison"),
                         false, result.getString("parcho"), result.getLong("timeDeblo"), result.getBoolean("noall"),
                         result.getString("deadInformation"), result.getByte("deathCount"), result.getLong("totalKills"));
 
@@ -97,7 +97,7 @@ public class PlayerData extends FunctionDAO<Player> {
     }
 
     @Override
-    public boolean insert(Player entity) {
+    public boolean insert(BasePlayer entity) {
         PreparedStatement statement = null;
         boolean ok = true;
         try {
@@ -147,7 +147,7 @@ public class PlayerData extends FunctionDAO<Player> {
     }
 
     @Override
-    public void delete(Player entity) {
+    public void delete(BasePlayer entity) {
         PreparedStatement p = null;
         try {
             p = getPreparedStatement("DELETE FROM " + getTableName() + " WHERE id = ?");
@@ -171,7 +171,7 @@ public class PlayerData extends FunctionDAO<Player> {
     }
 
     @Override
-    public void update(Player entity) {
+    public void update(BasePlayer entity) {
         PreparedStatement p = null;
         try {
             p = getPreparedStatement("UPDATE " + getTableName() + " SET `kamas`= ?, `spellboost`= ?, `capital`= ?, `energy`= ?, `level`= ?, `xp`= ?, `size` = ?, `gfx`= ?, `alignement`= ?, `honor`= ?, `deshonor`= ?, `alvl`= ?, `vitalite`= ?, `force`= ?, `sagesse`= ?, `intelligence`= ?, `chance`= ?, `agilite`= ?, `seeFriend`= ?, `seeAlign`= ?, `seeSeller`= ?, `canaux`= ?, `map`= ?, `cell`= ?, `pdvper`= ?, `spells`= ?, `objets`= ?, `storeObjets`= ?, `savepos`= ?, `zaaps`= ?, `jobs`= ?, `mountxpgive`= ?, `mount`= ?, `title`= ?, `wife`= ?, `morphMode`= ?, `allTitle` = ?, `emotes` = ?, `prison` = ?, `parcho` = ?, `timeDeblo` = ?, `noall` = ?, `deadInformation` = ?, `deathCount` = ?, `totalKills` = ? WHERE `id` = ? LIMIT 1");
@@ -258,16 +258,16 @@ public class PlayerData extends FunctionDAO<Player> {
         return stats;
     }
 
-    public Player loadClone(int id) {
+    public BasePlayer loadClone(int id) {
         ResultSet result = null;
-        Player player = null;
+        BasePlayer player = null;
         try {
             result = getData("SELECT * FROM " + getTableName() + " WHERE id = '" + id + "';");
             while (result.next()) {
                 if (result.getInt("server") != Config.gameServerId)
                     continue;
 
-                player = new Player(result.getInt("id"), result.getString("name"), result.getInt("groupe"), result.getInt("sexe"),
+                player = new BasePlayer(result.getInt("id"), result.getString("name"), result.getInt("groupe"), result.getInt("sexe"),
                         result.getInt("class"), result.getInt("color1"), result.getInt("color2"), result.getInt("color3"), result.getLong("kamas"),
                         result.getInt("spellboost"), result.getInt("capital"), result.getInt("energy"), result.getInt("level"), result.getLong("xp"),
                         result.getInt("size"), result.getInt("gfx"), result.getByte("alignement"), result.getInt("account"), this.getStats(result),
@@ -276,7 +276,7 @@ public class PlayerData extends FunctionDAO<Player> {
                         result.getInt("pdvper"), result.getString("spells"), result.getString("savepos"), result.getString("jobs"),
                         result.getInt("mountxpgive"), result.getInt("mount"), result.getInt("honor"), result.getInt("deshonor"),
                         result.getInt("alvl"), result.getString("zaaps"), result.getByte("title"), result.getInt("wife"),
-                        result.getString("morphMode"), result.getString("allTitle"), result.getString("emotes"), result.getLong("prison"),
+                        result.getInt("morphMode"), result.getString("allTitle"), result.getString("emotes"), result.getLong("prison"),
                         false, result.getString("parcho"), result.getLong("timeDeblo"), result.getBoolean("noall"),
                         result.getString("deadInformation"), result.getByte("deathCount"), result.getLong("totalKills"));
 
@@ -309,7 +309,7 @@ public class PlayerData extends FunctionDAO<Player> {
                 if (result.getInt("server") != Config.gameServerId)
                     continue;
 
-                Player p = World.world.getPlayer(result.getInt("id"));
+                BasePlayer p = World.world.getPlayer(result.getInt("id"));
                 if (p != null) {
                     if (p.getFight() != null) {
                         continue;
@@ -324,7 +324,7 @@ public class PlayerData extends FunctionDAO<Player> {
                 stats.put(Constant.STATS_ADD_INTE, result.getInt("intelligence"));
                 stats.put(Constant.STATS_ADD_CHAN, result.getInt("chance"));
                 stats.put(Constant.STATS_ADD_AGIL, result.getInt("agilite"));
-                Player player = new Player(result.getInt("id"), result.getString("name"), result.getInt("groupe"), result.getInt("sexe"), result.getInt("class"), result.getInt("color1"), result.getInt("color2"), result.getInt("color3"), result.getLong("kamas"), result.getInt("spellboost"), result.getInt("capital"), result.getInt("energy"), result.getInt("level"), result.getLong("xp"), result.getInt("size"), result.getInt("gfx"), result.getByte("alignement"), result.getInt("account"), stats, result.getByte("seeFriend"), result.getByte("seeAlign"), result.getByte("seeSeller"), result.getString("canaux"), result.getShort("map"), result.getInt("cell"), result.getString("objets"), result.getString("storeObjets"), result.getInt("pdvper"), result.getString("spells"), result.getString("savepos"), result.getString("jobs"), result.getInt("mountxpgive"), result.getInt("mount"), result.getInt("honor"), result.getInt("deshonor"), result.getInt("alvl"), result.getString("zaaps"), result.getByte("title"), result.getInt("wife"), result.getString("morphMode"), result.getString("allTitle"), result.getString("emotes"), result.getLong("prison"), false, result.getString("parcho"), result.getLong("timeDeblo"), result.getBoolean("noall"), result.getString("deadInformation"), result.getByte("deathCount"), result.getLong("totalKills"));
+                BasePlayer player = new BasePlayer(result.getInt("id"), result.getString("name"), result.getInt("groupe"), result.getInt("sexe"), result.getInt("class"), result.getInt("color1"), result.getInt("color2"), result.getInt("color3"), result.getLong("kamas"), result.getInt("spellboost"), result.getInt("capital"), result.getInt("energy"), result.getInt("level"), result.getLong("xp"), result.getInt("size"), result.getInt("gfx"), result.getByte("alignement"), result.getInt("account"), stats, result.getByte("seeFriend"), result.getByte("seeAlign"), result.getByte("seeSeller"), result.getString("canaux"), result.getShort("map"), result.getInt("cell"), result.getString("objets"), result.getString("storeObjets"), result.getInt("pdvper"), result.getString("spells"), result.getString("savepos"), result.getString("jobs"), result.getInt("mountxpgive"), result.getInt("mount"), result.getInt("honor"), result.getInt("deshonor"), result.getInt("alvl"), result.getString("zaaps"), result.getByte("title"), result.getInt("wife"), result.getInt("morphMode"), result.getString("allTitle"), result.getString("emotes"), result.getLong("prison"), false, result.getString("parcho"), result.getLong("timeDeblo"), result.getBoolean("noall"), result.getString("deadInformation"), result.getByte("deathCount"), result.getLong("totalKills"));
 
                 if(p != null)
                         player.setNeededEndFight(p.needEndFight(), p.hasMobGroup());
@@ -360,7 +360,7 @@ public class PlayerData extends FunctionDAO<Player> {
         return title;
     }
 
-    public void updateInfos(Player perso) {
+    public void updateInfos(BasePlayer perso) {
         PreparedStatement p = null;
         try {
             p = getPreparedStatement("UPDATE " + getTableName() + " SET `name` = ?, `sexe`=?, `class`= ?, `color1` = ?, `color2` = ?, `color3` = ? WHERE `id`= ?;");
@@ -394,7 +394,7 @@ public class PlayerData extends FunctionDAO<Player> {
         }
     }
 
-    public void updateGroupe(Player perso) {
+    public void updateGroupe(BasePlayer perso) {
         PreparedStatement p = null;
         try {
             p = getPreparedStatement("UPDATE " + getTableName() + " SET `groupe` = ? WHERE `id`= ?");
@@ -409,7 +409,7 @@ public class PlayerData extends FunctionDAO<Player> {
         }
     }
 
-    public void updateTimeTaverne(Player player) {
+    public void updateTimeTaverne(BasePlayer player) {
         PreparedStatement p = null;
         try {
             p = getPreparedStatement("UPDATE " + getTableName() + " SET `timeDeblo` = ? WHERE `id` = ?");
@@ -502,7 +502,7 @@ public class PlayerData extends FunctionDAO<Player> {
         return servers;
     }
 
-    public void reloadGroup(Player p) {
+    public void reloadGroup(BasePlayer p) {
         ResultSet result = null;
         try {
             result = getData("SELECT groupe FROM " + getTableName() + " WHERE id = '" + p.getId() + "'");
@@ -518,7 +518,7 @@ public class PlayerData extends FunctionDAO<Player> {
         }
     }
 
-    public byte canRevive(Player player) {
+    public byte canRevive(BasePlayer player) {
         ResultSet result = null;
         byte revive = 0;
         try {
@@ -533,7 +533,7 @@ public class PlayerData extends FunctionDAO<Player> {
         return revive;
     }
 
-    public void setRevive(Player player) {
+    public void setRevive(BasePlayer player) {
         try {
             PreparedStatement p = getPreparedStatement("UPDATE " + getTableName() + " SET `revive` = 0 WHERE `id` = '" + player.getId() + "';");
             execute(p);
