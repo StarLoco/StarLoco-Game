@@ -1,7 +1,6 @@
 package org.starloco.locos.dynamic;
 
-import org.starloco.locos.client.Player;
-import org.starloco.locos.common.SocketManager;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.entity.Collector;
 import org.starloco.locos.fight.Fighter;
 import org.starloco.locos.game.world.World;
@@ -19,7 +18,7 @@ public class FormuleOfficiel {
             return 0;
         if (object instanceof Fighter) {
             Fighter fighter = (Fighter) object;
-            Player player = fighter.getPlayer();
+            BasePlayer player = fighter.getPlayer();
 
             if (winners.contains(fighter)) {
                 if (lvlWinners <= 0)

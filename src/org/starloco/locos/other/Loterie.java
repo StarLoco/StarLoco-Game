@@ -1,6 +1,6 @@
 package org.starloco.locos.other;
 
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.common.Formulas;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.game.world.World;
@@ -8,7 +8,7 @@ import org.starloco.locos.object.GameObject;
 
 public class Loterie {
 
-    public static void startLoterie(Player perso, int args) {
+    public static void startLoterie(BasePlayer perso, int args) {
         switch (args) {
             case 1:
                 if (perso.hasItemTemplate(15001, 1, false)) {
@@ -53,7 +53,7 @@ public class Loterie {
         }
     }
 
-    public static void startLoteriePioute(Player perso) {
+    public static void startLoteriePioute(BasePlayer perso) {
         int objIdWin = getCadeauPioute();
         SocketManager.GAME_SEND_Im_PACKET(perso, "021;" + 1 + "~" + objIdWin);
         GameObject newObjAdded = World.world.getObjTemplate(objIdWin).createNewItem(1, false);

@@ -1,6 +1,6 @@
 package org.starloco.locos.object;
 
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.client.other.Stats;
 import org.starloco.locos.common.Formulas;
 import org.starloco.locos.common.SocketManager;
@@ -305,7 +305,7 @@ public class GameObject {
         return txtStats;
     }
 
-    public Mount setMountStats(Player player, Mount mount, boolean castrated) {
+    public Mount setMountStats(BasePlayer player, Mount mount, boolean castrated) {
         if(mount == null)
             mount = new Mount(Constant.getMountColorByParchoTemplate(this.getTemplate().getId()), player.getId(), false);
         if(castrated) mount.setCastrated();
@@ -317,7 +317,7 @@ public class GameObject {
         return mount;
     }
 
-    public void attachToPlayer(Player player) {
+    public void attachToPlayer(BasePlayer player) {
         this.getTxtStat().put(Constant.STATS_OWNER_1, player.getName());
         SocketManager.GAME_SEND_UPDATE_OBJECT_DISPLAY_PACKET(player, this);
     }
@@ -326,7 +326,7 @@ public class GameObject {
         boolean ok = this.getTxtStat().containsKey(Constant.STATS_OWNER_1);
 
         if(ok) {
-            Player player = World.world.getPlayerByName(this.getTxtStat().get(Constant.STATS_OWNER_1));
+            BasePlayer player = World.world.getPlayerByName(this.getTxtStat().get(Constant.STATS_OWNER_1));
             if(player != null) player.send("BN");
         }
 

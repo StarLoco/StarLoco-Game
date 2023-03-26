@@ -3,7 +3,7 @@ package org.starloco.locos.common;
 import org.starloco.locos.area.map.CellCache;
 import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.area.map.GameMap;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.fight.Fight;
 import org.starloco.locos.fight.Fighter;
 import org.starloco.locos.fight.spells.ResEffectInfo;
@@ -149,7 +149,7 @@ public class Formulas {
         return esquive;
     }
 
-    public static int calculFinalHeal(Player caster, int jet) {
+    public static int calculFinalHeal(BasePlayer caster, int jet) {
         int statC = caster.getTotalStats(false).getEffect(Constant.STATS_ADD_INTE);
         int soins = caster.getTotalStats(false).getEffect(Constant.STATS_ADD_SOIN);
         if (statC < 0)
@@ -554,7 +554,7 @@ public class Formulas {
         return (int) num;
     }
 
-    public static int calculZaapCost(Player player, GameMap map1, GameMap map2) {
+    public static int calculZaapCost(BasePlayer player, GameMap map1, GameMap map2) {
         return player.getAccount().isSubscribeWithoutCondition() ? 10 :
                 10 * (Math.abs(map2.getX() - map1.getX()) + Math.abs(map2.getY() - map1.getY()) - 1);
     }
@@ -764,7 +764,7 @@ public class Formulas {
         return toReturn;
     }
 
-    public static int totalCaptChance(int pierreChance, Player p) {
+    public static int totalCaptChance(int pierreChance, BasePlayer p) {
         int sortChance = 0;
 
         switch (p.getSortStatBySortIfHas(413).getLevel()) {
@@ -812,7 +812,7 @@ public class Formulas {
     }
 
     public static int totalAppriChance(boolean Amande, boolean Rousse,
-                                       boolean Doree, Player p) {
+                                       boolean Doree, BasePlayer p) {
         int sortChance = 0;
         int ddChance = 0;
         switch (p.getSortStatBySortIfHas(414).getLevel()) {
@@ -1206,7 +1206,7 @@ public class Formulas {
 
     //region Formulas fight honor
     public static int calculHonorWin(ArrayList<Fighter> winners, ArrayList<Fighter> loosers, Fighter current, boolean prism) {
-        final Player player = current.getPlayer();
+        final BasePlayer player = current.getPlayer();
         if(player == null || winners == null ||loosers == null) return 0;
         if(prism && loosers.size() == 1 && loosers.get(0).getPrism() != null) return 0;
 

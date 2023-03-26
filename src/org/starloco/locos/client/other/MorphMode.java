@@ -1,6 +1,9 @@
 package org.starloco.locos.client.other;
 
+import org.starloco.locos.fight.spells.Spell;
 import org.starloco.locos.kernel.Constant;
+
+import java.util.Map;
 
 public class MorphMode {
 
@@ -8,15 +11,18 @@ public class MorphMode {
     private final int gfxId;
     private int hp;
     private final String name;
-    private final String spells;
+
+    private final Map<Integer, Spell.SortStats> spells;
+    private final Map<Integer, Integer> spellPositions;
     private boolean dungeon = false;
     private final Stats stats;
 
-    public MorphMode(int id, String name, int gfxId, String spells, int[] args) {
+    public MorphMode(int id, String name, int gfxId, Map<Integer, Spell.SortStats> spells, Map<Integer, Integer> spellPositions, int[] args) {
         this.id = id;
         this.name = name;
         this.gfxId = gfxId;
         this.spells = spells;
+        this.spellPositions = spellPositions;
         this.stats = this.handleStats(args);
     }
 
@@ -36,8 +42,12 @@ public class MorphMode {
         return hp;
     }
 
-    public String getSpells() {
+    public Map<Integer, Spell.SortStats> getSpells() {
         return spells;
+    }
+
+    public Map<Integer, Integer> getSpellPositions() {
+        return spellPositions;
     }
 
     public boolean isDungeon() {

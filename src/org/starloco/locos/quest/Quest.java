@@ -1,7 +1,7 @@
 package org.starloco.locos.quest;
 
 import org.apache.commons.lang.StringUtils;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.database.DatabaseManager;
 import org.starloco.locos.database.data.login.ObjectData;
@@ -151,7 +151,7 @@ public class Quest {
         return questPlayer.overQuestStep(questStep) && getNextStep(questStep) == 0;
     }
 
-    public void update(Player player, boolean validation, int type) {
+    public void update(BasePlayer player, boolean validation, int type) {
         QuestPlayer questPlayer = player.getQuestPersoByQuest(this);
         for (QuestObjective questObjective : this.objectives) {
             if (questObjective.getValidationType() != type || questPlayer.isQuestObjectiveIsValidate(questObjective)) //On a d�j� valid� la questEtape on passe
@@ -273,7 +273,7 @@ public class Quest {
         }
     }
 
-    public boolean apply(Player player) {
+    public boolean apply(BasePlayer player) {
         if (this.condition != null) {
             switch (this.condition.first) {
                 case 1: // Niveau
@@ -302,7 +302,7 @@ public class Quest {
         return true;
     }
 
-    public void applyButinOfQuest(Player player, QuestStep questStep) {
+    public void applyButinOfQuest(BasePlayer player, QuestStep questStep) {
         long xp; int kamas;
 
         if ((xp = questStep.getXp()) > 0) { //Xp a donner
@@ -337,7 +337,7 @@ public class Quest {
         }
     }
 
-    public String encodeQS(Player player) {
+    public String encodeQS(BasePlayer player) {
         QuestPlayer questPlayer = player.getQuestPersoByQuest(this);
         int currentObjective = getCurrentObjectiveId(questPlayer), previousObjective = getPreviousObjectiveId(questPlayer);
         int nextStep = getNextStep(QuestStep.steps.get(getCurrentObjectiveId(questPlayer)));

@@ -1,7 +1,7 @@
 package org.starloco.locos.area.map.entity;
 
 import org.starloco.locos.client.Account;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.database.DatabaseManager;
 import org.starloco.locos.database.data.game.BankData;
@@ -26,7 +26,7 @@ public class Trunk {
     private String key;
     private int ownerId;
     private long kamas;
-    private Player player = null;
+    private BasePlayer player = null;
     private Map<Integer, GameObject> object = new HashMap<>();
 
     public Trunk(int id, int houseId, int mapId, int cellId) {
@@ -36,7 +36,7 @@ public class Trunk {
         this.cellId = cellId;
     }
 
-    public static void closeCode(Player P) {
+    public static void closeCode(BasePlayer P) {
         SocketManager.GAME_SEND_KODE(P, "V");
     }
 
@@ -47,7 +47,7 @@ public class Trunk {
         return null;
     }
 
-    public static void lock(Player P, String packet) {
+    public static void lock(BasePlayer P, String packet) {
         Trunk t = (Trunk) P.getExchangeAction().getValue();
         if (t == null)
             return;
@@ -61,7 +61,7 @@ public class Trunk {
         P.setExchangeAction(null);
     }
 
-    public static void open(Player P, String packet, boolean isTrunk) {//Ouvrir un coffre
+    public static void open(BasePlayer P, String packet, boolean isTrunk) {//Ouvrir un coffre
         Trunk t = (Trunk) P.getExchangeAction().getValue();
         if (t == null)
             return;
@@ -154,11 +154,11 @@ public class Trunk {
         this.kamas = kamas;
     }
 
-    public Player getPlayer() {
+    public BasePlayer getPlayer() {
         return player;
     }
 
-    public void setPlayer(Player player) {
+    public void setPlayer(BasePlayer player) {
         this.player = player;
     }
 
@@ -170,12 +170,12 @@ public class Trunk {
         this.object = object;
     }
 
-    public void Lock(Player P) {
+    public void Lock(BasePlayer P) {
         P.setExchangeAction(new ExchangeAction<>(ExchangeAction.LOCK_TRUNK, this));
         SocketManager.GAME_SEND_KODE(P, "CK1|8");
     }
 
-    public void enter(Player player) {
+    public void enter(BasePlayer player) {
         if (player.getFight() != null || player.getExchangeAction() != null)
             return;
 
@@ -196,7 +196,7 @@ public class Trunk {
         }
     }
 
-    public boolean isTrunk(Player P, Trunk t)//Savoir si c'est son coffre
+    public boolean isTrunk(BasePlayer P, Trunk t)//Savoir si c'est son coffre
     {
         return t.getOwnerId() == P.getAccID();
     }
@@ -211,7 +211,7 @@ public class Trunk {
         return packet.toString();
     }
 
-    public void addInTrunk(int guid, int qua, Player P) {
+    public void addInTrunk(int guid, int qua, BasePlayer P) {
         if (qua <= 0)
             return;
         if (((Trunk) P.getExchangeAction().getValue()).getId() != getId())
@@ -296,7 +296,7 @@ public class Trunk {
             }
         }
 
-        for (Player perso : P.getCurMap().getPlayers())
+        for (BasePlayer perso : P.getCurMap().getPlayers())
             if (perso.getExchangeAction() != null && perso.getExchangeAction().getType() == ExchangeAction.IN_TRUNK && getId() == ((Trunk) perso.getExchangeAction().getValue()).getId())
                 SocketManager.GAME_SEND_EsK_PACKET(perso, str);
 
@@ -305,7 +305,7 @@ public class Trunk {
         ((PlayerData) DatabaseManager.get(PlayerData.class)).update(P);
     }
 
-    public void removeFromTrunk(int guid, int qua, Player P) {
+    public void removeFromTrunk(int guid, int qua, BasePlayer P) {
         if (qua <= 0)
             return;
         if (((Trunk) P.getExchangeAction().getValue()).getId() != getId())
@@ -382,7 +382,7 @@ public class Trunk {
             }
         }
 
-        for (Player perso : P.getCurMap().getPlayers())
+        for (BasePlayer perso : P.getCurMap().getPlayers())
             if (perso.getExchangeAction() != null && perso.getExchangeAction().getType() == ExchangeAction.IN_TRUNK && getId() == ((Trunk) perso.getExchangeAction().getValue()).getId())
                 SocketManager.GAME_SEND_EsK_PACKET(perso, str);
 

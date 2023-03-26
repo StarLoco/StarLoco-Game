@@ -1,6 +1,6 @@
 package org.starloco.locos.game.scheduler.entity;
 
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.database.DatabaseManager;
 import org.starloco.locos.database.data.game.*;
@@ -50,7 +50,7 @@ public class WorldSave extends Updatable {
 
             World.world.logger.info("-> of players.");
             World.world.logger.info("-> of members of guilds.");
-            World.world.getPlayers().stream().filter(Objects::nonNull).filter(Player::isOnline).forEach(player -> {
+            World.world.getPlayers().stream().filter(Objects::nonNull).filter(BasePlayer::isOnline).forEach(player -> {
                 ((PlayerData) DatabaseManager.get(PlayerData.class)).update(player);
                 if (player.getGuildMember() != null)
                     ((GuildMemberData) DatabaseManager.get(GuildMemberData.class)).update(player);

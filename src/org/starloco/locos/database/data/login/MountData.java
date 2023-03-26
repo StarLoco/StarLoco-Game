@@ -3,7 +3,7 @@ package org.starloco.locos.database.data.login;
 import com.mysql.jdbc.Statement;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.lang.NotImplementedException;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.database.DatabaseManager;
 import org.starloco.locos.database.data.FunctionDAO;
 import org.starloco.locos.entity.mount.Mount;
@@ -117,7 +117,7 @@ public class MountData extends FunctionDAO<Mount> {
         }
     }
 
-    public void delete(Player player) {
+    public void delete(BasePlayer player) {
         this.delete(player.getMount());
         World.world.delDragoByID(player.getMount().getId());
         player.setMountGiveXp(0);

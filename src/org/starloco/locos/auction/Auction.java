@@ -1,6 +1,6 @@
 package org.starloco.locos.auction;
 
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.object.GameObject;
 
 /**
@@ -10,10 +10,10 @@ public class Auction {
 
     private int price;
     private byte retry;
-    private Player owner, customer;
+    private BasePlayer owner, customer;
     private GameObject object;
 
-    public Auction(int price, Player owner, GameObject object, byte retry) {
+    public Auction(int price, BasePlayer owner, GameObject object, byte retry) {
         this.price = price;
         this.retry = retry;
         this.owner = owner;
@@ -24,15 +24,15 @@ public class Auction {
         return price;
     }
 
-    public Player getOwner() {
+    public BasePlayer getOwner() {
         return owner;
     }
 
-    public Player getCustomer() {
+    public BasePlayer getCustomer() {
         return customer;
     }
 
-    public void setCustomer(Player customer) {
+    public void setCustomer(BasePlayer customer) {
         this.customer = customer;
     }
 

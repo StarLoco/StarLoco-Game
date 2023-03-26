@@ -2,7 +2,7 @@ package org.starloco.locos.entity.exchange;
 
 import org.starloco.locos.auction.Auction;
 import org.starloco.locos.auction.AuctionManager;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.database.DatabaseManager;
 import org.starloco.locos.database.data.login.PlayerData;
@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class NpcExchange {
-    private Player player;
+    private BasePlayer player;
     private NpcTemplate npc;
     private long kamas1 = 0;
     private long kamas2 = 0;
@@ -28,7 +28,7 @@ public class NpcExchange {
     private boolean ok2;
     private Auction auction;
 
-    public NpcExchange(Player p, NpcTemplate n) {
+    public NpcExchange(BasePlayer p, NpcTemplate n) {
         this.player = p;
         AuctionManager.getInstance().onPlayerOpenExchange(player, this);
         this.setNpc(n);

@@ -1,21 +1,16 @@
 package org.starloco.locos.script;
 
 import org.classdump.luna.Table;
-import org.classdump.luna.Userdata;
 import org.classdump.luna.exec.CallException;
 import org.classdump.luna.exec.CallPausedException;
-import org.classdump.luna.exec.DirectCallExecutor;
 import org.classdump.luna.impl.NonsuspendableFunctionException;
 import org.classdump.luna.load.LoaderException;
 import org.classdump.luna.runtime.*;
-import org.starloco.locos.client.Player;
 import org.starloco.locos.entity.npc.NpcTemplate;
 import org.starloco.locos.game.world.World;
 
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 public final class NpcScriptVM extends ScriptVM {
     private static NpcScriptVM instance;

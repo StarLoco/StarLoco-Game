@@ -1,6 +1,6 @@
 package org.starloco.locos.entity.exchange;
 
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.common.Formulas;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.game.world.World;
@@ -25,7 +25,7 @@ public class CraftSecure extends PlayerExchange {
     private ArrayList<Couple<Integer, Integer>> payItems = new ArrayList<>();
     private ArrayList<Couple<Integer, Integer>> payItemsIfSuccess = new ArrayList<>();
 
-    public CraftSecure(Player player1, Player player2) {
+    public CraftSecure(BasePlayer player1, BasePlayer player2) {
         super(player1, player2);
         JobStat job = this.player1.getMetierBySkill(this.player1.getIsCraftingType().get(1));
         if(job != null && job.getTemplate() != null) {
@@ -36,7 +36,7 @@ public class CraftSecure extends PlayerExchange {
         }
     }
 
-    public Player getNeeder() {
+    public BasePlayer getNeeder() {
         return player2;
     }
 
@@ -55,7 +55,7 @@ public class CraftSecure extends PlayerExchange {
         if (jobAction == null)
             return;
 
-        Map<Player, ArrayList<Couple<Integer, Integer>>> items = new HashMap<>();
+        Map<BasePlayer, ArrayList<Couple<Integer, Integer>>> items = new HashMap<>();
         items.put(this.player1, this.items1);
         items.put(this.player2, this.items2);
 

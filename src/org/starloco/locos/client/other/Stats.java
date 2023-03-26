@@ -1,6 +1,6 @@
 package org.starloco.locos.client.other;
 
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.guild.Guild;
 import org.starloco.locos.kernel.Constant;
 
@@ -17,7 +17,7 @@ public class Stats {
         this.effects = stats;
     }
 
-    public Stats(boolean addBases, Player player) {
+    public Stats(boolean addBases, BasePlayer player) {
         if (addBases) {
             this.effects.put(Constant.STATS_ADD_PA, player.getLevel() < 100 ? 6 : 7);
             this.effects.put(Constant.STATS_ADD_PM, 3);
@@ -28,7 +28,7 @@ public class Stats {
         }
     }
 
-    public Stats(Map<Integer, Integer> stats, boolean addBases, Player player) {
+    public Stats(Map<Integer, Integer> stats, boolean addBases, BasePlayer player) {
         this.effects = stats;
         if (addBases) {
             this.effects.put(Constant.STATS_ADD_PA, player.getLevel() < 100 ? 6 : 7);

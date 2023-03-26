@@ -1,6 +1,6 @@
 package org.starloco.locos.fight;
 
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.common.Formulas;
 import org.starloco.locos.common.PathFinding;
 import org.starloco.locos.common.SocketManager;
@@ -77,7 +77,7 @@ public class Challenge {
         SocketManager.GAME_SEND_Im_PACKET_TO_CHALLENGE(fight, 1, "0188;" + name);
     }
 
-    public void challengeSpecLoose(Player player) {
+    public void challengeSpecLoose(BasePlayer player) {
         SocketManager.GAME_SEND_CHALLENGE_PERSO(player, "KO" + Type);
         SocketManager.GAME_SEND_Im_PACKET_TO_CHALLENGE_PERSO(player, "0188;"
                 + looseBy);
@@ -95,7 +95,7 @@ public class Challenge {
         return packet.toString();
     }
 
-    public void showCibleToPerso(Player p) {
+    public void showCibleToPerso(BasePlayer p) {
         if (!challengeAlive || _cible == null || _cible.getCell() == null
                 || p == null)
             return;

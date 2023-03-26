@@ -4,7 +4,7 @@ import com.singularsys.jep.Jep;
 import com.singularsys.jep.JepException;
 import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.area.map.GameMap;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.entity.monster.MonsterGroup;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.game.world.World.Couple;
@@ -80,7 +80,7 @@ public class InteractiveDoor {
         }
     }
 
-    static boolean tryActivate(Player player, GameCase gameCase) {
+    static boolean tryActivate(BasePlayer player, GameCase gameCase) {
         for(InteractiveDoor interactiveDoor : InteractiveDoor.interactiveDoors) {
             if (interactiveDoor.button != null && player.getCurMap().getId() == interactiveDoor.button.first && gameCase.getId() == interactiveDoor.button.second) {
                 interactiveDoor.check(player);
@@ -90,7 +90,7 @@ public class InteractiveDoor {
         return false;
     }
 
-    public static void show(Player player) {
+    public static void show(BasePlayer player) {
         InteractiveDoor.interactiveDoors.stream().filter(interactiveDoor -> interactiveDoor.state).forEach(interactiveDoor -> {
             interactiveDoor.setState(interactiveDoor.cellsEnable, true, false, player);
             interactiveDoor.setState(interactiveDoor.cellsDisable, false, false, player);
@@ -99,7 +99,7 @@ public class InteractiveDoor {
         });
     }
 
-    public static void check(Player player, GameMap gameMap) {
+    public static void check(BasePlayer player, GameMap gameMap) {
         try {
             for (InteractiveDoor interactiveDoor : InteractiveDoor.interactiveDoors)
                 if (interactiveDoor.maps.contains(gameMap.getId()))
@@ -108,7 +108,7 @@ public class InteractiveDoor {
         } catch(Exception e) { e.printStackTrace(); }
     }
 
-    private synchronized boolean check(Player player) {
+    private synchronized boolean check(BasePlayer player) {
         if(this.state) return false;
         boolean ok = true;
 
@@ -171,7 +171,7 @@ public class InteractiveDoor {
         this.state = false;
     }
 
-    private void setState(Map<Short, ArrayList<Short>> arrayListMap, boolean active, boolean doors, Player player) {
+    private void setState(Map<Short, ArrayList<Short>> arrayListMap, boolean active, boolean doors, BasePlayer player) {
         String packet = "GDF";
 
         for(Entry<Short, ArrayList<Short>> entry : arrayListMap.entrySet()) {
@@ -188,7 +188,7 @@ public class InteractiveDoor {
 
             if(player != null)
                 player.send(packet);
-            else for (Player target : gameMap.getPlayers())
+            else for (BasePlayer target : gameMap.getPlayers())
                 target.send(packet);
         }
     }
@@ -197,7 +197,7 @@ public class InteractiveDoor {
         return "|" + cell + (!fast ? (active ? ";2" : ";4") : (active ? ";3" : ";1"));
     }
 
-    private void setStateCell(GameMap gameMap, short cell, boolean active, Player player) {
+    private void setStateCell(GameMap gameMap, short cell, boolean active, BasePlayer player) {
         String packet = "GDC" + cell;
         GameCase gameCase = gameMap.getCase(cell), temporaryCell;
         gameMap.removeCase(cell);
@@ -216,12 +216,12 @@ public class InteractiveDoor {
 
         if(player != null)
             player.send(packet);
-        else for (Player target : gameMap.getPlayers())
+        else for (BasePlayer target : gameMap.getPlayers())
             target.send(packet);
     }
 
     private static class Condition {
-        static boolean isValid(Player player, GameCase gameCase, String request) {
+        static boolean isValid(BasePlayer player, GameCase gameCase, String request) {
             Jep jep = new Jep();
             request = request.replace("&", "&&").replace("=", "==").replace("|", "||").replace("!", "!=").replace("~", "==");
             try {
@@ -244,7 +244,7 @@ public class InteractiveDoor {
             return false;
         }
 
-        private static String parseKRL(Player player, String request) {
+        private static String parseKRL(BasePlayer player, String request) {
             if(player == null)
                 return "0==1";
             String[] data = request.split("==")[1].split("-");
@@ -253,7 +253,7 @@ public class InteractiveDoor {
             return player.getSexe() == sex && player.getClasse() == classId ? "1==1" : "0==0";
         }
 
-        private static String parseMGC(Player player, String request) {
+        private static String parseMGC(BasePlayer player, String request) {
             String[] data = request.split("==")[1].split("-");
             for(MonsterGroup monsterGroup : player.getCurMap().getMobGroups().values())
                 for(String id : data)

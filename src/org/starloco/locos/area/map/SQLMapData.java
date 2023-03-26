@@ -1,8 +1,7 @@
 package org.starloco.locos.area.map;
 
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.entity.monster.MonsterGrade;
-import org.starloco.locos.entity.monster.MonsterGroup;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.Config;
 import org.starloco.locos.other.Action;
@@ -130,7 +129,7 @@ public class SQLMapData extends MapData {
     }
 
     @Override
-    public void onMoveEnd(Player player) {
+    public void onMoveEnd(BasePlayer player) {
         final GameCase cell = player.getCurCell();
         if (cell == null) return;
 

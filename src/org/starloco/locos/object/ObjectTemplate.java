@@ -1,6 +1,6 @@
 package org.starloco.locos.object;
 
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.client.other.Stats;
 import org.starloco.locos.common.Formulas;
 import org.starloco.locos.common.SocketManager;
@@ -600,7 +600,7 @@ public class ObjectTemplate {
         return getId() + ";" + getStrTemplate() + (this.newPrice > 0 ? ";" + this.newPrice : "");
     }
 
-    public void applyAction(Player player, Player target, int objectId, short cellId, int quantity) {
+    public void applyAction(BasePlayer player, BasePlayer target, int objectId, short cellId, int quantity) {
         for (int i = 0; i < quantity; i++) {
             if (World.world.getGameObject(objectId) == null) return;
             if (World.world.getGameObject(objectId).getTemplate().getType() == 85 && World.world.getGameObject(objectId).getTemplate().getId() == 7010) {

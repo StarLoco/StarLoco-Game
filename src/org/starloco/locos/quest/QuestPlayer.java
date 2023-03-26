@@ -1,6 +1,6 @@
 package org.starloco.locos.quest;
 
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.database.DatabaseManager;
 import org.starloco.locos.database.data.login.QuestPlayerData;
 import org.starloco.locos.game.world.World;
@@ -16,7 +16,7 @@ public class QuestPlayer {
     private int id;
     private final Quest quest;
     private boolean finished;
-    private final Player player;
+    private final BasePlayer player;
     private final Map<Integer, QuestObjective> objectivesValidate = new HashMap<>();
     private final Map<Integer, Short> monsterKill = new HashMap<>();
 
@@ -67,7 +67,7 @@ public class QuestPlayer {
         }
     }
 
-    public Player getPlayer() {
+    public BasePlayer getPlayer() {
         return player;
     }
 

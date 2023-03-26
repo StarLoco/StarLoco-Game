@@ -1,6 +1,6 @@
 package org.starloco.locos.area.map.entity;
 
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.game.action.ExchangeAction;
 import org.starloco.locos.game.world.World;
@@ -32,7 +32,7 @@ public class House {
         this.houseCellId = houseCellId;
     }
 
-    public void open(Player P, String packet, boolean isHome)//Ouvrir une maison ;o
+    public void open(BasePlayer P, String packet, boolean isHome)//Ouvrir une maison ;o
     {
         if ((!this.canDo(Constant.H_OCANTOPEN) && (packet.compareTo(this.getKey()) == 0))
                 || isHome)//Si c'est chez lui ou que le mot de passe est bon
@@ -120,7 +120,7 @@ public class House {
         return this.houseCellId;
     }
 
-    public void enter(Player P) {//Entrer dans la maison
+    public void enter(BasePlayer P) {//Entrer dans la maison
         if (P.getFight() != null || P.getExchangeAction() != null)
             return;
         if (this.getOwnerId() == P.getAccID() || (P.getGuild() != null && P.getGuild().getId() == this.getGuildId() && canDo(Constant.H_GNOCODE)))//C'est sa maison ou m�me guilde + droits entrer sans pass
@@ -131,14 +131,14 @@ public class House {
             open(P, "-", false);
     }
 
-    public void buyIt(Player P)//Acheter une maison
+    public void buyIt(BasePlayer P)//Acheter une maison
     {
         House h = P.getInHouse();
         String str = "CK" + h.getId() + "|" + h.getSale();//ID + Prix
         SocketManager.GAME_SEND_hOUSE(P, str);
     }
 
-    public void sellIt(Player P)//Vendre une maison
+    public void sellIt(BasePlayer P)//Vendre une maison
     {
         House h = P.getInHouse();
         if (isHouse(P, h)) {
@@ -147,12 +147,12 @@ public class House {
         }
     }
 
-    public boolean isHouse(Player P, House h)//Savoir si c'est sa maison
+    public boolean isHouse(BasePlayer P, House h)//Savoir si c'est sa maison
     {
         return h.getOwnerId() == P.getAccID();
     }
 
-    public void lock(Player player) {
+    public void lock(BasePlayer player) {
         player.setExchangeAction(new ExchangeAction<>(ExchangeAction.LOCK_HOUSE, this));
         SocketManager.GAME_SEND_KODE(player, "CK1|8");
     }

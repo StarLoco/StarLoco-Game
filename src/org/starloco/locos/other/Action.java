@@ -7,7 +7,7 @@ import org.starloco.locos.area.map.entity.House;
 import org.starloco.locos.area.map.entity.MountPark;
 import org.starloco.locos.area.map.entity.Tutorial;
 import org.starloco.locos.area.map.labyrinth.PigDragon;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.client.other.Stalk;
 import org.starloco.locos.client.other.Stats;
 import org.starloco.locos.common.Formulas;
@@ -105,7 +105,7 @@ public class Action {
         this.map = map;
     }
 
-    public boolean apply(final Player player, Player target, int itemID,
+    public boolean apply(final BasePlayer player, BasePlayer target, int itemID,
                          int cellid) {
 
         if (player == null)
@@ -144,7 +144,7 @@ public class Action {
                 int ange = 0;
                 int demon = 0;
                 int total = 0;
-                for (Player i : World.world.getPlayers()) {
+                for (BasePlayer i : World.world.getPlayers()) {
                     if (i == null)
                         continue;
                     if (i.getAlignment() == 1)
@@ -1190,9 +1190,9 @@ public class Action {
                     player.setStalk(t);
                 }
                 if (player.getStalk().getTime() < System.currentTimeMillis() - 600000 || player.getStalk().getTime() == 0) {
-                    Player tempP = null;
-                    ArrayList<Player> victimes = new ArrayList<Player>();
-                    for (Player victime : World.world.getOnlinePlayers()) {
+                    BasePlayer tempP = null;
+                    ArrayList<BasePlayer> victimes = new ArrayList<BasePlayer>();
+                    for (BasePlayer victime : World.world.getOnlinePlayers()) {
                         if (victime == null || victime == player)
                             continue;
 						if (victime.getAccount().getCurrentIp().compareTo(player.getAccount().getCurrentIp()) == 0)
@@ -1319,7 +1319,7 @@ public class Action {
                 GameMap map0 = player.getCurMap();
                 if(map0.getCase(297).getPlayers() != null && map0.getCase(282).getPlayers() != null) {
                     if (map0.getCase(297).getPlayers().size() == 1 && map0.getCase(282).getPlayers().size() == 1) {
-                        Player boy = (Player) map0.getCase(282).getPlayers().toArray()[0], girl = (Player) map0.getCase(297).getPlayers().toArray()[0];
+                        BasePlayer boy = (BasePlayer) map0.getCase(282).getPlayers().toArray()[0], girl = (BasePlayer) map0.getCase(297).getPlayers().toArray()[0];
                         boy.setBlockMovement(true);
                         girl.setBlockMovement(true);
                         World.world.priestRequest(boy, girl, player);
@@ -1334,7 +1334,7 @@ public class Action {
                     player.setKamas(player.getKamas() - 50000);
                     if (player.isOnline())
                         SocketManager.GAME_SEND_STATS_PACKET(player);
-                    Player wife = World.world.getPlayer(player.getWife());
+                    BasePlayer wife = World.world.getPlayer(player.getWife());
                     wife.Divorce();
                     player.Divorce();
                 }

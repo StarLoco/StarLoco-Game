@@ -1,6 +1,6 @@
 package org.starloco.locos.game.action.type;
 
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.entity.npc.Npc;
 import org.starloco.locos.entity.npc.NpcTemplate;
 
@@ -40,11 +40,11 @@ public class NpcDialogActionData implements ActionDataInterface {
         this.answers = answers;
     }
 
-    public Npc getNpc(Player player) {
+    public Npc getNpc(BasePlayer player) {
         return player.getCurMap().getNpcByTemplateId(npcTemplate.getId());
     }
 
-    public boolean isValid(Player player, int npcId) {
+    public boolean isValid(BasePlayer player, int npcId) {
         return getNpc(player).getId() == npcId;
     }
 }

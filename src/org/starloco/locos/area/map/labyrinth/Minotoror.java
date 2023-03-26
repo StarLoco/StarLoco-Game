@@ -2,7 +2,7 @@ package org.starloco.locos.area.map.labyrinth;
 
 import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.area.map.GameMap;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.common.Formulas;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.game.world.World;
@@ -584,7 +584,7 @@ public class Minotoror {
         SocketManager.GAME_SEND_ACTION_TO_DOOR(map, cellId, true);
     }
 
-    private static void sendOpen(Player p, int cellId) {
+    private static void sendOpen(BasePlayer p, int cellId) {
         SocketManager.GAME_UPDATE_CELL(p, cellId + ";aaGaaaaaaa801;1");
         SocketManager.GAME_SEND_ACTION_TO_DOOR(p, cellId, true);
     }
@@ -594,12 +594,12 @@ public class Minotoror {
         SocketManager.GAME_SEND_ACTION_TO_DOOR(map, cellId, false);
     }
 
-    private static void sendClose(Player p, int cellId) {
+    private static void sendClose(BasePlayer p, int cellId) {
         SocketManager.GAME_UPDATE_CELL(p, cellId + ";aaaaaaaaaa801;1");
         SocketManager.GAME_SEND_ACTION_TO_DOOR(p, cellId, false);
     }
 
-    public static void sendPacketMap(Player perso) {
+    public static void sendPacketMap(BasePlayer perso) {
         GameMap map = perso.getCurMap();
         GameCase c1 = null; // bas
         GameCase c2 = null; // gauche

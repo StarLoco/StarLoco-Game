@@ -2,7 +2,7 @@ package org.starloco.locos.common;
 
 import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.area.map.GameMap;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.fight.Fight;
 import org.starloco.locos.fight.Fighter;
 import org.starloco.locos.fight.ia.util.AStarPathFinding;
@@ -19,7 +19,7 @@ public class PathFinding {
 
 
     public static int isValidPath(GameMap map, int cellID,
-                                  AtomicReference<String> pathRef, Fight fight, Player perso,
+                                  AtomicReference<String> pathRef, Fight fight, BasePlayer perso,
                                   int targetCell) {
         AtomicReference<Integer> nSteps = new AtomicReference<>();
         nSteps.set(0);
@@ -112,7 +112,7 @@ public class PathFinding {
     }
 
     public static String ValidSinglePath(AtomicReference<Integer> nSteps, int CurrentPos, String Path, GameMap map,
-                                         Fight fight, Player perso, int targetCell) {
+                                         Fight fight, BasePlayer perso, int targetCell) {
         nSteps.set(0);
         char dir = Path.charAt(0);
         int dirCaseID = World.world.getCryptManager().cellCode_To_ID(Path.substring(1)), check = ("353;339;325;311;297;283;269;255;241;227;213;228;368;354;340;326;312;298;284;270;256;242;243;257;271;285;299;313;327;341;355;369;383".contains(String.valueOf(targetCell)) ? 1 : 0);

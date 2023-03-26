@@ -1,7 +1,7 @@
 package org.starloco.locos.entity;
 
 import org.starloco.locos.area.map.GameMap;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.common.PathFinding;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.database.DatabaseManager;
@@ -30,16 +30,16 @@ public class Collector {
     private long kamas = 0;
     private long xp = 0;
     private boolean inExchange = false;
-    private Player poseur = null;
+    private BasePlayer poseur = null;
     private long date;
     //Les logs
     private java.util.Map<Integer, GameObject> logObjects = new HashMap<>();
     private java.util.Map<Integer, GameObject> objects = new HashMap<>();
     //La d�fense
-    private java.util.Map<Integer, Player> defenserId = new HashMap<>();
+    private java.util.Map<Integer, BasePlayer> defenserId = new HashMap<>();
 
     public Collector(int id, int map, int cell, byte orientation,
-                     int aGuildID, short N1, short N2, Player poseur, long date,
+                     int aGuildID, short N1, short N2, BasePlayer poseur, long date,
                      String items, long kamas, long xp) {
         this.id = id;
         this.map = map;
@@ -124,7 +124,7 @@ public class Collector {
 
         if (path != null) {
             this.cell = cell;
-            for (Player player : map.getPlayers()) {
+            for (BasePlayer player : map.getPlayers()) {
                 SocketManager.GAME_SEND_GA_PACKET(player.getGameClient(), "0", "1", this.getId() + "", path);
             }
         }
@@ -261,13 +261,13 @@ public class Collector {
         return i;
     }
 
-    public static void parseAttaque(Player perso, int guildID) {
+    public static void parseAttaque(BasePlayer perso, int guildID) {
         for (java.util.Map.Entry<Integer, Collector> Collector : World.world.getCollectors().entrySet())
             if (Collector.getValue().getInFight() > 0 && Collector.getValue().getGuildId() == guildID)
                 SocketManager.GAME_SEND_gITp_PACKET(perso, parseAttaqueToGuild(Collector.getValue().getId(), Collector.getValue().getMap(), Collector.getValue().get_inFightID()));
     }
 
-    public static void parseDefense(Player perso, int guildID) {
+    public static void parseDefense(BasePlayer perso, int guildID) {
         for (java.util.Map.Entry<Integer, Collector> Collector : World.world.getCollectors().entrySet())
             if (Collector.getValue().getInFight() > 0 && Collector.getValue().getGuildId() == guildID)
                 SocketManager.GAME_SEND_gITP_PACKET(perso, parseDefenseToGuild(Collector.getValue()));
@@ -296,7 +296,7 @@ public class Collector {
         StringBuilder str = new StringBuilder();
         str.append("+").append(collector.getId());
 
-        for (Player player : collector.getDefenseFight().values()) {
+        for (BasePlayer player : collector.getDefenseFight().values()) {
             if (player == null)
                 continue;
             str.append("|");
@@ -315,7 +315,7 @@ public class Collector {
         for (Collector collector : World.world.getCollectors().values()) {
             if (collector.getGuildId() == GuildID) {
                 World.world.getCollectors().remove(collector.getId());
-                for (Player p : World.world.getMap(collector.getMap()).getPlayers()) {
+                for (BasePlayer p : World.world.getMap(collector.getMap()).getPlayers()) {
                     SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(p.getCurMap(), collector.getId());//Suppression visuelle
                 }
                 collector.reloadTimer();
@@ -337,11 +337,11 @@ public class Collector {
         return this.date;
     }
 
-    public Player getPoseur() {
+    public BasePlayer getPoseur() {
         return this.poseur;
     }
 
-    public void setPoseur(Player poseur) {
+    public void setPoseur(BasePlayer poseur) {
         this.poseur = poseur;
     }
 
@@ -487,7 +487,7 @@ public class Collector {
         return items;
     }
 
-    public void removeFromCollector(Player P, int id, int qua) {
+    public void removeFromCollector(BasePlayer P, int id, int qua) {
         if (qua <= 0)
             return;
         GameObject CollectorObj = World.world.getGameObject(id);
@@ -558,11 +558,11 @@ public class Collector {
         ((PlayerData) DatabaseManager.get(PlayerData.class)).update(P);
     }
 
-    public synchronized boolean addDefenseFight(Player player) {
+    public synchronized boolean addDefenseFight(BasePlayer player) {
         if (!(player.getFight() == null && !player.isAway() && !player.isInPrison() && player.getExchangeAction() == null))
             return false;
 
-        for (Player p : this.getDefenseFight().values()) {
+        for (BasePlayer p : this.getDefenseFight().values()) {
             if (player.getAccount() != null && p != null && p.getAccount() != null) {
                 if (player.getAccount().getCurrentIp().compareTo(p.getAccount().getCurrentIp()) == 0) {
                     SocketManager.GAME_SEND_MESSAGE(player, player.getLang().trans("fight.join.with.sameip"));
@@ -579,7 +579,7 @@ public class Collector {
         }
     }
 
-    public synchronized boolean delDefenseFight(Player P) {
+    public synchronized boolean delDefenseFight(BasePlayer P) {
         if (this.defenserId.containsKey(P.getId())) {
             this.defenserId.remove(P.getId());
             return true;
@@ -591,7 +591,7 @@ public class Collector {
         this.defenserId.clear();
     }
 
-    public java.util.Map<Integer, Player> getDefenseFight() {
+    public java.util.Map<Integer, BasePlayer> getDefenseFight() {
         return this.defenserId;
     }
 

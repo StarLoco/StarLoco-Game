@@ -2,7 +2,7 @@ package org.starloco.locos.auction;
 
 import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.client.Account;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.database.DatabaseManager;
 import org.starloco.locos.database.data.game.AuctionData;
@@ -49,13 +49,13 @@ public class AuctionManager extends Updatable {
     }
 
     public void talk(String key, GameObject object, boolean tradeTalk, Object... params) {
-        for(Player player : this.map.getPlayers()) {
+        for(BasePlayer player : this.map.getPlayers()) {
             String msg = player.getLang().trans(key, params);
             if(object != null) msg = getTalkStringObject(object, msg);
             player.send("cMK|" + npc.getId() + "|Commissaire|" + msg + "|");
         }
         if(tradeTalk) {
-            for (Player player : World.world.getOnlinePlayers()) {
+            for (BasePlayer player : World.world.getOnlinePlayers()) {
                 String msg = player.getLang().trans(key, params);
                 if (object != null) msg = getTalkStringObject(object, msg);
                 player.send("cMK:|" + npc.getId() + "|Commissaire|" + msg + "|");
@@ -64,17 +64,17 @@ public class AuctionManager extends Updatable {
     }
 
     public void talkNext() {
-        for(Player player : this.map.getPlayers()) {
+        for(BasePlayer player : this.map.getPlayers()) {
             String msg = player.getLang().trans("game.auction.auctionmanager.stop.none")+ (this.auctions.size() == 0 ? "" : player.getLang().trans("game.auction.auctionmanager.stop.next"));
             player.send("cMK|" + npc.getId() + "|Commissaire|" + msg + "|");
         }
-        for(Player player : World.world.getOnlinePlayers()) {
+        for(BasePlayer player : World.world.getOnlinePlayers()) {
             String msg = player.getLang().trans("game.auction.auctionmanager.stop.none")+ (this.auctions.size() == 0 ? "" : player.getLang().trans("game.auction.auctionmanager.stop.next"));
             player.send("cMK:|" + npc.getId() + "|Commissaire|" + msg + "|");
         }
     }
 
-    public void talk(Player player, String msg) {
+    public void talk(BasePlayer player, String msg) {
         player.send("cMK|" + npc.getId() + "|Commissaire|" + msg + "|");
     }
 
@@ -112,7 +112,7 @@ public class AuctionManager extends Updatable {
         }
     }
 
-    private synchronized void check(final Player player, int kamas) {
+    private synchronized void check(final BasePlayer player, int kamas) {
         if(current != null && currentIsAvailable()) {
             if(!this.start(player, kamas))
                 if(!this.newAuction(player, kamas))
@@ -121,7 +121,7 @@ public class AuctionManager extends Updatable {
         }
     }
 
-    private boolean start(Player player, int kamas) {
+    private boolean start(BasePlayer player, int kamas) {
         if (kamas == -1 && currentIsAvailable() && player != null) { // Lancement de l'enchère
             this.talk("game.auction.auctionmanager.start", current.getObject(), true, current.getObject().getQuantity(), current.getPrice(), current.getOwner().getName());
             this.counter = 0;
@@ -131,7 +131,7 @@ public class AuctionManager extends Updatable {
         return false;
     }
 
-    private boolean newAuction(Player player, int kamas) {
+    private boolean newAuction(BasePlayer player, int kamas) {
         if (kamas > 0 && kamas != current.getPrice()) {
             if(current.getCustomer() != null) {
                 current.getCustomer().addKamas(current.getPrice());
@@ -150,7 +150,7 @@ public class AuctionManager extends Updatable {
         return false;
     }
 
-    private boolean counter(Player player, int kamas) {
+    private boolean counter(BasePlayer player, int kamas) {
         if (counter == 0 || counter == 1) {
             if(this.currentIsAvailable()) {
                 if (current.getCustomer() != null)
@@ -168,7 +168,7 @@ public class AuctionManager extends Updatable {
 
     private void stop() {
         if(this.currentIsAvailable()) {
-            Player target = this.current.getCustomer();
+            BasePlayer target = this.current.getCustomer();
             final GameObject object = this.current.getObject();
 
             if (target != null) {
@@ -205,7 +205,7 @@ public class AuctionManager extends Updatable {
         return null;
     }
 
-    public void onPlayerLoadMap(Player player) {
+    public void onPlayerLoadMap(BasePlayer player) {
         if(!this.isValid(player)) return;
 
         if(this.current != null && this.currentIsAvailable()) {
@@ -224,7 +224,7 @@ public class AuctionManager extends Updatable {
         }
     }
 
-    public synchronized void onPlayerChat(Player player, String msg) {
+    public synchronized void onPlayerChat(BasePlayer player, String msg) {
         if(!this.isValid(player)) return;
         if(this.current != null && this.currentIsAvailable() && (msg.startsWith("moi") || msg.startsWith("me"))) {
             try {
@@ -261,7 +261,7 @@ public class AuctionManager extends Updatable {
         }
     }
 
-    public void onPlayerCommand(Player player, String[] info) {
+    public void onPlayerCommand(BasePlayer player, String[] info) {
         if(!this.isValid(player)) return;
         if(player.getExchangeAction() != null) {
             NpcExchange exchange = ((NpcExchange) player.getExchangeAction().getValue());
@@ -305,7 +305,7 @@ public class AuctionManager extends Updatable {
         }
     }
 
-    public void onPlayerOpenExchange(Player player, NpcExchange exchange) {
+    public void onPlayerOpenExchange(BasePlayer player, NpcExchange exchange) {
         if(!this.isValid(player)) return;
 
         player.sendTypeMessage("Auction", player.getLang().trans("game.auction.auctionmanager.infos.1"));
@@ -313,7 +313,7 @@ public class AuctionManager extends Updatable {
         player.sendTypeMessage("Auction", player.getLang().trans("game.auction.auctionmanager.infos.3"));
     }
 
-    public boolean onPlayerChangeItemInNpcExchange(Player player, GameObject object) {
+    public boolean onPlayerChangeItemInNpcExchange(BasePlayer player, GameObject object) {
         if(!this.isValid(player)) return false;
         if(object != null && object.getTemplate() != null && object.getTemplate().getLevel() <= 50) return true;
         if(player.getExchangeAction() != null) {
@@ -326,7 +326,7 @@ public class AuctionManager extends Updatable {
         return false;
     }
 
-    public boolean onPlayerAccept(Player player, NpcExchange exchange) {
+    public boolean onPlayerAccept(BasePlayer player, NpcExchange exchange) {
         if(player != null)if(!this.isValid(player)) return false;
         if(exchange != null) {
             final Auction auction = exchange.getAuction();
@@ -346,7 +346,7 @@ public class AuctionManager extends Updatable {
         return false;
     }
 
-    private boolean isValid(Player player) {
+    private boolean isValid(BasePlayer player) {
         if(!this.map.getPlayers().contains(player)) return false;
         if(player.getFight() != null || player.isDead() == 1 || player.isGhost()
                 || (player.getExchangeAction() != null && !(player.getExchangeAction().getValue() instanceof NpcExchange))) {

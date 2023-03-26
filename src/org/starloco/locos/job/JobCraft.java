@@ -1,6 +1,6 @@
 package org.starloco.locos.job;
 
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.util.TimerWaiter;
 
@@ -14,7 +14,7 @@ public class JobCraft {
     private int time = 0;
     private boolean itsOk = true;
 
-    JobCraft(JobAction jobAction, Player player) {
+    JobCraft(JobAction jobAction, BasePlayer player) {
         this.jobAction = jobAction;
 
         TimerWaiter.addNext(() -> {
@@ -35,7 +35,7 @@ public class JobCraft {
         this.itsOk = false;
     }
 
-    private void repeat(final int time1, final int time2, final Player player) {
+    private void repeat(final int time1, final int time2, final BasePlayer player) {
         final int j = time1 - time2;
         this.jobAction.player = player;
         this.jobAction.isRepeat = true;
@@ -47,7 +47,7 @@ public class JobCraft {
         }
     }
 
-    private boolean check(final Player player, int j, int time2) {
+    private boolean check(final BasePlayer player, int j, int time2) {
         if (this.jobAction.broke || this.jobAction.broken || player.getExchangeAction() == null || !player.isOnline()) {
             if (player.getExchangeAction() == null)
                 this.jobAction.broken = true;

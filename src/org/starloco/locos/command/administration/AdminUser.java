@@ -1,7 +1,7 @@
 package org.starloco.locos.command.administration;
 
 import org.starloco.locos.client.Account;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.game.GameClient;
 import org.starloco.locos.kernel.Config;
@@ -14,13 +14,13 @@ import java.awt.event.ActionListener;
 public abstract class AdminUser {
 
     private Account account;
-    private Player player;
+    private BasePlayer player;
     private GameClient client;
 
     private boolean timerStart = false;
     private Timer timer;
 
-    public AdminUser(Player player) {
+    public AdminUser(BasePlayer player) {
         if (player != null) {
             this.account = player.getAccount();
             this.player = player;
@@ -32,7 +32,7 @@ public abstract class AdminUser {
         return account;
     }
 
-    public Player getPlayer() {
+    public BasePlayer getPlayer() {
         return player;
     }
 

@@ -1,6 +1,6 @@
 package org.starloco.locos.dynamic;
 
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.common.Formulas;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.game.world.World;
@@ -28,7 +28,7 @@ public class Noel {
             + ",8337,840,929,1680,1694,2242,2562,2666,2667,2998,2999,7265,7269,7276,7280,7288,7292,7293,7294,7297,7298,7299,7300,7304,7305,7306,7370,8102,8731,8738,8771,8772,8776,8791,8792,8793,8800,8802,8803,8994,8995,9263,9389,9391"
             + ",9277,1892,1691,1696,2580,581,8339";
 
-    public static void getRandomObjectOne(Player player) {
+    public static void getRandomObjectOne(BasePlayer player) {
         int value = Formulas.getRandomValue(0, 100000);
         int template = -1;
         if (value >= 0 && value < 5000) {//Guildalogemme
@@ -45,7 +45,7 @@ public class Noel {
         SocketManager.GAME_SEND_Im_PACKET(player, "021;" + 1 + "~" + template);
     }
 
-    public static void getRandomObjectTwo(Player player) {
+    public static void getRandomObjectTwo(BasePlayer player) {
         int value = Formulas.getRandomValue(0, 100000);
         int template = -1;
         if (value >= 0 && value < 5000) {//Guildalogemme
@@ -62,7 +62,7 @@ public class Noel {
         SocketManager.GAME_SEND_Im_PACKET(player, "021;" + 1 + "~" + template);
     }
 
-    public static void getRandomObjectTree(Player player) {
+    public static void getRandomObjectTree(BasePlayer player) {
         int value = Formulas.getRandomValue(0, 100000);
         int template = -1;
         if (value >= 0 && value < 5000) {//Guildalogemme
@@ -79,7 +79,7 @@ public class Noel {
         SocketManager.GAME_SEND_Im_PACKET(player, "021;" + 1 + "~" + template);
     }
 
-    public static void getRandomObjectFour(Player player) {
+    public static void getRandomObjectFour(BasePlayer player) {
         int value = Formulas.getRandomValue(0, 100000);
         int template = -1;
         if (value >= 0 && value < 5000) {//Guildalogemme
@@ -96,7 +96,7 @@ public class Noel {
         SocketManager.GAME_SEND_Im_PACKET(player, "021;" + 1 + "~" + template);
     }
 
-    public static void getRandomObjectFive(Player player) {
+    public static void getRandomObjectFive(BasePlayer player) {
         int value = Formulas.getRandomValue(0, 100000);
         int template = -1;
         if (value >= 0 && value < 5000) {//Guildalogemme

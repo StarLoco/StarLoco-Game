@@ -4,13 +4,11 @@ import org.starloco.locos.area.Area;
 import org.starloco.locos.area.SubArea;
 import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.area.map.GameMap;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.common.Formulas;
-import org.starloco.locos.entity.npc.Npc;
 import org.starloco.locos.event.EventManager;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.object.GameObject;
-import org.starloco.locos.object.ObjectTemplate;
 import org.starloco.locos.util.TimerWaiter;
 
 import java.util.ArrayList;
@@ -59,7 +57,7 @@ public class EventFindMe extends Event {
     @Override
     public void perform() {
         this.cell.addDroppedItem(this.object);
-        for(Player player : World.world.getOnlinePlayers()) {
+        for(BasePlayer player : World.world.getOnlinePlayers()) {
             player.sendTypeMessage("Event",  player.getLang().trans("event.findme.find", map.getSubArea().getName()));
         }
         this.time = System.currentTimeMillis();
@@ -73,7 +71,7 @@ public class EventFindMe extends Event {
         } else if (count % 30 == 0) {
             boolean end = System.currentTimeMillis() - this.time > (30 * 60 * 1_000);
             String name = end ? map.getSubArea().getName() + " - [" + map.getX() + ", " + map.getY() + "]" : map.getSubArea().getName();
-            for (Player player : World.world.getOnlinePlayers())
+            for (BasePlayer player : World.world.getOnlinePlayers())
                 player.sendTypeMessage("Event", player.getLang().trans("event.findme.find", name));
             TimerWaiter.addNext(this::execute, 5000);
         } else {
@@ -84,22 +82,22 @@ public class EventFindMe extends Event {
 
     @Override
     public void close() {
-        for(Player player : World.world.getOnlinePlayers()) {
+        for(BasePlayer player : World.world.getOnlinePlayers()) {
             player.sendTypeMessage("Event", player.getLang().trans("event.findme.win"));
         }
         EventManager.getInstance().finishCurrentEvent();
     }
 
     @Override
-    public boolean onReceivePacket(EventManager manager, Player player, String packet) throws Exception {
+    public boolean onReceivePacket(EventManager manager, BasePlayer player, String packet) throws Exception {
         return false;
     }
 
     @Override
-    public GameCase getEmptyCellForPlayer(Player player) {
+    public GameCase getEmptyCellForPlayer(BasePlayer player) {
         return null;
     }
 
     @Override
-    public void kickPlayer(Player player) { }
+    public void kickPlayer(BasePlayer player) { }
 }

@@ -1,7 +1,7 @@
 package org.starloco.locos.dynamic;
 
 import org.starloco.locos.area.map.GameMap;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.common.Formulas;
 import org.starloco.locos.game.scheduler.Updatable;
 import org.starloco.locos.game.world.World;
@@ -60,7 +60,7 @@ public class Tavernier extends Updatable {
     private void drinkAllRound() {
         this.map.send("cMK|-4|Habitué de la taverne|Tournée générale pour tout le monde, c'est moi qui régale !|");
         ObjectTemplate objectTemplate = World.world.getObjTemplate(6857);
-        for(Player p : this.map.getPlayers()){
+        for(BasePlayer p : this.map.getPlayers()){
             if (p.isOnline()){
                 GameObject object = objectTemplate.createNewItem(1, false);
                 if (Formulas.getRandomValue(0, 3) == 0){

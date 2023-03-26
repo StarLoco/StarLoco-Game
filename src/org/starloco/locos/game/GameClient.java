@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.entity.exchange.NpcExchange;
 import org.starloco.locos.game.action.type.BigStoreActionData;
 import org.starloco.locos.game.action.type.NpcDialogActionData;
@@ -27,7 +28,6 @@ import org.starloco.locos.area.map.entity.Trunk;
 import org.starloco.locos.area.map.entity.Tutorial;
 import org.starloco.locos.auction.AuctionManager;
 import org.starloco.locos.client.Account;
-import org.starloco.locos.client.Player;
 import org.starloco.locos.client.other.Party;
 import org.starloco.locos.command.CommandAdmin;
 import org.starloco.locos.command.CommandPlayer;
@@ -85,7 +85,7 @@ public class GameClient {
 
     private final IoSession session;
     private Account account;
-    private Player player;
+    private BasePlayer player;
     private boolean walk = false;
     private AdminUser adminUser;
     private LangEnum language = LangEnum.ENGLISH;
@@ -103,7 +103,7 @@ public class GameClient {
         return session;
     }
 
-    public Player getPlayer() {
+    public BasePlayer getPlayer() {
         return this.player;
     }
 
@@ -558,7 +558,7 @@ public class GameClient {
         String[] infos = packet.split("\\|");
 
         int template = Integer.parseInt(infos[0]);
-        Player player = World.world.getPlayer(Integer.parseInt(infos[1]));
+        BasePlayer player = World.world.getPlayer(Integer.parseInt(infos[1]));
 
         if (player == null)
             return;
@@ -621,7 +621,7 @@ public class GameClient {
 
     private void getCharacters() {
         this.account.setGameClient(this);
-        for (Player player : this.account.getPlayers().values()) {
+        for (BasePlayer player : this.account.getPlayers().values()) {
             if (player != null)
                 if (player.getFight() != null && player.getFight().getFighterByPerso(player) != null) {
                     this.player = player;
@@ -634,7 +634,7 @@ public class GameClient {
     }
 
     private void hardcodeRevive(int id) {
-        final Player player = this.account.getPlayers().get(id);
+        final BasePlayer player = this.account.getPlayers().get(id);
 
         this.getSession().write("BN");
 
@@ -675,7 +675,7 @@ public class GameClient {
 
                 String ip = this.session.getRemoteAddress().toString().substring(1).split(":")[0];
                 Fight fight = null;
-                for(Player p : account.getPlayers().values())
+                for(BasePlayer p : account.getPlayers().values())
                     if((fight = p.getFight()) != null)
                         break;
                 if(fight == null && Config.limitByIp != -1 && new ArrayList<>(World.world.getOnlinePlayers()).stream().filter(p -> p != null &&
@@ -746,15 +746,12 @@ public class GameClient {
     }
 
     private void authorisedCommand(String packet) throws InterruptedException {
-        if (this.adminUser == null) this.adminUser = new CommandAdmin(this.player);
-        if (this.player.getGroupe() == null || this.getPlayer() == null) {
-            this.getAccount().getGameClient().kick();
+        if (this.player.getGroupe() == null || this.getPlayer() == null)
             return;
-        }
-
+        if (this.adminUser == null)
+            this.adminUser = new CommandAdmin(this.player);
         if (Logging.USE_LOG)
             Logging.getInstance().write("CommandAdmin", this.getAccount().getCurrentIp() + " : " + this.getAccount().getName() + " > " + this.getPlayer().getName() + " > " + packet.substring(2));
-
         this.adminUser.apply(packet);
     }
 
@@ -1002,7 +999,7 @@ public class GameClient {
                 String nom = packet.substring(2).split("\\|")[0];
                 msg = packet.split("\\|", 2)[1];
                 if (!(nom.length() <= 1)) {
-                    Player target = World.world.getPlayerByName(nom);
+                    BasePlayer target = World.world.getPlayerByName(nom);
                     if (target == null || target.getAccount() == null || target.getGameClient() == null) {
                         SocketManager.GAME_SEND_CHAT_ERROR_PACKET(this, nom);
                         return;
@@ -1046,7 +1043,7 @@ public class GameClient {
 
     private void whoIs(String packet) {
         packet = packet.substring(2);
-        Player player = World.world.getPlayerByName(packet);
+        BasePlayer player = World.world.getPlayerByName(packet);
         if (player == null) {
             if (packet.isEmpty())
                 SocketManager.GAME_SEND_BWK(this.player, this.player.getAccount().getPseudo()
@@ -1450,7 +1447,7 @@ public class GameClient {
             return;
 
         ExchangeAction<Integer> exchangeAction = (ExchangeAction<Integer>) this.player.getExchangeAction();
-        Player target = World.world.getPlayer(exchangeAction.getValue());
+        BasePlayer target = World.world.getPlayer(exchangeAction.getValue());
         if(target == null) return;
 
         checkExchangeAction = target.getExchangeAction();
@@ -1473,8 +1470,8 @@ public class GameClient {
                 break;
             case 12: // Craft s?ucirs?
             case 13:
-                Player player1 = (target.getIsCraftingType().get(0) == 12 ? target : this.player);
-                Player player2 = (target.getIsCraftingType().get(0) == 13 ? target : this.player);
+                BasePlayer player1 = (target.getIsCraftingType().get(0) == 12 ? target : this.player);
+                BasePlayer player2 = (target.getIsCraftingType().get(0) == 13 ? target : this.player);
 
                 CraftSecure craftSecure = new CraftSecure(player1, player2);
                 SocketManager.GAME_SEND_ECK_PACKET(this, type, craftSecure.getMaxCase() + ";" + this.player.getIsCraftingType().get(1));
@@ -1496,7 +1493,7 @@ public class GameClient {
         ExchangeAction<Integer> exchangeAction = (ExchangeAction<Integer>) this.player.getExchangeAction();
 
         if (exchangeAction.getType() == ExchangeAction.TRADING_WITH_OFFLINE_PLAYER) {
-            Player seller = World.world.getPlayer(exchangeAction.getValue());
+            BasePlayer seller = World.world.getPlayer(exchangeAction.getValue());
             if (seller != null && seller != this.player) {
                 int itemID = 0;
                 int qua = 0;
@@ -2464,7 +2461,7 @@ public class GameClient {
                                 GameObject object = World.world.getGameObject(guid);
                                 if(object != null) {
                                     if (object.getTxtStat().containsKey(Constant.STATS_OWNER_1)) {
-                                        Player player = World.world.getPlayerByName(object.getTxtStat().get(Constant.STATS_OWNER_1));
+                                        BasePlayer player = World.world.getPlayerByName(object.getTxtStat().get(Constant.STATS_OWNER_1));
                                         if (player != null) {
                                             if (!player.getName().equals(this.player.getName()))
                                                 return;
@@ -2947,7 +2944,7 @@ public class GameClient {
                 int id = Integer.parseInt(split[1]);
                 int skill = Integer.parseInt(split[2]);
 
-                Player player = World.world.getPlayer(id);
+                BasePlayer player = World.world.getPlayer(id);
 
                 if (player == null) {
                     SocketManager.GAME_SEND_EXCHANGE_REQUEST_ERROR(this, 'E');
@@ -3031,7 +3028,7 @@ public class GameClient {
                 int id = Integer.parseInt(split[1]);
                 int skill = Integer.parseInt(split[2]);
 
-                Player player = World.world.getPlayer(id);
+                BasePlayer player = World.world.getPlayer(id);
 
                 if (player == null) {
                     SocketManager.GAME_SEND_EXCHANGE_REQUEST_ERROR(this, 'E');
@@ -3180,7 +3177,7 @@ public class GameClient {
             case '1'://Si joueur
                 try {
                     id = Integer.parseInt(packet.substring(4));
-                    Player target = World.world.getPlayer(id);
+                    BasePlayer target = World.world.getPlayer(id);
 
                     if (target == null || target.getCurMap() != this.player.getCurMap() || !target.isOnline()) {
                         SocketManager.GAME_SEND_EXCHANGE_REQUEST_ERROR(this, 'E');
@@ -3223,7 +3220,7 @@ public class GameClient {
             case '4'://StorePlayer
                 id = Integer.valueOf(packet.split("\\|")[1]);
 
-                Player seller = World.world.getPlayer(id);
+                BasePlayer seller = World.world.getPlayer(id);
                 if (seller == null || !seller.isShowSeller() || seller.getCurMap() != this.player.getCurMap()) return;
 
                 ExchangeAction<Integer> exchangeAction = new ExchangeAction<>(ExchangeAction.TRADING_WITH_OFFLINE_PLAYER, id);
@@ -3289,7 +3286,7 @@ public class GameClient {
             case 'F':
                 int Metier = Integer.parseInt(packet.substring(3));
                 int cant = 0;
-                for (Player artissant : World.world.getOnlinePlayers()) {
+                for (BasePlayer artissant : World.world.getOnlinePlayers()) {
                     if (!artissant.getMetierPublic() || artissant.getMetiers().isEmpty())
                         continue;
                     String send = "";
@@ -3349,7 +3346,7 @@ public class GameClient {
         }
     }
 
-    public static void leaveExchange(Player player) {
+    public static void leaveExchange(BasePlayer player) {
         ExchangeAction<?> exchangeAction = player.getExchangeAction();
 
         if (exchangeAction == null)
@@ -3358,7 +3355,7 @@ public class GameClient {
         switch(exchangeAction.getType()) {
             case ExchangeAction.TRADING_WITH_PLAYER:
                 if(exchangeAction.getValue() instanceof Integer) {
-                    Player target = World.world.getPlayer((Integer) exchangeAction.getValue());
+                    BasePlayer target = World.world.getPlayer((Integer) exchangeAction.getValue());
                     if(target != null && target.getExchangeAction() != null && target.getExchangeAction().getType() == ExchangeAction.TRADING_WITH_PLAYER) {
                         target.send("EV");
                         target.setExchangeAction(null);
@@ -3375,7 +3372,7 @@ public class GameClient {
                 break;
             case ExchangeAction.CRAFTING_SECURE_WITH:
                 if(exchangeAction.getValue() instanceof Integer) {
-                    Player target = World.world.getPlayer((Integer) exchangeAction.getValue());
+                    BasePlayer target = World.world.getPlayer((Integer) exchangeAction.getValue());
                     if(target != null && target.getExchangeAction() != null && target.getExchangeAction().getType() == ExchangeAction.CRAFTING_SECURE_WITH) {
                         target.send("EV");
                         target.setExchangeAction(null);
@@ -3430,7 +3427,7 @@ public class GameClient {
             case ExchangeAction.TRADING_WITH_COLLECTOR:
                 Collector collector = World.world.getCollector((Integer) exchangeAction.getValue());
                 if (collector == null) return;
-                for (Player loc : World.world.getGuild(collector.getGuildId()).getPlayers()) {
+                for (BasePlayer loc : World.world.getGuild(collector.getGuildId()).getPlayers()) {
                     if (loc != null && loc.isOnline()) {
                         SocketManager.GAME_SEND_gITM_PACKET(loc, org.starloco.locos.entity.Collector.parseToGuild(loc.getGuild().getId()));
                         String str = "";
@@ -3535,7 +3532,7 @@ public class GameClient {
                     if(mount.getOwner() == this.player.getId())
                         mounts.add(mount);
             }
-            final Player player = this.player;
+            final BasePlayer player = this.player;
             if(mounts.isEmpty()) return;
             final Mount mount = mounts.get(Formulas.getRandomValue(0, mounts.size() - 1));
             if(mounts.size() > 0) {
@@ -3603,7 +3600,7 @@ public class GameClient {
         switch (packet.charAt(2)) {
             case '%'://Nom de this.player
                 packet = packet.substring(3);
-                Player P = World.world.getPlayerByName(packet);
+                BasePlayer P = World.world.getPlayerByName(packet);
                 if (P == null || !P.isOnline())//Si P est nul, ou si P est nonNul et P offline
                 {
                     SocketManager.GAME_SEND_FA_PACKET(this.player, "Ef");
@@ -3622,7 +3619,7 @@ public class GameClient {
                 break;
             default:
                 packet = packet.substring(2);
-                Player Pr = World.world.getPlayerByName(packet);
+                BasePlayer Pr = World.world.getPlayerByName(packet);
                 if (Pr == null || !Pr.isOnline())//Si P est nul, ou si P est nonNul et P offline
                 {
                     SocketManager.GAME_SEND_FA_PACKET(this.player, "Ef");
@@ -3645,7 +3642,7 @@ public class GameClient {
         switch (packet.charAt(2)) {
             case '%'://Nom de this.player
                 packet = packet.substring(3);
-                Player P = World.world.getPlayerByName(packet);
+                BasePlayer P = World.world.getPlayerByName(packet);
                 if (P == null)//Si P est nul, ou si P est nonNul et P offline
                 {
                     SocketManager.GAME_SEND_FD_PACKET(this.player, "Ef");
@@ -3664,7 +3661,7 @@ public class GameClient {
                 break;
             default:
                 packet = packet.substring(2);
-                Player Pr = World.world.getPlayerByName(packet);
+                BasePlayer Pr = World.world.getPlayerByName(packet);
                 if (Pr == null || !Pr.isOnline())//Si P est nul, ou si P est nonNul et P offline
                 {
                     SocketManager.GAME_SEND_FD_PACKET(this.player, "Ef");
@@ -3681,7 +3678,7 @@ public class GameClient {
     }
 
     private void joinWife(String packet) {
-        Player Wife = World.world.getPlayer(this.player.getWife());
+        BasePlayer Wife = World.world.getPlayer(this.player.getWife());
         if (Wife == null)
             return;
         if (!Wife.isOnline()) {
@@ -3917,7 +3914,7 @@ public class GameClient {
             case 618://Mariage oui
                 this.player.setisOK(Integer.parseInt(packet.substring(5, 6)));
                 SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(this.player.getCurMap(), "", this.player.getId(), this.player.getName(), "game.gameclient.maried.yes");
-                Player boy = (Player) this.player.getCurMap().getCase(282).getPlayers().toArray()[0], girl = (Player) this.player.getCurMap().getCase(297).getPlayers().toArray()[0];
+                BasePlayer boy = (BasePlayer) this.player.getCurMap().getCase(282).getPlayers().toArray()[0], girl = (BasePlayer) this.player.getCurMap().getCase(297).getPlayers().toArray()[0];
 
                 if (girl.getisOK() > 0 && boy.getisOK() > 0)
                     World.world.wedding(girl, boy, 1);
@@ -3927,8 +3924,8 @@ public class GameClient {
             case 619://Mariage non
                 this.player.setisOK(0);
                 SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(this.player.getCurMap(), "", this.player.getId(), this.player.getName(), "game.gameclient.maried.no");
-                boy = (Player) this.player.getCurMap().getCase(282).getPlayers().toArray()[0];
-                girl = (Player) this.player.getCurMap().getCase(297).getPlayers().toArray()[0];
+                boy = (BasePlayer) this.player.getCurMap().getCase(282).getPlayers().toArray()[0];
+                girl = (BasePlayer) this.player.getCurMap().getCase(297).getPlayers().toArray()[0];
 
                 World.world.wedding(girl, boy, 0);
                 break;
@@ -4205,7 +4202,7 @@ public class GameClient {
             if (this.player.cantDefie())
                 return;
             int guid = Integer.parseInt(packet.substring(5));
-            Player target = World.world.getPlayer(guid);
+            BasePlayer target = World.world.getPlayer(guid);
             if (target == null)
                 return;
             if(this.player.getStalk() != null && player.getStalk().onPlayerTryToFight(player, target))
@@ -4268,7 +4265,7 @@ public class GameClient {
         if (this.player.getDuelId() != guid || this.player.getDuelId() == -1 || this.player.isDead() == 1)
             return;
         int duel = this.player.getDuelId();
-        Player player = World.world.getPlayer(duel);
+        BasePlayer player = World.world.getPlayer(duel);
 
         SocketManager.GAME_SEND_MAP_START_DUEL_TO_MAP(this.player.getCurMap(), duel, this.player.getId());
         this.clearPanelsForPlayer(player);
@@ -4285,7 +4282,7 @@ public class GameClient {
             if (this.player.getDuelId() == -1)
                 return;
             SocketManager.GAME_SEND_CANCEL_DUEL_TO_MAP(this.player.getCurMap(), this.player.getDuelId(), this.player.getId());
-            Player player = World.world.getPlayer(this.player.getDuelId());
+            BasePlayer player = World.world.getPlayer(this.player.getDuelId());
             player.setAway(false);
             player.setDuelId(-1);
             this.player.setAway(false);
@@ -4317,7 +4314,7 @@ public class GameClient {
                     SocketManager.GAME_SEND_GA903_ERROR_PACKET(this, 'o', guid);
                     return;
                 }
-                Player player = World.world.getPlayer(guid);
+                BasePlayer player = World.world.getPlayer(guid);
                 Fight fight = null;
 
                 if (player == null) {
@@ -4368,7 +4365,7 @@ public class GameClient {
                 SocketManager.GAME_SEND_EXCHANGE_REQUEST_ERROR(this.player.getGameClient(), 'S');
                 return;
             }
-            Player target = World.world.getPlayer(Integer.parseInt(packet.substring(5)));
+            BasePlayer target = World.world.getPlayer(Integer.parseInt(packet.substring(5)));
 
             if (target == null || !target.isOnline() || target.getFight() != null || target.getCurMap().getId()
                     != this.player.getCurMap().getId() || target.getAlignment() == this.player.getAlignment() || this.player.
@@ -4451,19 +4448,19 @@ public class GameClient {
     }
 
     //TODO: Change the duel asking method by ExchangeAction (better way)
-    public void clearAllPanels(Player target) {
+    public void clearAllPanels(BasePlayer target) {
         this.clearPanelsForPlayer(this.player);
         this.clearPanelsForPlayer(target);
     }
 
-    private void clearPanelsForPlayer(Player player) {
+    private void clearPanelsForPlayer(BasePlayer player) {
         if(player != null) {
             if(player.getExchangeAction() != null) {
                 player.setExchangeAction(null);
                 player.send("EV");
             }
             if(player.getDuelId() != -1) {
-                Player target = World.world.getPlayer(player.getDuelId());
+                BasePlayer target = World.world.getPlayer(player.getDuelId());
                 if(target != null) {
                     target.setAway(false);
                     target.setDuelId(-1);
@@ -4691,7 +4688,7 @@ public class GameClient {
             return;
 
         if (id > 0) {
-            final Player target = World.world.getPlayer(id);
+            final BasePlayer target = World.world.getPlayer(id);
 
             if (target == null || target.getFight() == null)
                 return;
@@ -4968,7 +4965,7 @@ public class GameClient {
         SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(this.player.getCurMap(), idCollector);
         ((CollectorData) DatabaseManager.get(CollectorData.class)).delete(collector);
         collector.delCollector(collector.getId());
-        for (Player z : this.player.getGuild().getPlayers()) {
+        for (BasePlayer z : this.player.getGuild().getPlayers()) {
             if (z.isOnline()) {
                 SocketManager.GAME_SEND_gITM_PACKET(z, org.starloco.locos.entity.Collector.parseToGuild(z.getGuild().getId()));
                 String str = "";
@@ -5076,7 +5073,7 @@ public class GameClient {
         SocketManager.GAME_SEND_ADD_PERCO_TO_MAP(map);
         SocketManager.GAME_SEND_STATS_PACKET(this.player);
 
-        for (Player player : guild.getPlayers()) {
+        for (BasePlayer player : guild.getPlayers()) {
             if (player != null && player.isOnline()) {
                 SocketManager.GAME_SEND_gITM_PACKET(player, org.starloco.locos.entity.Collector.parseToGuild(player.getGuild().getId()));
                 String str = "";
@@ -5116,7 +5113,7 @@ public class GameClient {
     private void invitationGuild(String packet) {
         switch (packet.charAt(0)) {
             case 'R'://Nom this.player
-                Player P = World.world.getPlayerByName(packet.substring(1));
+                BasePlayer P = World.world.getPlayerByName(packet.substring(1));
                 if (P == null || this.player.getGuild() == null) {
                     SocketManager.GAME_SEND_gJ_PACKET(this.player, "Eu");
                     return;
@@ -5154,7 +5151,7 @@ public class GameClient {
             case 'E'://ou Refus
                 if (packet.substring(1).equalsIgnoreCase(this.player.getInvitation()
                         + "")) {
-                    Player p = World.world.getPlayer(this.player.getInvitation());
+                    BasePlayer p = World.world.getPlayer(this.player.getInvitation());
                     if (p == null)
                         return;//Pas cens? arriver
                     SocketManager.GAME_SEND_gJ_PACKET(p, "Ec");
@@ -5163,7 +5160,7 @@ public class GameClient {
             case 'K'://Accepte
                 if (packet.substring(1).equalsIgnoreCase(this.player.getInvitation()
                         + "")) {
-                    Player p = World.world.getPlayer(this.player.getInvitation());
+                    BasePlayer p = World.world.getPlayer(this.player.getInvitation());
                     if (p == null)
                         return;//Pas cens? arriver
                     Guild G = p.getGuild();
@@ -5186,7 +5183,7 @@ public class GameClient {
     private void banToGuild(String name) {
         if (this.player.getGuild() == null)
             return;
-        Player P = World.world.getPlayerByName(name);
+        BasePlayer P = World.world.getPlayerByName(name);
         int guid = -1, guildId = -1;
         Guild toRemGuild;
         GuildMember toRemMember;
@@ -5267,7 +5264,7 @@ public class GameClient {
         byte xpGive = Byte.parseByte(infos[2]);
         int right = Integer.parseInt(infos[3]);
 
-        Player p = World.world.getPlayer(guid); //Cherche le this.playernnage a qui l'on change les droits dans la m?moire
+        BasePlayer p = World.world.getPlayer(guid); //Cherche le this.playernnage a qui l'on change les droits dans la m?moire
         GuildMember toChange;
         GuildMember changer = this.player.getGuildMember();
 
@@ -5395,7 +5392,7 @@ public class GameClient {
         /*if (!fail) {
             SocketManager.GAME_SEND_BN(this.player);
         }*/
-        for (Player z : World.world.getGuild(collector.getGuildId()).getPlayers())
+        for (BasePlayer z : World.world.getGuild(collector.getGuildId()).getPlayers())
 		{
 			if (z == null)
 				continue;
@@ -5469,7 +5466,7 @@ public class GameClient {
         switch (packet.charAt(2)) {
             case '%'://Nom de this.player
                 packet = packet.substring(3);
-                Player P = World.world.getPlayerByName(packet);
+                BasePlayer P = World.world.getPlayerByName(packet);
                 if (P == null) {
                     SocketManager.GAME_SEND_FD_PACKET(this.player, "Ef");
                     return;
@@ -5488,7 +5485,7 @@ public class GameClient {
                 break;
             default:
                 packet = packet.substring(2);
-                Player Pr = World.world.getPlayerByName(packet);
+                BasePlayer Pr = World.world.getPlayerByName(packet);
                 if (Pr == null || !Pr.isOnline()) {
                     SocketManager.GAME_SEND_FD_PACKET(this.player, "Ef");
                     return;
@@ -5510,7 +5507,7 @@ public class GameClient {
         switch (packet.charAt(2)) {
             case '%'://Nom de this.player
                 packet = packet.substring(3);
-                Player P = World.world.getPlayerByName(packet);
+                BasePlayer P = World.world.getPlayerByName(packet);
                 if (P == null) {
                     SocketManager.GAME_SEND_FD_PACKET(this.player, "Ef");
                     return;
@@ -5529,7 +5526,7 @@ public class GameClient {
                 break;
             default:
                 packet = packet.substring(2);
-                Player Pr = World.world.getPlayerByName(packet);
+                BasePlayer Pr = World.world.getPlayerByName(packet);
                 if (Pr == null || !Pr.isOnline()) {
                     SocketManager.GAME_SEND_FD_PACKET(this.player, "Ef");
                     return;
@@ -6206,7 +6203,7 @@ public class GameClient {
         int targetGuid = -1;
         short cellID = -1;
         int quantity = 1;
-        Player target = null;
+        BasePlayer target = null;
         try {
             String[] infos = packet.substring(2).split("\\|");
             guid = Integer.parseInt(infos[0]);
@@ -6398,7 +6395,7 @@ public class GameClient {
         if (this.player == null || this.player.getInvitation() == 0)
             return;
 
-        Player target = World.world.getPlayer(this.player.getInvitation());
+        BasePlayer target = World.world.getPlayer(this.player.getInvitation());
 
         if (target == null)
             return;
@@ -6438,7 +6435,7 @@ public class GameClient {
         }
         if (pGuid == -1)
             return;
-        Player P = World.world.getPlayer(pGuid);
+        BasePlayer P = World.world.getPlayer(pGuid);
         if (P == null || !P.isOnline())
             return;
         if (packet.charAt(2) == '+')//Suivre
@@ -6474,12 +6471,12 @@ public class GameClient {
 
         if (pGuid2 == -1)
             return;
-        Player P2 = World.world.getPlayer(pGuid2);
+        BasePlayer P2 = World.world.getPlayer(pGuid2);
         if (P2 == null || !P2.isOnline())
             return;
         if (packet.charAt(2) == '+')//Suivre
         {
-            for (Player T : g2.getPlayers()) {
+            for (BasePlayer T : g2.getPlayers()) {
                 if (T.getId() == P2.getId())
                     continue;
                 if (T.follow != null)
@@ -6492,7 +6489,7 @@ public class GameClient {
             }
         } else if (packet.charAt(2) == '-')//Ne plus suivre
         {
-            for (Player T : g2.getPlayers()) {
+            for (BasePlayer T : g2.getPlayers()) {
                 if (T.getId() == P2.getId())
                     continue;
                 SocketManager.GAME_SEND_DELETE_FLAG_PACKET(T);
@@ -6509,7 +6506,7 @@ public class GameClient {
             return;
 
         String name = packet.substring(2);
-        Player target = World.world.getPlayerByName(name);
+        BasePlayer target = World.world.getPlayerByName(name);
 
         if (target == null || !target.isOnline()) {
             SocketManager.GAME_SEND_GROUP_INVITATION_ERROR(this, "n" + name);
@@ -6540,7 +6537,7 @@ public class GameClient {
         if (this.player == null || this.player.getInvitation() == 0)
             return;
 
-        Player player = World.world.getPlayer(this.player.getInvitation());
+        BasePlayer player = World.world.getPlayer(this.player.getInvitation());
 
         if (player != null) {
             player.setInvitation(0);
@@ -6566,7 +6563,7 @@ public class GameClient {
                     return;
                 }
 
-                Player target = World.world.getPlayer(id);
+                BasePlayer target = World.world.getPlayer(id);
                 party.leave(target);
                 SocketManager.GAME_SEND_PV_PACKET(target.getGameClient(), String.valueOf(this.player.getId()));
                 SocketManager.GAME_SEND_IH_PACKET(target, "");
@@ -6582,7 +6579,7 @@ public class GameClient {
             return;
         String str = "";
         boolean isFirst = true;
-        for (Player GroupP : this.player.getParty().getPlayers()) {
+        for (BasePlayer GroupP : this.player.getParty().getPlayers()) {
             if (!isFirst)
                 str += "|";
             str += GroupP.getCurMap().getX() + ";" + GroupP.getCurMap().getY()
@@ -6639,7 +6636,7 @@ public class GameClient {
     private void buyMountPark(String packet) {
         SocketManager.GAME_SEND_R_PACKET(this.player, "v");//Fermeture du panneau
         MountPark MP = this.player.getCurMap().getMountPark();
-        Player Seller = World.world.getPlayer(MP.getOwner());
+        BasePlayer Seller = World.world.getPlayer(MP.getOwner());
         if (MP.getOwner() == -1) {
             SocketManager.GAME_SEND_Im_PACKET(this.player, "196");
             return;
@@ -6686,7 +6683,7 @@ public class GameClient {
         ((MountParkData) DatabaseManager.get(MountParkData.class)).update(MP);
         ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this.player);
         //On rafraichit l'enclo
-        for (Player z : this.player.getCurMap().getPlayers()) {
+        for (BasePlayer z : this.player.getCurMap().getPlayers()) {
             SocketManager.GAME_SEND_Rp_PACKET(z, MP);
         }
     }
@@ -6754,7 +6751,7 @@ public class GameClient {
         ((MountParkData) DatabaseManager.get(MountParkData.class)).update(MP1);
         ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this.player);
         //On rafraichit l'enclo
-        for (Player z : this.player.getCurMap().getPlayers()) {
+        for (BasePlayer z : this.player.getCurMap().getPlayers()) {
             SocketManager.GAME_SEND_Rp_PACKET(z, MP1);
         }
     }

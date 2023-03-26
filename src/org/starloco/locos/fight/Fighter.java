@@ -1,7 +1,7 @@
 package org.starloco.locos.fight;
 
 import org.starloco.locos.area.map.GameCase;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.client.other.Stats;
 import org.starloco.locos.common.Formulas;
 import org.starloco.locos.common.PathFinding;
@@ -32,8 +32,8 @@ public class Fighter implements Comparable<Fighter> {
     private Fight fight;
     private int type = 0;                                // 1 : Personnage, 2 : Mob, 5 : Perco
     private MonsterGrade mob = null;
-    private Player player = null;
-    private Player _double = null;
+    private BasePlayer player = null;
+    private BasePlayer _double = null;
     private Collector collector = null;
     private Prism prism = null;
     private int team = -2;
@@ -71,7 +71,7 @@ public class Fighter implements Comparable<Fighter> {
             this.state.put(Constant.ETAT_ENRACINE, 9999);
     }
 
-    public Fighter(Fight f, Player player) {
+    public Fighter(Fight f, BasePlayer player) {
         this.fight = f;
         if (player._isClone) {
             this.type = 10;
@@ -141,13 +141,13 @@ public class Fighter implements Comparable<Fighter> {
         return (this.mob != null);
     }
 
-    public Player getPlayer() {
+    public BasePlayer getPlayer() {
         if (this.type == 1)
             return this.player;
         return null;
     }
 
-    public Player getDouble() {
+    public BasePlayer getDouble() {
         return _double;
     }
 
@@ -155,7 +155,7 @@ public class Fighter implements Comparable<Fighter> {
         return (this._double != null);
     }
 
-    public void setDouble(Player _double) {
+    public void setDouble(BasePlayer _double) {
         this._double = _double;
     }
 
@@ -360,7 +360,7 @@ public class Fighter implements Comparable<Fighter> {
         return turn != null && turn != 0;
     }
 
-    public void sendState(Player p) {
+    public void sendState(BasePlayer p) {
         if (p != null && p.getAccount() != null && p.getGameClient() != null)
             for (Entry<Integer, Integer> state : this.state.entrySet())
                 SocketManager.GAME_SEND_GA_PACKET(p.getGameClient(), 7 + "", 950 + "", getId() + "", getId() + "," + state.getKey() + ",1");
@@ -756,7 +756,7 @@ public class Fighter implements Comparable<Fighter> {
     }
 
     boolean testIfCC(int porcCC, Spell.SortStats sSort, Fighter fighter) {
-        Player perso = fighter.getPlayer();
+        BasePlayer perso = fighter.getPlayer();
         if (porcCC < 2)
             return false;
         int agi = getTotalStats().getEffect(Constant.STATS_ADD_AGIL);

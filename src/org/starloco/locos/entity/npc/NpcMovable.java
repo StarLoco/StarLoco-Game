@@ -1,7 +1,7 @@
 package org.starloco.locos.entity.npc;
 
 import org.starloco.locos.area.map.GameMap;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.common.PathFinding;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.game.world.World;
@@ -31,7 +31,7 @@ public class NpcMovable extends Npc {
         if(dir == 'E') {
             nbr = Short.parseShort(this.path[this.position].substring(1));
 
-            for(Player player : this.map.getPlayers())
+            for(BasePlayer player : this.map.getPlayers())
                 player.send("eUK" + this.getId() + "|" + nbr);
         } else {
             nbr = Short.parseShort(String.valueOf(this.path[this.position].charAt(1)));
@@ -55,7 +55,7 @@ public class NpcMovable extends Npc {
             if (path == null)
                 return;
 
-            for (Player player : this.map.getPlayers())
+            for (BasePlayer player : this.map.getPlayers())
             	if(player != null)
                 	SocketManager.GAME_SEND_GA_PACKET(player.getGameClient(), "0", "1", String.valueOf(this.getId()), path);
 

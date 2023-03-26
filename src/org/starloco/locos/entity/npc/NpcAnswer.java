@@ -1,6 +1,6 @@
 package org.starloco.locos.entity.npc;
 
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.other.Action;
 import org.starloco.locos.quest.Quest;
 
@@ -39,7 +39,7 @@ public class NpcAnswer {
         this.actions.add(action0);
     }
 
-    public boolean apply(Player player) {
+    public boolean apply(BasePlayer player) {
         boolean leave = true;
         for (Action action : this.getActions())
             leave = action.apply(player, null, -1, -1);

@@ -2,7 +2,7 @@ package org.starloco.locos.job;
 
 import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.area.map.entity.InteractiveObject;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.game.action.GameAction;
 import org.starloco.locos.game.world.World;
@@ -65,7 +65,7 @@ public class JobStat {
         return null;
     }
 
-    public void startAction(int id, Player P, InteractiveObject IO, GameAction GA, GameCase cell) {
+    public void startAction(int id, BasePlayer P, InteractiveObject IO, GameAction GA, GameCase cell) {
         for (JobAction JA : this.posActions) {
             if (JA.getId() == id) {
                 this.curAction = JA;
@@ -75,7 +75,7 @@ public class JobStat {
         }
     }
 
-    public void endAction(Player P, InteractiveObject IO, GameAction GA, GameCase cell) {
+    public void endAction(BasePlayer P, InteractiveObject IO, GameAction GA, GameCase cell) {
         if (this.curAction == null)
             return;
 
@@ -86,7 +86,7 @@ public class JobStat {
         SocketManager.GAME_SEND_JX_PACKET(P, list);
     }
 
-    public void addXp(Player P, long xp) {
+    public void addXp(BasePlayer P, long xp) {
         if(xp<0) throw new IllegalArgumentException("xp must be positive");
         if (this.lvl > 99)
             return;
@@ -112,7 +112,7 @@ public class JobStat {
         return String.valueOf(World.world.getExpLevel(this.lvl).metier) + s + this.xp + s + World.world.getExpLevel((this.lvl < 100 ? this.lvl + 1 : this.lvl)).metier;
     }
 
-    public void levelUp(Player P, boolean send) {
+    public void levelUp(BasePlayer P, boolean send) {
         this.lvl++;
         this.posActions = JobConstant.getPosActionsToJob(this.template.getId(), this.lvl);
 

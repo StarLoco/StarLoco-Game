@@ -1,7 +1,7 @@
 package org.starloco.locos.entity.npc;
 
 import org.starloco.locos.area.map.GameMap;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.game.action.type.NpcDialogActionData;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.game.world.World.Couple;
@@ -46,7 +46,7 @@ public class NpcQuestion {
         this.args = args;
     }
 
-    public String conditionsReponse(Player player) {
+    public String conditionsReponse(BasePlayer player) {
         String str = "";
         try {
             String[] split = this.answers.split(";");
@@ -495,7 +495,7 @@ public class NpcQuestion {
         return str;
     }
 
-    public String parse(Player player) {
+    public String parse(BasePlayer player) {
         NpcDialogActionData data = (NpcDialogActionData) player.getExchangeAction().getValue();
 
         if (this.condition != null && !this.condition.equals("")) {
@@ -557,7 +557,7 @@ public class NpcQuestion {
         return str;
     }
 
-    private String parseArgs(String args, Player player) {
+    private String parseArgs(String args, BasePlayer player) {
         String arg = args;
         arg = arg.replace("[name]", player.getStringVar("name"));
         arg = arg.replace("[bankCost]", player.getStringVar("bankCost"));

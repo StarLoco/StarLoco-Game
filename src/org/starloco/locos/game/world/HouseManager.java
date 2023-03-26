@@ -3,7 +3,7 @@ package org.starloco.locos.game.world;
 import org.starloco.locos.area.map.entity.House;
 import org.starloco.locos.area.map.entity.Trunk;
 import org.starloco.locos.client.Account;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.database.DatabaseManager;
 import org.starloco.locos.database.data.game.HouseData;
@@ -29,7 +29,7 @@ public class HouseManager {
         return null;
     }
 
-    public void load(Player player, int newMapID) {
+    public void load(BasePlayer player, int newMapID) {
         World.world.getHouses().entrySet().stream().filter(house -> house.getValue().getMapId() == newMapID).forEach(house -> {
             StringBuilder packet = new StringBuilder();
             packet.append("P").append(house.getValue().getId()).append("|");
@@ -87,7 +87,7 @@ public class HouseManager {
         });
     }
 
-    public void buy(Player player)//Acheter une maison
+    public void buy(BasePlayer player)//Acheter une maison
     {
         House house = player.getInHouse();
 
@@ -127,13 +127,13 @@ public class HouseManager {
         SocketManager.GAME_SEND_STATS_PACKET(player);
         ((HouseData) DatabaseManager.get(HouseData.class)).buy(player, house);
 
-        for (Player viewer : player.getCurMap().getPlayers())
+        for (BasePlayer viewer : player.getCurMap().getPlayers())
             World.world.getHouseManager().load(viewer, viewer.getCurMap().getId());
 
         ((PlayerData) DatabaseManager.get(PlayerData.class)).update(player);
     }
 
-    public void sell(Player P, String packet)//Vendre une maison
+    public void sell(BasePlayer P, String packet)//Vendre une maison
     {
         House h = P.getInHouse();
         int price = Integer.parseInt(packet);
@@ -143,21 +143,21 @@ public class HouseManager {
             //Vente de la maison
             ((HouseData) DatabaseManager.get(HouseData.class)).sell(h, price);
             //Rafraichir la map apr�s la mise en vente
-            for (Player z : P.getCurMap().getPlayers())
+            for (BasePlayer z : P.getCurMap().getPlayers())
                 load(z, z.getCurMap().getId());
         }
     }
 
-    public void closeCode(Player player) {
+    public void closeCode(BasePlayer player) {
         SocketManager.GAME_SEND_KODE(player, "V");
         player.setExchangeAction(null);
     }
 
-    public void closeBuy(Player P) {
+    public void closeBuy(BasePlayer P) {
         SocketManager.GAME_SEND_hOUSE(P, "V");
     }
 
-    public void lockIt(Player player, String packet) {
+    public void lockIt(BasePlayer player, String packet) {
         ExchangeAction<?> action = player.getExchangeAction();
 
         if(action != null && action.getType() == ExchangeAction.LOCK_HOUSE) {
@@ -169,7 +169,7 @@ public class HouseManager {
         }
     }
 
-    public String parseHouseToGuild(Player P) {
+    public String parseHouseToGuild(BasePlayer P) {
         boolean isFirst = true;
         String packet = "+";
         for (Map.Entry<Integer, House> house : World.world.getHouses().entrySet()) {
@@ -217,14 +217,14 @@ public class HouseManager {
         return packet;
     }
 
-    public boolean alreadyHaveHouse(Player P) {
+    public boolean alreadyHaveHouse(BasePlayer P) {
         for (Map.Entry<Integer, House> house : World.world.getHouses().entrySet())
             if (house.getValue().getOwnerId() == P.getAccID())
                 return true;
         return false;
     }
 
-    public void parseHG(Player P, String packet) {
+    public void parseHG(BasePlayer P, String packet) {
         House h = P.getInHouse();
         if (P.getGuild() == null)
             return;
@@ -268,12 +268,12 @@ public class HouseManager {
         return i;
     }
 
-    public void leave(Player player, String packet) {
+    public void leave(BasePlayer player, String packet) {
         House h = player.getInHouse();
         if (!h.isHouse(player, h))
             return;
         int Pguid = Integer.parseInt(packet);
-        Player Target = World.world.getPlayer(Pguid);
+        BasePlayer Target = World.world.getPlayer(Pguid);
         if (Target == null || !Target.isOnline() || Target.getFight() != null
                 || Target.getCurMap().getId() != player.getCurMap().getId())
             return;
@@ -281,7 +281,7 @@ public class HouseManager {
         SocketManager.GAME_SEND_Im_PACKET(Target, "018;" + player.getName());
     }
 
-    public House getHouseByPerso(Player player)  {
+    public House getHouseByPerso(BasePlayer player)  {
         for (Map.Entry<Integer, House> house : World.world.getHouses().entrySet())
             if (house.getValue().getOwnerId() == player.getAccID())
                 return house.getValue();

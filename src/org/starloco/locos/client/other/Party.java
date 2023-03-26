@@ -1,7 +1,7 @@
 package org.starloco.locos.client.other;
 
 import org.starloco.locos.area.map.GameCase;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.common.PathFinding;
 import org.starloco.locos.common.SocketManager;
 
@@ -10,20 +10,20 @@ import java.util.List;
 
 public class Party {
 
-    private Player chief, master;
-    private final ArrayList<Player> players = new ArrayList<>();
+    private BasePlayer chief, master;
+    private final ArrayList<BasePlayer> players = new ArrayList<>();
     private final ArrayList<MasterOption> options = new ArrayList<>();
 
-    public Party(Player p1, Player p2) {
+    public Party(BasePlayer p1, BasePlayer p2) {
         this.chief = p1;
         this.players.add(p1);
         this.players.add(p2);
     }
-    public Player getChief() {
+    public BasePlayer getChief() {
         return this.chief;
     }
 
-    public void setChief(Player chief) {
+    public void setChief(BasePlayer chief) {
         this.chief = chief;
     }
 
@@ -31,23 +31,23 @@ public class Party {
         return this.chief.getId() == id;
     }
 
-    public Player getMaster() {
+    public BasePlayer getMaster() {
         return master;
     }
 
-    public void setMaster(Player master) {
+    public void setMaster(BasePlayer master) {
         this.master = master;
     }
 
-    public ArrayList<Player> getPlayers() {
+    public ArrayList<BasePlayer> getPlayers() {
         return this.players;
     }
 
-    public void addPlayer(Player player) {
+    public void addPlayer(BasePlayer player) {
         this.players.add(player);
     }
 
-    public void leave(Player player) {
+    public void leave(BasePlayer player) {
         if (!this.players.contains(player)) return;
 
         player.follow = null;
@@ -55,7 +55,7 @@ public class Party {
         player.setParty(null);
         this.players.removeIf(player1 ->  player1.getId() == player.getId());
 
-        for(Player member : this.players) {
+        for(BasePlayer member : this.players) {
             if(member.follow == player) member.follow = null;
             member.follower.remove(player.getId());
         }
@@ -68,7 +68,7 @@ public class Party {
         } else {
             if(this.isChief(player.getId())) {
                 this.chief = this.players.get(0);
-                for(Player member : this.players) {
+                for(BasePlayer member : this.players) {
                     member.send("PL" + this.chief.getId());
                 }
             }
@@ -108,20 +108,20 @@ public class Party {
         }
     }
 
-    public boolean isWithTheMaster(Player follower, boolean inFight, boolean changeMap) {
+    public boolean isWithTheMaster(BasePlayer follower, boolean inFight, boolean changeMap) {
         boolean sameMap = changeMap || (this.master.getCurMap() == follower.getCurMap() && this.master.getCurMap().getId() == follower.getCurMap().getId());
 
         return sameMap && !follower.getName().equals(this.master.getName()) &&  this.players.contains(follower) && follower.getGameClient() != null &&
                 this.haveSameIp(follower) && (inFight ? follower.getFight() == this.master.getFight() : follower.getFight() == null);
     }
 
-    private boolean haveSameIp(Player follower) {
+    private boolean haveSameIp(BasePlayer follower) {
         if(follower.getAccount() != null && this.master != null && this.master.getAccount() != null)
             return follower.getAccount().getCurrentIp().equals(this.master.getAccount().getCurrentIp());
         return false;
     }
 
-    public MasterOption getOptionByPlayer(Player player) {
+    public MasterOption getOptionByPlayer(BasePlayer player) {
         if(this.players.contains(player)) {
             for (MasterOption option : options)
                 if (option.player.getId() == player.getId())
@@ -139,10 +139,10 @@ public class Party {
 
     public static class MasterOption {
 
-        private final Player player;
+        private final BasePlayer player;
         private byte second = 1, pass = 0;
 
-        public MasterOption(Player player) {
+        public MasterOption(BasePlayer player) {
             this.player = player;
         }
 

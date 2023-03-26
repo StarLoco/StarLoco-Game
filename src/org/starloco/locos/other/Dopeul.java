@@ -1,7 +1,7 @@
 package org.starloco.locos.other;
 
 import org.starloco.locos.area.map.GameMap;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.database.DatabaseManager;
 import org.starloco.locos.database.data.login.PlayerData;
@@ -24,7 +24,7 @@ public class Dopeul {
         return donjons;
     }
 
-    public static void getReward(Player player, int type) {
+    public static void getReward(BasePlayer player, int type) {
         GameMap curMap = player.getCurMap();
         int idMap = World.world.getTempleByClasse(player.getClasse());
         switch (type) {
@@ -162,7 +162,7 @@ public class Dopeul {
         return -1;
     }
 
-    public static int hasOneDoplon(Player perso) {
+    public static int hasOneDoplon(BasePlayer perso) {
         if (perso.hasItemTemplate(10306, 1, false))
             return 10306;
         else if (perso.hasItemTemplate(10308, 1, false))
@@ -191,7 +191,7 @@ public class Dopeul {
             return -1;
     }
 
-    private static ArrayList<Integer> hasQuaDoplon(Player perso, int qua) {
+    private static ArrayList<Integer> hasQuaDoplon(BasePlayer perso, int qua) {
         ArrayList<Integer> doplons = new ArrayList<>();
 
         if (perso.hasItemTemplate(10306, qua, false))
@@ -221,7 +221,7 @@ public class Dopeul {
         return doplons;
     }
 
-    private static void removeObject(Player perso, int id, int qua) {
+    private static void removeObject(BasePlayer perso, int id, int qua) {
         perso.removeItemByTemplateId(id, qua, false);
         SocketManager.GAME_SEND_Ow_PACKET(perso);
         SocketManager.GAME_SEND_Im_PACKET(perso, "022;" + qua + "~" + id);

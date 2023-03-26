@@ -1,7 +1,7 @@
 package org.starloco.locos.event.type;
 
 import org.starloco.locos.area.map.GameCase;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.common.Formulas;
 import org.starloco.locos.common.PathFinding;
 import org.starloco.locos.common.SocketManager;
@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 public class EventSmiley extends Event {
 
     private final List<Byte> emotes = new ArrayList<>();
-    private final List<World.Couple<Player, List<Byte>>> answers = new ArrayList<>();
+    private final List<World.Couple<BasePlayer, List<Byte>>> answers = new ArrayList<>();
     private byte state = 0, count = 0;
     private final short[] cells = {239, 253, 225, 267, 211, 281, 197, 295, 183, 309, 169};
     private Npc animator;
@@ -85,10 +85,10 @@ public class EventSmiley extends Event {
     public void execute() {
         this.count = 0;
 
-        List<Player> participants = new ArrayList<>(EventManager.getInstance().getParticipants());
+        List<BasePlayer> participants = new ArrayList<>(EventManager.getInstance().getParticipants());
         int nbPlayers = participants.size();
 
-        for(Player player : participants)
+        for(BasePlayer player : participants)
             if(player != null && player.isOnline())
                 this.answers.add(new World.Couple<>(player, new ArrayList<>()));
 
@@ -121,7 +121,7 @@ public class EventSmiley extends Event {
             SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(this.map, "", this.animator.getId(), "Event", "event.type.eventsmiley.run.3");
             this.state = 0;
 
-            for(World.Couple<Player, List<Byte>> pair : new ArrayList<>(this.answers)) {
+            for(World.Couple<BasePlayer, List<Byte>> pair : new ArrayList<>(this.answers)) {
                 if(pair.second.size() == this.count) {
                     byte c = 0;
                     boolean kick = false;
@@ -162,7 +162,7 @@ public class EventSmiley extends Event {
     @Override
     public void close() {
         if(!EventManager.getInstance().getParticipants().isEmpty()) {
-            Player winner = EventManager.getInstance().getParticipants().get(0);
+            BasePlayer winner = EventManager.getInstance().getParticipants().get(0);
 
             SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(this.map, "", this.animator.getId(), "Event", "event.type.eventsmiley.win");
             winner.sendMessage(winner.getLang().trans("event.type.eventsmiley.winner"));
@@ -188,17 +188,17 @@ public class EventSmiley extends Event {
         EventManager.getInstance().finishCurrentEvent();
     }
 
-    public GameCase getEmptyCellForPlayer(Player player) {
+    public GameCase getEmptyCellForPlayer(BasePlayer player) {
         return map.getCase(this.cells[count++]);
     }
 
     @Override
-    public void kickPlayer(Player player) {
+    public void kickPlayer(BasePlayer player) {
         EventManager.getInstance().getParticipants().remove(player);
-        Iterator<World.Couple<Player, List<Byte>>> iterator = this.answers.iterator();
+        Iterator<World.Couple<BasePlayer, List<Byte>>> iterator = this.answers.iterator();
 
         while(iterator.hasNext()) {
-            World.Couple<Player, List<Byte>> pair = iterator.next();
+            World.Couple<BasePlayer, List<Byte>> pair = iterator.next();
 
             if(pair.first.getId() == player.getId()) {
                 this.map.send("GA;208;" + player.getId() + ";" + player.getCurCell().getId() + ",2916,11,8,1");
@@ -212,10 +212,10 @@ public class EventSmiley extends Event {
     }
 
     @Override
-    public boolean onReceivePacket(EventManager manager, Player player, String packet) throws Exception {
+    public boolean onReceivePacket(EventManager manager, BasePlayer player, String packet) throws Exception {
         if(packet.startsWith("BS") && this.state == 1) {
             byte emote = Byte.parseByte(packet.substring(2));
-            for(World.Couple<Player, List<Byte>> pair : this.answers) {
+            for(World.Couple<BasePlayer, List<Byte>> pair : this.answers) {
                 if(pair.first.getId() == player.getId()) {
                     pair.second.add(emote);
                     if(pair.second.size() == this.count)
@@ -230,7 +230,7 @@ public class EventSmiley extends Event {
 
     private void initializeTurn(short time) {
         this.state = 1;
-        for (Player player : EventManager.getInstance().getParticipants()) {
+        for (BasePlayer player : EventManager.getInstance().getParticipants()) {
             player.send("GTS" + player.getId() + "|" + time);
         }
     }

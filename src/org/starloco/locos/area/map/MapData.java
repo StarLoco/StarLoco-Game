@@ -2,7 +2,7 @@ package org.starloco.locos.area.map;
 
 import org.starloco.locos.area.Area;
 import org.starloco.locos.area.SubArea;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.entity.monster.MonsterGrade;
 import org.starloco.locos.game.world.World;
 
@@ -67,5 +67,5 @@ public abstract class MapData {
                 ";" + (noDefy ? 1 : 0) + ";" + (noAgro ? 1 : 0) + ";" + (noCanal ? 1 : 0);
     }
 
-    public abstract void onMoveEnd(Player p);
+    public abstract void onMoveEnd(BasePlayer p);
 }

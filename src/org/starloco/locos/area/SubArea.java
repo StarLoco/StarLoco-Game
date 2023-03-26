@@ -1,7 +1,7 @@
 package org.starloco.locos.area;
 
 import org.starloco.locos.area.map.GameMap;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.entity.Prism;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.Constant;
@@ -81,7 +81,7 @@ public class SubArea {
         this.mapIDs.add(mapID);
     }
 
-    public boolean ownNearestSubArea(Player player) {
+    public boolean ownNearestSubArea(BasePlayer player) {
         for (short id : this.nearestSubAreas) {
             SubArea temp = World.world.getSubArea(id);
             if (temp != null && temp.getAlignment() == player.getAlignment())
@@ -90,11 +90,11 @@ public class SubArea {
         return false;
     }
 
-    public boolean isMoreThanEnemies(Player player) {
+    public boolean isMoreThanEnemies(BasePlayer player) {
         short bonta = 0, brak = 1;
 
         for(GameMap map : getMaps()) {
-            for (Player temp : map.getPlayers()) {
+            for (BasePlayer temp : map.getPlayers()) {
                 if(!temp.isOnline()) continue;
                 if (temp.getAlignment() == Constant.ALIGNEMENT_BONTARIEN) bonta++;
                 else if (temp.getAlignment() == Constant.ALIGNEMENT_BRAKMARIEN) brak++;

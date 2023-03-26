@@ -12,7 +12,7 @@ import org.starloco.locos.area.map.entity.InteractiveObject.InteractiveObjectTem
 import org.starloco.locos.area.map.labyrinth.Minotoror;
 import org.starloco.locos.area.map.labyrinth.PigDragon;
 import org.starloco.locos.client.Account;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.client.other.MorphMode;
 import org.starloco.locos.client.other.Stats;
 import org.starloco.locos.common.ConditionParser;
@@ -61,7 +61,7 @@ public class World {
     public Logger logger = (Logger) LoggerFactory.getLogger(World.class);
 
     private final Map<Integer, Account>    accounts    = new HashMap<>();
-    private final Map<Integer, Player>     players     = new HashMap<>();
+    private final Map<Integer, BasePlayer>     players     = new HashMap<>();
     private final Map<Integer, GameMap>    maps        = new ConcurrentHashMap<>();
     private final Map<Integer, MapData>    mapsData    = new ConcurrentHashMap<>();
     private final Map<Integer, GameObject> objects     = new ConcurrentHashMap<>();
@@ -153,27 +153,27 @@ public class World {
     //endregion
 
     //region Players data
-    public Collection<Player> getPlayers() {
+    public Collection<BasePlayer> getPlayers() {
         return players.values();
     }
 
-    public void addPlayer(Player player) {
+    public void addPlayer(BasePlayer player) {
         players.put(player.getId(), player);
         ((QuestPlayerData) DatabaseManager.get(QuestPlayerData.class)).load(player.getId());
     }
 
-    public Player getPlayerByName(String name) {
-        for (Player player : players.values())
+    public BasePlayer getPlayerByName(String name) {
+        for (BasePlayer player : players.values())
             if (player.getName().equalsIgnoreCase(name))
                 return player;
         return null;
     }
 
-    public Player getPlayer(int id) {
+    public BasePlayer getPlayer(int id) {
         return players.get(id);
     }
 
-    public List<Player> getOnlinePlayers() {
+    public List<BasePlayer> getOnlinePlayers() {
         return players.values().stream().filter(player -> player.isOnline() && player.getGameClient() != null).collect(Collectors.toList());
     }
     //endregion
@@ -671,7 +671,7 @@ public class World {
         return Math.rint((10 * cant / 4) / 10);
     }
 
-    public double getConquestBonus(Player player) {
+    public double getConquestBonus(BasePlayer player) {
         if(player == null) return 1;
         if(player.getAlignment() == 0) return 1;
         final double factor = 1 + (getBalanceWorld(player.getAlignment()) * Math.rint((player.getGrade() / 2.5) + 1)) / 100;
@@ -712,15 +712,15 @@ public class World {
         npcsTemplate.put(temp.getId(), temp);
     }
 
-    public void removePlayer(Player player) {
+    public void removePlayer(BasePlayer player) {
         if (player.getGuild() != null) {
             if (player.getGuild().getPlayers().size() <= 1) {
                 removeGuild(player.getGuild().getId());
             } else if (player.getGuildMember().getRank() == 1) {
                 int curMaxRight = 0;
-                Player leader = null;
+                BasePlayer leader = null;
 
-                for (Player newLeader : player.getGuild().getPlayers())
+                for (BasePlayer newLeader : player.getGuild().getPlayers())
                     if (newLeader != player && newLeader.getGuildMember().getRights() < curMaxRight)
                         leader = newLeader;
 
@@ -732,7 +732,7 @@ public class World {
             }
         }
         if(player.getWife() != 0) {
-            Player wife = getPlayer(player.getWife());
+            BasePlayer wife = getPlayer(player.getWife());
 
             if(wife != null) {
                 wife.setWife(0);
@@ -743,7 +743,7 @@ public class World {
         players.remove(player.getId());
     }
 
-    public void unloadPerso(Player perso) {
+    public void unloadPerso(BasePlayer perso) {
         unloadPerso(perso.getId());//UnLoad du perso+item
         players.remove(perso.getId());
     }
@@ -828,7 +828,7 @@ public class World {
         int ange = 0;
         int demon = 0;
         int total = 0;
-        for (Player i : getPlayers()) {
+        for (BasePlayer i : getPlayers()) {
             if (i == null)
                 continue;
             if (i.getAlignment() == 1)
@@ -961,7 +961,7 @@ public class World {
         return i;
     }
 
-    public ArrayList<GameMap> getMapByPosInArrayPlayer(int mapX, int mapY, Player player) {
+    public ArrayList<GameMap> getMapByPosInArrayPlayer(int mapX, int mapY, BasePlayer player) {
         return maps.values().stream().filter(map -> map != null && map.getSubArea() != null && player.getCurMap().getSubArea() != null).filter(map -> map.getX() == mapX && map.getY() == mapY && map.getSubArea().getArea().getSuperArea() == player.getCurMap().getSubArea().getArea().getSuperArea()).collect(Collectors.toCollection(ArrayList::new));
     }
 
@@ -1039,7 +1039,7 @@ public class World {
     }
 
     public void unloadPerso(int g) {
-        Player toRem = players.get(g);
+        BasePlayer toRem = players.get(g);
         if (!toRem.getItems().isEmpty())
             for (Entry<Integer, GameObject> curObj : toRem.getItems().entrySet())
                 objects.remove(curObj.getKey());
@@ -1130,7 +1130,7 @@ public class World {
         return ObjTemplates.values();
     }
 
-    public void priestRequest(Player boy, Player girl, Player asked) {
+    public void priestRequest(BasePlayer boy, BasePlayer girl, BasePlayer asked) {
         if(boy.getSexe() == 0 && girl.getSexe() == 1) {
             final GameMap map = boy.getCurMap();
             if (boy.getWife() != 0) {// 0 : femme | 1 = homme
@@ -1149,7 +1149,7 @@ public class World {
     }
 
 
-    public void wedding(Player boy, Player girl, int isOK) {
+    public void wedding(BasePlayer boy, BasePlayer girl, int isOK) {
         if (isOK > 0) {
             SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(boy.getCurMap(), "", -1, "Prêtre", "world.world.maried.pietre.ask.ok");
             boy.setWife(girl.getId());
@@ -1267,7 +1267,7 @@ public class World {
         return null;
     }
 
-    public String PrismesGeoposition(Player player, int alignement) {
+    public String PrismesGeoposition(BasePlayer player, int alignement) {
         StringBuilder str = new StringBuilder();
         boolean first = false;
         int subareas = 0;
@@ -1310,7 +1310,7 @@ public class World {
         return str.toString();
     }
 
-    public void showPrismes(Player perso) {
+    public void showPrismes(BasePlayer perso) {
         for (SubArea subarea : subAreas.values()) {
             if (subarea.getAlignment() == 0)
                 continue;
@@ -1516,7 +1516,7 @@ public class World {
         return toReturn.toString();
     }
 
-    public void verifyClone(Player p) {
+    public void verifyClone(BasePlayer p) {
         if (p.getCurCell() != null && p.getFight() == null) {
             if (p.getCurCell().getPlayers().contains(p)) {
                 p.getCurCell().removePlayer(p);
@@ -1604,7 +1604,7 @@ public class World {
         return null;
     }
 
-    public void addSeller(Player player) {
+    public void addSeller(BasePlayer player) {
         if (player.getStoreItems().isEmpty())
             return;
 

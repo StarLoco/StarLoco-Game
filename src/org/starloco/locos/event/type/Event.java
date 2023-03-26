@@ -1,7 +1,7 @@
 package org.starloco.locos.event.type;
 
 import org.starloco.locos.area.map.GameMap;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.event.IEvent;
 
 /**
@@ -53,5 +53,5 @@ public abstract class Event implements IEvent {
         }
     }
 
-    public abstract void kickPlayer(Player player);
+    public abstract void kickPlayer(BasePlayer player);
 }

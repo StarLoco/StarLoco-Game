@@ -3,7 +3,7 @@ package org.starloco.locos.database.data.game;
 import com.zaxxer.hikari.HikariDataSource;
 import org.starloco.locos.auction.Auction;
 import org.starloco.locos.auction.AuctionManager;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.database.data.FunctionDAO;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.object.GameObject;
@@ -27,7 +27,7 @@ public class AuctionData extends FunctionDAO<Auction> {
         try {
             result = getData("SELECT * FROM " + getTableName() + ";");
             while (result.next()) {
-                final Player player = World.world.getPlayer(result.getInt("owner"));
+                final BasePlayer player = World.world.getPlayer(result.getInt("owner"));
                 final GameObject object = World.world.getGameObject(result.getInt("object"));
 
                 if(object == null || player == null) {

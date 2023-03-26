@@ -1,6 +1,7 @@
 package org.starloco.locos.fight.spells;
 
 import org.starloco.locos.area.map.GameCase;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.common.Formulas;
 import org.starloco.locos.common.PathFinding;
@@ -419,7 +420,7 @@ public class SpellEffect implements Cloneable {
 		} catch (Exception ignored) {}
 
 		if (caster.getPlayer() != null) {
-			Player perso = caster.getPlayer();
+			BasePlayer perso = caster.getPlayer();
 			if (perso.getObjectsClassSpell().containsKey(spell)) {
 				int modi = 0;
 				if (effectID == 108)
@@ -3629,7 +3630,7 @@ public class SpellEffect implements Cloneable {
 		if (!this.cell.getFighters().isEmpty())
 			return;
 		int id = fight.getNextLowerFighterGuid();
-		Player clone = Player.ClonePerso(caster.getPlayer(), -id - 10000, (caster.getPlayer().getMaxPdv() - ((caster.getLvl() - 1) * 5 + 50)));
+		BasePlayer clone = Player.ClonePerso(caster.getPlayer(), -id - 10000, (caster.getPlayer().getMaxPdv() - ((caster.getLvl() - 1) * 5 + 50)));
 		clone.setFight(fight);
 
 		Fighter fighter = new Fighter(fight, clone);

@@ -2,7 +2,7 @@ package org.starloco.locos.entity.mount;
 
 import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.area.map.entity.MountPark;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.client.other.Stats;
 import org.starloco.locos.common.Formulas;
 import org.starloco.locos.common.PathFinding;
@@ -194,7 +194,7 @@ public class Mount {
 							if (mount.getSavage() == 1) {
 								park.getListOfRaising().remove(mount.id);
 								park.getMap().send("GM|-" + mount.getId());
-								Player player = World.world.getPlayer(mount.getOwner());
+								BasePlayer player = World.world.getPlayer(mount.getOwner());
 								if (player != null && player.isOnline()) {
 									player.send("Im0111;~" + park.getMap().getX() + "," + park.getMap().getY());
 									SocketManager.GAME_SEND_Ee_PACKET(player, '-', String.valueOf(mount.getId()));
@@ -214,7 +214,7 @@ public class Mount {
 							if (mountArg.getSavage() == 1) {
 								park.getListOfRaising().remove(mountArg.id);
 								park.getMap().send("GM|-" + mountArg.getId());
-								Player player = World.world.getPlayer(mountArg.getOwner());
+								BasePlayer player = World.world.getPlayer(mountArg.getOwner());
 								if (player != null && player.isOnline()) {
 									player.send("Im0111;~" + park.getMap().getX() + "," + park.getMap().getY());
 									SocketManager.GAME_SEND_Ee_PACKET(player, '-', String.valueOf(mountArg.getId()));
@@ -232,7 +232,7 @@ public class Mount {
 		return action;
 	}
 
-	public synchronized void checkBaby(Player player, MountPark mp) {
+	public synchronized void checkBaby(BasePlayer player, MountPark mp) {
         if(this.fecundatedDate == -1) return;
 		int time = Generation.getTimeGestation(Constant.getGeneration(this.getColor()));
         int actualHours = (int) ((System.currentTimeMillis() - this.getFecundatedDate()) / 3600000) + 1;
@@ -629,7 +629,7 @@ public class Mount {
 		return fatigue == 240 ? 0 : 1;
 	}
 	
-	public synchronized void moveMounts(Player player, int cellules, boolean remove) {
+	public synchronized void moveMounts(BasePlayer player, int cellules, boolean remove) {
 		int action = 0;
 		if(player == null)
 			return;
@@ -918,8 +918,8 @@ public class Mount {
         final int finalCell = cellTest, finalAction = action;
 
         if(map.getPlayers().size() > 0) {
-			Player player = null;
-			for(Player target : map.getPlayers())
+			BasePlayer player = null;
+			for(BasePlayer target : map.getPlayers())
 				player = target;
 			if (player != null)
 				TimerWaiter.addNext(() -> {
@@ -929,7 +929,7 @@ public class Mount {
         }
     }
 	
-	public void addObject(int guid, int qua, Player P) {
+	public void addObject(int guid, int qua, BasePlayer P) {
 		if(qua <= 0)
 			return;
 		GameObject playerObj = World.world.getGameObject(guid);
@@ -1000,7 +1000,7 @@ public class Mount {
 		SocketManager.GAME_SEND_EL_MOUNT_PACKET(P, this);
 	}
 	
-	public void removeObject(int guid, int qua, Player P) {
+	public void removeObject(int guid, int qua, BasePlayer P) {
 		if(qua <= 0)
 			return;
 		GameObject TrunkObj = World.world.getGameObject(guid);

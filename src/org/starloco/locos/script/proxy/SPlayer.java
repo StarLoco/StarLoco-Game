@@ -4,7 +4,7 @@ import org.classdump.luna.ByteString;
 import org.classdump.luna.impl.DefaultUserdata;
 import org.classdump.luna.impl.ImmutableTable;
 import org.classdump.luna.lib.ArgumentIterator;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.database.DatabaseManager;
 import org.starloco.locos.database.data.login.PlayerData;
@@ -25,27 +25,27 @@ import org.starloco.locos.util.Pair;
 import java.util.List;
 import java.util.Optional;
 
-public class SPlayer extends DefaultUserdata<Player> {
+public class SPlayer extends DefaultUserdata<BasePlayer> {
     private static final ImmutableTable META_TABLE= MetaTables.MetaTable(MetaTables.ReflectIndexTable(SPlayer.class));
 
-    public SPlayer(Player userValue) {
+    public SPlayer(BasePlayer userValue) {
         super(META_TABLE, userValue);
     }
 
     //region Basic stuff
     @SuppressWarnings("unused")
-    private static int gender(Player p) {
+    private static int gender(BasePlayer p) {
        return p.getSexe();
     }
 
 
     @SuppressWarnings("unused")
-    private static void openBank(Player p) {
+    private static void openBank(BasePlayer p) {
         p.openBank();
     }
 
     @SuppressWarnings("unused")
-    private static void sendAction(Player p, ArgumentIterator args) {
+    private static void sendAction(BasePlayer p, ArgumentIterator args) {
         int actionID = args.nextInt();
         String actionIDStr = "";
         if(actionID != -1) actionIDStr = String.valueOf(actionID);
@@ -60,7 +60,7 @@ public class SPlayer extends DefaultUserdata<Player> {
 
     //region Dialogs
     @SuppressWarnings("unused")
-    private static void ask(Player p, ArgumentIterator args) {
+    private static void ask(BasePlayer p, ArgumentIterator args) {
         int question = args.nextInt();
         List<Integer> answersInts = ScriptVM.intsFromLuaTable(args.nextOptionalTable(null));
         ByteString param = args.nextOptionalString(null);
@@ -74,7 +74,7 @@ public class SPlayer extends DefaultUserdata<Player> {
     }
 
     @SuppressWarnings("unused")
-    private static void endDialog(Player p) {
+    private static void endDialog(BasePlayer p) {
         if (p.getExchangeAction() == null || p.getExchangeAction().getType() != ExchangeAction.TALKING_WITH ){
             return;
         }
@@ -87,22 +87,22 @@ public class SPlayer extends DefaultUserdata<Player> {
     //region Quests
 
     @SuppressWarnings("unused")
-    private static boolean questAvailable(Player p, ArgumentIterator args) {
+    private static boolean questAvailable(BasePlayer p, ArgumentIterator args) {
         return p.getQuestPersoByQuestId(args.nextInt()) == null;
     }
 
     @SuppressWarnings("unused")
-    private static boolean questFinished(Player p, ArgumentIterator args) {
+    private static boolean questFinished(BasePlayer p, ArgumentIterator args) {
         return Optional.ofNullable(p.getQuestPersoByQuestId(args.nextInt())).map(QuestPlayer::isFinished).orElse(false);
     }
 
     @SuppressWarnings("unused")
-    private static boolean questOngoing(Player p, ArgumentIterator args) {
+    private static boolean questOngoing(BasePlayer p, ArgumentIterator args) {
         return Optional.ofNullable(p.getQuestPersoByQuestId(args.nextInt())).map(s -> !s.isFinished()).orElse(false);
     }
 
     @SuppressWarnings("unused")
-    private static boolean startQuest(Player p, ArgumentIterator args) {
+    private static boolean startQuest(BasePlayer p, ArgumentIterator args) {
         int id = args.nextInt();
 
         Quest q = Quest.quests.get(id);
@@ -114,7 +114,7 @@ public class SPlayer extends DefaultUserdata<Player> {
     }
 
     @SuppressWarnings("unused")
-    private static boolean completeObjective(Player p, ArgumentIterator args) {
+    private static boolean completeObjective(BasePlayer p, ArgumentIterator args) {
         int qID = args.nextInt();
         int oID = args.nextInt();
 
@@ -148,13 +148,13 @@ public class SPlayer extends DefaultUserdata<Player> {
 
     //region Emotes
     @SuppressWarnings("unused")
-    public static boolean hasEmote(Player p, ArgumentIterator args) {
+    public static boolean hasEmote(BasePlayer p, ArgumentIterator args) {
         int emote = args.nextInt();
         return p.getEmotes().contains(emote);
     }
 
     @SuppressWarnings("unused")
-    public static boolean learnEmote(Player p, ArgumentIterator args) {
+    public static boolean learnEmote(BasePlayer p, ArgumentIterator args) {
         int emote = args.nextInt();
         return p.addStaticEmote(emote);
     }
@@ -162,18 +162,18 @@ public class SPlayer extends DefaultUserdata<Player> {
 
     //region Geolocation (Maps)
     @SuppressWarnings("unused")
-    private static Pair<Integer,Integer> savedPosition(Player p, ArgumentIterator args) {
+    private static Pair<Integer,Integer> savedPosition(BasePlayer p, ArgumentIterator args) {
         return p.getSavePosition();
     }
 
     @SuppressWarnings("unused")
-    private static int mapID(Player p, ArgumentIterator args) {
+    private static int mapID(BasePlayer p, ArgumentIterator args) {
         //  TODO: Replace with map():SMap
         return p.getCurMap().getId();
     }
 
     @SuppressWarnings("unused")
-    private static void teleport(Player p, ArgumentIterator args) {
+    private static void teleport(BasePlayer p, ArgumentIterator args) {
         int mapID = args.nextInt();
         int cellID = args.nextInt();
         p.teleport(mapID, cellID);
@@ -182,12 +182,12 @@ public class SPlayer extends DefaultUserdata<Player> {
 
     //region Currency
     @SuppressWarnings("unused")
-    private static long kamas(Player p) {
+    private static long kamas(BasePlayer p) {
         return p.getKamas();
     }
 
     @SuppressWarnings("unused")
-    private static boolean modKamas(Player p, ArgumentIterator args) {
+    private static boolean modKamas(BasePlayer p, ArgumentIterator args) {
         int quantity = args.nextInt();
         return p.modKamasDisplay(quantity);
     }
@@ -195,7 +195,7 @@ public class SPlayer extends DefaultUserdata<Player> {
 
     //region Inventory/Gear
     @SuppressWarnings("unused")
-    public static SItem gearAt(Player p, ArgumentIterator args) {
+    public static SItem gearAt(BasePlayer p, ArgumentIterator args) {
         int pos = args.nextInt();
         return p.getEquippedObjects().stream()
                 .filter(i -> i.getPosition() == pos)
@@ -204,12 +204,12 @@ public class SPlayer extends DefaultUserdata<Player> {
     }
 
     @SuppressWarnings("unused")
-    public static Pair<Integer, Integer> pods(Player p) {
+    public static Pair<Integer, Integer> pods(BasePlayer p) {
         return new Pair<>(p.getPodUsed(), p.getMaxPod());
     }
 
     @SuppressWarnings("unused")
-    private static SItem getItem(Player p, ArgumentIterator args) {
+    private static SItem getItem(BasePlayer p, ArgumentIterator args) {
         int itemID = args.nextInt();
         int quantity = args.nextInt();
         GameObject item = p.getItemTemplate(itemID, quantity);
@@ -221,7 +221,7 @@ public class SPlayer extends DefaultUserdata<Player> {
     }
 
     @SuppressWarnings("unused")
-    private static boolean consumeItem(Player p, ArgumentIterator args) {
+    private static boolean consumeItem(BasePlayer p, ArgumentIterator args) {
         int itemID = args.nextInt();
         int quantity = args.nextInt();
         return p.removeItemByTemplateId(itemID, quantity, true);
@@ -229,7 +229,7 @@ public class SPlayer extends DefaultUserdata<Player> {
 
 
     @SuppressWarnings("unused")
-    private static void addItem(Player p, ArgumentIterator args) {
+    private static void addItem(BasePlayer p, ArgumentIterator args) {
         int itemID = args.nextInt();
         int quantity = args.nextInt();
         boolean isPerfect = args.nextOptionalBoolean(true);
@@ -239,7 +239,7 @@ public class SPlayer extends DefaultUserdata<Player> {
     }
 
     @SuppressWarnings("unused")
-    private static boolean tryBuyItem(Player p, ArgumentIterator args) {
+    private static boolean tryBuyItem(BasePlayer p, ArgumentIterator args) {
         int itemID = args.nextInt();
         int unitPrice = args.nextInt();
         int quantity = args.nextOptionalInt(1);
@@ -256,13 +256,13 @@ public class SPlayer extends DefaultUserdata<Player> {
 
     //region Jobs
     @SuppressWarnings("unused")
-    private static int jobLevel(Player p, ArgumentIterator args) {
+    private static int jobLevel(BasePlayer p, ArgumentIterator args) {
         int jobID = args.nextInt();
         return Optional.ofNullable(p.getMetiers().get(jobID)).map(JobStat::get_lvl).orElse(0);
     }
 
     @SuppressWarnings("unused")
-    private static boolean addJobXP(Player p, ArgumentIterator args) {
+    private static boolean addJobXP(BasePlayer p, ArgumentIterator args) {
         int jobID = args.nextInt();
         int xpDelta = args.nextInt();
 
@@ -277,7 +277,7 @@ public class SPlayer extends DefaultUserdata<Player> {
 
     //region Spells
     @SuppressWarnings("unused")
-    private static int spellLevel(Player p, ArgumentIterator args) {
+    private static int spellLevel(BasePlayer p, ArgumentIterator args) {
         int spellID = args.nextInt();
         return p.getSpells().stream()
                 .filter(s -> s.getSpellID() == spellID).findFirst()
@@ -285,7 +285,7 @@ public class SPlayer extends DefaultUserdata<Player> {
     }
 
     @SuppressWarnings("unused")
-    private static boolean setSpellLevel(Player p, ArgumentIterator args) {
+    private static boolean setSpellLevel(BasePlayer p, ArgumentIterator args) {
         int spellID = args.nextInt();
         int level = args.nextInt();
         boolean modPoints = args.nextOptionalBoolean(false);
@@ -296,7 +296,7 @@ public class SPlayer extends DefaultUserdata<Player> {
 
     //region Factions
     @SuppressWarnings("unused")
-    private static boolean setFaction(Player p, ArgumentIterator args) {
+    private static boolean setFaction(BasePlayer p, ArgumentIterator args) {
         byte faction = (byte)args.nextInt();
         boolean replace = args.nextOptionalBoolean(false);
 

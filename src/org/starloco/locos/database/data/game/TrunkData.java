@@ -4,7 +4,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.lang.NotImplementedException;
 import org.starloco.locos.area.map.entity.House;
 import org.starloco.locos.area.map.entity.Trunk;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.database.data.FunctionDAO;
 import org.starloco.locos.game.world.World;
 
@@ -110,7 +110,7 @@ public class TrunkData extends FunctionDAO<Trunk> {
         }
     }
 
-    public void update(Player player, House house) {
+    public void update(BasePlayer player, House house) {
         Trunk.getTrunksByHouse(house)
             .filter(t -> t.getOwnerId() != player.getAccID())
             .peek(t -> t.setOwnerId(player.getAccID()))
@@ -127,7 +127,7 @@ public class TrunkData extends FunctionDAO<Trunk> {
     }
 
 
-    public void updateCode(Player P, Trunk t, String packet) {
+    public void updateCode(BasePlayer P, Trunk t, String packet) {
         PreparedStatement p = null;
         try {
             p = getPreparedStatement("UPDATE " + getTableName() + " SET `key`=? WHERE `id`=? AND owner_id=?");

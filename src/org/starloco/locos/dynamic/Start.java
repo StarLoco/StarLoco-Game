@@ -1,7 +1,7 @@
 package org.starloco.locos.dynamic;
 
 import org.starloco.locos.area.map.GameMap;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.common.PathFinding;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.entity.npc.Npc;
@@ -12,14 +12,14 @@ import java.util.Map;
 
 public class Start {
 	
-	private Player player;
+	private BasePlayer player;
 	private Npc helper;
 	public boolean leave = false;
 	private GameMap map;
 	private Map<Integer, GameMap> mapUse = new HashMap<>();
 	private Thread thread;
 	
-	public Start(Player player) {
+	public Start(BasePlayer player) {
 		this.player = player;
 		this.player.start = this;
 		this.thread = new Thread(new starting());

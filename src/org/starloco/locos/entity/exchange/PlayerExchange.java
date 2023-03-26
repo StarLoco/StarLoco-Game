@@ -1,6 +1,6 @@
 package org.starloco.locos.entity.exchange;
 
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.database.DatabaseManager;
 import org.starloco.locos.database.data.login.PlayerData;
@@ -17,7 +17,7 @@ import java.util.ArrayList;
 
 public class PlayerExchange extends Exchange {
 
-    public PlayerExchange(Player player1, Player player2) {
+    public PlayerExchange(BasePlayer player1, BasePlayer player2) {
         super(player1, player2);
     }
 
@@ -399,7 +399,7 @@ public class PlayerExchange extends Exchange {
      * Other Exchange *
      */
     public static class NpcExchangePets {
-        private Player player;
+        private BasePlayer player;
         private NpcTemplate npc;
         private long kamas1 = 0;
         private long kamas2 = 0;
@@ -408,7 +408,7 @@ public class PlayerExchange extends Exchange {
         private boolean ok1;
         private boolean ok2;
 
-        public NpcExchangePets(Player p, NpcTemplate n) {
+        public NpcExchangePets(BasePlayer p, NpcTemplate n) {
             this.player = p;
             this.npc = n;
         }
@@ -660,7 +660,7 @@ public class PlayerExchange extends Exchange {
     }
 
     public static class NpcRessurectPets {
-        private Player perso;
+        private BasePlayer perso;
         private NpcTemplate npc;
         private long kamas1 = 0;
         private long kamas2 = 0;
@@ -669,7 +669,7 @@ public class PlayerExchange extends Exchange {
         private boolean ok1;
         private boolean ok2;
 
-        public NpcRessurectPets(Player p, NpcTemplate n) {
+        public NpcRessurectPets(BasePlayer p, NpcTemplate n) {
             this.perso = p;
             this.npc = n;
         }

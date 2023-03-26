@@ -2,7 +2,7 @@ package org.starloco.locos.database.data.game;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.lang.NotImplementedException;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.database.data.FunctionDAO;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.guild.Guild;
@@ -12,7 +12,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class GuildMemberData extends FunctionDAO<Player> {
+public class GuildMemberData extends FunctionDAO<BasePlayer> {
     public GuildMemberData(HikariDataSource dataSource) {
         super(dataSource, "guild_members");
     }
@@ -41,17 +41,17 @@ public class GuildMemberData extends FunctionDAO<Player> {
     }
 
     @Override
-    public Player load(int id) {
+    public BasePlayer load(int id) {
         throw new NotImplementedException();
     }
 
     @Override
-    public boolean insert(Player entity) {
+    public boolean insert(BasePlayer entity) {
         throw new NotImplementedException();
     }
 
     @Override
-    public void delete(Player entity) {
+    public void delete(BasePlayer entity) {
         PreparedStatement p = null;
         try {
             p = getPreparedStatement("DELETE FROM " + getTableName() + " WHERE `guid` = ?");
@@ -65,7 +65,7 @@ public class GuildMemberData extends FunctionDAO<Player> {
     }
 
     @Override
-    public void update(Player player) {
+    public void update(BasePlayer player) {
         PreparedStatement p = null;
         try {
             p = getPreparedStatement("REPLACE INTO " + getTableName() + " VALUES(?,?,?,?,?,?,?,?,?,?,?)");

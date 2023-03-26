@@ -2,7 +2,7 @@ package org.starloco.locos.job;
 
 import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.area.map.entity.InteractiveObject;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.common.Formulas;
 import org.starloco.locos.common.PathFinding;
 import org.starloco.locos.common.SocketManager;
@@ -28,7 +28,7 @@ import java.util.Map.Entry;
 public class JobAction {
 
     public Map<Integer, Integer> ingredients = new TreeMap<>(), lastCraft = new TreeMap<>();
-    public Player player;
+    public BasePlayer player;
     public String data = "";
     public boolean broke = false, broken = false, isRepeat = false;
     private final int id;
@@ -90,11 +90,11 @@ public class JobAction {
         this.jobCraft = jobCraft;
     }
 
-    public void startCraft(Player P) {
+    public void startCraft(BasePlayer P) {
         this.jobCraft = new JobCraft(this, P);
     }
 
-    public void startAction(Player P, InteractiveObject IO, GameAction GA, GameCase cell, JobStat SM) {
+    public void startAction(BasePlayer P, InteractiveObject IO, GameAction GA, GameCase cell, JobStat SM) {
         this.SM = SM;
         this.player = P;
 
@@ -131,7 +131,7 @@ public class JobAction {
         }
     }
 
-    public void startAction(Player P, InteractiveObject IO, GameAction GA, GameCase cell) {
+    public void startAction(BasePlayer P, InteractiveObject IO, GameAction GA, GameCase cell) {
         this.player = P;
         P.setAway(true);
         IO.setState(JobConstant.IOBJECT_STATE_EMPTYING);//FIXME trouver la bonne valeur
@@ -140,7 +140,7 @@ public class JobAction {
         SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(P.getCurMap(), cell);
     }
 
-    public void endAction(Player player, InteractiveObject IO, GameAction GA, GameCase cell) {
+    public void endAction(BasePlayer player, InteractiveObject IO, GameAction GA, GameCase cell) {
         if(!this.isCraft && player.getGameClient().action != 0) {
             if(System.currentTimeMillis() - player.getGameClient().action < this.time - 500) {
                 /*String ip = player.getAccount().getCurrentIp();
@@ -215,7 +215,7 @@ public class JobAction {
         player.setAway(false);
     }
 
-    private int addCraftObject(Player player, GameObject newObj) {
+    private int addCraftObject(BasePlayer player, GameObject newObj) {
         for (Entry<Integer, GameObject> entry : player.getItems().entrySet()) {
             GameObject obj = entry.getValue();
             if (obj.getTemplate().getId() == newObj.getTemplate().getId() && obj.getTxtStat().equals(newObj.getTxtStat())
@@ -232,7 +232,7 @@ public class JobAction {
         return -1;
     }
 
-    public void addIngredient(Player player, int id, int quantity) {
+    public void addIngredient(BasePlayer player, int id, int quantity) {
         int oldQuantity = this.ingredients.get(id) == null ? 0 : this.ingredients.get(id);
         if(quantity < 0) if(- quantity > oldQuantity) return;
 
@@ -247,7 +247,7 @@ public class JobAction {
         }
     }
 
-    public byte sizeList(Map<Player, ArrayList<Couple<Integer, Integer>>> list) {
+    public byte sizeList(Map<BasePlayer, ArrayList<Couple<Integer, Integer>>> list) {
         byte size = 0;
 
         for (ArrayList<Couple<Integer, Integer>> entry : list.values()) {
@@ -279,7 +279,7 @@ public class JobAction {
         this.jobCraft = null;
     }
 
-    public boolean craftPublicMode(Player crafter, Player receiver, Map<Player, ArrayList<Couple<Integer, Integer>>> list) {
+    public boolean craftPublicMode(BasePlayer crafter, BasePlayer receiver, Map<BasePlayer, ArrayList<Couple<Integer, Integer>>> list) {
         if (!this.isCraft) return false;
 
         this.player = crafter;
@@ -294,8 +294,8 @@ public class JobAction {
 
         Map<Integer, Integer> items = new HashMap<>();
 
-        for (Entry<Player, ArrayList<Couple<Integer, Integer>>> entry : list.entrySet()) {
-            Player player = entry.getKey();
+        for (Entry<BasePlayer, ArrayList<Couple<Integer, Integer>>> entry : list.entrySet()) {
+            BasePlayer player = entry.getKey();
 
             for (Couple<Integer, Integer> e : entry.getValue()) {
                 if (!player.hasItemGuid(e.first)) {
@@ -564,7 +564,7 @@ public class JobAction {
     public static float coefExo = 0.25f;
 
     /* ********FM TOUT POURRI*************/
-    private synchronized boolean craftMaging(boolean isRepeat, Player receiver, Map<Player, ArrayList<Couple<Integer, Integer>>> items) {
+    private synchronized boolean craftMaging(boolean isRepeat, BasePlayer receiver, Map<BasePlayer, ArrayList<Couple<Integer, Integer>>> items) {
         boolean isSigningRune = false;
         GameObject objectFm = null, signingRune = null, runeOrPotion = null;
         int lvlElementRune = 0, statId = -1, lvlQuaStatsRune = 0, statsAdd = 0, deleteID = -1, poid = 0, idRune = 0;
@@ -575,7 +575,7 @@ public class JobAction {
         final Map<Integer, Integer> ingredients = items == null ? this.ingredients : new HashMap<>();
 
         if(items != null) {
-            for(Entry<Player, ArrayList<Couple<Integer, Integer>>> entry : items.entrySet()) {
+            for(Entry<BasePlayer, ArrayList<Couple<Integer, Integer>>> entry : items.entrySet()) {
                 for(Couple<Integer, Integer> couple : entry.getValue()) {
                     ingredients.put(couple.first, couple.second);
                 }
@@ -1145,7 +1145,7 @@ public class JobAction {
                 default:
                     int type = object.getTemplate().getType();
                     if ((type >= 1 && type <= 11) || (type >= 16 && type <= 22) || type == 81 || type == 102 || type == 114 || object.getTemplate().getPACost() > 0) {
-                        final Player player = this.player.hasItemGuid(object.getGuid()) ? this.player : receiver;
+                        final BasePlayer player = this.player.hasItemGuid(object.getGuid()) ? this.player : receiver;
                         objectFm = object;
                         SocketManager.GAME_SEND_EXCHANGE_OTHER_MOVE_OK_FM(player.getGameClient(), 'O', "+", objectFm.getGuid() + "|" + 1);
                         deleteID = id;
@@ -1518,8 +1518,8 @@ public class JobAction {
             }
         } else {
             if(items != null) {
-                for(Entry<Player, ArrayList<Couple<Integer, Integer>>> entry : items.entrySet()) {
-                    final Player player = entry.getKey();
+                for(Entry<BasePlayer, ArrayList<Couple<Integer, Integer>>> entry : items.entrySet()) {
+                    final BasePlayer player = entry.getKey();
                     for(Couple<Integer, Integer> couple : entry.getValue()) {
                         if(signingRune != null && signingRune.getGuid() == couple.first)
                             this.decrementObjectQuantity(player, signingRune);
@@ -1551,7 +1551,7 @@ public class JobAction {
     }
 
     //region usefull function for fm
-    private void decrementObjectQuantity(Player player, GameObject object) {
+    private void decrementObjectQuantity(BasePlayer player, GameObject object) {
         if (object != null) {
             int newQua = object.getQuantity() - 1;
             if (newQua <= 0) {

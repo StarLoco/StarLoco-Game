@@ -35,7 +35,7 @@ public class Account {
     private boolean banned = false;
     private long subscriber = 1;
     private long bankKamas = 0;
-    private Player currentPlayer;
+    private BasePlayer currentPlayer;
     private GameClient gameClient;
     private byte state;
     private String lastVoteIP;
@@ -232,8 +232,8 @@ public class Account {
         this.gameClient = t;
     }
 
-    public Map<Integer, Player> getPlayers() {
-        Map<Integer, Player> players = new HashMap<>();
+    public Map<Integer, BasePlayer> getPlayers() {
+        Map<Integer, BasePlayer> players = new HashMap<>();
         new CopyOnWriteArrayList<>(World.world.getPlayers()).stream().filter(player -> player != null).filter(player -> player.getAccount() != null)
                 .filter(player -> player.getAccount().getId() == this.getId()).forEach(player -> {
             if (player.getGameClient() == null)
@@ -243,11 +243,11 @@ public class Account {
         return players;
     }
 
-    public Player getCurrentPlayer() {
+    public BasePlayer getCurrentPlayer() {
         return this.currentPlayer;
     }
 
-    public void setCurrentPlayer(Player player) {
+    public void setCurrentPlayer(BasePlayer player) {
         this.currentPlayer = player;
     }
 
@@ -296,7 +296,7 @@ public class Account {
     }
 
     public boolean createPlayer(String name, int sexe, int classe, int color1, int color2, int color3) {
-        Player perso = Player.create(name, sexe, classe, color1, color2, color3, this);
+        BasePlayer perso = Player.create(name, sexe, classe, color1, color2, color3, this);
         return perso != null;
     }
 
@@ -307,7 +307,7 @@ public class Account {
 
     public void sendOnline() {
         for (int id : this.friends) {
-            Player player = World.world.getPlayer(id);
+            BasePlayer player = World.world.getPlayer(id);
             if (player != null && player.is_showFriendConnection() && player.isOnline() && player.getAccount().isFriendWith(this.id))
                 SocketManager.GAME_SEND_FRIEND_ONLINE(this.currentPlayer, player);
         }
@@ -326,7 +326,7 @@ public class Account {
             return;
         }
 
-        Player player = account.getCurrentPlayer(); // Il est arriv� que le personnage soit null alors que ... non !
+        BasePlayer player = account.getCurrentPlayer(); // Il est arriv� que le personnage soit null alors que ... non !
 
         if (player == null) {
             SocketManager.GAME_SEND_MESSAGE(this.currentPlayer, this.currentPlayer.getLang().trans("client.account.addfriend.notexist.player"));
@@ -385,7 +385,7 @@ public class Account {
             //on s'arrete la si aucun perso n'est connect�
             if (!C.isOnline())
                 continue;
-            Player P = C.getCurrentPlayer();
+            BasePlayer P = C.getCurrentPlayer();
             if (P == null)
                 continue;
             str.append(P.parseToFriendList(id));
@@ -400,7 +400,7 @@ public class Account {
         }
         if (!this.enemys.contains(guid)) {
             this.enemys.add(guid);
-            Player Pr = World.world.getPlayerByName(packet);
+            BasePlayer Pr = World.world.getPlayerByName(packet);
             SocketManager.GAME_SEND_ADD_ENEMY(this.currentPlayer, Pr);
             ((AccountData) DatabaseManager.get(AccountData.class)).update(this);
         } else
@@ -444,7 +444,7 @@ public class Account {
             //on s'arrete la si aucun perso n'est connect�
             if (!C.isOnline())
                 continue;
-            Player P = C.getCurrentPlayer();
+            BasePlayer P = C.getCurrentPlayer();
             if (P == null)
                 continue;
             str.append(P.parseToEnemyList(id));
@@ -461,7 +461,7 @@ public class Account {
     }
 
     public void resetAllChars() {
-        for (Player player : this.getPlayers().values()) {
+        for (BasePlayer player : this.getPlayers().values()) {
             if (player.getFight() != null) {
                 if (player.getParty() != null)
                     player.getParty().leave(player);
@@ -481,7 +481,7 @@ public class Account {
         }
     }
 
-    public void disconnect(Player player) {
+    public void disconnect(BasePlayer player) {
         ((PlayerData) DatabaseManager.get(PlayerData.class)).updateAllLogged(this.getId(), 0);
 
         if (player.getExchangeAction() != null)
@@ -505,7 +505,7 @@ public class Account {
         this.gameClient = null;
         this.currentIp = "";
 
-        for (Player character : this.getPlayers().values())
+        for (BasePlayer character : this.getPlayers().values())
             ((PlayerData) DatabaseManager.get(PlayerData.class)).update(character);
 
         player.resetVars();

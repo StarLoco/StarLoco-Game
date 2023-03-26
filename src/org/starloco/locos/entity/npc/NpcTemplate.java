@@ -3,7 +3,7 @@ package org.starloco.locos.entity.npc;
 import org.classdump.luna.Table;
 import org.classdump.luna.impl.DefaultTable;
 import org.starloco.locos.area.map.GameMap;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.database.data.game.SaleOffer;
 import org.starloco.locos.database.data.game.SaleOffer.Currency;
@@ -127,10 +127,10 @@ public class NpcTemplate {
         }
     }
 
-    public void onCreateDialog(Player player) {
+    public void onCreateDialog(BasePlayer player) {
         this.onDialog(player,  0,0);
     }
-    public void onDialog(Player player, int question, int response) {
+    public void onDialog(BasePlayer player, int question, int response) {
         if(scriptVal == null) {
             legacy.onDialog(this, player, question, response);
             return;
@@ -140,7 +140,7 @@ public class NpcTemplate {
         NpcScriptVM.getInstance().call(onTalk, scriptVal, player.scripted(), response);
     }
 
-    public List<SaleOffer> salesList(Player player) {
+    public List<SaleOffer> salesList(BasePlayer player) {
         if(scriptVal == null) {
             return legacy.sales;
         }
@@ -188,7 +188,7 @@ public class NpcTemplate {
         return this.legacy.quest;
     }
 
-    public int getExtraClip(Player p) {
+    public int getExtraClip(BasePlayer p) {
         if(this.legacy==null) {
             // TODO Scripted NPC
             return -1;
@@ -201,7 +201,7 @@ public class NpcTemplate {
         return -1;
     }
 
-    public Couple<Integer,Integer> barterOutcome(Player player, List<Couple<Integer,Integer>> objects) {
+    public Couple<Integer,Integer> barterOutcome(BasePlayer player, List<Couple<Integer,Integer>> objects) {
         if(this.legacy != null) {
             List<Couple<Integer,Integer>> out = this.legacy.checkGetObjects(objects);
             if(out.size() != 1) throw new RuntimeException(String.format("unexpected count(%d) in legacy barterOutcome", out.size()));
@@ -366,7 +366,7 @@ public class NpcTemplate {
             return null;
         }
 
-        public void onDialog(NpcTemplate template, Player player, int question, int response) {
+        public void onDialog(NpcTemplate template, BasePlayer player, int question, int response) {
             try {
                 if(response == 0)legacyCreateDialog(template, player);
                 else legacyDialogResponse(template, player, question, response);
@@ -375,7 +375,7 @@ public class NpcTemplate {
             }
         }
 
-        private void legacyDialogResponse(NpcTemplate template, Player player, int questionID, int answerId) {
+        private void legacyDialogResponse(NpcTemplate template, BasePlayer player, int questionID, int answerId) {
             NpcQuestion question = World.world.getNPCQuestion(questionID);
             NpcAnswer answer = World.world.getNpcAnswer(answerId);
 
@@ -466,7 +466,7 @@ public class NpcTemplate {
                 }
             }
         }
-        private void legacyCreateDialog(NpcTemplate template, Player player) {
+        private void legacyCreateDialog(NpcTemplate template, BasePlayer player) {
             int questionId = getInitQuestionId(player.getCurMap().getId());
             NpcQuestion question = World.world.getNPCQuestion(questionId);
 

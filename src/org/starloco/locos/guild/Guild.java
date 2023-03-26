@@ -8,7 +8,7 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import org.starloco.locos.area.map.entity.House;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.database.DatabaseManager;
 import org.starloco.locos.database.data.game.GuildMemberData;
 import org.starloco.locos.database.data.game.HouseData;
@@ -54,14 +54,14 @@ public class Guild {
     }
 
     public void addMember(int id, int r, byte pXp, long x, int ri, String lastCo) {
-        Player player = World.world.getPlayer(id);
+        BasePlayer player = World.world.getPlayer(id);
         if (player == null) return;
         GuildMember guildMember = new GuildMember(player, this, r, x, pXp, ri, lastCo);
         this.members.put(id, guildMember);
         player.setGuildMember(guildMember);
     }
 
-    public GuildMember addNewMember(Player player) {
+    public GuildMember addNewMember(BasePlayer player) {
         GuildMember guildMember = new GuildMember(player, this, 0, 0, (byte) 0, 0, player.getAccount().getLastConnectionDate());
         this.members.put(player.getId(), guildMember);
         player.setGuildMember(guildMember);
@@ -143,9 +143,9 @@ public class Guild {
         return this.id == 1 || this.id == 2 || (this.members.size() >= 10);
     }
 
-    public List<Player> getPlayers() {
+    public List<BasePlayer> getPlayers() {
         //return this.members.stream().filter(guildMember -> guildMember.getPlayer() != null).map(GuildMember::getPlayer).collect(Collectors.toList());
-    	ArrayList<Player> a = new ArrayList<>();
+    	ArrayList<BasePlayer> a = new ArrayList<>();
 		for (GuildMember GM : this.members.values())
 			if (GM.getPlayer() != null)
 				a.add(GM.getPlayer());
@@ -159,7 +159,7 @@ public class Guild {
         return null;
     }
 
-    public void removeMember(Player player) {
+    public void removeMember(BasePlayer player) {
         House house = World.world.getHouseManager().getHouseByPerso(player);
         if (house != null)
             if (World.world.getHouseManager().houseOnGuild(this.id) > 0)

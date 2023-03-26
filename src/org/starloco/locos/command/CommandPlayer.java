@@ -1,7 +1,7 @@
 package org.starloco.locos.command;
 
 import org.starloco.locos.auction.AuctionManager;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.client.other.Party;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.event.EventManager;
@@ -24,7 +24,7 @@ public class CommandPlayer {
     public final static String canal = "Général";
     static boolean canalMute = false;
 
-    public static boolean analyse(Player player, String msg) {
+    public static boolean analyse(BasePlayer player, String msg) {
         msg = msg.replace("|", "");
         if (msg.charAt(0) == '.') {
             if(command(msg, "help")) {
@@ -111,7 +111,7 @@ public class CommandPlayer {
         return false;
     }
 
-    private static boolean commandPass(Player player, String msg) {
+    private static boolean commandPass(BasePlayer player, String msg) {
         if(player.getParty() != null && player.getParty().getMaster() != null) {
             Party.MasterOption option = player.getParty().getOptionByPlayer(player);
             if(option != null) {
@@ -125,7 +125,7 @@ public class CommandPlayer {
         return false;
     }
 
-    private static boolean commandInterval(Player player, String msg) {
+    private static boolean commandInterval(BasePlayer player, String msg) {
         if(player.getParty() != null && player.getParty().getMaster() != null) {
             Party.MasterOption option = player.getParty().getOptionByPlayer(player);
             if(option != null) {
@@ -157,7 +157,7 @@ public class CommandPlayer {
 
     private static List<Integer> bannedItemJob = Arrays.asList(491, 493, 494, 495, 496);
 
-    private static boolean commandTransfert(Player player, String msg) {
+    private static boolean commandTransfert(BasePlayer player, String msg) {
         if (player.isInPrison() || player.getFight() != null)
             return true;
 
@@ -244,7 +244,7 @@ public class CommandPlayer {
         return true;
     }
 
-    private static boolean commandTransfertWithMaster(Player player, String msg) {
+    private static boolean commandTransfertWithMaster(BasePlayer player, String msg) {
         String[] info = msg.split(" ");
         if(info.length == 1 && player.getParty() != null && player.getParty().getMaster() != null && player.getParty().getMaster().getId() == player.getId()) {
             final List<GameObject> objects = new ArrayList<>();
@@ -289,7 +289,7 @@ public class CommandPlayer {
         return false;
     }
 
-    private static boolean commandStart(Player player, String msg) {
+    private static boolean commandStart(BasePlayer player, String msg) {
         int mapId = player.getCurMap().getId();
         if (player.isInPrison() || player.cantTP() || player.getFight() != null)
             return true;
@@ -297,7 +297,7 @@ public class CommandPlayer {
 
         final Party party = player.getParty();
         if(party != null && party.getMaster() != null && party.getMaster().getName().equals(player.getName())) {
-            for (Player slave : player.getParty().getPlayers()) {
+            for (BasePlayer slave : player.getParty().getPlayers()) {
                 if (slave.getCurMap().getId() == mapId) {
                     if (!player.isInPrison())
                         if (!player.cantTP())
@@ -309,7 +309,7 @@ public class CommandPlayer {
         return true;
     }
 
-    private static boolean commandAstrub(Player player, String msg) {
+    private static boolean commandAstrub(BasePlayer player, String msg) {
         int mapId = player.getCurMap().getId();
         if (player.isInPrison() || player.cantTP() || player.getFight() != null || Config.gameServerId == 22)
             return true;
@@ -328,12 +328,12 @@ public class CommandPlayer {
         return true;
     }
 
-    private static boolean commandMaster(Player player, String msg) {
+    private static boolean commandMaster(BasePlayer player, String msg) {
         String[] split = msg.split(" ");
 
         if(split.length == 2) {
             String name = split[1];
-            final Player target = World.world.getPlayerByName(name);
+            final BasePlayer target = World.world.getPlayerByName(name);
 
             if(target != null && target != player) {
                 if(target.getParty() == player.getParty()) {
@@ -341,7 +341,7 @@ public class CommandPlayer {
                     party.setChief(target);
                     party.setMaster(target);
 
-                    for(Player member : party.getPlayers())
+                    for(BasePlayer member : party.getPlayers())
                         member.send("PL" + target.getId());
                 } else {
                     player.sendMessage(player.getLang().trans("command.commandplayer.master.nogroup.name", name));
@@ -358,7 +358,7 @@ public class CommandPlayer {
                 return true;
             }
 
-            final List<Player> players = player.getParty().getPlayers();
+            final List<BasePlayer> players = player.getParty().getPlayers();
 
             if (!party.getChief().getName().equals(player.getName())) {
                 player.sendMessage(player.getLang().trans("command.commandplayer.master.noking"));
@@ -373,7 +373,7 @@ public class CommandPlayer {
                 return true;
             }
 
-            Player target = player;
+            BasePlayer target = player;
 
             if (msg.length() > 8) {
                 String name = msg.substring(8, msg.length() - 1);
@@ -392,7 +392,7 @@ public class CommandPlayer {
             party.setMaster(target);
 
             final String message = player.getLang().trans("command.commandplayer.master.follow", target.getName());
-            for (Player follower : players)
+            for (BasePlayer follower : players)
                 if (follower != target)
                     SocketManager.GAME_SEND_MESSAGE(follower, message);
 
@@ -402,14 +402,14 @@ public class CommandPlayer {
         }
     }
 
-    private static boolean commandHelp(Player player, String msg) {
+    private static boolean commandHelp(BasePlayer player, String msg) {
         player.sendMessage(player.getLang().trans("command.commandplayer.default"));
         return true;
     }
 
     //region Commands
 
-    private static boolean commandAll(Player player, String msg) {
+    private static boolean commandAll(BasePlayer player, String msg) {
         if (player.isInPrison())
             return true;
         if(canalMute && player.getGroupe() == null) {
@@ -438,7 +438,7 @@ public class CommandPlayer {
         return true;
     }
 
-    private static boolean commandNoAll(Player player, String msg) {
+    private static boolean commandNoAll(BasePlayer player, String msg) {
         if (player.noall) {
             player.noall = false;
             player.sendMessage(player.getLang().trans("command.commandplayer.all.on"));
@@ -449,7 +449,7 @@ public class CommandPlayer {
         return true;
     }
 
-    private static boolean commandDeblo(Player player, String msg) {
+    private static boolean commandDeblo(BasePlayer player, String msg) {
         if (player.cantTP())
             return true;
         if (player.getFight() != null)
@@ -462,7 +462,7 @@ public class CommandPlayer {
         return true;
     }
 
-    private static boolean commandInfos(Player player, String msg) {
+    private static boolean commandInfos(BasePlayer player, String msg) {
         long uptime = System.currentTimeMillis()
                 - Config.startTime;
         int jour = (int) (uptime / (1000 * 3600 * 24));
@@ -481,10 +481,10 @@ public class CommandPlayer {
         return true;
     }
 
-    private static boolean commandStaff(Player player, String msg) {
+    private static boolean commandStaff(BasePlayer player, String msg) {
         String message = player.getLang().trans("command.commandplayer.staff");
         boolean vide = true;
-        for (Player target : World.world.getOnlinePlayers()) {
+        for (BasePlayer target : World.world.getOnlinePlayers()) {
             if (target == null)
                 continue;
             if (target.getGroupe() == null || target.isInvisible())

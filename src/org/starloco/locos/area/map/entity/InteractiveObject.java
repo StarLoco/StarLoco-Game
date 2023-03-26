@@ -3,7 +3,7 @@ package org.starloco.locos.area.map.entity;
 import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.area.map.labyrinth.Minotoror;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.entity.monster.MonsterGroup;
 import org.starloco.locos.game.scheduler.Updatable;
@@ -56,7 +56,7 @@ public class InteractiveObject {
         this.walkable = this.getTemplate() != null && this.getTemplate().isWalkable() && this.state == JobConstant.IOBJECT_STATE_FULL;
     }
 
-    public static void getActionIO(final Player player, GameCase cell, int id) {
+    public static void getActionIO(final BasePlayer player, GameCase cell, int id) {
         switch(id) {
             case 7041:
             case 7042:
@@ -228,7 +228,7 @@ public class InteractiveObject {
         }
     }
 
-    public static void getSignIO(Player perso, int cell, int id) {
+    public static void getSignIO(BasePlayer perso, int cell, int id) {
         switch (perso.getCurMap().getId()) {
             case 7460:
                 for (String[] hunt : Constant.HUNTING_QUESTS) {

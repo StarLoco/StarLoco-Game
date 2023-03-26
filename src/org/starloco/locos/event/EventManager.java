@@ -1,7 +1,7 @@
 package org.starloco.locos.event;
 
 import org.starloco.locos.area.map.GameCase;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.common.Formulas;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.database.DatabaseManager;
@@ -40,7 +40,7 @@ public class EventManager extends Updatable {
     private State state = State.WAITING;
     private Event current, lastest;
     private short count = 0;
-    private final List<Player> participants = new ArrayList<>();
+    private final List<BasePlayer> participants = new ArrayList<>();
 
     private EventManager() {
         super(60000);
@@ -59,7 +59,7 @@ public class EventManager extends Updatable {
         return current;
     }
 
-    public List<Player> getParticipants() {
+    public List<BasePlayer> getParticipants() {
         return participants;
     }
 
@@ -117,7 +117,7 @@ public class EventManager extends Updatable {
         this.state = State.WAITING;
     }
 
-    public synchronized byte subscribe(final Player player) {
+    public synchronized byte subscribe(final BasePlayer player) {
         if(this.current == null || this.state == State.WAITING) {
             return 0;
         } else {
@@ -146,13 +146,13 @@ public class EventManager extends Updatable {
         return 1;
     }
 
-    private boolean hasSameIP(Player player) {
+    private boolean hasSameIP(BasePlayer player) {
         if(player != null && player.getAccount() != null) {
             final String ip = player.getAccount().getCurrentIp();
 
             if(ip.equals("127.0.0.1"))
                 return false;
-            for (Player target : this.participants) {
+            for (BasePlayer target : this.participants) {
                 if (target != null && target.getAccount() != null) {
                     return ip.equals(target.getAccount().getCurrentIp());
                 }
@@ -188,7 +188,7 @@ public class EventManager extends Updatable {
                 if (result <= 0) {
                     this.startCurrentEvent();
                 } else if(result == 1 && this.hasEnoughPlayers()) {
-                    for(Player player : this.participants) {
+                    for(BasePlayer player : this.participants) {
                         player.sendMessage(player.getLang().trans("event.eventmanager.start", "1"));
                     }
                 }
@@ -205,10 +205,10 @@ public class EventManager extends Updatable {
         boolean ok = true;
         final StringBuilder afk = teleport ? new StringBuilder() : null;
 
-        final Iterator<Player> iterator1 = this.participants.iterator();
+        final Iterator<BasePlayer> iterator1 = this.participants.iterator();
 
         while(iterator1.hasNext()) {
-            final Player player = iterator1.next();
+            final BasePlayer player = iterator1.next();
             if(player.getFight() != null || !player.isOnline() || player.isGhost() || player.getDoAction()) {
                 ok = false;
                 iterator1.remove();
@@ -230,10 +230,10 @@ public class EventManager extends Updatable {
             return false;
         }
 
-        final Iterator<Player> iterator2 = this.participants.iterator();
+        final Iterator<BasePlayer> iterator2 = this.participants.iterator();
 
         while(iterator2.hasNext()) {
-            final Player player = iterator2.next();
+            final BasePlayer player = iterator2.next();
 
             if(player.getFight() == null && player.isOnline() && !player.isGhost() && !player.getDoAction()) {
                 player.setOldPosition();
@@ -254,9 +254,9 @@ public class EventManager extends Updatable {
         return ok;
     }
 
-    public static boolean isInEvent(Player player) {
+    public static boolean isInEvent(BasePlayer player) {
         if(Config.modeEvent && EventManager.getInstance().state == State.STARTED)
-            for(Player target : EventManager.getInstance().participants)
+            for(BasePlayer target : EventManager.getInstance().participants)
                 if(target.getId() == player.getId())
                     return true;
         return false;

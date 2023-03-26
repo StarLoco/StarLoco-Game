@@ -4,7 +4,7 @@ import org.starloco.locos.area.map.entity.House;
 import org.starloco.locos.area.map.entity.InteractiveObject;
 import org.starloco.locos.area.map.entity.MountPark;
 import org.starloco.locos.area.map.entity.Trunk;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.common.Formulas;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.database.DatabaseManager;
@@ -29,7 +29,7 @@ public class GameCase {
     private int id;
     private boolean walkable = true, loS = true;
 
-    private List<Player> players;
+    private List<BasePlayer> players;
     private ArrayList<Fighter> fighters;
     private ArrayList<Action> onCellStop;
     private InteractiveObject object;
@@ -97,14 +97,14 @@ public class GameCase {
         return this.loS && hide;
     }
 
-    public void addPlayer(Player player) {
+    public void addPlayer(BasePlayer player) {
         if (this.players == null)
             this.players = new ArrayList<>();
         if(!this.players.contains(player))
             this.players.add(player);
     }
 
-    public synchronized void removePlayer(Player player) {
+    public synchronized void removePlayer(BasePlayer player) {
         if (this.players != null) {
             if(this.players.contains(player))
                 this.players.remove(player);
@@ -112,7 +112,7 @@ public class GameCase {
         }
     }
 
-    public List<Player> getPlayers() {
+    public List<BasePlayer> getPlayers() {
         if (this.players == null)
             return new ArrayList<>();
         return players;
@@ -151,7 +151,7 @@ public class GameCase {
         this.onCellStop.add(new Action(id, args, cond, map));
     }
 
-    public void applyOnCellStopActions(Player player) {
+    public void applyOnCellStopActions(BasePlayer player) {
         if (this.onCellStop != null)
             for (Action action : this.onCellStop)
                 action.apply(player, null, -1, -1);
@@ -760,7 +760,7 @@ public class GameCase {
         }
     }
 
-    public void startAction(final Player player, GameAction GA) {
+    public void startAction(final BasePlayer player, GameAction GA) {
         if(player.getExchangeAction() != null) {
             player.send("BN");
             return;
@@ -915,7 +915,7 @@ public class GameCase {
                 }
 
                 if(park.getGuild() != null)
-                    for(Player target : park.getGuild().getPlayers())
+                    for(BasePlayer target : park.getGuild().getPlayers())
                         if(target != null && target.getExchangeAction() != null && target.getExchangeAction().getType() == ExchangeAction.IN_MOUNTPARK && target.getCurMap().getId() == player.getCurMap().getId()) {
                             player.send("Im120");
                             return;
@@ -1068,7 +1068,7 @@ public class GameCase {
         player.getGameClient().removeAction(GA);
     }
 
-    public void finishAction(Player perso, GameAction GA) {
+    public void finishAction(BasePlayer perso, GameAction GA) {
         int actionID = -1;
         try {
             actionID = Integer.parseInt(GA.args.split(";")[1]);

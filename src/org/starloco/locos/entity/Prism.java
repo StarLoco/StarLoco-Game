@@ -3,7 +3,7 @@ package org.starloco.locos.entity;
 import org.starloco.locos.area.Area;
 import org.starloco.locos.area.SubArea;
 import org.starloco.locos.area.map.GameMap;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.client.other.Stats;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.fight.Fight;
@@ -50,13 +50,13 @@ public class Prism {
         TimerWaiter.addNext(() -> this.state = NORMAL, 60 * 60_000);
     }
 
-    public static void parseAttack(Player player) {
+    public static void parseAttack(BasePlayer player) {
         for (Prism prism : World.world.AllPrisme())
             if (prism.getFight() != null && player.getAlignment() == prism.getAlignment())
                 SocketManager.SEND_Cp_INFO_ATTAQUANT_PRISME(player, attackerOfPrisme(prism.getId(), prism.getMap(), prism.getFight().getId()));
     }
 
-    public static void parseDefense(Player player) {
+    public static void parseDefense(BasePlayer player) {
         for (Prism prism : World.world.AllPrisme())
             if (prism.getFight() != null && player.getAlignment() == prism.getAlignment())
                 SocketManager.SEND_CP_INFO_DEFENSEURS_PRISME(player, defenderOfPrisme(prism.getId(), prism.getMap(), prism.getFight().getId()));

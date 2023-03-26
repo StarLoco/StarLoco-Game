@@ -1,24 +1,24 @@
 package org.starloco.locos.client.other;
 
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.common.PathFinding;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.kernel.Constant;
 
 public class Stalk {
     private long time;
-    private Player target;
+    private BasePlayer target;
 
-    public Stalk(long time, Player p) {
+    public Stalk(long time, BasePlayer p) {
         this.time = time;
         this.target = p;
     }
 
-    public Player getTarget() {
+    public BasePlayer getTarget() {
         return this.target;
     }
 
-    public void setTarget(Player p) {
+    public void setTarget(BasePlayer p) {
         this.target = p;
     }
 
@@ -30,7 +30,7 @@ public class Stalk {
         this.time = t;
     }
 
-    public boolean onPlayerTryToFight(Player player, Player target) {
+    public boolean onPlayerTryToFight(BasePlayer player, BasePlayer target) {
         if(this.target == null || target == null || this.target.getId() != target.getId())
             return false;
         if (player.getFight() != null|| target.getFight() != null || target.getCurMap().getId() != player.getCurMap().getId() || target.isDead() == 1 || player.isDead() == 1)

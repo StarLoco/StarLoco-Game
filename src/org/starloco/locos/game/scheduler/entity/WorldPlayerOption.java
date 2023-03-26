@@ -1,5 +1,6 @@
 package org.starloco.locos.game.scheduler.entity;
 
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.database.DatabaseManager;
 import org.starloco.locos.database.data.login.AccountData;
 import org.starloco.locos.game.scheduler.Updatable;
@@ -17,7 +18,7 @@ public class WorldPlayerOption extends Updatable {
     public void update() {
         if(this.verify()) {
             ((AccountData) DatabaseManager.get(AccountData.class)).updateVoteAll();
-            World.world.getOnlinePlayers().stream().filter(player -> player != null && player.isOnline()).forEach(org.starloco.locos.client.Player::checkVote);
+            World.world.getOnlinePlayers().stream().filter(player -> player != null && player.isOnline()).forEach(BasePlayer::checkVote);
         }
     }
 

@@ -1,6 +1,6 @@
 package org.starloco.locos.entity.npc;
 
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.game.action.ExchangeAction;
 import org.starloco.locos.game.action.type.NpcDialogActionData;
@@ -42,7 +42,7 @@ public class Npc {
         return World.world.getNPCTemplate(templateId);
     }
 
-    public void onCreateDialog(Player player) {
+    public void onCreateDialog(BasePlayer player) {
         NpcTemplate template = this.getTemplate();
 
         NpcDialogActionData data = new NpcDialogActionData(template, -1);
@@ -53,7 +53,7 @@ public class Npc {
         template.onCreateDialog(player);
     }
 
-    public String encodeGM(boolean alter, Player p) {
+    public String encodeGM(boolean alter, BasePlayer p) {
         NpcTemplate template = getTemplate();
         StringBuilder packet = new StringBuilder();
         packet.append((alter ? "~" : "+"));

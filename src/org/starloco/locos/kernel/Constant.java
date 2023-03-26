@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.area.map.GameMap;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.client.other.Stats;
 import org.starloco.locos.common.Formulas;
 import org.starloco.locos.entity.mount.Mount;
@@ -1214,7 +1214,7 @@ public class Constant {
         return 5;
     }
 
-    public static void onLevelUpSpells(Player perso, int lvl) {
+    public static void onLevelUpSpells(BasePlayer perso, int lvl) {
         switch (perso.getClasse()) {
             case CLASS_FECA:
                 if (lvl == 3)
@@ -2504,7 +2504,7 @@ public class Constant {
 	 * Main.itemFeedMount) { if (type == feed) return true; } return false; }
 	 */
 
-    public static void tpCim(int idArea, Player perso) {
+    public static void tpCim(int idArea, BasePlayer perso) {
         switch (idArea) {
             case 45:
                 perso.teleport((short) 10342, 222);
@@ -2637,7 +2637,7 @@ public class Constant {
         return false;
     }
 
-    public static int getLevelForChevalier(Player target) {
+    public static int getLevelForChevalier(BasePlayer target) {
         int lvl = target.getLevel();
         if (lvl <= 50)
             return 50;
@@ -2894,7 +2894,7 @@ public class Constant {
         }
     }
 
-    public static int colorToEtable(Player player, Mount mother, Mount father) {
+    public static int colorToEtable(BasePlayer player, Mount mother, Mount father) {
         int color1, color2;
         int A = 0, B = 0, C = 0;
 
@@ -3722,7 +3722,7 @@ public class Constant {
         return new int[]{};
     }
 
-    public static int getNearestCellIdUnused(Player player) {
+    public static int getNearestCellIdUnused(BasePlayer player) {
         final GameMap map = player.getCurMap();
         final int width = map.getW();
         final int cell = player.getCurCell().getId();

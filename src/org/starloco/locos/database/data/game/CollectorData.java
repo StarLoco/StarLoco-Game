@@ -3,7 +3,7 @@ package org.starloco.locos.database.data.game;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.lang.NotImplementedException;
 import org.starloco.locos.area.map.GameMap;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.database.data.FunctionDAO;
 import org.starloco.locos.entity.Collector;
 import org.starloco.locos.game.world.World;
@@ -27,7 +27,7 @@ public class CollectorData extends FunctionDAO<Collector> {
                 GameMap map = World.world.getMap(result.getShort("mapid"));
                 if (map != null) {
                     int poseur_id = result.getInt("poseur_id");
-                    Player player = World.world.getPlayer(poseur_id);
+                    BasePlayer player = World.world.getPlayer(poseur_id);
                     String date = result.getString("date");
                     long time = 0;
                     if (date != null && !date.equals("")) {

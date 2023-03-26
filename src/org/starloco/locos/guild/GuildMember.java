@@ -2,7 +2,7 @@ package org.starloco.locos.guild;
 
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.database.DatabaseManager;
 import org.starloco.locos.database.data.game.GuildMemberData;
 import org.starloco.locos.kernel.Constant;
@@ -15,7 +15,7 @@ import java.util.TreeMap;
  **/
 public class GuildMember {
 
-    private final Player player;
+    private final BasePlayer player;
     private final Guild guild;
     private int rank = 0;
     private byte xpGive = 0;
@@ -24,7 +24,7 @@ public class GuildMember {
     private String lastCo;
     private final Map<Integer, Boolean> haveRights = new TreeMap<>();
 
-    GuildMember(Player player, Guild guild, int rank, long xpGave, byte xpGive, int rights, String lastCo) {
+    GuildMember(BasePlayer player, Guild guild, int rank, long xpGave, byte xpGive, int rights, String lastCo) {
         this.player = player;
         this.guild = guild;
         this.rank = rank;
@@ -35,7 +35,7 @@ public class GuildMember {
         this.parseIntToRight(this.rights);
     }
 
-    public Player getPlayer() {
+    public BasePlayer getPlayer() {
         return player;
     }
 
@@ -110,7 +110,7 @@ public class GuildMember {
         return this.rights == 1 || haveRights.get(rightValue);
     }
 
-    public void setAllRights(int rank, byte xp, int right, Player perso) {
+    public void setAllRights(int rank, byte xp, int right, BasePlayer perso) {
         if (rank == -1) rank = this.rank;
         if (xp < 0) xp = this.xpGive;
         if (xp > 90) xp = 90;

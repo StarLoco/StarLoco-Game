@@ -1,6 +1,6 @@
 package org.starloco.locos.entity.pet;
 
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.database.DatabaseManager;
 import org.starloco.locos.database.data.login.ObjectData;
@@ -141,7 +141,7 @@ public class PetEntry {
         return World.world.getPets(this.template).getMax();
     }
 
-    public void looseFight(Player player) {
+    public void looseFight(BasePlayer player) {
         GameObject obj = World.world.getGameObject(this.objectId);
         if (obj == null)
             return;
@@ -178,7 +178,7 @@ public class PetEntry {
         ((PetData) DatabaseManager.get(PetData.class)).update(this);
     }
 
-    public void eat(Player p, int min, int max, int statsID, GameObject feed) {
+    public void eat(BasePlayer p, int min, int max, int statsID, GameObject feed) {
         GameObject obj = World.world.getGameObject(this.objectId);
         if (obj == null)
             return;
@@ -305,7 +305,7 @@ public class PetEntry {
         ((PetData) DatabaseManager.get(PetData.class)).update(this);
     }
 
-    public void eatSouls(Player p, Map<Integer, Integer> souls) {
+    public void eatSouls(BasePlayer p, Map<Integer, Integer> souls) {
         GameObject obj = World.world.getGameObject(this.objectId);
         if (obj == null)
             return;
@@ -367,7 +367,7 @@ public class PetEntry {
         ((PetData) DatabaseManager.get(PetData.class)).update(this);
     }
 
-    public void updatePets(Player p, int max) {
+    public void updatePets(BasePlayer p, int max) {
         GameObject obj = World.world.getGameObject(this.objectId);
         if (obj == null)
             return;
@@ -442,7 +442,7 @@ public class PetEntry {
         ((PetData) DatabaseManager.get(PetData.class)).update(this);
     }
 
-    public void restoreLife(Player p) {
+    public void restoreLife(BasePlayer p) {
         GameObject obj = World.world.getGameObject(this.objectId);
         if (obj == null)
             return;
@@ -468,7 +468,7 @@ public class PetEntry {
         ((PetData) DatabaseManager.get(PetData.class)).update(this);
     }
 
-    public void giveEpo(Player p) {
+    public void giveEpo(BasePlayer p) {
         GameObject obj = World.world.getGameObject(this.objectId);
         if (obj == null)
             return;

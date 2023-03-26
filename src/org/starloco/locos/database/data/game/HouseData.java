@@ -3,7 +3,7 @@ package org.starloco.locos.database.data.game;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.lang.NotImplementedException;
 import org.starloco.locos.area.map.entity.House;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.database.DatabaseManager;
 import org.starloco.locos.database.data.FunctionDAO;
 import org.starloco.locos.game.world.World;
@@ -107,7 +107,7 @@ public class HouseData extends FunctionDAO<House> {
         return false;
     }
 
-    public void buy(Player P, House h) {
+    public void buy(BasePlayer P, House h) {
         PreparedStatement p = null;
         try {
             p = getPreparedStatement("UPDATE " + getTableName() + " SET `sale`='0', `owner_id`=?, `guild_id`='0', `access`='0', `key`='-', `guild_rights`='0' WHERE `id`=?");
@@ -145,7 +145,7 @@ public class HouseData extends FunctionDAO<House> {
         }
     }
 
-    public void updateCode(Player P, House h, String packet) {
+    public void updateCode(BasePlayer P, House h, String packet) {
         PreparedStatement p = null;
         try {
             p = getPreparedStatement("UPDATE " + getTableName() + " SET `key`=? WHERE `id`=? AND owner_id = ?;");

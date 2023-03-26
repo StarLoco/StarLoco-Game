@@ -1,7 +1,7 @@
 package org.starloco.locos.hdv;
 
 import org.starloco.locos.client.Account;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.database.DatabaseManager;
 import org.starloco.locos.database.data.game.BigStoreListingData;
 import org.starloco.locos.database.data.login.PlayerData;
@@ -193,7 +193,7 @@ public class BigStore {
     }
 
     public boolean removeListing(Account account, int listingId) {
-        Player player = account.getCurrentPlayer();
+        BasePlayer player = account.getCurrentPlayer();
         List<BigStoreListing> accountListings = account.getHdvEntries(this.hdvId);
         if(accountListings.size() == 0) return false;
         if(player == null) return false;
@@ -229,7 +229,7 @@ public class BigStore {
         return linesForTemplate(categoryId, templateId).stream().filter(c -> c.lineId == lineId).findFirst();
     }
 
-    public Optional<BigStoreListing> buyItem(int category, int templateId, int lineID, int amount, int price, Player newOwner) {
+    public Optional<BigStoreListing> buyItem(int category, int templateId, int lineID, int amount, int price, BasePlayer newOwner) {
         synchronized (listingsLock) {
             return cheapestListing(category, templateId, lineID, amount)
                 .filter(e -> e.getGameObject() != null)

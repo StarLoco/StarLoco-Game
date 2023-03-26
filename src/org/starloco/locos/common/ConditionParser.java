@@ -3,7 +3,7 @@ package org.starloco.locos.common;
 import com.singularsys.jep.Jep;
 import com.singularsys.jep.JepException;
 import org.starloco.locos.area.map.GameMap;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.fight.spells.SpellEffect;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.game.world.World.Couple;
@@ -20,7 +20,7 @@ import java.util.Map.Entry;
 
 public class ConditionParser {
 
-    public boolean validConditions(Player perso, String req) {
+    public boolean validConditions(BasePlayer perso, String req) {
         if (req == null || req.equals(""))
             return true;
         if(req.contains("BI") || perso == null)
@@ -118,7 +118,7 @@ public class ConditionParser {
         return false;
     }
 
-    private boolean haveMorph(String c, Player p) {
+    private boolean haveMorph(String c, BasePlayer p) {
         if (c.equalsIgnoreCase(""))
             return false;
         int morph = -1;
@@ -133,7 +133,7 @@ public class ConditionParser {
             return !c.contains("==");
     }
 
-    private boolean haveMetier(String c, Player p) {
+    private boolean haveMetier(String c, BasePlayer p) {
         if (p.getMetiers() == null || p.getMetiers().isEmpty())
             return false;
         for (Entry<Integer, JobStat> entry : p.getMetiers().entrySet()) {
@@ -143,7 +143,7 @@ public class ConditionParser {
         return false;
     }
 
-    private boolean havePj(String c, Player p) {
+    private boolean havePj(String c, BasePlayer p) {
         if (c.equalsIgnoreCase(""))
             return false;
         for (String s : c.split("\\|\\|")) {
@@ -162,7 +162,7 @@ public class ConditionParser {
     }
 
     //Avoir la qu�te en cours
-    private boolean haveQa(String req, Player player) {
+    private boolean haveQa(String req, BasePlayer player) {
         int id = Integer.parseInt((req.contains("==") ? req.split("==")[1] : req.split("!=")[1]));
         Quest q = Quest.quests.get(id);
         if (q == null)
@@ -177,7 +177,7 @@ public class ConditionParser {
     }
 
     // �tre � l'�tape id. Elle ne doit pas �tre valid� et celle d'avant doivent l'�tre.
-    private boolean haveQEt(String req, Player player) {
+    private boolean haveQEt(String req, BasePlayer player) {
         int id = Integer.parseInt((req.contains("==") ? req.split("==")[1] : req.split("!=")[1]));
         QuestObjective qe = QuestObjective.objectives.get(id);
         if (qe != null) {
@@ -196,7 +196,7 @@ public class ConditionParser {
         return false;
     }
 
-    private boolean haveTiT(String req, Player player) {
+    private boolean haveTiT(String req, BasePlayer player) {
         if (req.contains("==")) {
             String split = req.split("==")[1];
             if (split.contains("&&")) {
@@ -214,7 +214,7 @@ public class ConditionParser {
         return false;
     }
 
-    private boolean haveTi(String req, Player player) {
+    private boolean haveTi(String req, BasePlayer player) {
         if (req.contains("==")) {
             String split = req.split("==")[1];
             if (split.contains(",")) {
@@ -231,7 +231,7 @@ public class ConditionParser {
         return false;
     }
 
-    private boolean haveCe(String req, Player player) {
+    private boolean haveCe(String req, BasePlayer player) {
         java.util.Map<Integer, Couple<Integer, Integer>> dopeuls = Action.getDopeul();
         GameMap map = player.getCurMap();
         if (dopeuls.containsKey((int) map.getId())) {
@@ -258,7 +258,7 @@ public class ConditionParser {
     }
 
     // Avoir la qu�te en cours.
-    private boolean haveQE(String req, Player player) {
+    private boolean haveQE(String req, BasePlayer player) {
         if (player == null)
             return false;
         int id = Integer.parseInt((req.contains("==") ? req.split("==")[1] : req.split("!=")[1]));
@@ -270,7 +270,7 @@ public class ConditionParser {
         }
     }
 
-    private boolean haveQT(String req, Player player) {
+    private boolean haveQT(String req, BasePlayer player) {
         int id = Integer.parseInt((req.contains("==") ? req.split("==")[1] : req.split("!=")[1]));
 
         QuestPlayer quest = player.getQuestPersoByQuestId(id);
@@ -280,7 +280,7 @@ public class ConditionParser {
             return (quest == null || !quest.isFinished());
     }
 
-    private boolean haveNPC(String req, Player perso) {
+    private boolean haveNPC(String req, BasePlayer perso) {
         switch (perso.getCurMap().getId()) {
             case 9052:
                 if (perso.getCurCell().getId() == 268
@@ -296,7 +296,7 @@ public class ConditionParser {
         return false;
     }
 
-    private boolean haveRO(String condition, Player player) {
+    private boolean haveRO(String condition, BasePlayer player) {
         try {
             for (String cond : condition.split("&&")) {
                 String[] split = cond.split("==")[1].split(",");
@@ -316,7 +316,7 @@ public class ConditionParser {
         return false;
     }
 
-    private boolean haveRA(String condition, Player player) {
+    private boolean haveRA(String condition, BasePlayer player) {
         try {
             for (String cond : condition.split("&&")) {
                 String[] split = cond.split("==")[1].split(",");
@@ -331,7 +331,7 @@ public class ConditionParser {
         return true;
     }
 
-    private String havePO(String cond, Player perso)//On remplace les PO par leurs valeurs si possession de l'item
+    private String havePO(String cond, BasePlayer perso)//On remplace les PO par leurs valeurs si possession de l'item
     {
         boolean Jump = false;
         boolean ContainsPO = false;
@@ -491,7 +491,7 @@ public class ConditionParser {
         return copyCond;
     }
 
-    public String canPN(String cond, Player perso)//On remplace le PN par 1 et si le nom correspond == 1 sinon == 0
+    public String canPN(String cond, BasePlayer perso)//On remplace le PN par 1 et si le nom correspond == 1 sinon == 0
     {
         String copyCond = "";
         for (String cur : cond.split("==")) {
@@ -511,7 +511,7 @@ public class ConditionParser {
         return World.world.getMap((short) 325).getMobGroups().size() > 0;
     }
 
-    public String canPJ(String cond, Player perso)//On remplace le PJ par 1 et si le metier correspond == 1 sinon == 0
+    public String canPJ(String cond, BasePlayer perso)//On remplace le PJ par 1 et si le metier correspond == 1 sinon == 0
     {
         String copyCond = "";
         if (cond.contains("==")) {
@@ -550,7 +550,7 @@ public class ConditionParser {
         return "1==1";
     }
 
-    public String haveJOB(String cond, Player perso) {
+    public String haveJOB(String cond, BasePlayer perso) {
         String copyCond = "";
         if (perso.getMetierByID(Integer.parseInt(cond.split("==")[1])) != null)
             copyCond = "1==1";

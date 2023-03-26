@@ -4,7 +4,7 @@ import org.starloco.locos.area.Area;
 import org.starloco.locos.area.SubArea;
 import org.starloco.locos.area.map.entity.InteractiveDoor;
 import org.starloco.locos.area.map.entity.MountPark;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.client.other.Party;
 import org.starloco.locos.common.Formulas;
 import org.starloco.locos.common.PathFinding;
@@ -66,7 +66,7 @@ public class GameMap {
                 if(Config.autoReboot) {
                     if (Reboot.check()) {
                         if ((System.currentTimeMillis() - Config.startTime) > 60000) {
-                            for (Player player : World.world.getOnlinePlayers()) {
+                            for (BasePlayer player : World.world.getOnlinePlayers()) {
                                 if(player.getFight() != null)
                                     player.getFight().endFight((byte) 0);
                                 player.send(this.toString());
@@ -80,7 +80,7 @@ public class GameMap {
 
                 TimerWaiter.addNext(() -> {
                     final List<GameMap> mapsAlreadyMoved = new ArrayList<>();
-                    for (Player player : World.world.getOnlinePlayers()) {
+                    for (BasePlayer player : World.world.getOnlinePlayers()) {
                         GameMap map = player.getCurMap();
                         if (map != null && !mapsAlreadyMoved.contains(map)) {
                             map.onMapMonsterDeplacement();
@@ -297,7 +297,7 @@ public class GameMap {
                 park.setPrice(3000000);
                 ((MountParkData) DatabaseManager.get(MountParkData.class)).update(park);
 
-                for (Player p : park.getMap().getPlayers())
+                for (BasePlayer p : park.getMap().getPlayers())
                     SocketManager.GAME_SEND_Rp_PACKET(p, park);
             });
         } catch (Exception e) {
@@ -305,7 +305,7 @@ public class GameMap {
         }
     }
 
-    public static int getObjResist(Player perso, int cellid, int itemID) {
+    public static int getObjResist(BasePlayer perso, int cellid, int itemID) {
         MountPark MP = perso.getCurMap().getMountPark();
         String packets = "";
         if (MP == null || MP.getObject().size() == 0)
@@ -508,7 +508,7 @@ public class GameMap {
         }
     }
 
-    public Fight newFight(Player init1, Player init2, int type) {
+    public Fight newFight(BasePlayer init1, BasePlayer init2, int type) {
         if (init1.getFight() != null || init2.getFight() != null)
             return null;
         int id = 1;
@@ -605,7 +605,7 @@ public class GameMap {
         return this.npcs.remove(id);
     }
 
-    public void applyEndFightAction(Player player) {
+    public void applyEndFightAction(BasePlayer player) {
         if (this.endFightAction.get(player.needEndFight()) == null)
             return;
         if (data.id == 8545 && player.hasMobGroup() != null && player.hasMobGroup().getMobs().size() == 6) {
@@ -684,7 +684,7 @@ public class GameMap {
         return new GameMap(data);
     }
 
-    public void addPlayer(Player perso) {
+    public void addPlayer(BasePlayer perso) {
         SocketManager.GAME_SEND_ADD_PLAYER_TO_MAP(this, perso);	
         perso.getCurCell().addPlayer(perso);
         if (perso.getEnergy() > 0) {
@@ -704,14 +704,14 @@ public class GameMap {
         }
     }
 
-    public ArrayList<Player> getPlayers() {
-        ArrayList<Player> player = new ArrayList<>();
+    public ArrayList<BasePlayer> getPlayers() {
+        ArrayList<BasePlayer> player = new ArrayList<>();
         for (GameCase c : cases)
             player.addAll(new ArrayList<>(c.getPlayers()));
         return player;
     }
 
-    public void sendFloorItems(Player player) {
+    public void sendFloorItems(BasePlayer player) {
         StringBuilder builder = new StringBuilder("GDO");
         this.cases.stream().filter(c -> c.getDroppedItem(false) != null)
                 .forEach(c -> builder.append("+").append(c.getId()).append(";").append(c.getDroppedItem(false).getTemplate().getId()).append(";0|"));
@@ -770,7 +770,7 @@ public class GameMap {
         return this.isMute;
     }
 
-    public boolean isAggroByMob(Player player, int cell) {
+    public boolean isAggroByMob(BasePlayer player, int cell) {
         if (data.placesStr.equalsIgnoreCase("|"))
             return false;
         if (player.getCurMap().data.id != data.id || !player.canAggro())
@@ -958,7 +958,7 @@ public class GameMap {
         return packet.toString();
     }
 
-    public String getFighterGMPacket(Player player) {
+    public String getFighterGMPacket(BasePlayer player) {
         Fighter target = player.getFight().getFighterByPerso(player);
         for (GameCase cell : this.cases)
             for(Fighter fighter : cell.getFighters())
@@ -1010,7 +1010,7 @@ public class GameMap {
         return str;
     }
 
-    public String getNpcsGMsPackets(Player p) {
+    public String getNpcsGMsPackets(BasePlayer p) {
         if (this.npcs.isEmpty())
             return "";
 
@@ -1053,7 +1053,7 @@ public class GameMap {
         SocketManager.GAME_SEND_MAP_FIGHT_COUNT_TO_MAP(this);
     }
 
-    public void startFightVersusMonstres(Player player, MonsterGroup group) {
+    public void startFightVersusMonstres(BasePlayer player, MonsterGroup group) {
         if (player.getFight() != null)
             return;
         if (player.isMissingSubscription()) {
@@ -1111,7 +1111,7 @@ public class GameMap {
         }
     }
 
-    public void startFightVersusProtectors(Player player, MonsterGroup group) {
+    public void startFightVersusProtectors(BasePlayer player, MonsterGroup group) {
         if (Main.fightAsBlocked || player == null || player.getFight() != null || player.isDead() == 1 || !player.canAggro())
             return;
         if (player.isMissingSubscription()) {
@@ -1135,7 +1135,7 @@ public class GameMap {
         SocketManager.GAME_SEND_MAP_FIGHT_COUNT_TO_MAP(this);
     }
 
-    public void startFigthVersusDopeuls(Player perso, MonsterGroup group)//RaZoR
+    public void startFigthVersusDopeuls(BasePlayer perso, MonsterGroup group)//RaZoR
     {
         if (perso.getFight() != null)
             return;
@@ -1156,7 +1156,7 @@ public class GameMap {
         SocketManager.GAME_SEND_MAP_FIGHT_COUNT_TO_MAP(this);
     }
 
-    public void startFightVersusPercepteur(Player perso, Collector perco) {
+    public void startFightVersusPercepteur(BasePlayer perso, Collector perco) {
         if (perso.getFight() != null)
             return;
         if (perso.isMissingSubscription()) {
@@ -1179,7 +1179,7 @@ public class GameMap {
         SocketManager.GAME_SEND_MAP_FIGHT_COUNT_TO_MAP(this);
     }
 
-    public void startFightVersusPrisme(Player perso, Prism Prisme) {
+    public void startFightVersusPrisme(BasePlayer perso, Prism Prisme) {
         if (perso.getFight() != null)
             return;
         if (perso.isMissingSubscription()) {
@@ -1398,7 +1398,7 @@ public class GameMap {
                         if (pathstr == null)
                             return;
                         group.setCellId(nextCell.getId());
-                        for (Player z : getPlayers())
+                        for (BasePlayer z : getPlayers())
                             SocketManager.GAME_SEND_GA_PACKET(z.getGameClient(), "0", "1", group.getId()
                                     + "", pathstr);
                     } else {
@@ -1422,7 +1422,7 @@ public class GameMap {
                         if (pathstr == null)
                             return;
                         group.setCellId(cell);
-                        for (Player z : getPlayers())
+                        for (BasePlayer z : getPlayers())
                             SocketManager.GAME_SEND_GA_PACKET(z.getGameClient(), "0", "1", group.getId() + "", pathstr);
                     }
                     break;
@@ -1444,7 +1444,7 @@ public class GameMap {
                     if (pathstr == null)
                         return;
                     group.setCellId(cell);
-                    for (Player z : getPlayers())
+                    for (BasePlayer z : getPlayers())
                         if(z != null)
                             SocketManager.GAME_SEND_GA_PACKET(z.getGameClient(), "0", "1", group.getId() + "", pathstr);
                     break;
@@ -1529,7 +1529,7 @@ public class GameMap {
         }
 
         if (ok)
-            for(Player target : this.getPlayers())
+            for(BasePlayer target : this.getPlayers())
                 SocketManager.GAME_SEND_GM_MOUNT(target.getGameClient(), this, false);
 
         return this.getGMOfMount(mounts);
@@ -1554,16 +1554,16 @@ public class GameMap {
         return packets.toString();
     }
 
-    public Player getPlayer(int id) {
+    public BasePlayer getPlayer(int id) {
         for(GameCase cell : cases)
-            for(Player player : cell.getPlayers())
+            for(BasePlayer player : cell.getPlayers())
                 if(player != null)
                     if(player.getId() == id)
                         return player;
         return null;
     }
 
-    public void onPlayerArriveOnCell(Player player, int id) {
+    public void onPlayerArriveOnCell(BasePlayer player, int id) {
         final GameCase cell = this.getCase(id);
 
         if (cell == null)
@@ -1607,7 +1607,7 @@ public class GameMap {
         this.getPlayers().stream().filter(Objects::nonNull).forEach(player -> player.send(packet));
     }
 
-	public Fight newFightbouf(Player init1, Player init2, int fightTypeChallenge) {
+	public Fight newFightbouf(BasePlayer init1, BasePlayer init2, int fightTypeChallenge) {
 		
 		if (init1.getFight() != null || init2.getFight() != null)
             return null;

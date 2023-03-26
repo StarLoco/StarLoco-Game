@@ -3,7 +3,7 @@ package org.starloco.locos.script.proxy;
 import org.classdump.luna.impl.DefaultUserdata;
 import org.classdump.luna.impl.ImmutableTable;
 import org.classdump.luna.lib.ArgumentIterator;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.object.GameObject;
 import org.starloco.locos.script.types.MetaTables;
@@ -32,7 +32,7 @@ public class SItem  extends DefaultUserdata<GameObject> {
 
     @SuppressWarnings("unused")
     private static boolean consumeTxtStat(GameObject item, ArgumentIterator args) {
-        Player player = args.nextUserdata("SPlayer", SPlayer.class).getUserValue();
+        BasePlayer player = args.nextUserdata("SPlayer", SPlayer.class).getUserValue();
         int stat = args.nextInt();
         String val = args.nextString().toString();
 

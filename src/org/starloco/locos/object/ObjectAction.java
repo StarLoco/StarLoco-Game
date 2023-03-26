@@ -6,7 +6,7 @@ import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.area.map.entity.Animation;
 import org.starloco.locos.area.map.entity.House;
 import org.starloco.locos.area.map.entity.MountPark;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.client.BasePlayer;
 import org.starloco.locos.common.Formulas;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.database.DatabaseManager;
@@ -50,7 +50,7 @@ public class ObjectAction {
         this.cond = cond;
     }
 
-    public void apply(Player player0, Player target, int objet, int cellid) {
+    public void apply(BasePlayer player0, BasePlayer target, int objet, int cellid) {
         GameObject object = World.world.getGameObject(objet);
 
         if (object == null) {
@@ -71,7 +71,7 @@ public class ObjectAction {
             return;
         }
 
-        Player player = target != null ? target : player0;
+        BasePlayer player = target != null ? target : player0;
         Fight fight = player.getFight();
 
         if(fight != null && !(fight.getState() == Constant.FIGHT_STATE_PLACE))
@@ -603,7 +603,7 @@ public class ObjectAction {
                         subArea.setAlignment((byte) alignement);
                         subArea.setPrism(prism);
 
-                        for (Player z : World.world.getOnlinePlayers()) {
+                        for (BasePlayer z : World.world.getOnlinePlayers()) {
                             if (z == null)
                                 continue;
                             if (z.getAlignment() == 0) {
@@ -716,7 +716,7 @@ public class ObjectAction {
                         if (traque == null)
                             break;
 
-                        Player cible = World.world.getPlayerByName(traque);
+                        BasePlayer cible = World.world.getPlayerByName(traque);
 
                         if (cible == null || cible.getAlignment() == 0 || (cible.getAlignment() == player0.getAlignment())) {
                             isOk = true;
@@ -929,7 +929,7 @@ public class ObjectAction {
         }
     }
 
-    private boolean haveEffect(int id, GameObject gameObject, Player player) {
+    private boolean haveEffect(int id, GameObject gameObject, BasePlayer player) {
         if (player.getFight() != null) return true;
         switch (id) {
             case 8378://Fragment magique.
