@@ -242,7 +242,72 @@ public class Player {
                   byte seeAlign, byte seeSeller, String canaux, short map, int cell,
                   String stuff, String storeObjets, int pdvPer, String spells,
                   String savePos, String jobs, int mountXp, int mount, int honor,
-                  int deshonor, int alvl, String z, byte title, int wifeGuid,
+                  int deshonor, int alvl, String zaaps, byte title, int wifeGuid,
+                  String morphMode, String allTitle, String emotes, long prison,
+                  boolean isNew, String parcho, long timeDeblo, boolean noall, String deadInformation, byte deathCount, long totalKills){
+        this(id,
+            name,
+            groupe,
+            sexe,
+            classe,
+            color1,
+            color2,
+            color3,
+            kamas,
+            pts,
+            _capital,
+            energy,
+            level,
+            exp,
+            _size,
+            _gfxid,
+            alignement,
+            account,
+            stats,
+            seeFriend,
+            seeAlign,
+            seeSeller,
+            canaux,
+            map,
+            cell,
+            stuff,
+            storeObjets,
+            pdvPer,
+            Collections.emptyMap(),
+            Collections.emptyMap(),
+            savePos,
+            jobs,
+            mountXp,
+            mount,
+            honor,
+            deshonor,
+            alvl,
+            zaaps,
+            title,
+            wifeGuid,
+            morphMode,
+            allTitle,
+            emotes,
+            prison,
+            isNew,
+            parcho,
+            timeDeblo,
+            noall,
+            deadInformation,
+            deathCount,
+            totalKills);
+        parseSpells(spells, false);
+    }
+
+    private Player(int id, String name, int groupe, int sexe, int classe,
+                  int color1, int color2, int color3, long kamas, int pts,
+                  int _capital, int energy, int level, long exp, int _size,
+                  int _gfxid, byte alignement, int account,
+                  Map<Integer, Integer> stats, byte seeFriend,
+                  byte seeAlign, byte seeSeller, String canaux, short map, int cell,
+                  String stuff, String storeObjets, int pdvPer, Map<Integer, Spell.SortStats> spells, Map<Integer,Integer> spellPositions,
+                  String savePos, String jobs, int mountXp, int mount, int honor,
+                  int deshonor, int alvl, String zaaps, byte title, int wifeGuid,
                   String morphMode, String allTitle, String emotes, long prison,
                   boolean isNew, String parcho, long timeDeblo, boolean noall, String deadInformation, byte deathCount, long totalKills) {
         this.scriptVal = new SPlayer(this);
@@ -286,8 +351,8 @@ public class Player {
         this._savePos = new Pair<>(Integer.valueOf(parts[0]), Integer.valueOf(parts[1]));
         this.regenTime = System.currentTimeMillis();
         this.timeTaverne = timeDeblo;
-        this._sorts = new HashMap<>();
-        this._sortsPlaces = new HashMap<>();
+        this._sorts = new HashMap<>(spells);
+        this._sortsPlaces = new HashMap<>(spellPositions);
         try {
             String[] split = deadInformation.split(",");
             this.dead = Byte.parseByte(split[0]);
@@ -334,8 +399,8 @@ public class Player {
                     this.curCell = curMap.getCase(311);
                 }
             }
-            if (!z.equalsIgnoreCase("")) {
-                for (String str : z.split(",")) {
+            if (!zaaps.equalsIgnoreCase("")) {
+                for (String str : zaaps.split(",")) {
                     try {
                         _zaaps.add(Integer.parseInt(str));
                     } catch (Exception e) {
@@ -387,7 +452,6 @@ public class Player {
                 this.curPdv = (this.maxPdv * pdvPer / 100);
             if (this.curPdv <= 0)
                 this.curPdv = 1;
-            parseSpells(spells, false);
             //Chargement des m�tiers
             if (!jobs.equals("")) {
                 for (String aJobData : jobs.split(";")) {
@@ -501,16 +565,14 @@ public class Player {
                 (Config.startCell > 0 ? (short) Config.startCell : Constant.getStartCell(classe)),
                 //(short)6824,
                 //224,
-                "", "", 100, "", (Config.startMap != 0 ? (short) Config.startMap : Constant.getStartMap(classe))
+                "", "", 100, Constant.getStartSorts(classe), Constant.getStartSortsPlaces(classe), (Config.startMap != 0 ? (short) Config.startMap : Constant.getStartMap(classe))
                 + ","
                 + (Config.startCell > 0 ? (short) Config.startCell : Constant.getStartCell(classe)), "", 0, -1, 0, 0, 0, z, (byte) 0, 0, "0;0", "", (Config.allEmotes ? "0;1;2;3;4;5;6;7;8;9;10;11;12;13;14;15;16;17;18;19;20;21" : "0"), 0, true, "118,0;119,0;123,0;124,0;125,0;126,0", 0, false, "0,0,0,0", (byte) 0, 0);
 
         player.emotes.add(0);
         player.emotes.add(1);
-        player._sorts.putAll(Constant.getStartSorts(classe));
         for (int a = 1; a <= player.getLevel(); a++)
             Constant.onLevelUpSpells(player, a);
-        player._sortsPlaces.putAll(Constant.getStartSortsPlaces(classe));
 
         if (!((PlayerData) DatabaseManager.get(PlayerData.class)).insert(player))
             return null;
