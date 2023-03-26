@@ -24,6 +24,7 @@ public class NpcMovable extends Npc {
 	}	
 	
 	private void move() {
+		if(this.position >= this.path.length) return;
 		char dir = this.path[this.position].charAt(0);
         short nbr;
 
