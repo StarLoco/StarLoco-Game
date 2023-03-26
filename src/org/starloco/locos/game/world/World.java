@@ -295,12 +295,6 @@ public class World {
         DatabaseManager.get(ServerData.class).loadFully();
         logger.debug("The reset of the logged players were done successfully.");
 
-        DatabaseManager.get(CommandData.class).loadFully();
-        logger.debug("The administration commands were loaded successfully.");
-
-        DatabaseManager.get(GroupData.class).loadFully();
-        logger.debug("The administration groups were loaded successfully.");
-
         DatabaseManager.get(PubData.class).loadFully();
         logger.debug("The pubs were loaded successfully.");
 

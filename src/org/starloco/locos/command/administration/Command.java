@@ -1,11 +1,6 @@
 package org.starloco.locos.command.administration;
 
-import org.starloco.locos.database.DatabaseManager;
-import org.starloco.locos.database.data.login.CommandData;
-
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 public class Command {
 
