@@ -61,7 +61,7 @@ public class Start {
 			try { Thread.sleep(2000); } catch (InterruptedException ignored) {}
 			map = mapUse.get(1);
 			helper = map.addNpc(15020, (short) 179, 3);
-			player.setSpellsPlace(false);
+			// FIXME player.setSpellsPlace(false);
 			Start.this.player.unlearnSpell(661);
 			Start.this.player.teleport(map, 224);
 			Start.this.player.setBlockMovement(true);
@@ -219,7 +219,7 @@ public class Start {
 			try { Thread.sleep(3000); } catch (InterruptedException ignored) {}
 			SocketManager.GAME_SEND_cMK_PACKET(player, "", helper.getId(), "Ganymede", "Bien, tu sais désormais comment te battre contre un ennemi.");
 			try { Thread.sleep(3000); } catch (InterruptedException ignored) {}
-			player.setSpellsPlace(true);
+			// FIXME player.setSpellsPlace(true);
 			SocketManager.GAME_SEND_cMK_PACKET(player, "", helper.getId(), "Ganymede", "Je viens de te donner tes trois premiers sorts.");
 			try { Thread.sleep(3000); } catch (InterruptedException ignored) {}
 			SocketManager.GAME_SEND_cMK_PACKET(player, "", helper.getId(), "Ganymede", "Utilise les pour combattre l'Arakne qui se trouve dans cette pièce.");

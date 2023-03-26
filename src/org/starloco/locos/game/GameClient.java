@@ -268,7 +268,7 @@ public class GameClient {
                 getCharacters(/*(packet.length() == 2)*/);
                 break;
             case 'R':
-                retry(Integer.parseInt(packet.substring(2)));
+                hardcodeRevive(Integer.parseInt(packet.substring(2)));
                 break;
             case 'S':
                 setCharacter(packet);
@@ -633,8 +633,10 @@ public class GameClient {
         SocketManager.GAME_SEND_PERSO_LIST(this, this.account.getPlayers(), this.account.getSubscribeRemaining());
     }
 
-    private void retry(int id) {
+    private void hardcodeRevive(int id) {
         final Player player = this.account.getPlayers().get(id);
+
+        this.getSession().write("BN");
 
         if(player != null) {
             player.revive();
@@ -6898,19 +6900,15 @@ public class GameClient {
     }
 
     private void moveSpell(String packet) {
-        try {
-            String[] parts = packet.substring(2).split("\\|");
+        String[] parts = packet.substring(2).split("\\|");
 
-            int SpellID = Integer.parseInt(parts[0]);
-            int position = Integer.parseInt(parts[1]); // Will return -1
+        int SpellID = Integer.parseInt(parts[0]);
+        int position = Integer.parseInt(parts[1]); // May return -1
 
-            Spell.SortStats spellStats = this.player.getSortStatBySortIfHas(SpellID);
-            if (spellStats != null) {
-                this.player.setSpellShortcuts(SpellID, position);
-                SocketManager.GAME_SEND_BN(this);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        Spell.SortStats spellStats = this.player.getSortStatBySortIfHas(SpellID);
+        if (spellStats != null) {
+            this.player.setSpellShortcuts(SpellID, position);
+            SocketManager.GAME_SEND_BN(this);
         }
     }
 

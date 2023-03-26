@@ -157,9 +157,9 @@ public class Player {
     private final ArrayList<Integer> _zaaps = new ArrayList<>();
 
     //Sort
-    private Map<Integer, Spell.SortStats> _sorts = new HashMap<>();
-    private Map<Integer, Integer> _sortsPlaces = new HashMap<>(); // K: SpellID, V: Position
-    private Map<Integer, ItemHash> _itemShortcuts = new HashMap<>(); // K: Position, V: Item Hash
+    private final Map<Integer, Spell.SortStats> _sorts;
+    private final Map<Integer, Integer> _sortsPlaces; // K: SpellID, V: Position
+    private final Map<Integer, ItemHash> _itemShortcuts = new HashMap<>(); // K: Position, V: Item Hash
 
     //Titre
     private byte currentTitle = 0;
@@ -229,7 +229,7 @@ public class Player {
 
     private String Savecolors;
     private String Savestats;
-    
+
     public ArrayList<Integer> getIsCraftingType() {
         return craftingType;
     }
@@ -242,7 +242,72 @@ public class Player {
                   byte seeAlign, byte seeSeller, String canaux, short map, int cell,
                   String stuff, String storeObjets, int pdvPer, String spells,
                   String savePos, String jobs, int mountXp, int mount, int honor,
-                  int deshonor, int alvl, String z, byte title, int wifeGuid,
+                  int deshonor, int alvl, String zaaps, byte title, int wifeGuid,
+                  String morphMode, String allTitle, String emotes, long prison,
+                  boolean isNew, String parcho, long timeDeblo, boolean noall, String deadInformation, byte deathCount, long totalKills){
+        this(id,
+            name,
+            groupe,
+            sexe,
+            classe,
+            color1,
+            color2,
+            color3,
+            kamas,
+            pts,
+            _capital,
+            energy,
+            level,
+            exp,
+            _size,
+            _gfxid,
+            alignement,
+            account,
+            stats,
+            seeFriend,
+            seeAlign,
+            seeSeller,
+            canaux,
+            map,
+            cell,
+            stuff,
+            storeObjets,
+            pdvPer,
+            Collections.emptyMap(),
+            Collections.emptyMap(),
+            savePos,
+            jobs,
+            mountXp,
+            mount,
+            honor,
+            deshonor,
+            alvl,
+            zaaps,
+            title,
+            wifeGuid,
+            morphMode,
+            allTitle,
+            emotes,
+            prison,
+            isNew,
+            parcho,
+            timeDeblo,
+            noall,
+            deadInformation,
+            deathCount,
+            totalKills);
+        parseSpells(spells, false);
+    }
+
+    private Player(int id, String name, int groupe, int sexe, int classe,
+                  int color1, int color2, int color3, long kamas, int pts,
+                  int _capital, int energy, int level, long exp, int _size,
+                  int _gfxid, byte alignement, int account,
+                  Map<Integer, Integer> stats, byte seeFriend,
+                  byte seeAlign, byte seeSeller, String canaux, short map, int cell,
+                  String stuff, String storeObjets, int pdvPer, Map<Integer, Spell.SortStats> spells, Map<Integer,Integer> spellPositions,
+                  String savePos, String jobs, int mountXp, int mount, int honor,
+                  int deshonor, int alvl, String zaaps, byte title, int wifeGuid,
                   String morphMode, String allTitle, String emotes, long prison,
                   boolean isNew, String parcho, long timeDeblo, boolean noall, String deadInformation, byte deathCount, long totalKills) {
         this.scriptVal = new SPlayer(this);
@@ -286,6 +351,8 @@ public class Player {
         this._savePos = new Pair<>(Integer.valueOf(parts[0]), Integer.valueOf(parts[1]));
         this.regenTime = System.currentTimeMillis();
         this.timeTaverne = timeDeblo;
+        this._sorts = new HashMap<>(spells);
+        this._sortsPlaces = new HashMap<>(spellPositions);
         try {
             String[] split = deadInformation.split(",");
             this.dead = Byte.parseByte(split[0]);
@@ -324,9 +391,7 @@ public class Player {
                 this.curMap = World.world.getMap((short) 7411);
                 this.curCell = curMap.getCase(311);
             } else if (curMap == null && World.world.getMap((short) 7411) == null) {
-                GameServer.a();
-                Main.stop("Player1");
-                return;
+                throw new IllegalStateException("Cannot find map 7411");
             } else if (curMap != null) {
                 this.curCell = curMap.getCase(cell);
                 if (curCell == null) {
@@ -334,8 +399,8 @@ public class Player {
                     this.curCell = curMap.getCase(311);
                 }
             }
-            if (!z.equalsIgnoreCase("")) {
-                for (String str : z.split(",")) {
+            if (!zaaps.equalsIgnoreCase("")) {
+                for (String str : zaaps.split(",")) {
                     try {
                         _zaaps.add(Integer.parseInt(str));
                     } catch (Exception e) {
@@ -344,8 +409,7 @@ public class Player {
                 }
             }
             if (!isNew && (curMap == null || curCell == null)) {
-                Main.stop("Player2");
-                return;
+                throw new IllegalStateException("Cannot find map/cell for player");
             }
             this.parseObjects(stuff);
             try {
@@ -388,7 +452,6 @@ public class Player {
                 this.curPdv = (this.maxPdv * pdvPer / 100);
             if (this.curPdv <= 0)
                 this.curPdv = 1;
-            parseSpells(spells, false);
             //Chargement des m�tiers
             if (!jobs.equals("")) {
                 for (String aJobData : jobs.split(";")) {
@@ -459,6 +522,8 @@ public class Player {
         this.gfxId = _gfxid;
         this.stats = new Stats(stats, true, this);
         this.changeName = false;
+        _sorts = new HashMap<>();
+        _sortsPlaces = new HashMap<>();
         this.set_isClone(true);
 
         for (String item : stuff.split("\\|")) {
@@ -500,16 +565,14 @@ public class Player {
                 (Config.startCell > 0 ? (short) Config.startCell : Constant.getStartCell(classe)),
                 //(short)6824,
                 //224,
-                "", "", 100, "", (Config.startMap != 0 ? (short) Config.startMap : Constant.getStartMap(classe))
+                "", "", 100, Constant.getStartSorts(classe), Constant.getStartSortsPlaces(classe), (Config.startMap != 0 ? (short) Config.startMap : Constant.getStartMap(classe))
                 + ","
                 + (Config.startCell > 0 ? (short) Config.startCell : Constant.getStartCell(classe)), "", 0, -1, 0, 0, 0, z, (byte) 0, 0, "0;0", "", (Config.allEmotes ? "0;1;2;3;4;5;6;7;8;9;10;11;12;13;14;15;16;17;18;19;20;21" : "0"), 0, true, "118,0;119,0;123,0;124,0;125,0;126,0", 0, false, "0,0,0,0", (byte) 0, 0);
 
         player.emotes.add(0);
         player.emotes.add(1);
-        player._sorts = Constant.getStartSorts(classe);
         for (int a = 1; a <= player.getLevel(); a++)
             Constant.onLevelUpSpells(player, a);
-        player._sortsPlaces = Constant.getStartSortsPlaces(classe);
 
         if (!((PlayerData) DatabaseManager.get(PlayerData.class)).insert(player))
             return null;
@@ -976,13 +1039,6 @@ public class Player {
         ((PlayerData) DatabaseManager.get(PlayerData.class)).updateTitles(this.getId(), _allTitle);
     }
 
-    public void setSpells(Map<Integer, Spell.SortStats> spells) {
-        _sorts.clear();
-        _sortsPlaces.clear();
-        _sorts = spells;
-        _sortsPlaces = Constant.getStartSortsPlaces(this.getClasse());
-    }
-
     public void teleportOldMap() {
         if(oldMap > 0) {
             this.teleport(oldMap, oldCell);
@@ -1038,7 +1094,7 @@ public class Player {
                 continue;
             sorts.append(SS.getSpellID()).append(";").append(SS.getLevel()).append(";");
             int position = positions.getOrDefault(key, 126);
-            if (position < 30 && position > 1)
+            if (position > 0 && position < 31)
                 sorts.append(position);
             sorts.append(",");
         }
@@ -1046,23 +1102,34 @@ public class Player {
     }
 
     public void parseSpells(String str, boolean send) {
-        if(str.equalsIgnoreCase("")) {
-            _sorts = Constant.getStartSorts(classe);
-            for (int a = 1; a <= this.getLevel(); a++)
-                Constant.onLevelUpSpells(this, a);
-            this._sortsPlaces = Constant.getStartSortsPlaces(this.classe);
-            return;
-        }
+        if(str.length() == 0) throw new IllegalArgumentException("passed empty spell string to parseSpells");
+//        if(str.equalsIgnoreCase("")) {
+//            _sorts = Constant.getStartSorts(classe);
+//            for (int a = 1; a <= this.getLevel(); a++)
+//                Constant.onLevelUpSpells(this, a);
+//            this._sortsPlaces = Constant.getStartSortsPlaces(this.classe);
+//            return;
+//        }
 
-        Map<Integer, Integer> positions = new HashMap<>();
-        String[] spells = str.split(",");
-        for (String e : spells) {
+        Map<Integer, Spell.SortStats> spells = _sorts;
+        Map<Integer, Integer> spellPositions = _sortsPlaces;
+        if (_morphMode) {
+            spells = _saveSorts;
+            spellPositions = _saveSortsPlaces;
+        }
+        spells.clear();
+        spellPositions.clear();
+
+        String[] spellParts = str.split(",");
+        for (String e : spellParts) {
             try {
                 String[] parts = e.split(";");
                 int id = Integer.parseInt(parts[0]);
                 int lvl = Integer.parseInt(parts[1]);
 
-                learnSpell(id, lvl);
+                Spell.SortStats ss =  World.world.getSort(id).getStatsByLevel(lvl);
+                if(ss == null) throw new IllegalStateException(String.format("player has unknown spell: %d/%d", id, lvl));
+                spells.put(id, World.world.getSort(id).getStatsByLevel(lvl));
 
                 if(parts.length < 3 || parts[2].equalsIgnoreCase("")) continue;
                 int position = World.world.getCryptManager().getIntByHashedValue(parts[2].charAt(0)); // may return -1
@@ -1071,20 +1138,10 @@ public class Player {
                     // Too high to be a valid base64 position
                     position =  Integer.parseInt(parts[2]);
                 }
-                positions.put(id, position);
+                spellPositions.put(id, position);
             } catch (NumberFormatException e1) {
-                e1.printStackTrace();
+                Main.logger.error("Cannot load player's spell", e1);
             }
-        }
-
-        if (_morphMode) {
-            _saveSorts.clear();
-            _saveSortsPlaces.clear();
-            _saveSortsPlaces = positions;
-        } else {
-            _sorts.clear();
-            _sortsPlaces.clear();
-            _sortsPlaces = positions;
         }
     }
 
@@ -1294,14 +1351,6 @@ public class Player {
         return _capital;
     }
 
-    public void setSpellsPlace(boolean ok) {
-        if (ok)
-            _sortsPlaces = Constant.getStartSortsPlaces(this.getClasse());
-        else
-            _sortsPlaces.clear();
-        SocketManager.GAME_SEND_SPELL_LIST(this);
-    }
-
     public static class EnsureSpellLevelResult {
         public final boolean changed;
         public final int ptsDelta, oldLevel;
@@ -1400,20 +1449,6 @@ public class Player {
             }
             if (save)
                 ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this);
-            return true;
-        }
-    }
-
-    public boolean learnSpell(int spellID, int level) {
-        if (World.world.getSort(spellID).getStatsByLevel(level) == null) {
-            GameServer.a();
-            return false;
-        }
-
-        if (_saveSorts.containsKey(spellID)) {
-            return false;
-        } else {
-            _saveSorts.put(spellID, World.world.getSort(spellID).getStatsByLevel(level));
             return true;
         }
     }
@@ -4697,8 +4732,10 @@ public class Player {
             this.addCapital(-this.getCapital());
             this.setSpellPoints(0);
             this.getStatsParcho().getEffects().clear();
-            this._sorts = Constant.getStartSorts(classe);
-            this._sortsPlaces = Constant.getStartSortsPlaces(classe);
+            this._sorts.clear();
+            this._sorts.putAll(Constant.getStartSorts(classe));
+            this._sortsPlaces.clear();
+            this._sortsPlaces.putAll(Constant.getStartSortsPlaces(classe));
             if(this.level >= 100)
                 this.stats.addOneStat(Constant.STATS_ADD_PA, -1);
             this.level = 1;
@@ -5577,7 +5614,7 @@ public class Player {
                     if (z == null)
                         continue;
                     if (z.isOnline()) {
-                        SocketManager.GAME_SEND_gITM_PACKET(z, org.starloco.locos.entity.Collector.parseToGuild(z.getGuild().getId()));
+                        SocketManager.GAME_SEND_gITM_PACKET(z, Collector.parseToGuild(z.getGuild().getId()));
                         String str = "G" + collector.getFullName() + "|.|" + World.world.getMap(collector.getMap()).getX() + "|" + World.world.getMap(collector.getMap()).getY() + "|" + getName() + "|" + collector.getXp() + ";";
 
                         if (!collector.getLogObjects().equals(""))
@@ -5842,7 +5879,7 @@ public class Player {
     }
 
 	public void setFullMorphbouf(int team) {
-		
+
 		if (this.isOnMount()) this.toogleOnMount();
 		if (_morphMode)
 			unsetFullMorph();
@@ -5851,19 +5888,19 @@ public class Player {
 			SocketManager.send(this, "Im1185");
 			return;
 		}
-	
+
 		_saveSpellPts = _spellPts;
 		_saveSorts.putAll(_sorts);
 		_saveSortsPlaces.putAll(_sortsPlaces);
-		
+
 
 		_morphMode = true;
 		_sorts.clear();
 		_sortsPlaces.clear();
 		_spellPts = 0;
 		this.Savecolors = this.color1 + "," + this.color2 + "," + this.color3;
-		
-		
+
+
 		if(team == 0)//rouge
 		{
 			this.color1 = 16713479;
@@ -5883,7 +5920,7 @@ public class Player {
 			//SocketManager.GAME_SEND_ASK(this.getGameClient(), this);
 			SocketManager.GAME_SEND_SPELL_LIST(this);
 		}
-		
+
 		this.Savestats = this.maxPdv + "," + this.pa + ","
 		+ this.pm + ","  + this.vitalite + "," + this.sagesse + ","
 		+ this.terre + "," + this.feu + "," + this.eau + "," + this.air
@@ -5923,7 +5960,7 @@ public class Player {
 		_sorts.putAll(_saveSorts);
 		_sortsPlaces.putAll(_saveSortsPlaces);
 		String[] stats = this.Savestats.split(",");
-		
+
 		this.maxPdv = Integer.parseInt(stats[0]);
 		this.pa = Integer.parseInt(stats[1]);
 		this.pm = Integer.parseInt(stats[2]);
@@ -5934,13 +5971,13 @@ public class Player {
 		this.eau = Integer.parseInt(stats[7]);
 		this.air = Integer.parseInt(stats[8]);
 		this.initiative = Integer.parseInt(stats[9]);
-		
+
 		String[] color = this.Savecolors.split(",");
-		
+
 		this.color1 = Integer.parseInt(color[0]);
 		this.color2 = Integer.parseInt(color[1]);
 		this.color3 = Integer.parseInt(color[2]);
-		
+
 		parseSpells(encodeSpellsToDB(), true);
 		SocketManager.GAME_SEND_SPELL_LIST(this);
 		SocketManager.GAME_SEND_STATS_PACKET(this);
@@ -6007,7 +6044,7 @@ public class Player {
 
     public Optional<Integer> removeItemShortcutByHash(ItemHash hash) {
         Optional<Integer> position = _itemShortcuts.entrySet().stream().filter(e -> hash.equals(e.getValue()))
-                            .map(Map.Entry::getKey).findFirst();
+                            .map(Entry::getKey).findFirst();
         position.ifPresent(_itemShortcuts::remove);
         return position;
     }

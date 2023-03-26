@@ -53,7 +53,7 @@ public class GameMap {
                         Map<String, String> data = World.world.getGroupFix(respawnGroup.map.data.id, respawnGroup.cell);
 
                         if(data != null && time - respawnGroup.lastTime > Long.parseLong(data.get("timer"))) {
-                            respawnGroup.map.spawnMobGroup(respawnGroup.cell, data.get("groupData"), true);
+                            respawnGroup.m.spawnMobGroup(respawnGroup.cell, data.get("groupData"), true);
                             this.groups.remove(respawnGroup);
                         }
                     } else if(time - respawnGroup.lastTime > random) {
