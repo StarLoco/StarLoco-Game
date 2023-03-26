@@ -268,7 +268,7 @@ public class GameClient {
                 getCharacters(/*(packet.length() == 2)*/);
                 break;
             case 'R':
-                retry(Integer.parseInt(packet.substring(2)));
+                hardcodeRevive(Integer.parseInt(packet.substring(2)));
                 break;
             case 'S':
                 setCharacter(packet);
@@ -633,8 +633,10 @@ public class GameClient {
         SocketManager.GAME_SEND_PERSO_LIST(this, this.account.getPlayers(), this.account.getSubscribeRemaining());
     }
 
-    private void retry(int id) {
+    private void hardcodeRevive(int id) {
         final Player player = this.account.getPlayers().get(id);
+
+        this.getSession().write("BN");
 
         if(player != null) {
             player.revive();
