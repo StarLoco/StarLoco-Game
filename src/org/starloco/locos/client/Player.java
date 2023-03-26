@@ -3989,11 +3989,11 @@ public class Player {
         }
     }
 
-    public void useZaap(short id) {
+    public void useZaap(int id) {
         if (this.getExchangeAction() == null || this.getExchangeAction().getType() != ExchangeAction.IN_ZAAPING)
             return;
-        if (this.fight != null || this.isInPrison()
-                || !this._zaaps.contains(id) || !this._zaaps.contains(this.curMap.getId())) {
+        if (this.fight != null || this.isInPrison() || !this._zaaps.contains(id) || !this._zaaps.contains(this.curMap.getId())) {
+            this.setExchangeAction(null);
             SocketManager.GAME_SEND_WV_PACKET(this);
             return;
         }
@@ -4004,12 +4004,14 @@ public class Player {
         if (this.kamas < cost) return;
 
         if (map == null) {
+            this.setExchangeAction(null);
             SocketManager.GAME_SEND_WUE_PACKET(this);
             return;
         }
 
         GameCase cell = map.getCase(World.world.getZaapCellIdByMapId(id));
         if (cell == null || !cell.isWalkable(true)) {
+            this.setExchangeAction(null);
             SocketManager.GAME_SEND_WUE_PACKET(this);
             return;
         }
