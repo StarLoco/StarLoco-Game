@@ -21,15 +21,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.starloco.locos.game.world.World.Couple;
 import org.starloco.locos.object.GameObject;
+import org.starloco.locos.util.Pair;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Stream;
 
 public class ScriptVM {
@@ -55,6 +53,7 @@ public class ScriptVM {
         TableLib.installInto(state, env);
 
         this.env.rawset("JLogF", new LogF());
+        this.env.rawset("loadDir", new LoadDir());
         this.loadData();
     }
 
@@ -62,7 +61,7 @@ public class ScriptVM {
         runFile(Paths.get("scripts", "Common.lua"));
     }
 
-    protected void runDirectory(Path path) throws IOException, LoaderException, CallException, CallPausedException, InterruptedException {
+    protected void runDirectory(Path path) {
         try (Stream<Path> paths = Files.walk(path)) {
             Iterator<Path> it = paths
                 .filter(Files::isRegularFile)
@@ -71,7 +70,7 @@ public class ScriptVM {
                 this.runFile(it.next());
             }
         } catch(Exception e){
-            e.printStackTrace();
+            ScriptVM.logger.error("cannot load directory", e);
         }
     }
 
@@ -112,6 +111,19 @@ public class ScriptVM {
         }
     }
 
+    class LoadDir extends AbstractLibFunction {
+        @Override
+        protected String name() { return "RequireDir"; }
+
+        @Override
+        public void invoke(ExecutionContext context, ArgumentIterator args) {
+            Path path = Paths.get(args.nextStrictString().toString());
+            runDirectory(path);
+
+            context.getReturnBuffer().setTo(true);
+        }
+    }
+
     public static int rawOptionalInt(Table v, Object key, int val) {
         Object n = v.rawget(key);
         if(n==null) return val;
@@ -132,6 +144,20 @@ public class ScriptVM {
         long len = t.rawlen();
         for(int i=1;i<=len;i++){
             out.add((T)t.rawget(i));
+        }
+
+        return out;
+    }
+
+    public static List<Pair<Integer,Integer>> listOfIntPairs(Table t) {
+        if(t == null) return null;
+
+        long len = t.rawlen();
+        List<Pair<Integer,Integer>> out = new LinkedList<>();
+
+        for(long i=0;i<len;i++){
+            Table pair = (Table)t.rawget(i+1);
+            out.add(new Pair<>(rawInt(pair, 1L), rawInt(pair, 2L)));
         }
 
         return out;

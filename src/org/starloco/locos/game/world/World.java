@@ -42,7 +42,7 @@ import org.starloco.locos.object.ObjectTemplate;
 import org.starloco.locos.object.entity.Fragment;
 import org.starloco.locos.object.entity.SoulStone;
 import org.starloco.locos.guild.Guild;
-import org.starloco.locos.script.NpcScriptVM;
+import org.starloco.locos.script.DataScriptVM;
 import org.starloco.locos.util.TimerWaiter;
 
 import java.text.SimpleDateFormat;
@@ -281,7 +281,7 @@ public class World {
     public void loadScripts() {
         logger.debug("Loading script engine");
         try {
-            NpcScriptVM.init();
+            DataScriptVM.init();
         } catch (Exception e) {
             logger.error("init NpcScriptVM failed", e);
             throw new RuntimeException("init NpcScriptVM failed", e);

@@ -1,6 +1,9 @@
 --- DO NOT USE TYPES DEFINED HERE
 --- THOSE ARE ONLY FOR AUTO-COMPLETION
 
+---@param path string
+local function loadDir(path)  end
+
 ---@class Player
 local Player = {}
 
