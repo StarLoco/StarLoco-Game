@@ -117,7 +117,8 @@ public class ScriptVM {
 
         @Override
         public void invoke(ExecutionContext context, ArgumentIterator args) {
-            Path path = Paths.get(args.nextStrictString().toString());
+            Path path = Paths.get("scripts", args.nextStrictString().toString());
+
             runDirectory(path);
 
             context.getReturnBuffer().setTo(true);

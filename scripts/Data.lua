@@ -1,10 +1,10 @@
 -- Init script for static data VM
 
 -- Define classes
-require("NPC")
+require("./models/NPC")
 -- require("MapDef")
 
 
 -- Load data
-loadDir("./scripts/npcs")
+loadDir("./data/npcs")
 -- loadDir("./scripts/maps")

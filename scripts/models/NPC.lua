@@ -1,4 +1,4 @@
-require("Dungeon")
+require("./data/Dungeons")
 
 ---@type table<number, Npc>
 NPCS = {}
