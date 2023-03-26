@@ -100,7 +100,7 @@ public class GameServer {
     public void kickAll(boolean kickGm) {
         for (Player player : new ArrayList<>(World.world.getOnlinePlayers())) {
             if (player != null && player.getGameClient() != null) {
-                if (player.getGroupe() != null && !player.getGroupe().isPlayer() && kickGm)
+                if (player.getGroup() != null && !player.getGroup().isPlayer() && kickGm)
                     continue;
                 player.send("M04");
                 ((GameHandler) player.getGameClient().getSession().getHandler()).kick(player.getGameClient().getSession());

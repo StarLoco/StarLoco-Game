@@ -6,5 +6,7 @@ require("./models/NPC")
 
 
 -- Load data
+require("./data/AdminCommands")
+require("./data/AdminGroups")
 loadDir("./data/npcs")
 -- loadDir("./scripts/maps")

@@ -398,7 +398,7 @@ public class PlayerData extends FunctionDAO<Player> {
         PreparedStatement p = null;
         try {
             p = getPreparedStatement("UPDATE " + getTableName() + " SET `groupe` = ? WHERE `id`= ?");
-            int id = (perso.getGroupe() != null) ? perso.getGroupe().getId() : -1;
+            int id = (perso.getGroup() != null) ? perso.getGroup().getId() : -1;
             p.setInt(1, id);
             p.setInt(2, perso.getId());
             execute(p);
@@ -508,8 +508,7 @@ public class PlayerData extends FunctionDAO<Player> {
             result = getData("SELECT groupe FROM " + getTableName() + " WHERE id = '" + p.getId() + "'");
             if (result.next()) {
                 int group = result.getInt("groupe");
-                Group g = Group.getGroupeById(group);
-                p.setGroupe(g, false);
+                p.setGroupe(group, false);
             }
         } catch (SQLException e) {
             super.sendError(e);

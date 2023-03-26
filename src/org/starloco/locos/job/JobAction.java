@@ -2554,7 +2554,7 @@ public class JobAction {
             randomStats.add((int) criticFail, (byte) 2);
             byte result = randomStats.get();
 
-            if(this.player.getGroupe() != null) {
+            if(this.player.getGroup() != null) {
                 this.player.sendMessage("PWRGmin à max : " + PWRGmin + " | " + PWRGmax + " | " + PWRGactual);
                 this.player.sendMessage("FO: " + factorObject + " EB: " + EtatObjet + " | FJ: " + factorJet + " | EJ: " + EtatJet);
                 this.player.sendMessage("SC: " + criticSuccess + " | SN: " + neutralSuccess + " | EC: " + criticFail + " | R: " + result);
@@ -2606,7 +2606,7 @@ public class JobAction {
 
             int puit = gameObject.getPuit();
             float PWGLoose = PWGRune;
-            if(this.player.getGroupe() != null)
+            if(this.player.getGroup() != null)
                 player.sendMessage("Puit before : " + puit);
 
             if (puit > 0)
@@ -2618,7 +2618,7 @@ public class JobAction {
             if (puit > 0)
                 puit = Math.round(puit - PWGLoose);
 
-            if(this.player.getGroupe() != null)
+            if(this.player.getGroup() != null)
                 player.sendMessage("Puit after : " + puit);
             boolean cancel = false;
             //region Succès neutre
@@ -2666,7 +2666,7 @@ public class JobAction {
                         stats = getStatsToLoose(runeTemplate, actualObjectSplitStats, originalSplitStats, blacklist);
                     }
 
-                    if(this.player.getGroupe() != null)
+                    if(this.player.getGroup() != null)
                         player.sendMessage("Puit remove PWGLoose : " + PWGLoose);
                     puit = -(int) Math.ceil(PWGLoose);
                 }
@@ -2696,7 +2696,7 @@ public class JobAction {
                     stats = getStatsToLoose(runeTemplate, actualObjectSplitStats, originalSplitStats, null);
                 }
 
-                if(this.player.getGroupe() != null)
+                if(this.player.getGroup() != null)
                     player.sendMessage("Puit remove PWGLoose : " + PWGLoose);
                 puit = - (int) Math.ceil(PWGLoose);
             }
@@ -2709,7 +2709,7 @@ public class JobAction {
 
             if(puit < 0) puit = 0;
             newObject.setPuit(puit);
-            if(this.player.getGroupe() != null)
+            if(this.player.getGroup() != null)
                 player.sendMessage("Puit finish : " + puit);
 
 

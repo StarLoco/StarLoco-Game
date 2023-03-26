@@ -412,7 +412,7 @@ public class CommandPlayer {
     private static boolean commandAll(Player player, String msg) {
         if (player.isInPrison())
             return true;
-        if(canalMute && player.getGroupe() == null) {
+        if(canalMute && player.getGroup() == null) {
             player.sendMessage(player.getLang().trans("command.commandplayer.commandall.unvailable"));
             return true;
         }
@@ -420,7 +420,7 @@ public class CommandPlayer {
             player.sendMessage(player.getLang().trans("command.commandplayer.noall"));
             return true;
         }
-        if (player.getGroupe() == null && System.currentTimeMillis() - player.getGameClient().timeLastTaverne < 10000) {
+        if (player.getGroup() == null && System.currentTimeMillis() - player.getGameClient().timeLastTaverne < 10000) {
             player.sendMessage(player.getLang().trans("command.commandplayer.allwait").replace("#1", String.valueOf(10 - ((System.currentTimeMillis() - player.getGameClient().timeLastTaverne) / 1000))));
             return true;
         }
@@ -487,10 +487,10 @@ public class CommandPlayer {
         for (Player target : World.world.getOnlinePlayers()) {
             if (target == null)
                 continue;
-            if (target.getGroupe() == null || target.isInvisible())
+            if (target.getGroup() == null || target.isInvisible())
                 continue;
 
-            message += "\n- <b><a href='asfunction:onHref,ShowPlayerPopupMenu," + target.getName() + "'>[" + target.getGroupe().getName() + "] " + target.getName() + "</a></b>";
+            message += "\n- <b><a href='asfunction:onHref,ShowPlayerPopupMenu," + target.getName() + "'>[" + target.getGroup().getName() + "] " + target.getName() + "</a></b>";
             vide = false;
         }
         if (vide)

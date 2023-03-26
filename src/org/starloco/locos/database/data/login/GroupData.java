@@ -22,7 +22,8 @@ public class GroupData extends FunctionDAO<Group> {
             result = getData("SELECT * FROM " + getTableName() + ";");
 
             while (result.next()) {
-                new Group(result.getInt("id"), result.getString("name"), result.getBoolean("isPlayer"), result.getString("commands"));
+            // FIXME Diabu
+//                new Group(result.getInt("id"), result.getString("name"), result.getBoolean("isPlayer"), result.getString("commands"));
             }
         } catch (SQLException e) {
             super.sendError(e);

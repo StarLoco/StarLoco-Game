@@ -220,7 +220,7 @@ public class Player {
     private long regenTime = -1;                                                //-1 veut dire que la personne ne c'est jamais connecte
     private boolean isInPrivateArea = false;
     public Start start;
-    private Group groupe;
+    private int groupId;
     private boolean isInvisible = false;
 
     private Map<Integer, QuestPlayer> questList = new HashMap<>();
@@ -314,7 +314,7 @@ public class Player {
         this.id = id;
         this.noall = noall;
         this.name = name;
-        this.groupe = Group.getGroupeById(groupe);
+        this.groupId = groupe;
         this.sexe = sexe;
         this.classe = classe;
         this.color1 = color1;
@@ -510,7 +510,7 @@ public class Player {
 
         this.id = id;
         this.name = name;
-        this.groupe = Group.getGroupeById(groupe);
+        this.groupId = groupe;
         this.sexe = sexe;
         this.classe = classe;
         this.color1 = color1;
@@ -635,7 +635,7 @@ public class Player {
             mountID = P.getMount().getId();
         }
 
-        Player Clone = new Player(id, P.getName(), (P.getGroupe() != null) ? P.getGroupe().getId() : -1, P.getSexe(), P.getClasse(), P.getColor1(), P.getColor2(), P.getColor3(), P.getLevel(), 100, P.getGfxId(), stats, "", 100, showWings, mountID, alvl, P.getAlignment());
+        Player Clone = new Player(id, P.getName(), (P.getGroup() != null) ? P.getGroup().getId() : -1, P.getSexe(), P.getClasse(), P.getColor1(), P.getColor2(), P.getColor3(), P.getLevel(), 100, P.getGfxId(), stats, "", 100, showWings, mountID, alvl, P.getAlignment());
         Clone.objects.putAll(P.objects);
         Clone.set_isClone(true);
         if (P._onMount) {
@@ -673,12 +673,12 @@ public class Player {
         ((PlayerData) DatabaseManager.get(PlayerData.class)).updateInfos(this);
     }
 
-    public Group getGroupe() {
-        return this.groupe;
+    public Group getGroup() {
+        return Group.byId(this.groupId);
     }
 
-    public void setGroupe(Group groupe, boolean reload) {
-        this.groupe = groupe;
+    public void setGroupe(int groupId, boolean reload) {
+        this.groupId = groupId;
         if (reload)
             ((PlayerData) DatabaseManager.get(PlayerData.class)).updateGroupe(this);
     }
@@ -1819,7 +1819,7 @@ public class Player {
         }
 
         SocketManager.GAME_SEND_ALIGNEMENT(client, alignment);
-        SocketManager.GAME_SEND_ADD_CANAL(client, _canaux + "^" + (this.getGroupe() != null ? "@" : ""));
+        SocketManager.GAME_SEND_ADD_CANAL(client, _canaux + "^" + (this.getGroup() != null ? "@" : ""));
         if (_guildMember != null)
             SocketManager.GAME_SEND_gS_PACKET(this, _guildMember);
         SocketManager.GAME_SEND_ZONE_ALLIGN_STATUT(client);
@@ -2017,7 +2017,7 @@ public class Player {
             } else {
                 if (getCurrentTitle() == 2)
                     setCurrentTitle(0);
-                Group g = this.getGroupe();
+                Group g = this.getGroup();
                 int level = this.getLevel();
                 if (g != null)
                     if (!g.isPlayer() || this.get_size() <= 0) // Si c'est un groupe non joueur ou que l'on est invisible on cache l'aura

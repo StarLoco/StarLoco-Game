@@ -745,9 +745,9 @@ public class GameClient {
         }
     }
 
-    private void authorisedCommand(String packet) throws InterruptedException {
+    private void authorisedCommand(String packet) {
         if (this.adminUser == null) this.adminUser = new CommandAdmin(this.player);
-        if (this.player.getGroupe() == null || this.getPlayer() == null) {
+        if (this.player.getGroup() == null || this.getPlayer() == null) {
             this.getAccount().getGameClient().kick();
             return;
         }
@@ -777,7 +777,7 @@ public class GameClient {
         }
 
         if (this.player.getCurMap() != null) {
-            if (this.player.getCurMap().isMute() && this.player.getGroupe() == null) {
+            if (this.player.getCurMap().isMute() && this.player.getGroup() == null) {
                 this.player.sendServerMessage("The map is currently mute.");
                 return;
             }
@@ -895,7 +895,7 @@ public class GameClient {
                 } else if (this.player.isInPrison()) {
                     SocketManager.GAME_SEND_MESSAGE(this.player, "Vous ?tes en prison, impossible de parler dans ce canal !", "B9121B");
                 } else {
-                    if (this.player.getGroupe() == null) {
+                    if (this.player.getGroup() == null) {
                         if ((l = System.currentTimeMillis() - timeLastTradeMsg) < 50000) {
                             l = (50000 - l) / 1000;//On calcul la diff?rence en secondes
                             SocketManager.GAME_SEND_Im_PACKET(this.player, "0115;"
@@ -914,7 +914,7 @@ public class GameClient {
                 }
                 break;
             case '@'://Canal Admin
-                if (this.player.getGroupe() == null)
+                if (this.player.getGroup() == null)
                     return;
                 msg = packet.split("\\|", 2)[1];
                 if (Logging.USE_LOG)
@@ -935,7 +935,7 @@ public class GameClient {
                 } else if (this.player.isInPrison()) {
                     SocketManager.GAME_SEND_MESSAGE(this.player, "Vous ?tes en prison, impossible de parler dans ce canal !", "B9121B");
                 } else {
-                    if (this.player.getGroupe() == null) {
+                    if (this.player.getGroup() == null) {
                         if ((j = System.currentTimeMillis()
                                 - timeLastRecrutmentMsg) < 40000) {
                             j = (40000 - j) / 1000;//On calcul la diff?rence en secondes
@@ -1015,7 +1015,7 @@ public class GameClient {
                         SocketManager.GAME_SEND_Im_PACKET(this.player, "184");
                         return;
                     }
-                    if (this.player.getGroupe() == null && target.isInvisible()) {
+                    if (this.player.getGroup() == null && target.isInvisible()) {
                         SocketManager.GAME_SEND_CHAT_ERROR_PACKET(this, nom);
                         return;
                     }
@@ -1105,9 +1105,9 @@ public class GameClient {
 
     // T?l?portation de MJ
     private void goToMap(String packet) {
-        if (this.player.getGroupe() == null)
+        if (this.player.getGroup() == null)
             return;
-        if (this.player.getGroupe().isPlayer() || this.player.getGroupe().getId() > 3)
+        if (this.player.getGroup().isPlayer() || this.player.getGroup().getId() > 3)
             return;
 
         String datas = packet.substring(3);
@@ -3190,8 +3190,8 @@ public class GameClient {
                         SocketManager.GAME_SEND_EXCHANGE_REQUEST_ERROR(this, 'O');
                         return;
                     }
-                    if (target.getGroupe() != null && this.player.getGroupe() == null) {
-                        if (!target.getGroupe().isPlayer()) {
+                    if (target.getGroup() != null && this.player.getGroup() == null) {
+                        if (!target.getGroup().isPlayer()) {
                             SocketManager.GAME_SEND_EXCHANGE_REQUEST_ERROR(this, 'E');
                             return;
                         }
@@ -6535,8 +6535,8 @@ public class GameClient {
             SocketManager.GAME_SEND_GROUP_INVITATION_ERROR(this, "a" + name);
             return;
         }
-        if (target.getGroupe() != null && this.player.getGroupe() == null) {
-            if (!target.getGroupe().isPlayer()) {
+        if (target.getGroup() != null && this.player.getGroup() == null) {
+            if (!target.getGroup().isPlayer()) {
                 SocketManager.GAME_SEND_MESSAGE(this.player, this.player.getLang().trans("game.gameclient.inviteparty.noauthorize"));
                 return;
             }

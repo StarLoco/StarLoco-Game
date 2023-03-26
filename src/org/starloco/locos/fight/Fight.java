@@ -1104,7 +1104,7 @@ public class Fight {
     }
 
     private void demorph(Player p) {
-        if (!p.getMorphMode() && p.isMorph() && (p.getGroupe() == null) && (p.getMorphId() != 8006 && p.getMorphId() != 8007 && p.getMorphId() != 8009))
+        if (!p.getMorphMode() && p.isMorph() && (p.getGroup() == null) && (p.getMorphId() != 8006 && p.getMorphId() != 8007 && p.getMorphId() != 8009))
             p.unsetMorph();
     }
 
@@ -2303,7 +2303,7 @@ public class Fight {
             SocketManager.GAME_SEND_Im_PACKET(p, "157");
             return;
         }
-        if (p.getGroupe() == null) {
+        if (p.getGroup() == null) {
             if (!isViewerOk() || getState() != Constant.FIGHT_STATE_ACTIVE) {
                 SocketManager.GAME_SEND_Im_PACKET(p, "157");
                 return;
@@ -2326,7 +2326,7 @@ public class Fight {
         all.addAll(this.getTeam0().values());
         all.addAll(this.getTeam1().values());
         all.stream().filter(Fighter::isHide).forEach(f -> SocketManager.GAME_SEND_GA_PACKET(p, 150, f.getId() + "", f.getId() + ",4"));
-        if (p.getGroupe() == null)
+        if (p.getGroup() == null)
             SocketManager.GAME_SEND_Im_PACKET_TO_FIGHT(this, 7, "036;" + p.getName());
         if ((getType() == Constant.FIGHT_TYPE_PVM) && (getAllChallenges().size() > 0) || getType() == Constant.FIGHT_TYPE_DOPEUL && getAllChallenges().size() > 0) {
             for (Entry<Integer, Challenge> c : getAllChallenges().entrySet()) {
@@ -2362,7 +2362,7 @@ public class Fight {
             this.setViewerOk(!this.isViewerOk());
 
             if (!this.isViewerOk()) {
-                new ArrayList<>(this.getViewer().values()).stream().filter(target -> target.getGroupe() == null).forEach(target -> {
+                new ArrayList<>(this.getViewer().values()).stream().filter(target -> target.getGroup() == null).forEach(target -> {
                     SocketManager.GAME_SEND_GV_PACKET(target);
                     this.getViewer().remove(target.getId());
                     target.setFight(null);

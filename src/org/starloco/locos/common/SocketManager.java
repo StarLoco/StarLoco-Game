@@ -294,7 +294,7 @@ public class SocketManager {
         for (Player z : map.getPlayers()) {
             if (perso.get_size() > 0)
                 send(z, packet);
-            else if (z.getGroupe() != null)
+            else if (z.getGroup() != null)
                 send(z, packet);
         }
     }
@@ -967,7 +967,7 @@ public class SocketManager {
         for (Player perso : World.world.getOnlinePlayers())
             if (perso.isOnline())
                 if (perso.getAccount() != null)
-                    if (perso.getGroupe() != null)
+                    if (perso.getGroup() != null)
                         send(perso, packet);
     }
 
@@ -1542,7 +1542,7 @@ public class SocketManager {
         for (Player z : map.getPlayers()) {
             if (perso.get_size() > 0)
                 send(z, packet);
-            else if (z.getGroupe() != null)
+            else if (z.getGroup() != null)
                 send(z, packet);
         }
     }

@@ -4,6 +4,19 @@
 ---@param path string
 local function loadDir(path)  end
 
+
+---@param name string
+---@param args string
+---@param description string
+function RegisterAdminCommand(name, args, description) end
+
+---@param id number
+---@param name string
+---@param isPlayer boolean
+---@param commands boolean|string[]
+function RegisterAdminGroup(id, name, isPlayer, commands) end
+
+
 ---@class Player
 local Player = {}
 

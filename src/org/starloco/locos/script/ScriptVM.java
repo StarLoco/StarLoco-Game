@@ -164,6 +164,20 @@ public class ScriptVM {
         return out;
     }
 
+    public static List<String> listOfString(Table t) {
+        if(t == null) return null;
+
+        long len = t.rawlen();
+        List<String> out = new LinkedList<>();
+
+        for(long i=0; i<len; i++) {
+            ByteString bs = (ByteString)t.rawget(i+1);
+            out.add(bs.toString());
+        }
+
+        return out;
+    }
+
     public static ArrayList<Integer> intsFromLuaTable(Table t) {
         ArrayList<Integer> out = new ArrayList<>();
         if(t == null) return out;

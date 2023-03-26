@@ -3,35 +3,26 @@ package org.starloco.locos.command.administration;
 import org.starloco.locos.database.DatabaseManager;
 import org.starloco.locos.database.data.login.GroupData;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Group {
 
-    private final static List<Group> groups = new ArrayList<>();
+    private final static HashMap<Integer, Group> groups = new HashMap<>();
 
     private final int id;
     private final String name;
     private final boolean isPlayer;
-    private List<Command> commands = new ArrayList<>();
+    private final List<String> commands;
+    private final boolean allCommands;
 
-    public Group(int id, String name, boolean isPlayer, String commands) {
+    public Group(int id, String name, boolean isPlayer, boolean allCommands, List<String> commands) {
         this.id = id;
         this.name = name;
         this.isPlayer = isPlayer;
-
-        if (commands.equalsIgnoreCase("all")) {
-            this.commands = Command.commands;
-        } else {
-            if (commands.contains(",")) {
-                for (String str : commands.split(","))
-                    this.commands.add(Command.getCommandById(Integer.parseInt(str)));
-            } else {
-                this.commands.add(Command.getCommandById(Integer.parseInt(commands)));
-            }
-        }
-
-        Group.groups.add(this);
+        this.commands = new ArrayList<>(commands);
+        this.allCommands = allCommands;
+        Group.groups.put(id, this);
     }
 
     public int getId() {
@@ -47,29 +38,25 @@ public class Group {
     }
 
     public List<Command> getCommands() {
-        return commands;
+        if(allCommands) return new LinkedList<>(Command.commands.values());
+        return commands.stream().map(Command.commands::get).collect(Collectors.toList());
     }
 
     public boolean haveCommand(String name) {
-        for (Command command : this.commands)
-            if (command.getArguments()[0].equalsIgnoreCase(name))
-                return true;
-        return false;
+        if(allCommands) return true;
+        return commands.contains(name);
     }
 
-    public static void reload() {
-        Group.groups.clear();
-        DatabaseManager.get(GroupData.class).loadFully();
+//    public static void reload() {
+//        Group.groups.clear();
+//        DatabaseManager.get(GroupData.class).loadFully();
+//    }
+
+    public static Group byId(int id) {
+        return groups.get(id);
     }
 
-    public static Group getGroupeById(int id) {
-        for(Group group : Group.groups)
-            if(group.id == id)
-                return group;
-        return null;
-    }
-
-    public static List<Group> getGroups() {
-        return groups;
+    public static Collection<Group> getGroups() {
+        return groups.values();
     }
 }

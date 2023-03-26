@@ -20,7 +20,8 @@ public class CommandData extends FunctionDAO<Command> {
         try {
             result = getData("SELECT * FROM " + getTableName() + ";");
             while (result.next()) {
-                new Command(result.getInt("id"), result.getString("command"), result.getString("args"), result.getString("description"));
+                // FIXME Diabu
+//                new Command(result.getInt("id"), result.getString("command"), result.getString("args"), result.getString("description"));
             }
         } catch (SQLException e) {
             super.sendError(e);
