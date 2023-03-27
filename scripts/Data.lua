@@ -8,5 +8,7 @@ require("./models/NPC")
 -- Load data
 require("./data/AdminCommands")
 require("./data/AdminGroups")
+require("./data/Experience")
+
 loadDir("./data/npcs")
 -- loadDir("./scripts/maps")
