@@ -304,9 +304,6 @@ public class World {
         DatabaseManager.get(ExtraMonsterData.class).loadFully();
         logger.debug("The extra-monsters were loaded successfully.");
 
-        DatabaseManager.get(ExperienceData.class).loadFully();
-        logger.debug("The experiences were loaded successfully.");
-
         DatabaseManager.get(SpellData.class).loadFully();
         logger.debug("The spells were loaded successfully.");
 
