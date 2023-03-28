@@ -27,7 +27,7 @@ public final class NpcScriptVM extends ScriptVM {
     public void loadData() throws CallException, LoaderException, IOException, CallPausedException, InterruptedException {
         super.loadData();
         this.customizeEnv();
-        this.runFile(Paths.get("scripts", "Npc.lua"));
+        this.runFile(Paths.get("scripts", "NPC.lua"));
         this.runDirectory(Paths.get("scripts", "npcs"));
     }
 
