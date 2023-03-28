@@ -16,6 +16,15 @@ function RegisterAdminCommand(name, args, description) end
 ---@param commands boolean|string[]
 function RegisterAdminGroup(id, name, isPlayer, commands) end
 
+---@param players number[]
+---@param guilds number[]
+---@param jobs number[]
+---@param mounts number[]
+---@param pvp number[]
+---@param livitinems number[]
+---@param tormentators number[]
+---@param bandits number[]
+function RegisterExpTables(players, guilds, jobs, mounts, pvp, livitinems, tormentators, bandits) end
 
 ---@class Player
 local Player = {}

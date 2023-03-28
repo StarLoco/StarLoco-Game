@@ -4211,7 +4211,7 @@ public class Player {
         }
     }
 
-    public void useZaap(short id) {
+    public void useZaap(int id) {
         if (this.getExchangeAction() == null || this.getExchangeAction().getType() != ExchangeAction.IN_ZAAPING)
             return;
         if (this.fight != null || this.isInPrison()

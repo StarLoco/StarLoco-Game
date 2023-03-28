@@ -65,6 +65,9 @@ public class World {
     private final Map<Integer, MapData>    mapsData    = new ConcurrentHashMap<>();
     private final Map<Integer, GameObject> objects     = new ConcurrentHashMap<>();
     private final Map<Integer, ExpLevel> experiences = new HashMap<>();
+
+    private final
+
     private final Map<Integer, Spell> spells = new HashMap<>();
     private final Map<Integer, ObjectTemplate> ObjTemplates = new HashMap<>();
     private final Map<Integer, Monster> MobTemplates = new HashMap<>();

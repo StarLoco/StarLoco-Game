@@ -113,4 +113,27 @@ public final class DataScriptVM extends ScriptVM {
         }
     }
 
+    static class RegisterExpTables extends AbstractLibFunction {
+        @Override
+        protected String name() {
+            return "RegisterExpTables";
+        }
+
+        @Override
+        public void invoke(ExecutionContext context, ArgumentIterator  args) {
+            List<Long> players = fromLuaTable(args.nextTable());
+            List<Long> guilds = fromLuaTable(args.nextTable());
+            List<Long> jobs = fromLuaTable(args.nextTable());
+            List<Long> mounts = fromLuaTable(args.nextTable());
+            List<Long> pvp = fromLuaTable(args.nextTable());
+            List<Long> livitinems = fromLuaTable(args.nextTable());
+            List<Long> tormentators = fromLuaTable(args.nextTable());
+            List<Long> bandits = fromLuaTable(args.nextTable());
+
+
+
+            context.getReturnBuffer().setTo();
+        }
+    }
+
 }
