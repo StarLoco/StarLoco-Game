@@ -6942,7 +6942,7 @@ public class GameClient {
 
     private void waypointUse(String packet) {
         try {
-            final short id = Short.parseShort(packet.substring(2));
+            final int id = Integer.parseInt(packet.substring(2));
             final Party party = this.player.getParty();
 
             if(party != null && this.player.getFight() == null && party.getMaster() != null && party.getMaster().getName().equals(this.player.getName())) {
