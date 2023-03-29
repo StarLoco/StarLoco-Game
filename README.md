@@ -1,5 +1,5 @@
 # StarLoco - Game
-The most advanced public 1.29.1 to 1.38.10 dofus emulator written in Java 8.
+The most advanced public 1.39.8 dofus emulator written in Java 8.
 
 ## Summary
 - Requirements
