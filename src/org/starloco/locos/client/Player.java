@@ -17,6 +17,7 @@ import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.database.DatabaseManager;
 import org.starloco.locos.database.data.game.BankData;
 import org.starloco.locos.database.data.game.CollectorData;
+import org.starloco.locos.database.data.game.ExperienceTables;
 import org.starloco.locos.database.data.game.GuildMemberData;
 import org.starloco.locos.database.data.login.AccountData;
 import org.starloco.locos.database.data.login.ObjectData;
@@ -2194,10 +2195,7 @@ public class Player {
             return 0;
         if (_honor >= 17500)
             return 10;
-        for (int n = 1; n <= 10; n++)
-            if (_honor < World.world.getExpLevel(n).pvp)
-                return n - 1;
-        return 0;
+        return World.world.getExperiences().pvp.levelForXp(_honor);
     }
 
     public String xpString(String c) {
@@ -2755,7 +2753,8 @@ public class Player {
     }
 
     public boolean levelUp(boolean send, boolean addXp) {
-        if (this.getLevel() == World.world.getExpLevelSize())
+        ExperienceTables.ExperienceTable xpTable = World.world.getExperiences().players;
+        if (this.getLevel() == xpTable.maxLevel())
             return false;
         this.level++;
         _capital += 5;
@@ -2766,7 +2765,7 @@ public class Player {
             this.getStats().addOneStat(Constant.STATS_ADD_PA, 1);
         Constant.onLevelUpSpells(this, this.getLevel());
         if (addXp)
-            this.exp = World.world.getExpLevel(this.getLevel()).perso;
+            this.exp =  xpTable.minXpAt(this.getLevel());
         if (send && isOnline) {
             SocketManager.GAME_SEND_STATS_PACKET(this);
             SocketManager.GAME_SEND_SPELL_LIST(this);
@@ -2775,9 +2774,11 @@ public class Player {
     }
 
     public boolean addXp(long winxp) {
+        ExperienceTables.ExperienceTable xpTable = World.world.getExperiences().players;
+
         boolean up = false;
         this.exp += winxp;
-        while (this.getExp() >= World.world.getPersoXpMax(this.getLevel()) && this.getLevel() < World.world.getExpLevelSize())
+        while (this.getExp() >= xpTable.maxXpAt(this.level) && this.level < xpTable.maxLevel())
             up = levelUp(true, false);
         if (isOnline) {
             if (up)

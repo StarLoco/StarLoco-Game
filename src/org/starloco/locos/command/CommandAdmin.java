@@ -1702,7 +1702,8 @@ public class CommandAdmin extends AdminUser {
             try {
                 count = Integer.parseInt(infos[1]);
                 if (count < 1) count = 1;
-                if (count > World.world.getExpLevelSize()) count = World.world.getExpLevelSize();
+                ExperienceTables.ExperienceTable xpTable = World.world.getExperiences().players;
+                if (count > xpTable.maxLevel()) count = xpTable.maxLevel();
 
                 Player player = this.getPlayer();
 

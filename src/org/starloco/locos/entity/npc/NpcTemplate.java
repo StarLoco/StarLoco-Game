@@ -150,7 +150,7 @@ public class NpcTemplate {
         Object[] ret = DataScriptVM.getInstance().call(salesList, scriptVal, player.scripted());
 
         if(ret == null || ret.length == 0) return Collections.emptyList();
-        List<Object> offers = fromLuaTable((Table) ret[0]);
+        List<Object> offers = listFromLuaTable((Table) ret[0]);
 
         return offers.stream().map(o -> {
             Table t = (Table) o;

@@ -64,9 +64,8 @@ public class World {
     private final Map<Integer, GameMap>    maps        = new ConcurrentHashMap<>();
     private final Map<Integer, MapData>    mapsData    = new ConcurrentHashMap<>();
     private final Map<Integer, GameObject> objects     = new ConcurrentHashMap<>();
-    private final Map<Integer, ExpLevel> experiences = new HashMap<>();
 
-    private final
+    private volatile ExperienceTables experiences;
 
     private final Map<Integer, Spell> spells = new HashMap<>();
     private final Map<Integer, ObjectTemplate> ObjTemplates = new HashMap<>();
@@ -672,15 +671,13 @@ public class World {
         return factor;
     }
 
-    public int getExpLevelSize() {
-        return experiences.size();
+    public ExperienceTables getExperiences() {
+        return experiences;
     }
 
-    public void addExpLevel(int lvl, ExpLevel exp) {
-        experiences.put(lvl, exp);
+    public void setExperiences(ExperienceTables t) {
+        this.experiences = t;
     }
-
-
 
     public void addNPCQuestion(NpcQuestion quest) {
         questions.put(quest.getId(), quest);
@@ -741,44 +738,24 @@ public class World {
         players.remove(perso.getId());
     }
 
-    public long getPersoXpMin(int _lvl) {
-        if (_lvl > getExpLevelSize())
-            _lvl = getExpLevelSize();
-        if (_lvl < 1)
-            _lvl = 1;
-        return experiences.get(_lvl).perso;
+    public long getPersoXpMin(int lvl) {
+        return experiences.players.minXpAt(lvl);
     }
 
-    public long getPersoXpMax(int _lvl) {
-        if (_lvl >= getExpLevelSize())
-            _lvl = (getExpLevelSize() - 1);
-        if (_lvl <= 1)
-            _lvl = 1;
-        return experiences.get(_lvl + 1).perso;
+    public long getPersoXpMax(int lvl) {
+        return experiences.players.maxXpAt(lvl);
     }
 
-    public long getTourmenteursXpMax(int _lvl) {
-        if (_lvl >= getExpLevelSize())
-            _lvl = (getExpLevelSize() - 1);
-        if (_lvl <= 1)
-            _lvl = 1;
-        return experiences.get(_lvl + 1).tourmenteurs;
+    public long getTourmenteursXpMax(int lvl) {
+        return experiences.tormentators.maxXpAt(lvl);
     }
 
-    public long getBanditsXpMin(int _lvl) {
-        if (_lvl > getExpLevelSize())
-            _lvl = getExpLevelSize();
-        if (_lvl < 1)
-            _lvl = 1;
-        return experiences.get(_lvl).bandits;
+    public long getBanditsXpMin(int lvl) {
+        return experiences.bandits.minXpAt(lvl);
     }
 
-    public long getBanditsXpMax(int _lvl) {
-        if (_lvl >= getExpLevelSize())
-            _lvl = (getExpLevelSize() - 1);
-        if (_lvl <= 1)
-            _lvl = 1;
-        return experiences.get(_lvl + 1).bandits;
+    public long getBanditsXpMax(int lvl) {
+        return experiences.bandits.maxXpAt(lvl);
     }
 
     public void addSort(Spell sort) {
@@ -873,10 +850,6 @@ public class World {
 
     public Tutorial getTutorial(int id) {
         return Tutorial.get(id);
-    }
-
-    public ExpLevel getExpLevel(int lvl) {
-        return experiences.get(lvl);
     }
 
     public InteractiveObjectTemplate getIOTemplate(int id) {
@@ -1016,12 +989,8 @@ public class World {
         return -1;
     }
 
-    public long getGuildXpMax(int _lvl) {
-        if (_lvl >= 200)
-            _lvl = 199;
-        if (_lvl <= 1)
-            _lvl = 1;
-        return experiences.get(_lvl + 1).guilde;
+    public long getGuildXpMax(int lvl) {
+        return experiences.guilds.maxXpAt(lvl);
     }
 
     public void ReassignAccountToChar(Account account) {
@@ -1755,6 +1724,7 @@ public class World {
                         .forEach(player -> player.sendMessage(player.getLang().trans(key, str))),
                 0, TimeUnit.SECONDS);
     }
+
 
     public static class Drop {
         private final int objectId;

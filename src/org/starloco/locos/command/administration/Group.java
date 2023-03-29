@@ -1,8 +1,5 @@
 package org.starloco.locos.command.administration;
 
-import org.starloco.locos.database.DatabaseManager;
-import org.starloco.locos.database.data.login.GroupData;
-
 import java.util.*;
 import java.util.stream.Collectors;
 

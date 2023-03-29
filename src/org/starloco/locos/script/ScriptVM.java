@@ -20,7 +20,6 @@ import org.classdump.luna.runtime.LuaFunction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.starloco.locos.game.world.World.Couple;
-import org.starloco.locos.object.GameObject;
 import org.starloco.locos.util.Pair;
 
 import java.io.IOException;
@@ -139,7 +138,7 @@ public class ScriptVM {
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> ArrayList<T> fromLuaTable(Table t) {
+    public static <T> ArrayList<T> listFromLuaTable(Table t) {
         ArrayList<T> out = new ArrayList<>();
 
         long len = t.rawlen();
@@ -199,6 +198,19 @@ public class ScriptVM {
 
         for(int i=0;i<len;i++){
             out[i] = rawInt (t, i+1);
+        }
+
+        return out;
+    }
+
+    public static long[] longArrayFromLuaTable(Table t) {
+        if(t == null) return null;
+
+        long len = t.rawlen();
+        long[] out = new long[(int)len];
+
+        for(int i=0;i<len;i++){
+            out[i] = (Long)t.rawget(i+1);
         }
 
         return out;

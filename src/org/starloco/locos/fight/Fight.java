@@ -20,6 +20,7 @@ import org.starloco.locos.common.PathFinding;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.database.DatabaseManager;
 import org.starloco.locos.database.data.game.CollectorData;
+import org.starloco.locos.database.data.game.ExperienceTables;
 import org.starloco.locos.database.data.game.PrismData;
 import org.starloco.locos.database.data.login.PlayerData;
 import org.starloco.locos.dynamic.FormuleOfficiel;
@@ -5268,8 +5269,8 @@ public class Fight {
                             player.setDeshonor(player.getDeshonor() + winD);
                         }
 
-                        int maxHonor = World.world.getExpLevel(player.getGrade() + 1).pvp;
-                        if (maxHonor == -1) maxHonor = World.world.getExpLevel(player.getGrade()).pvp;
+                        ExperienceTables.ExperienceTable xpTable = World.world.getExperiences().pvp;
+                        long maxHonor = xpTable.maxXpAt(player.getGrade());
 
                         StringBuilder temporary = new StringBuilder();
                         temporary.append("2;").append(i.getId()).append(";").append(i.getPacketsName()).append(";").append(i.getLvl()).append(";");
@@ -5277,7 +5278,7 @@ public class Fight {
                             temporary.append(i.getDefaultGfx()).append(";");
                         }
                         temporary.append((i.isDead() ? "1" : "0")).append(";");
-                        temporary.append(player.getAlignment() != Constant.ALIGNEMENT_NEUTRE ? World.world.getExpLevel(player.getGrade()).pvp : 0).append(";");
+                        temporary.append(player.getAlignment() != Constant.ALIGNEMENT_NEUTRE ? xpTable.minXpAt(player.getGrade()):0).append(";");
                         temporary.append(player.get_honor()).append(";");
                         temporary.append(player.getAlignment() != Constant.ALIGNEMENT_NEUTRE ? maxHonor : 0).append(";");
                         temporary.append(winH).append(";");
@@ -5310,9 +5311,9 @@ public class Fight {
                             if (player.getDeshonor() - winD < 0)
                                 winD = 0;
                             player.setDeshonor(player.getDeshonor() - winD);
-                            int maxHonor = World.world.getExpLevel(player.getGrade() + 1).pvp;
-                            if (maxHonor == -1)
-                                maxHonor = World.world.getExpLevel(player.getGrade()).pvp;
+
+                            ExperienceTables.ExperienceTable xpTable = World.world.getExperiences().pvp;
+                            long maxHonor = xpTable.maxXpAt(player.getGrade());
 
                             StringBuilder temporary = new StringBuilder();
                             temporary.append("2;").append(i.getId()).append(";").append(i.getPacketsName()).append(";").append(i.getLvl()).append(";");
@@ -5320,7 +5321,7 @@ public class Fight {
                                 temporary.append(i.getDefaultGfx()).append(";");
                             }
                             temporary.append((i.isDead() ? "1" : "0")).append(";");
-                            temporary.append(player.getAlignment() != Constant.ALIGNEMENT_NEUTRE ? World.world.getExpLevel(player.getGrade()).pvp : 0).append(";");
+                            temporary.append(player.getAlignment() != Constant.ALIGNEMENT_NEUTRE ? xpTable.minXpAt(player.getGrade()) : 0).append(";");
                             temporary.append(player.get_honor()).append(";");
                             temporary.append(player.getAlignment() != Constant.ALIGNEMENT_NEUTRE ? maxHonor : 0).append(";");
                             temporary.append(winH).append(";");
@@ -5336,9 +5337,8 @@ public class Fight {
                             winH *= 3;
                             prism.addHonor(winH);
 
-                            int maxHonor = World.world.getExpLevel(prism.getLevel() + 1).pvp;
-                            if (maxHonor == -1)
-                                maxHonor = World.world.getExpLevel(prism.getLevel()).pvp;
+                            ExperienceTables.ExperienceTable xpTable = World.world.getExperiences().pvp;
+                            long maxHonor = xpTable.maxXpAt(prism.getGrade());
 
                             StringBuilder temporary = new StringBuilder();
                             temporary.append("2;").append(i.getId()).append(";").append(i.getPacketsName()).append(";").append(i.getLvl()).append(";");
@@ -5346,7 +5346,7 @@ public class Fight {
                                 temporary.append(i.getDefaultGfx()).append(";");
                             }
                             temporary.append((i.isDead() ? "1" : "0")).append(";");
-                            temporary.append(World.world.getExpLevel(prism.getLevel()).pvp).append(";");
+                            temporary.append(xpTable.minXpAt(prism.getLevel())).append(";");
                             temporary.append(prism.getHonor()).append(";");
                             temporary.append(maxHonor).append(";");
                             temporary.append(winH).append(";");
@@ -5411,12 +5411,11 @@ public class Fight {
                             player.setDeshonor(player.getDeshonor() - winD);
                         }
 
-                        int maxHonor = World.world.getExpLevel(player.getGrade() + 1).pvp;
-                        if (maxHonor == -1)
-                            maxHonor = World.world.getExpLevel(player.getGrade()).pvp;
+                        ExperienceTables.ExperienceTable xpTable = World.world.getExperiences().pvp;
+                        long maxHonor = xpTable.maxXpAt(player.getGrade());
 
                         packet.append("0;").append(i.getId()).append(";").append(i.getPacketsName()).append(";").append(i.getLvl()).append(";").append(i.getDefaultGfx()).append(";").append((i.isDead() ? "1" : "0")).append(";");
-                        packet.append(player.getAlignment() != Constant.ALIGNEMENT_NEUTRE ? World.world.getExpLevel(player.getGrade()).pvp : 0).append(";");
+                        packet.append(player.getAlignment() != Constant.ALIGNEMENT_NEUTRE ? xpTable.minXpAt(player.getGrade()) : 0).append(";");
                         packet.append(player.get_honor()).append(";");
                         packet.append(player.getAlignment() != Constant.ALIGNEMENT_NEUTRE ? maxHonor : 0).append(";");
                         packet.append(winH).append(";");
@@ -5431,13 +5430,13 @@ public class Fight {
                             winH = 0;
                             if (player.getDeshonor() - winD < 0)
                                 winD = 0;
-                            int maxHonor = World.world.getExpLevel(player.getGrade() + 1).pvp;
-                            if (maxHonor == -1)
-                                maxHonor = World.world.getExpLevel(player.getGrade()).pvp;
+
+                            ExperienceTables.ExperienceTable xpTable = World.world.getExperiences().pvp;
+                            long maxHonor = xpTable.maxXpAt(player.getGrade());
 
                             player.setDeshonor(player.getDeshonor() - winD);
                             packet.append("0;").append(i.getId()).append(";").append(i.getPacketsName()).append(";").append(i.getLvl()).append(";").append(i.getDefaultGfx()).append(";").append((i.isDead() ? "1" : "0")).append(";");
-                            packet.append(player.getAlignment() != Constant.ALIGNEMENT_NEUTRE ? World.world.getExpLevel(player.getGrade()).pvp : 0).append(";");
+                            packet.append(player.getAlignment() != Constant.ALIGNEMENT_NEUTRE ? xpTable.minXpAt(player.getGrade()) : 0).append(";");
                             packet.append(player.get_honor()).append(";");
                             packet.append(player.getAlignment() != Constant.ALIGNEMENT_NEUTRE ? maxHonor : 0).append(";");
                             packet.append(winH).append(";");
@@ -5448,15 +5447,14 @@ public class Fight {
                         } else {
                             Prism prism = i.getPrism();
 
+                            ExperienceTables.ExperienceTable xpTable = World.world.getExperiences().pvp;
                             if (prism.getHonor() + winH < 0)
                                 winH = -prism.getHonor();
-                            int maxHonor = World.world.getExpLevel(prism.getLevel() + 1).pvp;
-                            if (maxHonor == -1)
-                                maxHonor = World.world.getExpLevel(prism.getLevel()).pvp;
+                            long maxHonor = xpTable.maxXpAt(prism.getLevel());
 
                             prism.addHonor(winH);
                             packet.append("0;").append(i.getId()).append(";").append(i.getPacketsName()).append(";").append(i.getLvl()).append(";").append(i.getDefaultGfx()).append(";").append((i.isDead() ? "1" : "0")).append(";");
-                            packet.append(World.world.getExpLevel(prism.getLevel()).pvp).append(";");
+                            packet.append(xpTable.minXpAt(prism.getLevel())).append(";");
                             packet.append(prism.getHonor()).append(";");
                             packet.append(maxHonor).append(";");
                             packet.append(winH).append(";");
