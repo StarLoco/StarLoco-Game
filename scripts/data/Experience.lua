@@ -66,3 +66,14 @@ TormentatorLevelExp[2] = 600
 BanditLevelExp = sumIntFactor(250, 250, MaxBanditLevel, 2)
 BanditLevelExp[1] = 0
 BanditLevelExp[50] = 1237750
+
+RegisterExpTables(
+    PlayerLevelExp,
+    GuildLevelExp,
+    JobLevelExp,
+    MountLevelExp,
+    PvPLevelExp,
+    LivitinemLevelExp,
+    TormentatorLevelExp,
+    BanditLevelExp
+)
