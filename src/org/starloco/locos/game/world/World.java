@@ -738,26 +738,6 @@ public class World {
         players.remove(perso.getId());
     }
 
-    public long getPersoXpMin(int lvl) {
-        return experiences.players.minXpAt(lvl);
-    }
-
-    public long getPersoXpMax(int lvl) {
-        return experiences.players.maxXpAt(lvl);
-    }
-
-    public long getTourmenteursXpMax(int lvl) {
-        return experiences.tormentators.maxXpAt(lvl);
-    }
-
-    public long getBanditsXpMin(int lvl) {
-        return experiences.bandits.minXpAt(lvl);
-    }
-
-    public long getBanditsXpMax(int lvl) {
-        return experiences.bandits.maxXpAt(lvl);
-    }
-
     public void addSort(Spell sort) {
         spells.put(sort.getId(), sort);
     }
@@ -813,9 +793,8 @@ public class World {
             return "Les Brâkmarien sont actuellement en minorité, je peux donc te proposer de rejoindre les rangs Brâkmarien ?";
         else if (demon > ange)
             return "Les Bontarien sont actuellement en minorité, je peux donc te proposer de rejoindre les rangs Bontarien ?";
-        else if (demon == ange)
+        else
             return " Aucune milice est actuellement en minorité, je peux donc te proposer de rejoindre aléatoirement une milice ?";
-        return "Undefined";
     }
 
 

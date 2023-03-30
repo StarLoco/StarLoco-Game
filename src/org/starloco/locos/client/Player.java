@@ -560,7 +560,7 @@ public class Player {
         if (sexe < 0 || sexe > 1)
             return null;
         Player player = new Player(-1, name, -1, sexe, classe, color1, color2, color3, Config.startKamas, ((Config.startLevel - 1)), ((Config.startLevel - 1) * 5), 10000, Config.startLevel,
-                World.world.getPersoXpMin(Config.startLevel), 100, Integer.parseInt(classe
+                World.world.getExperiences().players.minXpAt(Config.startLevel), 100, Integer.parseInt(classe
                 + "" + sexe), (byte) 0, compte.getId(), new HashMap<>(), (byte) 1, (byte) 0, (byte) 0, "*#%!pi$:?",
                 (Config.startMap > 0 ? (short) Config.startMap : Constant.getStartMap(classe)),
                 (Config.startCell > 0 ? (short) Config.startCell : Constant.getStartCell(classe)),
@@ -2200,18 +2200,23 @@ public class Player {
 
     public String xpString(String c) {
         if (!_morphMode) {
-            return this.getExp() + c + World.world.getPersoXpMin(this.getLevel()) + c + World.world.getPersoXpMax(this.getLevel());
-        } else {
-            if (this.getObjetByPos(Constant.ITEM_POS_ARME) != null)
-                if (Constant.isIncarnationWeapon(this.getObjetByPos(Constant.ITEM_POS_ARME).getTemplate().getId()))
-                    if (this.getObjetByPos(Constant.ITEM_POS_ARME).getSoulStat().get(Constant.ERR_STATS_XP) != null)
-                        return this.getObjetByPos(Constant.ITEM_POS_ARME).getSoulStat().get(Constant.ERR_STATS_XP)
-                                + c
-                                + World.world.getBanditsXpMin(this.getObjetByPos(Constant.ITEM_POS_ARME).getSoulStat().get(Constant.STATS_NIVEAU))
-                                + c
-                                + World.world.getBanditsXpMax(this.getObjetByPos(Constant.ITEM_POS_ARME).getSoulStat().get(Constant.STATS_NIVEAU));
+            ExperienceTables.ExperienceTable xpTable = World.world.getExperiences().players;
+            return this.getExp() + c + xpTable.minXpAt(this.getLevel()) + c + xpTable.maxXpAt(this.getLevel());
         }
-        return 1 + c + 1 + c + 1;
+        if(this.getObjetByPos(Constant.ITEM_POS_ARME) == null
+                || !Constant.isIncarnationWeapon(this.getObjetByPos(Constant.ITEM_POS_ARME).getTemplate().getId())
+                || this.getObjetByPos(Constant.ITEM_POS_ARME).getSoulStat().get(Constant.ERR_STATS_XP) == null) {
+            return 1 + c + 1 + c + 1;
+        }
+
+        // What if it's a tormentator ?
+        ExperienceTables.ExperienceTable xpTable = World.world.getExperiences().bandits;
+        int level = this.getObjetByPos(Constant.ITEM_POS_ARME).getSoulStat().get(Constant.STATS_NIVEAU);
+        return this.getObjetByPos(Constant.ITEM_POS_ARME).getSoulStat().get(Constant.ERR_STATS_XP)
+            + c
+            + xpTable.minXpAt(level)
+            + c
+            + xpTable.maxXpAt(level);
     }
 
     public int emoteActive() {
@@ -2827,12 +2832,16 @@ public class Player {
         exp += winxp;
 
         if (Constant.isBanditsWeapon(this.getObjetByPos(Constant.ITEM_POS_ARME).getTemplate().getId())) {
-            while (exp >= World.world.getBanditsXpMax(level) && level < 50) {
+            ExperienceTables.ExperienceTable xpTable = World.world.getExperiences().bandits;
+
+            while (exp >= xpTable.maxXpAt(level) && level < xpTable.maxLevel()) {
                 up = levelUpIncarnations(true, false);
                 level = this.getObjetByPos(Constant.ITEM_POS_ARME).getSoulStat().get(Constant.STATS_NIVEAU);
             }
         } else if (Constant.isTourmenteurWeapon(this.getObjetByPos(Constant.ITEM_POS_ARME).getTemplate().getId())) {
-            while (exp >= World.world.getTourmenteursXpMax(level) && level < 50) {
+            ExperienceTables.ExperienceTable xpTable = World.world.getExperiences().tormentators;
+
+            while (exp >= xpTable.maxXpAt(level) && level < xpTable.maxLevel()) {
                 up = levelUpIncarnations(true, false);
                 level = this.getObjetByPos(Constant.ITEM_POS_ARME).getSoulStat().get(Constant.STATS_NIVEAU);
             }
