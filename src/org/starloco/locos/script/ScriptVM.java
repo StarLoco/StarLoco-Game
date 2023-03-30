@@ -26,10 +26,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Stream;
 
 public class ScriptVM {
@@ -101,6 +98,7 @@ public class ScriptVM {
         return recursiveGet(t.getMetatable(), key);
     }
 
+
     static class LogF extends AbstractLibFunction {
         @Override
         protected String name() { return "JLogF"; }
@@ -118,7 +116,8 @@ public class ScriptVM {
 
         @Override
         public void invoke(ExecutionContext context, ArgumentIterator args) {
-            Path path = Paths.get(args.nextStrictString().toString());
+            Path path = Paths.get("scripts", args.nextStrictString().toString());
+
             runDirectory(path);
 
             context.getReturnBuffer().setTo(true);
@@ -139,25 +138,12 @@ public class ScriptVM {
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> ArrayList<T> fromLuaTable(Table t) {
+    public static <T> ArrayList<T> listFromLuaTable(Table t) {
         ArrayList<T> out = new ArrayList<>();
 
         long len = t.rawlen();
         for(int i=1;i<=len;i++){
             out.add((T)t.rawget(i));
-        }
-
-        return out;
-    }
-
-    public static ArrayList<Integer> intsFromLuaTable(Table t) {
-        ArrayList<Integer> out = new ArrayList<>();
-        if(t == null) return out;
-
-        long len = t.rawlen();
-        for(int i=1;i<=len;i++){
-            int a = rawInt (t, i);
-            out.add(a);
         }
 
         return out;
@@ -177,6 +163,33 @@ public class ScriptVM {
         return out;
     }
 
+    public static List<String> listOfString(Table t) {
+        if(t == null) return null;
+
+        long len = t.rawlen();
+        List<String> out = new LinkedList<>();
+
+        for(long i=0; i<len; i++) {
+            ByteString bs = (ByteString)t.rawget(i+1);
+            out.add(bs.toString());
+        }
+
+        return out;
+    }
+
+    public static ArrayList<Integer> intsFromLuaTable(Table t) {
+        ArrayList<Integer> out = new ArrayList<>();
+        if(t == null) return out;
+
+        long len = t.rawlen();
+        for(int i=1;i<=len;i++){
+            int a = rawInt (t, i);
+            out.add(a);
+        }
+
+        return out;
+    }
+
     public static int[] intArrayFromLuaTable(Table t) {
         if(t == null) return null;
 
@@ -185,6 +198,19 @@ public class ScriptVM {
 
         for(int i=0;i<len;i++){
             out[i] = rawInt (t, i+1);
+        }
+
+        return out;
+    }
+
+    public static long[] longArrayFromLuaTable(Table t) {
+        if(t == null) return null;
+
+        long len = t.rawlen();
+        long[] out = new long[(int)len];
+
+        for(int i=0;i<len;i++){
+            out[i] = (Long)t.rawget(i+1);
         }
 
         return out;

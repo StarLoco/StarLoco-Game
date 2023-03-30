@@ -63,7 +63,7 @@ public class CommandAdmin extends AdminUser {
         String command = infos[0];
 
         try {
-            Group groupe = this.getPlayer().getGroupe();
+            Group groupe = this.getPlayer().getGroup();
             if (groupe == null) {
                 this.getClient().kick();
                 return;
@@ -94,19 +94,19 @@ public class CommandAdmin extends AdminUser {
             String cmd = infos.length == 2 ? infos[1] : "";
 
             if (cmd.equalsIgnoreCase("")) {
-                this.sendMessage("\nVous avez actuellement le groupe GM " + this.getPlayer().getGroupe().getName() + ".\nCommandes disponibles :\n");
-                for (Command commande : this.getPlayer().getGroupe().getCommands()) {
-                    String args = (commande.getArguments()[1] != null && !commande.getArguments()[1].equalsIgnoreCase("")) ? (" + " + commande.getArguments()[1]) : ("");
-                    String desc = (commande.getArguments()[2] != null && !commande.getArguments()[2].equalsIgnoreCase("")) ? (commande.getArguments()[2]) : ("");
-                    this.sendMessage("<u>" + commande.getArguments()[0] + args + "</u> - " + desc);
+                this.sendMessage("\nVous avez actuellement le groupe GM " + this.getPlayer().getGroup().getName() + ".\nCommandes disponibles :\n");
+                for (Command commande : this.getPlayer().getGroup().getCommands()) {
+                    String args = (commande.getArgs() != null && !commande.getArgs().equalsIgnoreCase("")) ? (" + " + commande.getArgs()) : ("");
+                    String desc = (commande.getDesc() != null && !commande.getDesc().equalsIgnoreCase("")) ? (commande.getDesc()) : ("");
+                    this.sendMessage("<u>" + commande.getName() + args + "</u> - " + desc);
                 }
             } else {
-                this.sendMessage("\nVous avez actuellement le groupe GM " + this.getPlayer().getGroupe().getName() + ".\nCommandes recherches :\n");
-                for (Command commande : this.getPlayer().getGroupe().getCommands()) {
-                    if (commande.getArguments()[0].contains(cmd.toUpperCase())) {
-                        String args = (commande.getArguments()[1] != null && !commande.getArguments()[1].equalsIgnoreCase("")) ? (" + " + commande.getArguments()[1]) : ("");
-                        String desc = (commande.getArguments()[2] != null && !commande.getArguments()[2].equalsIgnoreCase("")) ? (commande.getArguments()[2]) : ("");
-                        this.sendMessage("<u>" + commande.getArguments()[0] + args + "</u> - " + desc);
+                this.sendMessage("\nVous avez actuellement le groupe GM " + this.getPlayer().getGroup().getName() + ".\nCommandes recherches :\n");
+                for (Command commande : this.getPlayer().getGroup().getCommands()) {
+                    if (commande.getName().contains(cmd.toUpperCase())) {
+                        String args = (commande.getArgs() != null && !commande.getArgs().equalsIgnoreCase("")) ? (" + " + commande.getArgs()) : ("");
+                        String desc = (commande.getDesc() != null && !commande.getDesc().equalsIgnoreCase("")) ? (commande.getDesc()) : ("");
+                        this.sendMessage("<u>" + commande.getName() + args + "</u> - " + desc);
                     }
                 }
             }
@@ -171,7 +171,7 @@ public class CommandAdmin extends AdminUser {
             return;
         } else if (command.equalsIgnoreCase("ANAME")) {
             infos = msg.split(" ", 2);
-            String prefix = "<b><a href='asfunction:onHref,ShowPlayerPopupMenu," + this.getPlayer().getName() + "'>[" + this.getPlayer().getGroupe().getName() + "] " + this.getPlayer().getName() + "</a></b>";
+            String prefix = "<b><a href='asfunction:onHref,ShowPlayerPopupMenu," + this.getPlayer().getName() + "'>[" + this.getPlayer().getGroup().getName() + "] " + this.getPlayer().getName() + "</a></b>";
             if(infos.length > 1) {
                 String suffix = infos[1];
                 if (suffix.contains("<") && (!suffix.contains(">") || !suffix.contains("</"))) // S'il n'y a pas de balise fermante
@@ -737,7 +737,7 @@ public class CommandAdmin extends AdminUser {
                 if (infos.length > 1)//Si un nom de perso est specifie
                 {
                     Player perso = World.world.getPlayerByName(infos[1]);
-                    if (perso.getGroupe() != null) {
+                    if (perso.getGroup() != null) {
                         String str = "Il est interdit d'emprisonner un personnage ayant des droits.";
                         this.sendMessage(str);
                         return;
@@ -1265,13 +1265,13 @@ public class CommandAdmin extends AdminUser {
                     if (perso != null) {
                         if (persos.equalsIgnoreCase(""))
                             persos += perso.getName()
-                                    + ((perso.getGroupe() != null) ? ":"
-                                    + perso.getGroupe().getName() : "");
+                                    + ((perso.getGroup() != null) ? ":"
+                                    + perso.getGroup().getName() : "");
                         else
                             persos += ", "
                                     + perso.getName()
-                                    + ((perso.getGroupe() != null) ? ":"
-                                    + perso.getGroupe().getName() : "");
+                                    + ((perso.getGroup() != null) ? ":"
+                                    + perso.getGroup().getName() : "");
                     }
                 }
                 if (!persos.equalsIgnoreCase("")) {
@@ -1702,7 +1702,8 @@ public class CommandAdmin extends AdminUser {
             try {
                 count = Integer.parseInt(infos[1]);
                 if (count < 1) count = 1;
-                if (count > World.world.getExpLevelSize()) count = World.world.getExpLevelSize();
+                ExperienceTables.ExperienceTable xpTable = World.world.getExperiences().players;
+                if (count > xpTable.maxLevel()) count = xpTable.maxLevel();
 
                 Player player = this.getPlayer();
 
@@ -1918,13 +1919,16 @@ public class CommandAdmin extends AdminUser {
                     DatabaseManager.get(NpcQuestionData.class).loadFully();
                     World.world.getNpcAnswers().clear();
                     DatabaseManager.get(NpcAnswerData.class).loadFully();
+                    // Reload lua
+                    DataScriptVM.getInstance().safeLoadData();
                     break;
                 case "SCRIPTS":
                     // Reload lua
                     DataScriptVM.getInstance().safeLoadData();
                 case "ADMIN":
-                    Command.reload();
-                    Group.reload();
+                    // FIXME Scripts
+                    //  Command.reload();
+                    //  Group.reload();
                     Config.gameServer.getClients().stream().filter(client -> client != null && client.getPlayer() != null).forEach(client -> ((PlayerData) DatabaseManager.get(PlayerData.class)).reloadGroup(client.getPlayer()));
                     break;
                 case "MAPS":
@@ -2915,13 +2919,13 @@ public class CommandAdmin extends AdminUser {
                 return;
             }
 
-            Group group = Group.getGroupeById(id);
+            Group group = Group.byId(id);
 
             if(id == -1) {
                 if (infos.length > 2) {
                     Player player = World.world.getPlayerByName(infos[2]);
                     if (player != null) {
-                        player.setGroupe(null, true);
+                        player.setGroupe(-1, true);
                         player.send("BAIC");
                         ((PlayerData) DatabaseManager.get(PlayerData.class)).updateGroupe(id, infos[2]);
                         this.sendSuccessMessage("The player " + infos[2] + " has been remove to his group admin successfully.");
@@ -2939,7 +2943,7 @@ public class CommandAdmin extends AdminUser {
                 if (infos.length > 2) {
                     Player player = World.world.getPlayerByName(infos[2]);
                     if (player != null) {
-                        player.setGroupe(group, true);
+                        player.setGroupe(group.getId(), true);
                         player.send("BAIO");
                         ((PlayerData) DatabaseManager.get(PlayerData.class)).updateGroupe(id, infos[2]);
                         this.sendSuccessMessage("The player " + infos[2] + " has been assigned to group " + group.getName() + " successfully.");
@@ -2965,7 +2969,7 @@ public class CommandAdmin extends AdminUser {
 
             Group g = null;
             if (groupe > 0)
-                g = Group.getGroupeById(groupe);
+                g = Group.byId(groupe);
 
             if (g == null) {
                 String str = "Le groupe est invalide.";
@@ -2979,10 +2983,10 @@ public class CommandAdmin extends AdminUser {
                 this.sendMessage("\nCommandes disponibles pour le groupe "
                         + g.getName() + " :\n");
                 for (Command co : c) {
-                    String args = (co.getArguments()[1] != null && !co.getArguments()[1].equalsIgnoreCase("")) ? (" + " + co.getArguments()[1]) : ("");
-                    String desc = (co.getArguments()[2] != null && !co.getArguments()[2].equalsIgnoreCase("")) ? (co.getArguments()[2]) : ("");
+                    String args = (co.getArgs() != null && !co.getArgs().equalsIgnoreCase("")) ? (" + " + co.getArgs()) : ("");
+                    String desc = (co.getDesc() != null && !co.getDesc().equalsIgnoreCase("")) ? (co.getDesc()) : ("");
                     this.sendMessage("<u>"
-                            + co.getArguments()[0]
+                            + co.getName()
                             + args
                             + "</u> - "
                             + desc);
@@ -2991,11 +2995,11 @@ public class CommandAdmin extends AdminUser {
                 this.sendMessage("\nCommandes recherches pour le groupe "
                         + g.getName() + " :\n");
                 for (Command co : c) {
-                    if (co.getArguments()[0].contains(cmd.toUpperCase())) {
-                        String args = (co.getArguments()[1] != null && !co.getArguments()[1].equalsIgnoreCase("")) ? (" + " + co.getArguments()[1]) : ("");
-                        String desc = (co.getArguments()[2] != null && !co.getArguments()[2].equalsIgnoreCase("")) ? (co.getArguments()[2]) : ("");
+                    if (co.getName().contains(cmd.toUpperCase())) {
+                        String args = (co.getArgs() != null && !co.getArgs().equalsIgnoreCase("")) ? (" + " + co.getArgs()) : ("");
+                        String desc = (co.getDesc() != null && !co.getDesc().equalsIgnoreCase("")) ? (co.getDesc()) : ("");
                         this.sendMessage("<u>"
-                                + co.getArguments()[0]
+                                + co.getName()
                                 + args
                                 + "</u> - "
                                 + desc);

@@ -9,6 +9,27 @@ local function RegisterNPCDef(def)  end
 ---@param def MapDef
 local function RegisterMapDef(def)  end
 
+---@param name string
+---@param args string
+---@param description string
+function RegisterAdminCommand(name, args, description) end
+
+---@param id number
+---@param name string
+---@param isPlayer boolean
+---@param commands boolean|string[]
+function RegisterAdminGroup(id, name, isPlayer, commands) end
+
+---@param players number[]
+---@param guilds number[]
+---@param jobs number[]
+---@param mounts number[]
+---@param pvp number[]
+---@param livitinems number[]
+---@param tormentators number[]
+---@param bandits number[]
+function RegisterExpTables(players, guilds, jobs, mounts, pvp, livitinems, tormentators, bandits) end
+
 ---@class Player
 local Player = {}
 

@@ -164,10 +164,7 @@ public class Prism {
     public int getGrade() {
         if (this.honor >= 17500)
             return 10;
-        for (int n = 1; n <= 10; n++)
-            if (this.honor < World.world.getExpLevel(n).pvp)
-                return n - 1;
-        return 1;
+        return World.world.getExperiences().pvp.levelForXp(this.honor);
     }
 
     public int getConquestArea() {

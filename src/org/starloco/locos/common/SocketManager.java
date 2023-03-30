@@ -7,6 +7,7 @@ import org.starloco.locos.area.map.entity.MountPark;
 import org.starloco.locos.area.map.entity.Trunk;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.client.other.Party;
+import org.starloco.locos.database.data.game.ExperienceTables;
 import org.starloco.locos.database.data.game.SaleOffer;
 import org.starloco.locos.entity.Collector;
 import org.starloco.locos.entity.Prism;
@@ -294,7 +295,7 @@ public class SocketManager {
         for (Player z : map.getPlayers()) {
             if (perso.get_size() > 0)
                 send(z, packet);
-            else if (z.getGroupe() != null)
+            else if (z.getGroup() != null)
                 send(z, packet);
         }
     }
@@ -967,7 +968,7 @@ public class SocketManager {
         for (Player perso : World.world.getOnlinePlayers())
             if (perso.isOnline())
                 if (perso.getAccount() != null)
-                    if (perso.getGroupe() != null)
+                    if (perso.getGroup() != null)
                         send(perso, packet);
     }
 
@@ -1542,7 +1543,7 @@ public class SocketManager {
         for (Player z : map.getPlayers()) {
             if (perso.get_size() > 0)
                 send(z, packet);
-            else if (z.getGroupe() != null)
+            else if (z.getGroup() != null)
                 send(z, packet);
         }
     }
@@ -1647,13 +1648,10 @@ public class SocketManager {
         if (g == null) {
             send(p,"gIG");
         } else {
-            long xpMin = World.world.getExpLevel(g.getLvl()).guilde;
-            long xpMax;
-            if (World.world.getExpLevel(g.getLvl() + 1) == null) {
-                xpMax = -1;
-            } else {
-                xpMax = World.world.getExpLevel(g.getLvl() + 1).guilde;
-            }
+            ExperienceTables.ExperienceTable xpTable = World.world.getExperiences().guilds;
+
+            long xpMin = xpTable.minXpAt(g.getLvl());
+            long xpMax = xpTable.maxXpAt(g.getLvl());
             send(p, "gIG" + (g.haveTenMembers() ? 1 : 0) + "|" + g.getLvl() + "|" + xpMin + "|" + g.getXp() + "|" + xpMax);
         }
     }

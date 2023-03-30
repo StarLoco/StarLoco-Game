@@ -333,7 +333,7 @@ public class Account {
             return;
         }
 
-        Group group = player.getGroupe();
+        Group group = player.getGroup();
 
         if (group != null && !group.isPlayer()) {
             SocketManager.GAME_SEND_MESSAGE(this.currentPlayer, this.currentPlayer.getLang().trans("client.account.addfriend.staff"));

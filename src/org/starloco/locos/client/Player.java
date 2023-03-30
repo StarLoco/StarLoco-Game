@@ -17,6 +17,7 @@ import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.database.DatabaseManager;
 import org.starloco.locos.database.data.game.BankData;
 import org.starloco.locos.database.data.game.CollectorData;
+import org.starloco.locos.database.data.game.ExperienceTables;
 import org.starloco.locos.database.data.game.GuildMemberData;
 import org.starloco.locos.database.data.login.AccountData;
 import org.starloco.locos.database.data.login.ObjectData;
@@ -220,7 +221,7 @@ public class Player {
     private long regenTime = -1;                                                //-1 veut dire que la personne ne c'est jamais connecte
     private boolean isInPrivateArea = false;
     public Start start;
-    private Group groupe;
+    private int groupId;
     private boolean isInvisible = false;
 
     private Map<Integer, QuestPlayer> questList = new HashMap<>();
@@ -314,7 +315,7 @@ public class Player {
         this.id = id;
         this.noall = noall;
         this.name = name;
-        this.groupe = Group.getGroupeById(groupe);
+        this.groupId = groupe;
         this.sexe = sexe;
         this.classe = classe;
         this.color1 = color1;
@@ -510,7 +511,7 @@ public class Player {
 
         this.id = id;
         this.name = name;
-        this.groupe = Group.getGroupeById(groupe);
+        this.groupId = groupe;
         this.sexe = sexe;
         this.classe = classe;
         this.color1 = color1;
@@ -559,7 +560,7 @@ public class Player {
         if (sexe < 0 || sexe > 1)
             return null;
         Player player = new Player(-1, name, -1, sexe, classe, color1, color2, color3, Config.startKamas, ((Config.startLevel - 1)), ((Config.startLevel - 1) * 5), 10000, Config.startLevel,
-                World.world.getPersoXpMin(Config.startLevel), 100, Integer.parseInt(classe
+                World.world.getExperiences().players.minXpAt(Config.startLevel), 100, Integer.parseInt(classe
                 + "" + sexe), (byte) 0, compte.getId(), new HashMap<>(), (byte) 1, (byte) 0, (byte) 0, "*#%!pi$:?",
                 (Config.startMap > 0 ? (short) Config.startMap : Constant.getStartMap(classe)),
                 (Config.startCell > 0 ? (short) Config.startCell : Constant.getStartCell(classe)),
@@ -635,7 +636,7 @@ public class Player {
             mountID = P.getMount().getId();
         }
 
-        Player Clone = new Player(id, P.getName(), (P.getGroupe() != null) ? P.getGroupe().getId() : -1, P.getSexe(), P.getClasse(), P.getColor1(), P.getColor2(), P.getColor3(), P.getLevel(), 100, P.getGfxId(), stats, "", 100, showWings, mountID, alvl, P.getAlignment());
+        Player Clone = new Player(id, P.getName(), (P.getGroup() != null) ? P.getGroup().getId() : -1, P.getSexe(), P.getClasse(), P.getColor1(), P.getColor2(), P.getColor3(), P.getLevel(), 100, P.getGfxId(), stats, "", 100, showWings, mountID, alvl, P.getAlignment());
         Clone.objects.putAll(P.objects);
         Clone.set_isClone(true);
         if (P._onMount) {
@@ -673,12 +674,12 @@ public class Player {
         ((PlayerData) DatabaseManager.get(PlayerData.class)).updateInfos(this);
     }
 
-    public Group getGroupe() {
-        return this.groupe;
+    public Group getGroup() {
+        return Group.byId(this.groupId);
     }
 
-    public void setGroupe(Group groupe, boolean reload) {
-        this.groupe = groupe;
+    public void setGroupe(int groupId, boolean reload) {
+        this.groupId = groupId;
         if (reload)
             ((PlayerData) DatabaseManager.get(PlayerData.class)).updateGroupe(this);
     }
@@ -1819,7 +1820,7 @@ public class Player {
         }
 
         SocketManager.GAME_SEND_ALIGNEMENT(client, alignment);
-        SocketManager.GAME_SEND_ADD_CANAL(client, _canaux + "^" + (this.getGroupe() != null ? "@" : ""));
+        SocketManager.GAME_SEND_ADD_CANAL(client, _canaux + "^" + (this.getGroup() != null ? "@" : ""));
         if (_guildMember != null)
             SocketManager.GAME_SEND_gS_PACKET(this, _guildMember);
         SocketManager.GAME_SEND_ZONE_ALLIGN_STATUT(client);
@@ -2017,7 +2018,7 @@ public class Player {
             } else {
                 if (getCurrentTitle() == 2)
                     setCurrentTitle(0);
-                Group g = this.getGroupe();
+                Group g = this.getGroup();
                 int level = this.getLevel();
                 if (g != null)
                     if (!g.isPlayer() || this.get_size() <= 0) // Si c'est un groupe non joueur ou que l'on est invisible on cache l'aura
@@ -2194,26 +2195,28 @@ public class Player {
             return 0;
         if (_honor >= 17500)
             return 10;
-        for (int n = 1; n <= 10; n++)
-            if (_honor < World.world.getExpLevel(n).pvp)
-                return n - 1;
-        return 0;
+        return World.world.getExperiences().pvp.levelForXp(_honor);
     }
 
     public String xpString(String c) {
         if (!_morphMode) {
-            return this.getExp() + c + World.world.getPersoXpMin(this.getLevel()) + c + World.world.getPersoXpMax(this.getLevel());
-        } else {
-            if (this.getObjetByPos(Constant.ITEM_POS_ARME) != null)
-                if (Constant.isIncarnationWeapon(this.getObjetByPos(Constant.ITEM_POS_ARME).getTemplate().getId()))
-                    if (this.getObjetByPos(Constant.ITEM_POS_ARME).getSoulStat().get(Constant.ERR_STATS_XP) != null)
-                        return this.getObjetByPos(Constant.ITEM_POS_ARME).getSoulStat().get(Constant.ERR_STATS_XP)
-                                + c
-                                + World.world.getBanditsXpMin(this.getObjetByPos(Constant.ITEM_POS_ARME).getSoulStat().get(Constant.STATS_NIVEAU))
-                                + c
-                                + World.world.getBanditsXpMax(this.getObjetByPos(Constant.ITEM_POS_ARME).getSoulStat().get(Constant.STATS_NIVEAU));
+            ExperienceTables.ExperienceTable xpTable = World.world.getExperiences().players;
+            return this.getExp() + c + xpTable.minXpAt(this.getLevel()) + c + xpTable.maxXpAt(this.getLevel());
         }
-        return 1 + c + 1 + c + 1;
+        if(this.getObjetByPos(Constant.ITEM_POS_ARME) == null
+                || !Constant.isIncarnationWeapon(this.getObjetByPos(Constant.ITEM_POS_ARME).getTemplate().getId())
+                || this.getObjetByPos(Constant.ITEM_POS_ARME).getSoulStat().get(Constant.ERR_STATS_XP) == null) {
+            return 1 + c + 1 + c + 1;
+        }
+
+        // What if it's a tormentator ?
+        ExperienceTables.ExperienceTable xpTable = World.world.getExperiences().bandits;
+        int level = this.getObjetByPos(Constant.ITEM_POS_ARME).getSoulStat().get(Constant.STATS_NIVEAU);
+        return this.getObjetByPos(Constant.ITEM_POS_ARME).getSoulStat().get(Constant.ERR_STATS_XP)
+            + c
+            + xpTable.minXpAt(level)
+            + c
+            + xpTable.maxXpAt(level);
     }
 
     public int emoteActive() {
@@ -2755,7 +2758,8 @@ public class Player {
     }
 
     public boolean levelUp(boolean send, boolean addXp) {
-        if (this.getLevel() == World.world.getExpLevelSize())
+        ExperienceTables.ExperienceTable xpTable = World.world.getExperiences().players;
+        if (this.getLevel() == xpTable.maxLevel())
             return false;
         this.level++;
         _capital += 5;
@@ -2766,7 +2770,7 @@ public class Player {
             this.getStats().addOneStat(Constant.STATS_ADD_PA, 1);
         Constant.onLevelUpSpells(this, this.getLevel());
         if (addXp)
-            this.exp = World.world.getExpLevel(this.getLevel()).perso;
+            this.exp =  xpTable.minXpAt(this.getLevel());
         if (send && isOnline) {
             SocketManager.GAME_SEND_STATS_PACKET(this);
             SocketManager.GAME_SEND_SPELL_LIST(this);
@@ -2775,9 +2779,11 @@ public class Player {
     }
 
     public boolean addXp(long winxp) {
+        ExperienceTables.ExperienceTable xpTable = World.world.getExperiences().players;
+
         boolean up = false;
         this.exp += winxp;
-        while (this.getExp() >= World.world.getPersoXpMax(this.getLevel()) && this.getLevel() < World.world.getExpLevelSize())
+        while (this.getExp() >= xpTable.maxXpAt(this.level) && this.level < xpTable.maxLevel())
             up = levelUp(true, false);
         if (isOnline) {
             if (up)
@@ -2826,12 +2832,16 @@ public class Player {
         exp += winxp;
 
         if (Constant.isBanditsWeapon(this.getObjetByPos(Constant.ITEM_POS_ARME).getTemplate().getId())) {
-            while (exp >= World.world.getBanditsXpMax(level) && level < 50) {
+            ExperienceTables.ExperienceTable xpTable = World.world.getExperiences().bandits;
+
+            while (exp >= xpTable.maxXpAt(level) && level < xpTable.maxLevel()) {
                 up = levelUpIncarnations(true, false);
                 level = this.getObjetByPos(Constant.ITEM_POS_ARME).getSoulStat().get(Constant.STATS_NIVEAU);
             }
         } else if (Constant.isTourmenteurWeapon(this.getObjetByPos(Constant.ITEM_POS_ARME).getTemplate().getId())) {
-            while (exp >= World.world.getTourmenteursXpMax(level) && level < 50) {
+            ExperienceTables.ExperienceTable xpTable = World.world.getExperiences().tormentators;
+
+            while (exp >= xpTable.maxXpAt(level) && level < xpTable.maxLevel()) {
                 up = levelUpIncarnations(true, false);
                 level = this.getObjetByPos(Constant.ITEM_POS_ARME).getSoulStat().get(Constant.STATS_NIVEAU);
             }
@@ -4211,7 +4221,7 @@ public class Player {
         }
     }
 
-    public void useZaap(short id) {
+    public void useZaap(int id) {
         if (this.getExchangeAction() == null || this.getExchangeAction().getType() != ExchangeAction.IN_ZAAPING)
             return;
         if (this.fight != null || this.isInPrison()

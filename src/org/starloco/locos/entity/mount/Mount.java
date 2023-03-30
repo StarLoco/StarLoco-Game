@@ -8,6 +8,7 @@ import org.starloco.locos.common.Formulas;
 import org.starloco.locos.common.PathFinding;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.database.DatabaseManager;
+import org.starloco.locos.database.data.game.ExperienceTables;
 import org.starloco.locos.database.data.login.MountData;
 import org.starloco.locos.game.scheduler.Updatable;
 import org.starloco.locos.game.world.World;
@@ -485,8 +486,10 @@ public class Mount {
 	
 	public void addXp(long amount) {
 		this.exp += amount;
-		while(this.exp >= World.world.getExpLevel(this.level+1).mount && this.level < 100)
+		ExperienceTables.ExperienceTable xpTable = World.world.getExperiences().mounts;
+		while(this.exp >= xpTable.maxXpAt(this.level) && this.level < xpTable.maxLevel()) {
 			this.addLvl();
+		}
 	}
 
 	private void addLvl() {
@@ -603,7 +606,7 @@ public class Mount {
 	}
 
     public void setToMax() {
-		this.addXp(World.world.getExpLevel(100).mount);
+		this.addXp(World.world.getExperiences().mounts.maxLevel());
 		this.amour = 10000;
         this.endurance = 10000;
 		this.energy = this.getMaxEnergy();
@@ -1138,6 +1141,7 @@ public class Mount {
 	}
 	
 	private String parseExp() {
-		return this.exp + "," + World.world.getExpLevel(this.level).mount + "," + World.world.getExpLevel(this.level + 1).mount;
+		ExperienceTables.ExperienceTable xpTable = World.world.getExperiences().mounts;
+		return this.exp + "," + xpTable.minXpAt(this.level) + "," + xpTable.maxXpAt(this.level);
 	}
 }
