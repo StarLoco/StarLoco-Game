@@ -165,7 +165,6 @@ public class CommandAdmin extends AdminUser {
             SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(perso.getCurMap(), perso.getId());
             World.world.unloadPerso(perso);
             ((PlayerData) DatabaseManager.get(PlayerData.class)).load(perso.getId());
-            World.world.ReassignAccountToChar(perso.getAccount());
             String str = "Le joueur " + perso.getName() + " a ete reinitialise de ces variables.";
             this.sendMessage(str);
             return;

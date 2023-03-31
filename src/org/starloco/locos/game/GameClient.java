@@ -274,7 +274,7 @@ public class GameClient {
                 setCharacter(packet);
                 break;
             case 'T':
-                sendTicket(packet);
+                parseTicket(packet);
                 break;
             case 'V':
                 requestRegionalVersion();
@@ -662,7 +662,7 @@ public class GameClient {
         SocketManager.GAME_SEND_PERSO_SELECTION_FAILED(this);
     }
 
-    private void sendTicket(String packet) {
+    private void parseTicket(String packet) {
         try {
             int id = Integer.parseInt(packet.substring(2));
             this.account = Config.gameServer.getWaitingAccount(id);
@@ -1628,7 +1628,7 @@ public class GameClient {
                     return;
                 }
 
-                Optional<Account> seller = Optional.ofNullable(World.world.getAccount(entry.getOwner()));
+                Optional<Account> seller = Optional.ofNullable(World.world.ensureAccountLoaded(entry.getOwner()));
 
                 String name = seller.map(Account::getName).orElse("undefined");
                 GameObject obj = entry.getGameObject();

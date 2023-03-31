@@ -19,6 +19,8 @@ import org.starloco.locos.object.GameObject;
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class Account {
 	
@@ -233,14 +235,10 @@ public class Account {
     }
 
     public Map<Integer, Player> getPlayers() {
-        Map<Integer, Player> players = new HashMap<>();
-        new CopyOnWriteArrayList<>(World.world.getPlayers()).stream().filter(player -> player != null).filter(player -> player.getAccount() != null)
-                .filter(player -> player.getAccount().getId() == this.getId()).forEach(player -> {
-            if (player.getGameClient() == null)
-                player.setAccount(this);
-            players.put(player.getId(), player);
-        });
-        return players;
+        return World.world.getPlayers().stream()
+            .filter(Objects::nonNull)
+            .filter(player -> player.getAccount() != null && player.getAccount().getId() == this.getId())
+            .collect(Collectors.toMap(Player::getId, Function.identity()));
     }
 
     public Player getCurrentPlayer() {
@@ -280,7 +278,7 @@ public class Account {
         long remaining = this.subscriber - System.currentTimeMillis();
         if (!Config.subscription)
             return remaining > 0L ? remaining : 525600L;
-        return remaining <= 0L ? 0L : remaining;
+        return Math.max(remaining, 0L);
     }
 
     public boolean isSubscribe() {
@@ -319,7 +317,7 @@ public class Account {
             return;
         }
 
-        Account account = World.world.getAccount(id);
+        Account account = World.world.ensureAccountLoaded(id);
 
         if (account == null) {
             SocketManager.GAME_SEND_MESSAGE(this.currentPlayer, this.currentPlayer.getLang().trans("client.account.addfriend.notexist.account"));
@@ -378,7 +376,7 @@ public class Account {
         if (this.friends.isEmpty())
             return "";
         for (int i : this.friends) {
-            Account C = World.world.getAccount(i);
+            Account C = World.world.ensureAccountLoaded(i);
             if (C == null)
                 continue;
             str.append("|").append(C.getPseudo());
@@ -437,7 +435,7 @@ public class Account {
         if (this.enemys.isEmpty())
             return "";
         for (int i : this.enemys) {
-            Account C = World.world.getAccount(i);
+            Account C = World.world.ensureAccountLoaded(i);
             if (C == null)
                 continue;
             str.append("|").append(C.getPseudo());

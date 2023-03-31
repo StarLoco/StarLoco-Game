@@ -9,8 +9,6 @@ import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.area.map.MapData;
 import org.starloco.locos.area.map.entity.*;
 import org.starloco.locos.area.map.entity.InteractiveObject.InteractiveObjectTemplate;
-import org.starloco.locos.area.map.labyrinth.Minotoror;
-import org.starloco.locos.area.map.labyrinth.PigDragon;
 import org.starloco.locos.client.Account;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.client.other.Stats;
@@ -127,11 +125,12 @@ public class World {
         accounts.put(account.getId(), account);
     }
 
-    public Account getAccount(int id) {
+    public Account ensureAccountLoaded(int id) {
         Account account = accounts.get(id);
-        //if(account == null)
-        //    account = ((AccountData) DatabaseManager.get(AccountData.class)).load(id);
-        return account;
+        if(account == null) {
+            ((AccountData) DatabaseManager.get(AccountData.class)).load(id);
+        }
+        return accounts.get(id);
     }
 
     public Collection<Account> getAccounts() {
@@ -394,8 +393,8 @@ public class World {
         DatabaseManager.get(AnimationData.class).loadFully();
         logger.debug("The animations were loaded successfully.");
 
-        DatabaseManager.get(AccountData.class).loadFully();
-        logger.debug("The accounts were loaded successfully.");
+//        DatabaseManager.get(AccountData.class).loadFully();
+//        logger.debug("The accounts were loaded successfully.");
 
         // DatabaseManager.get(PlayerData.class).loadFully();
         // logger.debug("The players were loaded successfully.");
@@ -974,11 +973,6 @@ public class World {
 
     public long getGuildXpMax(int lvl) {
         return experiences.guilds.maxXpAt(lvl);
-    }
-
-    public void ReassignAccountToChar(Account account) {
-        ((PlayerData) DatabaseManager.get(PlayerData.class)).loadByAccountId(account.getId());
-        players.values().stream().filter(player -> player.getAccID() == account.getId()).forEach(player -> player.setAccount(account));
     }
 
     public int getZaapCellIdByMapId(int i) {

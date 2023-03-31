@@ -61,25 +61,23 @@ class ExchangePacketHandler {
                         switch (packet.charAt(1)) {
                             case 'A': //Add
                                 int id = Integer.parseInt(packet.substring(2));
-                                Account account = World.world.getAccount(id);
+                                Account account = World.world.ensureAccountLoaded(id);
 
                                 if (account == null) {
-                                    ((AccountData) DatabaseManager.get(AccountData.class)).load(id);
-                                    account = World.world.getAccount(id);
+                                    // Account doesn't exist, TODO: Send error
+                                     break;
                                 }
 
-                                if (account != null) {
-                                    if (account.getCurrentPlayer() != null)
-                                        account.getGameClient().kick();
-                                    account.setSubscribe();
-                                    Config.gameServer.addWaitingAccount(account);
-                                }
+                                if (account.getCurrentPlayer() != null)
+                                    account.getGameClient().kick();
+                                account.setSubscribe();
+                                Config.gameServer.addWaitingAccount(account);
                                 break;
                             case 'K': //Kick
                                 id = Integer.parseInt(packet.substring(2));
                                 ((PlayerData) DatabaseManager.get(PlayerData.class)).updateAllLogged(id, 0);
                                 ((AccountData) DatabaseManager.get(AccountData.class)).setLogged(id, 0);
-                                account = World.world.getAccount(id);
+                                account = World.world.ensureAccountLoaded(id);
 
                                 if (account != null) {
                                     GameClient client;

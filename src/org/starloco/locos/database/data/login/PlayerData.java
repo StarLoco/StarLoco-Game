@@ -4,7 +4,6 @@ import com.mysql.jdbc.Statement;
 import com.zaxxer.hikari.HikariDataSource;
 import org.starloco.locos.client.Account;
 import org.starloco.locos.client.Player;
-import org.starloco.locos.command.administration.Group;
 import org.starloco.locos.database.DatabaseManager;
 
 import org.starloco.locos.database.data.FunctionDAO;
@@ -293,7 +292,7 @@ public class PlayerData extends FunctionDAO<Player> {
     
     public void loadByAccountId(int id) {
         try {
-            Account account = World.world.getAccount(id);
+            Account account = World.world.ensureAccountLoaded(id);
             if (account != null)
                 if (account.getPlayers() != null)
                     account.getPlayers().values().stream().filter(Objects::nonNull).forEach(World.world::verifyClone);
@@ -301,14 +300,8 @@ public class PlayerData extends FunctionDAO<Player> {
             super.sendError(e);
         }
 
-        ResultSet result = null;
-        try {
-            result = getData("SELECT * FROM " + getTableName() + " WHERE account = '" + id + "'");
-            
+        try (ResultSet result = getData("SELECT * FROM " + getTableName() + " WHERE account = '" + id + "' AND server = '"+Config.gameServerId+"'")){
             while (result.next()) {
-                if (result.getInt("server") != Config.gameServerId)
-                    continue;
-
                 Player p = World.world.getPlayer(result.getInt("id"));
                 if (p != null) {
                     if (p.getFight() != null) {
@@ -317,7 +310,6 @@ public class PlayerData extends FunctionDAO<Player> {
                 }
 
                 HashMap<Integer, Integer> stats = new HashMap<Integer, Integer>();
-
                 stats.put(Constant.STATS_ADD_VITA, result.getInt("vitalite"));
                 stats.put(Constant.STATS_ADD_FORC, result.getInt("force"));
                 stats.put(Constant.STATS_ADD_SAGE, result.getInt("sagesse"));
@@ -338,8 +330,6 @@ public class PlayerData extends FunctionDAO<Player> {
         } catch (SQLException e) {
             super.sendError(e);
             Main.stop("unknown");
-        } finally {
-            close(result);
         }
     }
 

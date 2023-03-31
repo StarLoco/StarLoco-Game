@@ -22,7 +22,7 @@ public class BankData extends FunctionDAO<Account> {
 
     @Override
     public Account load(int id) {
-        Account account = World.world.getAccount(id);
+        Account account = World.world.ensureAccountLoaded(id);
         ResultSet result = null;
         try {
             result = getData("SELECT * FROM " + getTableName() + " WHERE id = '" + id + "';");

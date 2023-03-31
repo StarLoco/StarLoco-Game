@@ -34,11 +34,11 @@ public class HouseManager {
             StringBuilder packet = new StringBuilder();
             packet.append("P").append(house.getValue().getId()).append("|");
             if (house.getValue().getOwnerId() > 0) {
-                Account C = World.world.getAccount(house.getValue().getOwnerId());
+                Account C = World.world.ensureAccountLoaded(house.getValue().getOwnerId());
                 if (C == null)//Ne devrait pas arriver
                     packet.append("undefined;");
                 else
-                    packet.append(World.world.getAccount(house.getValue().getOwnerId()).getPseudo()).append(";");
+                    packet.append(World.world.ensureAccountLoaded(house.getValue().getOwnerId()).getPseudo()).append(";");
             } else {
                 packet.append(";");
             }
@@ -103,7 +103,7 @@ public class HouseManager {
 
         long kamas = Trunk.getTrunksByHouse(house).mapToLong(trunk -> {
             if (house.getOwnerId() > 0)
-                trunk.moveTrunkToBank(World.world.getAccount(house.getOwnerId()));//D�placement des items vers la banque
+                trunk.moveTrunkToBank(World.world.ensureAccountLoaded(house.getOwnerId()));//D�placement des items vers la banque
 
             long trunkKamas = trunk.getKamas();
             trunk.setKamas(0);//Retrait kamas
@@ -115,7 +115,7 @@ public class HouseManager {
 
         //Ajoute des kamas dans la banque du vendeur
         if (house.getOwnerId() > 0) {
-            Account seller = World.world.getAccount(house.getOwnerId());
+            Account seller = World.world.ensureAccountLoaded(house.getOwnerId());
             seller.setBankKamas(seller.getBankKamas() + house.getSale() + kamas);
 
             if (seller.getCurrentPlayer() != null)//FIXME: change the packet (Im)
@@ -178,7 +178,7 @@ public class HouseManager {
                 String name = "";
                 int id = house.getValue().getOwnerId();
                 if (id != -1) {
-                    Account a = World.world.getAccount(id);
+                    Account a = World.world.ensureAccountLoaded(id);
                     if (a != null) {
                         name = a.getPseudo();
                     }
