@@ -22,9 +22,7 @@ public class BaseMountParkData extends FunctionDAO<MountPark> {
 
 	@Override
 	public void loadFully() {
-		ResultSet result = null;
-		try {
-			result = getData("SELECT * FROM " + getTableName() + ";");
+		try (ResultSet result = getData("SELECT * FROM " + getTableName() + ";")) {
 			while (result.next()) {
 				GameMap map = World.world.getMap(result.getShort("mapid"));
 				if (map == null)
@@ -35,14 +33,25 @@ public class BaseMountParkData extends FunctionDAO<MountPark> {
 			}
 		} catch (SQLException e) {
 			super.sendError(e);
-		} finally {
-			close(result);
 		}
 	}
 
 	@Override
 	public MountPark load(int id) {
-		throw new NotImplementedException();
+		try (ResultSet result = getData("SELECT * FROM " + getTableName() + " WHERE `mapid` = " + id +" ;")) {
+			// Not found
+			if(!result.next()) return null;
+
+			GameMap map = World.world.getMap(result.getShort("mapid"));
+			if (map == null) return null;
+
+			MountPark MP = new MountPark(map, result.getInt("cellid"), result.getInt("size"), result.getInt("priceBase"), result.getInt("cellMount"), result.getInt("cellporte"), result.getString("cellEnclos"), result.getInt("sizeObj"));
+			World.world.addMountPark(MP);
+			((MountParkData) DatabaseManager.get(MountParkData.class)).exist(MP);
+		} catch (SQLException e) {
+			super.sendError(e);
+		};
+		return null;
 	}
 
 	@Override

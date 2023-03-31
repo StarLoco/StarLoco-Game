@@ -84,23 +84,6 @@ public class MountPark {
         }
     }
 
-    public void setInfos(GameMap map, int cellid, int size, int placeOfSpawn, int door, String cellOfObject, int maxObject) {
-        this.map = map;
-        this.cell = cellid;
-        this.size = size;
-        this.placeOfSpawn = placeOfSpawn;
-        this.door = door;
-        this.maxObject = maxObject;
-
-        if(!cellOfObject.isEmpty()) {
-            for(String cases : cellOfObject.split(";")) {
-                int cellId = Integer.parseInt(cases);
-                if(cellId > 0)
-                    this.cellOfObject.add(cellId);
-            }
-        }
-    }
-
     public int getPriceBase() {
         return priceBase;
     }
@@ -119,72 +102,6 @@ public class MountPark {
 
     public void setCellObject(ArrayList<Integer> array) {
         this.cellOfObject = new ArrayList<>(array);
-    }
-
-    public void setInfos(int owner, GameMap map, int cell, int size, int guild, int price, int placeOfSpawn, String raising, int door, String cellOfObject, int maxObject, String objects, String objDurab, String etable)
-    {
-
-        this.owner = owner;
-        this.size = size;
-        this.guild = World.world.getGuild(guild);
-        this.map.setMountPark(null);
-        this.map = map;
-        if(this.map != null)
-            this.map.setMountPark(this);
-        this.cell = cell;
-        this.price = price;
-        this.placeOfSpawn = placeOfSpawn;
-        this.door = door;
-        this.maxObject = maxObject;
-
-        this.cellAndObject.clear();
-        this.breedingObject.clear();
-        this.parseBreedObjects(objects);
-        //chargement de la liste des dragodinde dans l'Ã©table
-        this.etable.clear();
-        for(String i: etable.split(";"))
-        {
-            try {
-                Mount DD = World.world.getMountById(Integer.parseInt(i));
-                if(DD != null)
-                    this.etable.add(DD);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        this.objDurab.clear();
-        this.parseDurabilityObjects(objDurab);
-        this.cellOfObject.clear();
-        if(!cellOfObject.isEmpty())
-        {
-            for(String cases : cellOfObject.split(";"))
-            {
-                int cellId = Integer.parseInt(cases);
-                if(cellId <= 0)
-                    continue;
-                this.cellOfObject.add(cellId);
-            }
-        }
-        this.raising.clear();
-        if(!raising.isEmpty())
-        {
-            String[] dragodinde = raising.split(";");
-            for(String dd: dragodinde)
-                this.raising.add(Integer.parseInt(dd));
-        }
-        this.raising.clear();
-        for(String firstCut: raising.split(";"))//PosseseurID,DragoID;PosseseurID2,DragoID2;PosseseurID,DragoID3
-        {
-            try	{
-                String[] secondCut = firstCut.split(",");
-                Mount DD = World.world.getMountById(Integer.parseInt(secondCut[1]));
-                if(DD == null)
-                    continue;
-                this.raising.add(Integer.parseInt(secondCut[1]), Integer.parseInt(secondCut[0]));
-            }catch(Exception e){
-                e.printStackTrace();
-            }
-        }
     }
 
     public int getOwner() {

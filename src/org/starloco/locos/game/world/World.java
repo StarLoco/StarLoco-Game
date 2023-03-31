@@ -397,8 +397,8 @@ public class World {
         DatabaseManager.get(AccountData.class).loadFully();
         logger.debug("The accounts were loaded successfully.");
 
-        DatabaseManager.get(PlayerData.class).loadFully();
-        logger.debug("The players were loaded successfully.");
+        // DatabaseManager.get(PlayerData.class).loadFully();
+        // logger.debug("The players were loaded successfully.");
 
         DatabaseManager.get(GuildMemberData.class).loadFully();
         logger.debug("The guilds and guild members were loaded successfully.");
@@ -412,18 +412,18 @@ public class World {
         DatabaseManager.get(TutorialData.class).loadFully();
         logger.debug("The tutorials were loaded successfully.");
 
-        DatabaseManager.get(BaseMountParkData.class).loadFully();
-        logger.debug("The statics parks of the mounts were loaded successfully.");
-        DatabaseManager.get(MountParkData.class).loadFully();
-        logger.debug("The dynamics parks of the mounts were loaded successfully.");
+//        DatabaseManager.get(BaseMountParkData.class).loadFully();
+//        logger.debug("The statics parks of the mounts were loaded successfully.");
+//        DatabaseManager.get(MountParkData.class).loadFully();
+//        logger.debug("The dynamics parks of the mounts were loaded successfully.");
 
         DatabaseManager.get(CollectorData.class).loadFully();
         logger.debug("The collectors were loaded successfully.");
 
-        DatabaseManager.get(BaseHouseData.class).loadFully();
-        logger.debug("The statics houses were loaded successfully.");
-        DatabaseManager.get(HouseData.class).loadFully();
-        logger.debug("The dynamics houses were loaded successfully.");
+//        DatabaseManager.get(BaseHouseData.class).loadFully();
+//        logger.debug("The statics houses were loaded successfully.");
+//        DatabaseManager.get(HouseData.class).loadFully();
+//        logger.debug("The dynamics houses were loaded successfully.");
 
         DatabaseManager.get(BaseTrunkData.class).loadFully();
         logger.debug("The statics trunks were loaded successfully.");
@@ -451,19 +451,19 @@ public class World {
         DatabaseManager.get(RuneData.class).loadFully();
         logger.debug("The runes were loaded successfully.");
 
-        loadExtraMonster();
-        logger.debug("The adding of extra-monsters on the maps were done successfully.");
+//        loadExtraMonster();
+//        logger.debug("The adding of extra-monsters on the maps were done successfully.");
 
-        loadMonsterOnMap();
-        logger.debug("The adding of mobs groups on the maps were done successfully.");
+//        loadMonsterOnMap();
+//        logger.debug("The adding of mobs groups on the maps were done successfully.");
 
-        DatabaseManager.get(GangsterData.class).loadFully();
-        logger.debug("The adding of gangsters on the maps were done successfully.");
+//        DatabaseManager.get(GangsterData.class).loadFully();
+//        logger.debug("The adding of gangsters on the maps were done successfully.");
 
-        logger.debug("Initialization of the dungeons : Dragon Pig.");
-        PigDragon.initialize();
-        logger.debug("Initialization of the dungeons : Labyrinth of the Minotoror.");
-        Minotoror.initialize();
+//        logger.debug("Initialization of the dungeons : Dragon Pig.");
+//        PigDragon.initialize();
+//        logger.debug("Initialization of the dungeons : Labyrinth of the Minotoror.");
+//        Minotoror.initialize();
 
         // Load auction
         DatabaseManager.get(AuctionData.class).loadFully();

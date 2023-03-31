@@ -67,7 +67,7 @@ public class PlayerData extends FunctionDAO<Player> {
         try {
             result = getData("SELECT * FROM " + getTableName() + " WHERE id = '" + id + "' AND server = " + Config.gameServerId + ";");
             while (result.next()) {
-                Player oldPlayer = World.world.getPlayer((int) id);
+                Player oldPlayer = World.world.getPlayer(id);
                 player = new Player(result.getInt("id"), result.getString("name"), result.getInt("groupe"), result.getInt("sexe"),
                         result.getInt("class"), result.getInt("color1"), result.getInt("color2"), result.getInt("color3"), result.getLong("kamas"),
                         result.getInt("spellboost"), result.getInt("capital"), result.getInt("energy"), result.getInt("level"), result.getLong("xp"),
