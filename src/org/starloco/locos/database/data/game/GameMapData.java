@@ -4,6 +4,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.lang.NotImplementedException;
 import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.area.map.GameMap;
+import org.starloco.locos.area.map.MapData;
 import org.starloco.locos.area.map.SQLMapData;
 import org.starloco.locos.database.data.FunctionDAO;
 import org.starloco.locos.game.world.World;
@@ -55,13 +56,12 @@ public class GameMapData extends FunctionDAO<GameMap> {
 
             result = getData("SELECT * FROM mobgroups_fix");
             while (result.next()) {
-                GameMap map = World.world.getMap(result.getShort("mapid"));
-                if (map != null) {
-                    GameCase cell = map.getCase(result.getInt("cellid"));
-                    if(cell != null) {
-                        map.addStaticGroup(result.getInt("cellid"), result.getString("groupData"), false);
-                        World.world.addGroupFix(result.getInt("mapid") + ";" + result.getInt("cellid"), result.getString("groupData"), result.getInt("Timer"));
-                    }
+                int mapId = result.getShort("mapid");
+                MapData md = World.world.getMapData(mapId).orElse(null);
+                if (md instanceof SQLMapData) {
+                    int cellId = result.getInt("cellid");
+                    ((SQLMapData)md).addStaticGroup(cellId, result.getString("groupData"));
+                    World.world.addGroupFix(mapId + ";" + cellId, result.getString("groupData"), result.getInt("Timer"));
                 }
             }
         } catch (SQLException e) {

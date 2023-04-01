@@ -48,22 +48,22 @@ public class PigDragon {
     }
 
     private static void checkOutside() {
-        GameMap actual = World.world.getMap((short) 9375);
+        GameMap actual = World.world.getMap( 9375);
         if (actual.getCase(returnCell(actual, 413)).isLoS()) {
             TimerWaiter.addNext(PigDragon::checkOutside, 5, TimeUnit.MINUTES);
             return;
         }
-        actual = World.world.getMap((short) 9377);
+        actual = World.world.getMap( 9377);
         if (actual.getCase(returnCell(actual, 36)).isLoS()) {
             TimerWaiter.addNext(PigDragon::checkOutside, 5, TimeUnit.MINUTES);
             return;
         }
-        actual = World.world.getMap((short) 9381);
+        actual = World.world.getMap( 9381);
         if (actual.getCase(returnCell(actual, 216)).isLoS()) {
             TimerWaiter.addNext(PigDragon::checkOutside, 5, TimeUnit.MINUTES);
             return;
         }
-        actual = World.world.getMap((short) 9387);
+        actual = World.world.getMap( 9387);
         if (actual.getCase(returnCell(actual, 262)).isLoS()) {
             TimerWaiter.addNext(PigDragon::checkOutside, 5, TimeUnit.MINUTES);
             return;
@@ -468,7 +468,7 @@ public class PigDragon {
     private static void initializeMap(int id, int c1, int c2, int c3, int c4) {
         // Ferme toutes les portes et ouvre une porte dans chaque salle.
         closeMap(id, c1, c2, c3, c4);
-        GameMap map = World.world.getMap((short) id);
+        GameMap map = World.world.getMap( id);
         GameCase cell = randomCase(map, c1, c2, c3, c4);
 
         switch (id) {
@@ -534,25 +534,25 @@ public class PigDragon {
         switch (Formulas.getRandomValue(0, 3)) {
             case 0: // 9375 - 8�me
                 closeMap(9375, 413, 274, 262, 36);
-                map = World.world.getMap((short) 9375);
+                map = World.world.getMap( 9375);
                 cell = map.getCase(413);
                 open(map, cell);
                 break;
             case 1: // 9381 - 12�me
                 closeMap(9381, 442, 320, 216, 22);
-                map = World.world.getMap((short) 9381);
+                map = World.world.getMap( 9381);
                 cell = map.getCase(216);
                 open(map, cell);
                 break;
             case 2: // 9387 - 14�me
                 closeMap(9387, 414, 262, 144, 48);
-                map = World.world.getMap((short) 9387);
+                map = World.world.getMap( 9387);
                 cell = map.getCase(262);
                 open(map, cell);
                 break;
             case 3: // 9377 - 18�me
                 closeMap(9377, 413, 274, 262, 36);
-                map = World.world.getMap((short) 9377);
+                map = World.world.getMap( 9377);
                 cell = map.getCase(36);
                 open(map, cell);
                 break;
@@ -560,7 +560,7 @@ public class PigDragon {
     }
 
     private static void closeMap(int id, int c1, int c2, int c3, int c4) {
-        GameMap map = World.world.getMap((short) id);
+        GameMap map = World.world.getMap( id);
         close(map, map.getCase(c1));
         close(map, map.getCase(c2));
         close(map, map.getCase(c3));

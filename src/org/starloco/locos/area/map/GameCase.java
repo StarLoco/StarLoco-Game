@@ -31,7 +31,6 @@ public class GameCase {
 
     private List<Player> players;
     private ArrayList<Fighter> fighters;
-    private ArrayList<Action> onCellStop;
     private InteractiveObject object;
     private GameObject droppedItem;
 
@@ -143,33 +142,6 @@ public class GameCase {
         if(this.fighters != null && this.fighters.size() > 0)
             return fighters.get(0); // return this.fighters.get(0);o
         return null;
-    }
-
-    public void addOnCellStopAction(int id, String args, String cond, GameMap map) {
-        if (this.onCellStop == null)
-            this.onCellStop = new ArrayList<>();
-        this.onCellStop.add(new Action(id, args, cond, map));
-    }
-
-    public void applyOnCellStopActions(Player player) {
-        if (this.onCellStop != null)
-            for (Action action : this.onCellStop)
-                action.apply(player, null, -1, -1);
-    }
-
-    public boolean getOnCellStopAction() {
-        return this.onCellStop != null;
-    }
-
-    public ArrayList<Action> getOnCellStop() {
-        return onCellStop;
-    }
-
-    public void setOnCellStop(ArrayList<Action> onCellStop) {
-        this.onCellStop = onCellStop;
-    }
-    public void clearOnCellAction() {
-        this.onCellStop = null;
     }
 
     public InteractiveObject getObject() {
@@ -983,7 +955,7 @@ public class GameCase {
                 if (house == null)
                     return;
 
-                GameMap mapHouse = World.world.getMap((short) house.getHouseMapId());
+                GameMap mapHouse = World.world.getMap( house.getHouseMapId());
                 if (mapHouse == null) {
                     SocketManager.GAME_SEND_MESSAGE(player, player.getLang().trans("area.map.gamecase.startaction.house.broken"));
                     return;

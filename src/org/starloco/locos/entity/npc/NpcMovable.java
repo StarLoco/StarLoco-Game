@@ -12,13 +12,13 @@ public class NpcMovable extends Npc {
 
     private final static ArrayList<NpcMovable> movables = new ArrayList<>();
 
-	private GameMap map;
+	private int mapId;
 	private short position = 0;
 	private String[] path;
 
     public NpcMovable(int id, int cellid, byte orientation, int mapid, int template) {
 		super(id, cellid, orientation, template);
-		this.map = World.world.getMap(mapid);
+		this.mapId = mapid;
 		this.path = getTemplate().legacy.getPath().split(";");
         NpcMovable.movables.add(this);
 	}	
@@ -28,10 +28,12 @@ public class NpcMovable extends Npc {
 		char dir = this.path[this.position].charAt(0);
         short nbr;
 
+		GameMap map = World.world.getMap(mapId);
+
         if(dir == 'E') {
             nbr = Short.parseShort(this.path[this.position].substring(1));
 
-            for(Player player : this.map.getPlayers())
+            for(Player player : map.getPlayers())
                 player.send("eUK" + this.getId() + "|" + nbr);
         } else {
             nbr = Short.parseShort(String.valueOf(this.path[this.position].charAt(1)));
@@ -39,14 +41,14 @@ public class NpcMovable extends Npc {
             int oldCell = this.getCellId(), cell = this.getCellId();
 
             for (short i = 0; i <= nbr; i++) {
-                cell = PathFinding.getCaseIDFromDirrection(cell, NpcMovable.getDirByChar(dir), this.map);
-                if (!this.map.getCase(cell).isWalkable(true)) break;
+                cell = PathFinding.getCaseIDFromDirrection(cell, NpcMovable.getDirByChar(dir), map);
+                if (!map.getCase(cell).isWalkable(true)) break;
                 oldCell = cell;
             }
 
             String path;
             try {
-                path = PathFinding.getShortestStringPathBetween(this.map, this.getCellId(), oldCell, 25);
+                path = PathFinding.getShortestStringPathBetween(map, this.getCellId(), oldCell, 25);
             } catch (Exception e) {
 				e.printStackTrace();
                 return;
@@ -55,7 +57,7 @@ public class NpcMovable extends Npc {
             if (path == null)
                 return;
 
-            for (Player player : this.map.getPlayers())
+            for (Player player : map.getPlayers())
             	if(player != null)
                 	SocketManager.GAME_SEND_GA_PACKET(player.getGameClient(), "0", "1", String.valueOf(this.getId()), path);
 

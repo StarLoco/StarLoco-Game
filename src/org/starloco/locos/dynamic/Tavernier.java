@@ -32,7 +32,7 @@ public class Tavernier extends Updatable {
 
     public Tavernier(){
         super(5 * 60_000);
-        this.map = World.world.getMap((short) 10354);
+        this.map = World.world.getMap( 10354);
     }
 
     @Override

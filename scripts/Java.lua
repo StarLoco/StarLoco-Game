@@ -1,6 +1,36 @@
 --- DO NOT USE TYPES DEFINED HERE
 --- THOSE ARE ONLY FOR AUTO-COMPLETION
 
+---@param path string
+function loadDir(path)  end
+
+---@param def Npc
+function RegisterNPCDef(def)  end
+
+---@param def MapDef
+function RegisterMapDef(def)  end
+
+---@param name string
+---@param args string
+---@param description string
+function RegisterAdminCommand(name, args, description) end
+
+---@param id number
+---@param name string
+---@param isPlayer boolean
+---@param commands boolean|string[]
+function RegisterAdminGroup(id, name, isPlayer, commands) end
+
+---@param players number[]
+---@param guilds number[]
+---@param jobs number[]
+---@param mounts number[]
+---@param pvp number[]
+---@param livitinems number[]
+---@param tormentators number[]
+---@param bandits number[]
+function RegisterExpTables(players, guilds, jobs, mounts, pvp, livitinems, tormentators, bandits) end
+
 ---@class Player
 local Player = {}
 
@@ -63,6 +93,12 @@ function Player:tryBuyItem(template, unitPrice, quantity, isPerfect) end
 
 ---@return number
 function Player:mapID() end
+
+---@return Map
+function Player:map() end
+
+---@return number
+function Player:cell() end
 
 ---@return number,number map,cell
 function Player:savedPosition() end
@@ -141,3 +177,8 @@ function Item:hasTxtStat(stat, val) end
 ---@param val string
 ---@return boolean
 function Item:consumeTxtStat(stat, val) end
+
+-- Map instance
+---@class Map
+local Map = {}
+

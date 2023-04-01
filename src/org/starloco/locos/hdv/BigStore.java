@@ -239,7 +239,7 @@ public class BigStore {
                         return null;
                     }
 
-                    Optional<Account> prevOwner = Optional.ofNullable(World.world.getAccount(e.getOwner()));
+                    Optional<Account> prevOwner = Optional.ofNullable(World.world.ensureAccountLoaded(e.getOwner()));
                     prevOwner.ifPresent(p -> p.setBankKamas(p.getBankKamas() + price));
 
                     GameObject obj = e.getGameObject();

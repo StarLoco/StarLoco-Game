@@ -1,0 +1,16 @@
+NecklaceSlot = 0;
+WeaponSlot = 1;
+Ring1Slot = 2;
+BeltSlot = 3;
+Ring2Slot = 4;
+FeetSlot = 5;
+HeadSlot = 6;
+BackSlot = 7;
+PetSlot = 8;
+Dofus1Slot = 9;
+Dofus2Slot = 10;
+Dofus3Slot = 11;
+Dofus4Slot = 12;
+Dofus5Slot = 13;
+Dofus6Slot = 14;
+ShieldSlot = 15;

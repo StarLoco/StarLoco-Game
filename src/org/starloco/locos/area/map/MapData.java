@@ -5,9 +5,11 @@ import org.starloco.locos.area.SubArea;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.entity.monster.MonsterGrade;
 import org.starloco.locos.game.world.World;
+import org.starloco.locos.util.Pair;
 
+import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 
 // Holds all static data for maps
 public abstract class MapData {
@@ -28,6 +30,8 @@ public abstract class MapData {
     public final String cellsData;
     public final List<MonsterGrade> mobPossibles;
     public final String placesStr;
+
+    private final Map<Integer, Pair<Integer,Integer>> npcs = new HashMap<>();
 
     protected MapData(int id, String date, String key, String cellsData, int width, int height, int x, int y, int subAreaID, boolean noSellers, boolean noCollectors, boolean noPrisms, boolean noTp, boolean noDefy, boolean noAgro, boolean noCanal, int mobGroupsMaxCount, int mobGroupsMaxSize, List<MonsterGrade> mobPossibles, String placesStr) {
         this.id = id;
@@ -54,18 +58,21 @@ public abstract class MapData {
 
     public SubArea getSubArea() { return World.world.getSubArea(subAreaID); }
     public Area getArea() { return getSubArea().getArea(); }
+
     // TODO: Replace with Pair<List<Integer>,List<Integer>>
     public String getPlaces() { return placesStr; }
 
-    public abstract Optional<GameCase> getCase(int id);
-    public abstract List<GameCase> getCases();
+    public Map<Integer, Pair<Integer, Integer>> getNPCs() { return npcs; };
 
+    public void addNpc(int id, int cellid, int orientation) {
+        this.npcs.put(id, new Pair<>(cellid, orientation));
+    }
 
-    public abstract List<Integer> getNPCs();
     public String getForbidden() {
         return (noSellers ? 1 : 0) + ";" + (noCollectors ? 1 : 0) + ";" + (noPrisms ? 1 : 0) + ";" + (noTp ? 1 : 0) +
                 ";" + (noDefy ? 1 : 0) + ";" + (noAgro ? 1 : 0) + ";" + (noCanal ? 1 : 0);
     }
 
     public abstract void onMoveEnd(Player p);
+    public abstract boolean cellHasMoveEndActions(int cellId);
 }

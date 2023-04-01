@@ -68,7 +68,6 @@ public class DatabaseManager {
 
         //region login data
         this.daos.add(new AccountData(this.login));
-        this.daos.add(new CommandData(this.login));
         this.daos.add(new EventData(this.login));
         this.daos.add(new PlayerData(this.login));
         this.daos.add(new ServerData(this.login));
@@ -76,7 +75,6 @@ public class DatabaseManager {
         this.daos.add(new BaseAreaData(this.login));
         this.daos.add(new BaseSubAreaData(this.login));
         this.daos.add(new GuildData(this.login));
-        this.daos.add(new GroupData(this.login));
         this.daos.add(new BaseHouseData(this.login));
         this.daos.add(new BaseTrunkData(this.login));
         this.daos.add(new MountData(this.login));
@@ -110,7 +108,6 @@ public class DatabaseManager {
         this.daos.add(new DungeonData(this.game));
         this.daos.add(new DropData(this.game));
         this.daos.add(new EndFightActionData(this.game));
-        this.daos.add(new ExperienceData(this.game));
         this.daos.add(new ExtraMonsterData(this.game));
         this.daos.add(new FullMorphData(this.game));
         this.daos.add(new GiftData(this.game));

@@ -1,7 +1,7 @@
 package org.starloco.locos.command;
 
 import org.starloco.locos.entity.npc.NpcMovable;
-import org.starloco.locos.script.NpcScriptVM;
+import org.starloco.locos.script.DataScriptVM;
 import org.starloco.locos.util.Pair;
 import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.area.map.GameMap;
@@ -63,7 +63,7 @@ public class CommandAdmin extends AdminUser {
         String command = infos[0];
 
         try {
-            Group groupe = this.getPlayer().getGroupe();
+            Group groupe = this.getPlayer().getGroup();
             if (groupe == null) {
                 this.getClient().kick();
                 return;
@@ -94,19 +94,19 @@ public class CommandAdmin extends AdminUser {
             String cmd = infos.length == 2 ? infos[1] : "";
 
             if (cmd.equalsIgnoreCase("")) {
-                this.sendMessage("\nVous avez actuellement le groupe GM " + this.getPlayer().getGroupe().getName() + ".\nCommandes disponibles :\n");
-                for (Command commande : this.getPlayer().getGroupe().getCommands()) {
-                    String args = (commande.getArguments()[1] != null && !commande.getArguments()[1].equalsIgnoreCase("")) ? (" + " + commande.getArguments()[1]) : ("");
-                    String desc = (commande.getArguments()[2] != null && !commande.getArguments()[2].equalsIgnoreCase("")) ? (commande.getArguments()[2]) : ("");
-                    this.sendMessage("<u>" + commande.getArguments()[0] + args + "</u> - " + desc);
+                this.sendMessage("\nVous avez actuellement le groupe GM " + this.getPlayer().getGroup().getName() + ".\nCommandes disponibles :\n");
+                for (Command commande : this.getPlayer().getGroup().getCommands()) {
+                    String args = (commande.getArgs() != null && !commande.getArgs().equalsIgnoreCase("")) ? (" + " + commande.getArgs()) : ("");
+                    String desc = (commande.getDesc() != null && !commande.getDesc().equalsIgnoreCase("")) ? (commande.getDesc()) : ("");
+                    this.sendMessage("<u>" + commande.getName() + args + "</u> - " + desc);
                 }
             } else {
-                this.sendMessage("\nVous avez actuellement le groupe GM " + this.getPlayer().getGroupe().getName() + ".\nCommandes recherches :\n");
-                for (Command commande : this.getPlayer().getGroupe().getCommands()) {
-                    if (commande.getArguments()[0].contains(cmd.toUpperCase())) {
-                        String args = (commande.getArguments()[1] != null && !commande.getArguments()[1].equalsIgnoreCase("")) ? (" + " + commande.getArguments()[1]) : ("");
-                        String desc = (commande.getArguments()[2] != null && !commande.getArguments()[2].equalsIgnoreCase("")) ? (commande.getArguments()[2]) : ("");
-                        this.sendMessage("<u>" + commande.getArguments()[0] + args + "</u> - " + desc);
+                this.sendMessage("\nVous avez actuellement le groupe GM " + this.getPlayer().getGroup().getName() + ".\nCommandes recherches :\n");
+                for (Command commande : this.getPlayer().getGroup().getCommands()) {
+                    if (commande.getName().contains(cmd.toUpperCase())) {
+                        String args = (commande.getArgs() != null && !commande.getArgs().equalsIgnoreCase("")) ? (" + " + commande.getArgs()) : ("");
+                        String desc = (commande.getDesc() != null && !commande.getDesc().equalsIgnoreCase("")) ? (commande.getDesc()) : ("");
+                        this.sendMessage("<u>" + commande.getName() + args + "</u> - " + desc);
                     }
                 }
             }
@@ -165,13 +165,12 @@ public class CommandAdmin extends AdminUser {
             SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(perso.getCurMap(), perso.getId());
             World.world.unloadPerso(perso);
             ((PlayerData) DatabaseManager.get(PlayerData.class)).load(perso.getId());
-            World.world.ReassignAccountToChar(perso.getAccount());
             String str = "Le joueur " + perso.getName() + " a ete reinitialise de ces variables.";
             this.sendMessage(str);
             return;
         } else if (command.equalsIgnoreCase("ANAME")) {
             infos = msg.split(" ", 2);
-            String prefix = "<b><a href='asfunction:onHref,ShowPlayerPopupMenu," + this.getPlayer().getName() + "'>[" + this.getPlayer().getGroupe().getName() + "] " + this.getPlayer().getName() + "</a></b>";
+            String prefix = "<b><a href='asfunction:onHref,ShowPlayerPopupMenu," + this.getPlayer().getName() + "'>[" + this.getPlayer().getGroup().getName() + "] " + this.getPlayer().getName() + "</a></b>";
             if(infos.length > 1) {
                 String suffix = infos[1];
                 if (suffix.contains("<") && (!suffix.contains(">") || !suffix.contains("</"))) // S'il n'y a pas de balise fermante
@@ -737,7 +736,7 @@ public class CommandAdmin extends AdminUser {
                 if (infos.length > 1)//Si un nom de perso est specifie
                 {
                     Player perso = World.world.getPlayerByName(infos[1]);
-                    if (perso.getGroupe() != null) {
+                    if (perso.getGroup() != null) {
                         String str = "Il est interdit d'emprisonner un personnage ayant des droits.";
                         this.sendMessage(str);
                         return;
@@ -1265,13 +1264,13 @@ public class CommandAdmin extends AdminUser {
                     if (perso != null) {
                         if (persos.equalsIgnoreCase(""))
                             persos += perso.getName()
-                                    + ((perso.getGroupe() != null) ? ":"
-                                    + perso.getGroupe().getName() : "");
+                                    + ((perso.getGroup() != null) ? ":"
+                                    + perso.getGroup().getName() : "");
                         else
                             persos += ", "
                                     + perso.getName()
-                                    + ((perso.getGroupe() != null) ? ":"
-                                    + perso.getGroupe().getName() : "");
+                                    + ((perso.getGroup() != null) ? ":"
+                                    + perso.getGroup().getName() : "");
                     }
                 }
                 if (!persos.equalsIgnoreCase("")) {
@@ -1406,73 +1405,6 @@ public class CommandAdmin extends AdminUser {
             this.sendMessage("Vous avez supprimé le métier "
                     + job + " sur le personnage " + perso.getName() + ".");
             return;
-        } else if (command.equalsIgnoreCase("ADDTRIGGER")) {
-            String args = "";
-            try {
-                args = infos[1];
-            } catch (Exception e) {
-                // ok
-            }
-
-            if (args.equals("")) {
-                String str = "Valeur invalide.";
-                this.sendMessage(str);
-                return;
-            }
-
-            this.getPlayer().getCurCell().addOnCellStopAction(0, args, "-1", null);
-            boolean success = ((ScriptedCellData) DatabaseManager.get(ScriptedCellData.class)).update(this.getPlayer().getCurMap().getId(), this.getPlayer().getCurCell().getId(), 0, 1, args, "-1");
-            String str = "";
-            if (success)
-                str = "Le trigger a ete ajoute.";
-            else
-                str = "Le trigger n'a pas ete ajoute.";
-            this.sendMessage(str);
-            return;
-        } else if (command.equalsIgnoreCase("DELTRIGGER")) {
-            int cellID = -1;
-            try {
-                cellID = Integer.parseInt(infos[1]);
-            } catch (Exception e) {
-                // ok
-            }
-
-            if (cellID == -1
-                    || this.getPlayer().getCurMap().getCase(cellID) == null) {
-                String str = "CellID invalide.";
-                this.sendMessage(str);
-                return;
-            }
-            this.getPlayer().getCurMap().getCase(cellID).clearOnCellAction();
-            boolean success = ((ScriptedCellData) DatabaseManager.get(ScriptedCellData.class)).delete(this.getPlayer().getCurMap().getId(), cellID);
-            String str = "";
-            if (success)
-                str = "Le trigger a ete retire.";
-            else
-                str = "Le trigger n'a pas ete retire.";
-            this.sendMessage(str);
-            return;
-        } else if (command.equalsIgnoreCase("SAVETHAT")) {
-            this.getPlayer().thatMap = this.getPlayer().getCurMap().getId();
-            this.getPlayer().thatCell = this.getPlayer().getCurCell().getId();
-            this.sendMessage("Vous avez sauvegarde la map "
-                    + this.getPlayer().thatMap
-                    + " et la cellule "
-                    + this.getPlayer().thatCell + ".");
-            return;
-        } else if (command.equalsIgnoreCase("APPLYTHAT")) {
-            if (this.getPlayer().thatMap == -1 || this.getPlayer().thatCell == -1) {
-                this.sendMessage("Impossible d'ajouter le trigger, veuillez utiliser la commande SAVETHAT avant.");
-                return;
-            }
-            this.getPlayer().getCurCell().addOnCellStopAction(0, this.getPlayer().thatMap + "," + this.getPlayer().thatCell, "-1", null);
-            ((ScriptedCellData) DatabaseManager.get(ScriptedCellData.class)).update(this.getPlayer().getCurMap().getId(), this.getPlayer().getCurCell().getId(), 0, 1, this.getPlayer().thatMap + "," + this.getPlayer().thatCell, "-1");
-            this.sendMessage("REPLACE INTO `scripted_cells` VALUES ('" + this.getPlayer().getCurMap().getId() + "', '" + this.getPlayer().getCurCell().getId() + "','0','1','" + this.getPlayer().thatMap + "," + this.getPlayer().thatCell + "','-1');" +
-                    "\nVous avez applique le trigger.");
-            this.getPlayer().thatMap = -1;
-            this.getPlayer().thatCell = -1;
-
-            return;
         } else if (command.equalsIgnoreCase("STRIGGER")) {
             this.getPlayer().thatMap = this.getPlayer().getCurMap().getId();
             this.getPlayer().thatCell = this.getPlayer().getCurCell().getId();
@@ -1480,20 +1412,6 @@ public class CommandAdmin extends AdminUser {
                     + this.getPlayer().thatMap
                     + " et la cellule "
                     + this.getPlayer().thatCell + ".");
-            return;
-        } else if (command.equalsIgnoreCase("APTRIGGER")) {
-            if (this.getPlayer().thatMap == -1
-                    || this.getPlayer().thatCell == -1) {
-                this.sendMessage("Impossible d'ajouter le trigger, veuillez utiliser la commande STRIGGER avant.");
-                return;
-            }
-            World.world.getMap((short) this.getPlayer().thatMap).getCase(this.getPlayer().thatCell).addOnCellStopAction(0, this.getPlayer().getCurMap().getId()
-                    + "," + this.getPlayer().getCurCell().getId(), "-1", null);
-            ((ScriptedCellData) DatabaseManager.get(ScriptedCellData.class)).update(this.getPlayer().thatMap, this.getPlayer().thatCell, 0, 1, this.getPlayer().getCurMap().getId()
-                    + "," + this.getPlayer().getCurCell().getId(), "-1");
-            this.getPlayer().thatMap = -1;
-            this.getPlayer().thatCell = -1;
-            this.sendMessage("Vous avez applique le trigger.");
             return;
         } else if (command.equalsIgnoreCase("INFOS")) {
             long uptime = System.currentTimeMillis() - Config.startTime;
@@ -1702,7 +1620,8 @@ public class CommandAdmin extends AdminUser {
             try {
                 count = Integer.parseInt(infos[1]);
                 if (count < 1) count = 1;
-                if (count > World.world.getExpLevelSize()) count = World.world.getExpLevelSize();
+                ExperienceTables.ExperienceTable xpTable = World.world.getExperiences().players;
+                if (count > xpTable.maxLevel()) count = xpTable.maxLevel();
 
                 Player player = this.getPlayer();
 
@@ -1919,11 +1838,15 @@ public class CommandAdmin extends AdminUser {
                     World.world.getNpcAnswers().clear();
                     DatabaseManager.get(NpcAnswerData.class).loadFully();
                     // Reload lua
-                    NpcScriptVM.getInstance().safeLoadData();
+                    DataScriptVM.getInstance().safeLoadData();
                     break;
+                case "SCRIPTS":
+                    // Reload lua
+                    DataScriptVM.getInstance().safeLoadData();
                 case "ADMIN":
-                    Command.reload();
-                    Group.reload();
+                    // FIXME Scripts
+                    //  Command.reload();
+                    //  Group.reload();
                     Config.gameServer.getClients().stream().filter(client -> client != null && client.getPlayer() != null).forEach(client -> ((PlayerData) DatabaseManager.get(PlayerData.class)).reloadGroup(client.getPlayer()));
                     break;
                 case "MAPS":
@@ -2914,13 +2837,13 @@ public class CommandAdmin extends AdminUser {
                 return;
             }
 
-            Group group = Group.getGroupeById(id);
+            Group group = Group.byId(id);
 
             if(id == -1) {
                 if (infos.length > 2) {
                     Player player = World.world.getPlayerByName(infos[2]);
                     if (player != null) {
-                        player.setGroupe(null, true);
+                        player.setGroupe(-1, true);
                         player.send("BAIC");
                         ((PlayerData) DatabaseManager.get(PlayerData.class)).updateGroupe(id, infos[2]);
                         this.sendSuccessMessage("The player " + infos[2] + " has been remove to his group admin successfully.");
@@ -2938,7 +2861,7 @@ public class CommandAdmin extends AdminUser {
                 if (infos.length > 2) {
                     Player player = World.world.getPlayerByName(infos[2]);
                     if (player != null) {
-                        player.setGroupe(group, true);
+                        player.setGroupe(group.getId(), true);
                         player.send("BAIO");
                         ((PlayerData) DatabaseManager.get(PlayerData.class)).updateGroupe(id, infos[2]);
                         this.sendSuccessMessage("The player " + infos[2] + " has been assigned to group " + group.getName() + " successfully.");
@@ -2964,7 +2887,7 @@ public class CommandAdmin extends AdminUser {
 
             Group g = null;
             if (groupe > 0)
-                g = Group.getGroupeById(groupe);
+                g = Group.byId(groupe);
 
             if (g == null) {
                 String str = "Le groupe est invalide.";
@@ -2978,10 +2901,10 @@ public class CommandAdmin extends AdminUser {
                 this.sendMessage("\nCommandes disponibles pour le groupe "
                         + g.getName() + " :\n");
                 for (Command co : c) {
-                    String args = (co.getArguments()[1] != null && !co.getArguments()[1].equalsIgnoreCase("")) ? (" + " + co.getArguments()[1]) : ("");
-                    String desc = (co.getArguments()[2] != null && !co.getArguments()[2].equalsIgnoreCase("")) ? (co.getArguments()[2]) : ("");
+                    String args = (co.getArgs() != null && !co.getArgs().equalsIgnoreCase("")) ? (" + " + co.getArgs()) : ("");
+                    String desc = (co.getDesc() != null && !co.getDesc().equalsIgnoreCase("")) ? (co.getDesc()) : ("");
                     this.sendMessage("<u>"
-                            + co.getArguments()[0]
+                            + co.getName()
                             + args
                             + "</u> - "
                             + desc);
@@ -2990,11 +2913,11 @@ public class CommandAdmin extends AdminUser {
                 this.sendMessage("\nCommandes recherches pour le groupe "
                         + g.getName() + " :\n");
                 for (Command co : c) {
-                    if (co.getArguments()[0].contains(cmd.toUpperCase())) {
-                        String args = (co.getArguments()[1] != null && !co.getArguments()[1].equalsIgnoreCase("")) ? (" + " + co.getArguments()[1]) : ("");
-                        String desc = (co.getArguments()[2] != null && !co.getArguments()[2].equalsIgnoreCase("")) ? (co.getArguments()[2]) : ("");
+                    if (co.getName().contains(cmd.toUpperCase())) {
+                        String args = (co.getArgs() != null && !co.getArgs().equalsIgnoreCase("")) ? (" + " + co.getArgs()) : ("");
+                        String desc = (co.getDesc() != null && !co.getDesc().equalsIgnoreCase("")) ? (co.getDesc()) : ("");
                         this.sendMessage("<u>"
-                                + co.getArguments()[0]
+                                + co.getName()
                                 + args
                                 + "</u> - "
                                 + desc);

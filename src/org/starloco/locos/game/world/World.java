@@ -9,8 +9,6 @@ import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.area.map.MapData;
 import org.starloco.locos.area.map.entity.*;
 import org.starloco.locos.area.map.entity.InteractiveObject.InteractiveObjectTemplate;
-import org.starloco.locos.area.map.labyrinth.Minotoror;
-import org.starloco.locos.area.map.labyrinth.PigDragon;
 import org.starloco.locos.client.Account;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.client.other.Stats;
@@ -42,7 +40,7 @@ import org.starloco.locos.object.ObjectTemplate;
 import org.starloco.locos.object.entity.Fragment;
 import org.starloco.locos.object.entity.SoulStone;
 import org.starloco.locos.guild.Guild;
-import org.starloco.locos.script.NpcScriptVM;
+import org.starloco.locos.script.DataScriptVM;
 import org.starloco.locos.util.TimerWaiter;
 
 import java.text.SimpleDateFormat;
@@ -64,7 +62,9 @@ public class World {
     private final Map<Integer, GameMap>    maps        = new ConcurrentHashMap<>();
     private final Map<Integer, MapData>    mapsData    = new ConcurrentHashMap<>();
     private final Map<Integer, GameObject> objects     = new ConcurrentHashMap<>();
-    private final Map<Integer, ExpLevel> experiences = new HashMap<>();
+
+    private volatile ExperienceTables experiences;
+
     private final Map<Integer, Spell> spells = new HashMap<>();
     private final Map<Integer, ObjectTemplate> ObjTemplates = new HashMap<>();
     private final Map<Integer, Monster> MobTemplates = new HashMap<>();
@@ -125,11 +125,12 @@ public class World {
         accounts.put(account.getId(), account);
     }
 
-    public Account getAccount(int id) {
+    public Account ensureAccountLoaded(int id) {
         Account account = accounts.get(id);
-        //if(account == null)
-        //    account = ((AccountData) DatabaseManager.get(AccountData.class)).load(id);
-        return account;
+        if(account == null) {
+            ((AccountData) DatabaseManager.get(AccountData.class)).load(id);
+        }
+        return accounts.get(id);
     }
 
     public Collection<Account> getAccounts() {
@@ -187,13 +188,13 @@ public class World {
         // Make sure the subArea knows of that map
         Optional.ofNullable(subAreas.get(map.subAreaID)).ifPresent(s -> s.addMapID(map.id));
     }
+    public Optional<MapData> getMapData(int id) {
+        return Optional.ofNullable(mapsData.get(id));
+    }
+
     public GameMap getMap(int id) {
-        try {
-            // Atomically get or load map
-            return maps.computeIfAbsent(id, mapID -> new GameMap(mapsData.get(mapID)));
-        }catch (NullPointerException ignored){
-            return null;
-        }
+        // Atomically get or load map
+        return maps.computeIfAbsent(id, mapID -> new GameMap(mapsData.get(mapID)));
     }
 
     //endregion
@@ -281,7 +282,7 @@ public class World {
     public void loadScripts() {
         logger.debug("Loading script engine");
         try {
-            NpcScriptVM.init();
+            DataScriptVM.init();
         } catch (Exception e) {
             logger.error("init NpcScriptVM failed", e);
             throw new RuntimeException("init NpcScriptVM failed", e);
@@ -295,12 +296,6 @@ public class World {
         DatabaseManager.get(ServerData.class).loadFully();
         logger.debug("The reset of the logged players were done successfully.");
 
-        DatabaseManager.get(CommandData.class).loadFully();
-        logger.debug("The administration commands were loaded successfully.");
-
-        DatabaseManager.get(GroupData.class).loadFully();
-        logger.debug("The administration groups were loaded successfully.");
-
         DatabaseManager.get(PubData.class).loadFully();
         logger.debug("The pubs were loaded successfully.");
 
@@ -309,9 +304,6 @@ public class World {
 
         DatabaseManager.get(ExtraMonsterData.class).loadFully();
         logger.debug("The extra-monsters were loaded successfully.");
-
-        DatabaseManager.get(ExperienceData.class).loadFully();
-        logger.debug("The experiences were loaded successfully.");
 
         DatabaseManager.get(SpellData.class).loadFully();
         logger.debug("The spells were loaded successfully.");
@@ -380,8 +372,8 @@ public class World {
         DatabaseManager.get(ScriptedCellData.class).loadFully();
         logger.debug("The scripted cells were loaded successfully.");
 
-        DatabaseManager.get(EndFightActionData.class).loadFully();
-        logger.debug("The end fight actions were loaded successfully.");
+//        DatabaseManager.get(EndFightActionData.class).loadFully();
+//        logger.debug("The end fight actions were loaded successfully.");
 
         DatabaseManager.get(NpcData.class).loadFully();
         logger.debug("The placement of non-player character were done successfully.");
@@ -397,11 +389,11 @@ public class World {
         DatabaseManager.get(AnimationData.class).loadFully();
         logger.debug("The animations were loaded successfully.");
 
-        DatabaseManager.get(AccountData.class).loadFully();
-        logger.debug("The accounts were loaded successfully.");
+//        DatabaseManager.get(AccountData.class).loadFully();
+//        logger.debug("The accounts were loaded successfully.");
 
-        DatabaseManager.get(PlayerData.class).loadFully();
-        logger.debug("The players were loaded successfully.");
+        // DatabaseManager.get(PlayerData.class).loadFully();
+        // logger.debug("The players were loaded successfully.");
 
         DatabaseManager.get(GuildMemberData.class).loadFully();
         logger.debug("The guilds and guild members were loaded successfully.");
@@ -415,18 +407,18 @@ public class World {
         DatabaseManager.get(TutorialData.class).loadFully();
         logger.debug("The tutorials were loaded successfully.");
 
-        DatabaseManager.get(BaseMountParkData.class).loadFully();
-        logger.debug("The statics parks of the mounts were loaded successfully.");
-        DatabaseManager.get(MountParkData.class).loadFully();
-        logger.debug("The dynamics parks of the mounts were loaded successfully.");
+//        DatabaseManager.get(BaseMountParkData.class).loadFully();
+//        logger.debug("The statics parks of the mounts were loaded successfully.");
+//        DatabaseManager.get(MountParkData.class).loadFully();
+//        logger.debug("The dynamics parks of the mounts were loaded successfully.");
 
         DatabaseManager.get(CollectorData.class).loadFully();
         logger.debug("The collectors were loaded successfully.");
 
-        DatabaseManager.get(BaseHouseData.class).loadFully();
-        logger.debug("The statics houses were loaded successfully.");
-        DatabaseManager.get(HouseData.class).loadFully();
-        logger.debug("The dynamics houses were loaded successfully.");
+//        DatabaseManager.get(BaseHouseData.class).loadFully();
+//        logger.debug("The statics houses were loaded successfully.");
+//        DatabaseManager.get(HouseData.class).loadFully();
+//        logger.debug("The dynamics houses were loaded successfully.");
 
         DatabaseManager.get(BaseTrunkData.class).loadFully();
         logger.debug("The statics trunks were loaded successfully.");
@@ -454,19 +446,19 @@ public class World {
         DatabaseManager.get(RuneData.class).loadFully();
         logger.debug("The runes were loaded successfully.");
 
-        loadExtraMonster();
-        logger.debug("The adding of extra-monsters on the maps were done successfully.");
+//        loadExtraMonster();
+//        logger.debug("The adding of extra-monsters on the maps were done successfully.");
 
-        loadMonsterOnMap();
-        logger.debug("The adding of mobs groups on the maps were done successfully.");
+//        loadMonsterOnMap();
+//        logger.debug("The adding of mobs groups on the maps were done successfully.");
 
-        DatabaseManager.get(GangsterData.class).loadFully();
-        logger.debug("The adding of gangsters on the maps were done successfully.");
+//        DatabaseManager.get(GangsterData.class).loadFully();
+//        logger.debug("The adding of gangsters on the maps were done successfully.");
 
-        logger.debug("Initialization of the dungeons : Dragon Pig.");
-        PigDragon.initialize();
-        logger.debug("Initialization of the dungeons : Labyrinth of the Minotoror.");
-        Minotoror.initialize();
+//        logger.debug("Initialization of the dungeons : Dragon Pig.");
+//        PigDragon.initialize();
+//        logger.debug("Initialization of the dungeons : Labyrinth of the Minotoror.");
+//        Minotoror.initialize();
 
         // Load auction
         DatabaseManager.get(AuctionData.class).loadFully();
@@ -678,15 +670,13 @@ public class World {
         return factor;
     }
 
-    public int getExpLevelSize() {
-        return experiences.size();
+    public ExperienceTables getExperiences() {
+        return experiences;
     }
 
-    public void addExpLevel(int lvl, ExpLevel exp) {
-        experiences.put(lvl, exp);
+    public void setExperiences(ExperienceTables t) {
+        this.experiences = t;
     }
-
-
 
     public void addNPCQuestion(NpcQuestion quest) {
         questions.put(quest.getId(), quest);
@@ -747,46 +737,6 @@ public class World {
         players.remove(perso.getId());
     }
 
-    public long getPersoXpMin(int _lvl) {
-        if (_lvl > getExpLevelSize())
-            _lvl = getExpLevelSize();
-        if (_lvl < 1)
-            _lvl = 1;
-        return experiences.get(_lvl).perso;
-    }
-
-    public long getPersoXpMax(int _lvl) {
-        if (_lvl >= getExpLevelSize())
-            _lvl = (getExpLevelSize() - 1);
-        if (_lvl <= 1)
-            _lvl = 1;
-        return experiences.get(_lvl + 1).perso;
-    }
-
-    public long getTourmenteursXpMax(int _lvl) {
-        if (_lvl >= getExpLevelSize())
-            _lvl = (getExpLevelSize() - 1);
-        if (_lvl <= 1)
-            _lvl = 1;
-        return experiences.get(_lvl + 1).tourmenteurs;
-    }
-
-    public long getBanditsXpMin(int _lvl) {
-        if (_lvl > getExpLevelSize())
-            _lvl = getExpLevelSize();
-        if (_lvl < 1)
-            _lvl = 1;
-        return experiences.get(_lvl).bandits;
-    }
-
-    public long getBanditsXpMax(int _lvl) {
-        if (_lvl >= getExpLevelSize())
-            _lvl = (getExpLevelSize() - 1);
-        if (_lvl <= 1)
-            _lvl = 1;
-        return experiences.get(_lvl + 1).bandits;
-    }
-
     public void addSort(Spell sort) {
         spells.put(sort.getId(), sort);
     }
@@ -842,9 +792,8 @@ public class World {
             return "Les Brâkmarien sont actuellement en minorité, je peux donc te proposer de rejoindre les rangs Brâkmarien ?";
         else if (demon > ange)
             return "Les Bontarien sont actuellement en minorité, je peux donc te proposer de rejoindre les rangs Bontarien ?";
-        else if (demon == ange)
+        else
             return " Aucune milice est actuellement en minorité, je peux donc te proposer de rejoindre aléatoirement une milice ?";
-        return "Undefined";
     }
 
 
@@ -879,10 +828,6 @@ public class World {
 
     public Tutorial getTutorial(int id) {
         return Tutorial.get(id);
-    }
-
-    public ExpLevel getExpLevel(int lvl) {
-        return experiences.get(lvl);
     }
 
     public InteractiveObjectTemplate getIOTemplate(int id) {
@@ -1022,17 +967,8 @@ public class World {
         return -1;
     }
 
-    public long getGuildXpMax(int _lvl) {
-        if (_lvl >= 200)
-            _lvl = 199;
-        if (_lvl <= 1)
-            _lvl = 1;
-        return experiences.get(_lvl + 1).guilde;
-    }
-
-    public void ReassignAccountToChar(Account account) {
-        ((PlayerData) DatabaseManager.get(PlayerData.class)).loadByAccountId(account.getId());
-        players.values().stream().filter(player -> player.getAccID() == account.getId()).forEach(player -> player.setAccount(account));
+    public long getGuildXpMax(int lvl) {
+        return experiences.guilds.maxXpAt(lvl);
     }
 
     public int getZaapCellIdByMapId(int i) {
@@ -1761,6 +1697,7 @@ public class World {
                         .forEach(player -> player.sendMessage(player.getLang().trans(key, str))),
                 0, TimeUnit.SECONDS);
     }
+
 
     public static class Drop {
         private final int objectId;

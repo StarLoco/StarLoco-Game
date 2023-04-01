@@ -20,20 +20,19 @@ import org.classdump.luna.runtime.LuaFunction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.starloco.locos.game.world.World.Couple;
-import org.starloco.locos.object.GameObject;
+import org.starloco.locos.util.Pair;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 public class ScriptVM {
     public static final Logger logger = LoggerFactory.getLogger("Script");
+
     protected final Table env;
     protected final StateContext state;
     protected final ChunkLoader loader;
@@ -55,6 +54,7 @@ public class ScriptVM {
         TableLib.installInto(state, env);
 
         this.env.rawset("JLogF", new LogF());
+        this.env.rawset("loadDir", new LoadDir());
         this.loadData();
     }
 
@@ -62,7 +62,7 @@ public class ScriptVM {
         runFile(Paths.get("scripts", "Common.lua"));
     }
 
-    protected void runDirectory(Path path) throws IOException, LoaderException, CallException, CallPausedException, InterruptedException {
+    protected void runDirectory(Path path) {
         try (Stream<Path> paths = Files.walk(path)) {
             Iterator<Path> it = paths
                 .filter(Files::isRegularFile)
@@ -71,7 +71,7 @@ public class ScriptVM {
                 this.runFile(it.next());
             }
         } catch(Exception e){
-            e.printStackTrace();
+            ScriptVM.logger.error("cannot load directory", e);
         }
     }
 
@@ -112,6 +112,21 @@ public class ScriptVM {
         }
     }
 
+    class LoadDir extends AbstractLibFunction {
+        @Override
+        protected String name() { return "RequireDir"; }
+
+        @Override
+        public void invoke(ExecutionContext context, ArgumentIterator args) {
+            Path path = Paths.get("scripts", args.nextStrictString().toString());
+
+            runDirectory(path);
+
+            context.getReturnBuffer().setTo(true);
+        }
+    }
+
+
     public static int rawOptionalInt(Table v, Object key, int val) {
         Object n = v.rawget(key);
         if(n==null) return val;
@@ -126,12 +141,40 @@ public class ScriptVM {
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> ArrayList<T> fromLuaTable(Table t) {
+    public static <T> ArrayList<T> listFromLuaTable(Table t) {
         ArrayList<T> out = new ArrayList<>();
 
         long len = t.rawlen();
         for(int i=1;i<=len;i++){
             out.add((T)t.rawget(i));
+        }
+
+        return out;
+    }
+
+    public static List<Pair<Integer,Integer>> listOfIntPairs(Table t) {
+        if(t == null) return null;
+
+        long len = t.rawlen();
+        List<Pair<Integer,Integer>> out = new LinkedList<>();
+
+        for(long i=0;i<len;i++){
+            Table pair = (Table)t.rawget(i+1);
+            out.add(new Pair<>(rawInt(pair, 1L), rawInt(pair, 2L)));
+        }
+
+        return out;
+    }
+
+    public static List<String> listOfString(Table t) {
+        if(t == null) return null;
+
+        long len = t.rawlen();
+        List<String> out = new LinkedList<>();
+
+        for(long i=0; i<len; i++) {
+            ByteString bs = (ByteString)t.rawget(i+1);
+            out.add(bs.toString());
         }
 
         return out;
@@ -163,6 +206,19 @@ public class ScriptVM {
         return out;
     }
 
+    public static long[] longArrayFromLuaTable(Table t) {
+        if(t == null) return null;
+
+        long len = t.rawlen();
+        long[] out = new long[(int)len];
+
+        for(int i=0;i<len;i++){
+            out[i] = (Long)t.rawget(i+1);
+        }
+
+        return out;
+    }
+
     public static Table ItemStack(Couple<Integer,Integer> stack) {
         return new ImmutableTable.Builder()
             .add("itemID", stack.first)
@@ -173,5 +229,17 @@ public class ScriptVM {
         int id = rawInt(t, "itemID");
         int qua = rawInt(t, "quantity");
         return new Couple<>(id, qua);
+    }
+
+    public static <K,V> Map<K,V> mapFromScript(Table t, Function<Object,K> keyMapper, Function<Object,V> valMapper) {
+        Map<K,V> out = new HashMap<>();
+
+        for(Object key = t.initialKey(); key != null; key = t.successorKeyOf(key)) {
+            Object val = t.rawget(key);
+
+            out.put(keyMapper.apply(key), valMapper.apply(val));
+        }
+
+        return out;
     }
 }

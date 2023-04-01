@@ -7,7 +7,6 @@ import org.starloco.locos.database.DatabaseManager;
 import org.starloco.locos.database.data.FunctionDAO;
 import org.starloco.locos.database.data.game.BankData;
 import org.starloco.locos.game.world.World;
-import org.starloco.locos.kernel.Config;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -21,50 +20,25 @@ public class AccountData extends FunctionDAO<Account> {
     
     @Override
     public void loadFully() {
-        ResultSet result = null;
-
-        try {
-            result = super.getData("SELECT * FROM " + getTableName() + ";");
-
-            while (result.next()) {
-                String pseudo = result.getString("pseudo"), lastDate = result.getString("lastConnectionDate");
-
-                if(pseudo == null || pseudo.isEmpty())
-                    continue;
-                Account a = new Account(result.getInt("guid"), result.getString("account").toLowerCase(), result.getString("pseudo"), result.getString("reponse"), (result.getInt("banned") == 1), result.getString("lastIP"), lastDate, result.getString("friends"), result.getString("enemy"), result.getInt("points"), result.getLong("subscribe"), result.getLong("muteTime"), result.getString("mutePseudo"), result.getString("lastVoteIP"), result.getString("heurevote"));
-                World.world.addAccount(a);
-                ((BankData) DatabaseManager.get(BankData.class)).load(a.getId());
-            }
-        } catch (Exception e) {
-            super.sendError(e);
-        } finally {
-            close(result);
-        }
+        throw new NotImplementedException("It's not allowed to load all accounts");
     }
 
     @Override
     public Account load(int id) {
-        ResultSet result = null;
-        Account account = null;
-        try {
-            result = super.getData("SELECT * FROM " + getTableName() + " WHERE guid = " + id);
+        try(ResultSet result = super.getData("SELECT * FROM " + getTableName() + " WHERE guid = " + id)) {
+            if(!result.next()) return null;
+            Account acc = new Account(result.getInt("guid"), result.getString("account").toLowerCase(), result.getString("pseudo"), result.getString("reponse"), (result.getInt("banned") == 1), result.getString("lastIP"), result.getString("lastConnectionDate"), result.getString("friends"), result.getString("enemy"), result.getInt("points"), result.getLong("subscribe"), result.getLong("muteTime"), result.getString("mutePseudo"), result.getString("lastVoteIP"), result.getString("heurevote"));
+            World.world.addAccount(acc);
+            ((BankData) DatabaseManager.get(BankData.class)).load(acc.getId());
 
-            while (result.next()) {
-                account = World.world.getAccount(result.getInt("guid"));
+            // Ensure players are loaded too
+            ((PlayerData) DatabaseManager.get(PlayerData.class)).loadByAccountId(acc.getId());
 
-                if (account == null || !account.isOnline()) {
-                    Account acc = new Account(result.getInt("guid"), result.getString("account").toLowerCase(), result.getString("pseudo"), result.getString("reponse"), (result.getInt("banned") == 1), result.getString("lastIP"), result.getString("lastConnectionDate"), result.getString("friends"), result.getString("enemy"), result.getInt("points"), result.getLong("subscribe"), result.getLong("muteTime"), result.getString("mutePseudo"), result.getString("lastVoteIP"), result.getString("heurevote"));
-                    World.world.addAccount(acc);
-                    ((BankData) DatabaseManager.get(BankData.class)).load(acc.getId());
-                    World.world.ReassignAccountToChar(acc);
-                }
-            }
+            return acc;
         } catch (Exception e) {
             super.sendError(e);
-        } finally {
-            close(result);
+            return null;
         }
-        return account;
     }
 
     @Override
@@ -127,7 +101,7 @@ public class AccountData extends FunctionDAO<Account> {
         try {
             result = super.getData("SELECT guid, heurevote, lastVoteIP FROM " + getTableName() + ";");
             while (result.next()) {
-                a = World.world.getAccount(result.getInt("guid"));
+                a = World.world.ensureAccountLoaded(result.getInt("guid"));
                 if (a == null)
                     continue;
                 a.updateVote(result.getString("heurevote"), result.getString("lastVoteIP"));

@@ -1,3 +1,4 @@
+
 package org.starloco.locos.area.map.entity;
 
 import org.starloco.locos.client.Account;

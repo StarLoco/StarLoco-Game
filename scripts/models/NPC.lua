@@ -1,7 +1,4 @@
-require("Dungeon")
-
----@type table<number, Npc>
-NPCS = {}
+require("./data/Dungeons")
 
 ---@class Npc
 ---@field id number
@@ -32,11 +29,6 @@ setmetatable(Npc, {
         self.sales = {}
         self.barters = {}
 
-        -- Register the Npc in the global dict
-        if NPCS[self.id] ~= nil then
-            JLogF("Overriding Npc #{}", self.id)
-        end
-        NPCS[self.id] = self
         return self
     end,
 })

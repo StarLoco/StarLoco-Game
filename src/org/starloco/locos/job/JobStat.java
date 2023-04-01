@@ -4,6 +4,7 @@ import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.area.map.entity.InteractiveObject;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.common.SocketManager;
+import org.starloco.locos.database.data.game.ExperienceTables;
 import org.starloco.locos.game.action.GameAction;
 import org.starloco.locos.game.world.World;
 
@@ -93,7 +94,8 @@ public class JobStat {
         int exLvl = this.lvl;
         this.xp += xp;
 
-        while (this.xp >= World.world.getExpLevel(this.lvl + 1).metier && this.lvl < 100)
+        ExperienceTables.ExperienceTable xpTable = World.world.getExperiences().jobs;
+        while (this.xp >= xpTable.maxXpAt(this.lvl) && this.lvl < xpTable.maxLevel())
             levelUp(P, false);
 
         if (this.lvl > exLvl && P.isOnline()) {
@@ -109,7 +111,8 @@ public class JobStat {
     }
 
     public String getXpString(String s) {
-        return String.valueOf(World.world.getExpLevel(this.lvl).metier) + s + this.xp + s + World.world.getExpLevel((this.lvl < 100 ? this.lvl + 1 : this.lvl)).metier;
+        ExperienceTables.ExperienceTable xpTable = World.world.getExperiences().jobs;
+        return xpTable.minXpAt(this.lvl) + s + this.xp + s + xpTable.maxXpAt(this.lvl);
     }
 
     public void levelUp(Player P, boolean send) {
@@ -117,7 +120,7 @@ public class JobStat {
         this.posActions = JobConstant.getPosActionsToJob(this.template.getId(), this.lvl);
 
         if (send) {
-            //on cr�er la listes des JobStats a envoyer (Seulement celle ci)
+            //on creer la listes des JobStats a envoyer (Seulement celle ci)
             ArrayList<JobStat> list = new ArrayList<>();
             list.add(this);
             SocketManager.GAME_SEND_JS_PACKET(P, list);

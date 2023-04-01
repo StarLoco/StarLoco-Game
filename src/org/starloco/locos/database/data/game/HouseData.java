@@ -33,7 +33,7 @@ public class HouseData extends FunctionDAO<House> {
                 House house = World.world.getHouse(id);
                 if (house == null)
                     continue;
-                if (owner != 0 && World.world.getAccount(owner) == null) {
+                if (owner != 0 && World.world.ensureAccountLoaded(owner) == null) {
                     (new Exception("La maison " + id
                             + " a un propriétaire inexistant.")).printStackTrace();
                 }

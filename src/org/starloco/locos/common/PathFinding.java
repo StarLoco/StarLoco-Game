@@ -176,7 +176,7 @@ public class PathFinding {
                     if(_case.getId() == 282 && ((_case.getPlayers() != null && _case.getPlayers().size() > 0) || perso.getSexe() == 1))
                         return "stop:" + oldPos;
                 }
-                if (_case.getOnCellStopAction())
+                if (map.data.cellHasMoveEndActions(_case.getId()))
                     return "stop:" + lastPos;
                 if (map.isAggroByMob(perso, lastPos))
                     return "stop:" + lastPos;

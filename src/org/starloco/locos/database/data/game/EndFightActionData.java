@@ -8,7 +8,6 @@ import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.Main;
 import org.starloco.locos.other.Action;
 
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -27,7 +26,7 @@ public class EndFightActionData extends FunctionDAO<Object> {
                 GameMap map = World.world.getMap(result.getShort("map"));
                 if (map == null)
                     continue;
-                map.addEndFightAction(result.getInt("fighttype"), new Action(result.getInt("action"), result.getString("args"), result.getString("cond"), null));
+                map.addEndFightAction(result.getInt("fighttype"), new Action(result.getInt("action"), result.getString("args"), result.getString("cond")));
             }
         } catch (SQLException e) {
             super.sendError(e);

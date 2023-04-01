@@ -88,7 +88,7 @@ public class Main {
 
 	        if (!Config.debug) {
 	            ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
-	            root.setLevel(Level.OFF);
+	            root.setLevel(Level.ERROR);
 	        }
 
 	        final List<Updatable> updatables = Arrays.asList(

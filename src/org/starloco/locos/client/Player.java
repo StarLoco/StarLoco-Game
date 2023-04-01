@@ -17,6 +17,7 @@ import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.database.DatabaseManager;
 import org.starloco.locos.database.data.game.BankData;
 import org.starloco.locos.database.data.game.CollectorData;
+import org.starloco.locos.database.data.game.ExperienceTables;
 import org.starloco.locos.database.data.game.GuildMemberData;
 import org.starloco.locos.database.data.login.AccountData;
 import org.starloco.locos.database.data.login.ObjectData;
@@ -114,7 +115,6 @@ public class Player {
     private int _size;
     private int gfxId;
     private int _orientation = 1;
-    private Account account;
     //PDV
     private int _accID;
     private boolean canAggro = true;
@@ -131,7 +131,7 @@ public class Player {
     private String _canaux;
     private Fight fight;
     private boolean away;
-    private GameMap curMap;
+    private GameMap curMap; // Will become mapInstance GUID
     private GameCase curCell;
     private boolean ready = false;
     private boolean isOnline = false;
@@ -220,7 +220,7 @@ public class Player {
     private long regenTime = -1;                                                //-1 veut dire que la personne ne c'est jamais connecte
     private boolean isInPrivateArea = false;
     public Start start;
-    private Group groupe;
+    private int groupId;
     private boolean isInvisible = false;
 
     private Map<Integer, QuestPlayer> questList = new HashMap<>();
@@ -314,7 +314,7 @@ public class Player {
         this.id = id;
         this.noall = noall;
         this.name = name;
-        this.groupe = Group.getGroupeById(groupe);
+        this.groupId = groupe;
         this.sexe = sexe;
         this.classe = classe;
         this.color1 = color1;
@@ -336,7 +336,6 @@ public class Player {
         this._mountXpGive = mountXp;
         this.stats = new Stats(stats, true, this);
         this._accID = account;
-        this.account = World.world.getAccount(account);
         this._showFriendConnection = seeFriend == 1;
         this.wife = wifeGuid;
         this._metierPublic = false;
@@ -387,15 +386,15 @@ public class Player {
                 this.enteredOnEnnemyFaction = prison;
             }
             this._showWings = this.getAlignment() != 0 && seeAlign == 1;
-            if (curMap == null && World.world.getMap((short) 7411) != null) {
-                this.curMap = World.world.getMap((short) 7411);
+            if (curMap == null && World.world.getMap(7411) != null) {
+                this.curMap = World.world.getMap( 7411);
                 this.curCell = curMap.getCase(311);
-            } else if (curMap == null && World.world.getMap((short) 7411) == null) {
+            } else if (curMap == null && World.world.getMap(7411) == null) {
                 throw new IllegalStateException("Cannot find map 7411");
             } else if (curMap != null) {
                 this.curCell = curMap.getCase(cell);
                 if (curCell == null) {
-                    this.curMap = World.world.getMap((short) 7411);
+                    this.curMap = World.world.getMap( 7411);
                     this.curCell = curMap.getCase(311);
                 }
             }
@@ -510,7 +509,7 @@ public class Player {
 
         this.id = id;
         this.name = name;
-        this.groupe = Group.getGroupeById(groupe);
+        this.groupId = groupe;
         this.sexe = sexe;
         this.classe = classe;
         this.color1 = color1;
@@ -559,7 +558,7 @@ public class Player {
         if (sexe < 0 || sexe > 1)
             return null;
         Player player = new Player(-1, name, -1, sexe, classe, color1, color2, color3, Config.startKamas, ((Config.startLevel - 1)), ((Config.startLevel - 1) * 5), 10000, Config.startLevel,
-                World.world.getPersoXpMin(Config.startLevel), 100, Integer.parseInt(classe
+                World.world.getExperiences().players.minXpAt(Config.startLevel), 100, Integer.parseInt(classe
                 + "" + sexe), (byte) 0, compte.getId(), new HashMap<>(), (byte) 1, (byte) 0, (byte) 0, "*#%!pi$:?",
                 (Config.startMap > 0 ? (short) Config.startMap : Constant.getStartMap(classe)),
                 (Config.startCell > 0 ? (short) Config.startCell : Constant.getStartCell(classe)),
@@ -635,7 +634,7 @@ public class Player {
             mountID = P.getMount().getId();
         }
 
-        Player Clone = new Player(id, P.getName(), (P.getGroupe() != null) ? P.getGroupe().getId() : -1, P.getSexe(), P.getClasse(), P.getColor1(), P.getColor2(), P.getColor3(), P.getLevel(), 100, P.getGfxId(), stats, "", 100, showWings, mountID, alvl, P.getAlignment());
+        Player Clone = new Player(id, P.getName(), (P.getGroup() != null) ? P.getGroup().getId() : -1, P.getSexe(), P.getClasse(), P.getColor1(), P.getColor2(), P.getColor3(), P.getLevel(), 100, P.getGfxId(), stats, "", 100, showWings, mountID, alvl, P.getAlignment());
         Clone.objects.putAll(P.objects);
         Clone.set_isClone(true);
         if (P._onMount) {
@@ -673,12 +672,12 @@ public class Player {
         ((PlayerData) DatabaseManager.get(PlayerData.class)).updateInfos(this);
     }
 
-    public Group getGroupe() {
-        return this.groupe;
+    public Group getGroup() {
+        return Group.byId(this.groupId);
     }
 
-    public void setGroupe(Group groupe, boolean reload) {
-        this.groupe = groupe;
+    public void setGroupe(int groupId, boolean reload) {
+        this.groupId = groupId;
         if (reload)
             ((PlayerData) DatabaseManager.get(PlayerData.class)).updateGroupe(this);
     }
@@ -1194,11 +1193,7 @@ public class Player {
     }
 
     public Account getAccount() {
-        return account;
-    }
-
-    public void setAccount(Account c) {
-        account = c;
+        return World.world.ensureAccountLoaded(_accID);
     }
 
     public int get_spellPts() {
@@ -1754,18 +1749,18 @@ public class Player {
 
     public void OnJoinGame() {
         this._isClone = false;
-        this.account.setCurrentPlayer(this);
+        getAccount().setCurrentPlayer(this);
         this.setOnline(true);
 
-        if (this.account.getGameClient() == null)
+        if (getAccount().getGameClient() == null)
             return;
 
-        GameClient client = this.account.getGameClient();
+        GameClient client = getAccount().getGameClient();
 
         if(Config.modeHeroic) {
             this.alignment = 0;
             Optional<Player> p = new ArrayList<>(World.world.getOnlinePlayers()).stream().filter(p1 -> p1 != null && p1.getAlignment() > 0
-                    && p1.getAccount() != null && p1.getAccount().getCurrentIp().equalsIgnoreCase(account.getCurrentIp()))
+                    && p1.getAccount() != null && p1.getAccount().getCurrentIp().equalsIgnoreCase(getAccount().getCurrentIp()))
                     .findFirst();
             if(p != null) {
                 p.ifPresent(player -> {
@@ -1815,11 +1810,11 @@ public class Player {
             if (obj != null)
                 for (JobStat sm : list)
                     if (sm.getTemplate().isValidTool(obj.getTemplate().getId()))
-                        SocketManager.GAME_SEND_OT_PACKET(account.getGameClient(), sm.getTemplate().getId());
+                        SocketManager.GAME_SEND_OT_PACKET(getAccount().getGameClient(), sm.getTemplate().getId());
         }
 
         SocketManager.GAME_SEND_ALIGNEMENT(client, alignment);
-        SocketManager.GAME_SEND_ADD_CANAL(client, _canaux + "^" + (this.getGroupe() != null ? "@" : ""));
+        SocketManager.GAME_SEND_ADD_CANAL(client, _canaux + "^" + (this.getGroup() != null ? "@" : ""));
         if (_guildMember != null)
             SocketManager.GAME_SEND_gS_PACKET(this, _guildMember);
         SocketManager.GAME_SEND_ZONE_ALLIGN_STATUT(client);
@@ -1829,16 +1824,16 @@ public class Player {
         SocketManager.GAME_SEND_Ow_PACKET(this);
         SocketManager.GAME_SEND_SEE_FRIEND_CONNEXION(client, _showFriendConnection);
         SocketManager.GAME_SEND_SPELL_LIST(this);
-        this.account.sendOnline();
+        getAccount().sendOnline();
 
         //Messages de bienvenue
         SocketManager.GAME_SEND_Im_PACKET(this, "189");
-        if (this.account.getLastConnectionDate() != null && !this.account.getLastConnectionDate().equals("") && !account.getLastIP().equals(""))
-            SocketManager.GAME_SEND_Im_PACKET(this, "0152;" + account.getLastConnectionDate() + "~" + account.getLastIP());
+        if (getAccount().getLastConnectionDate() != null && !getAccount().getLastConnectionDate().equals("") && !getAccount().getLastIP().equals(""))
+            SocketManager.GAME_SEND_Im_PACKET(this, "0152;" + getAccount().getLastConnectionDate() + "~" + getAccount().getLastIP());
 
-        SocketManager.GAME_SEND_Im_PACKET(this, "0153;" + account.getCurrentIp());
+        SocketManager.GAME_SEND_Im_PACKET(this, "0153;" + getAccount().getCurrentIp());
 
-        this.account.setLastIP(this.account.getCurrentIp());
+        getAccount().setLastIP(getAccount().getCurrentIp());
 
         //Mise a jour du lastConnectionDate
         Date actDate = new Date();
@@ -1852,13 +1847,13 @@ public class Player {
         String heure = dateFormat.format(actDate);
         dateFormat = new SimpleDateFormat("mm");
         String min = dateFormat.format(actDate);
-        account.setLastConnectionDate(annee + "~" + mois + "~" + jour + "~" + heure + "~" + min);
+        getAccount().setLastConnectionDate(annee + "~" + mois + "~" + jour + "~" + heure + "~" + min);
         if (_guildMember != null)
             _guildMember.setLastCo(annee + "~" + mois + "~" + jour + "~" + heure + "~" + min);
         //Affichage des prismes
         World.world.showPrismes(this);
         //Actualisation dans la DB
-        ((AccountData) DatabaseManager.get(AccountData.class)).updateLastConnection(account);
+        ((AccountData) DatabaseManager.get(AccountData.class)).updateLastConnection(getAccount());
         SocketManager.GAME_SEND_MESSAGE(this, Config.startMessage.isEmpty() ? this.getLang().trans("client.player.onjoingame.startmessage") : Config.startMessage);
         for (GameObject object : this.objects.values()) {
             if (object.getTemplate().getType() == Constant.ITEM_TYPE_FAMILIER) {
@@ -1922,9 +1917,9 @@ public class Player {
         long now = System.currentTimeMillis() / 1000;
         boolean vote = true;
         for (Account account : World.world.getAccounts()) {
-            if (account != null && account.getLastVoteIP() != null && !account.getLastVoteIP().equalsIgnoreCase("")) {
-                if (account.getLastVoteIP().equalsIgnoreCase(IP)) {
-                    if ((account.getHeureVote() + 3600 * 3) > now) {
+            if (account != null && getAccount().getLastVoteIP() != null && !getAccount().getLastVoteIP().equalsIgnoreCase("")) {
+                if (getAccount().getLastVoteIP().equalsIgnoreCase(IP)) {
+                    if ((getAccount().getHeureVote() + 3600 * 3) > now) {
                         vote = false;
                         break;
                     }
@@ -1941,12 +1936,12 @@ public class Player {
 
     public void sendGameCreate() {
         this.setOnline(true);
-        this.account.setCurrentPlayer(this);
+        getAccount().setCurrentPlayer(this);
 
-        if (this.account.getGameClient() == null)
+        if (getAccount().getGameClient() == null)
             return;
 
-        GameClient client = this.account.getGameClient();
+        GameClient client = getAccount().getGameClient();
         SocketManager.GAME_SEND_GAME_CREATE(client, this.getName());
         SocketManager.GAME_SEND_STATS_PACKET(this);
         ((PlayerData) DatabaseManager.get(PlayerData.class)).updateLogged(this.id, 1);
@@ -2017,7 +2012,7 @@ public class Player {
             } else {
                 if (getCurrentTitle() == 2)
                     setCurrentTitle(0);
-                Group g = this.getGroupe();
+                Group g = this.getGroup();
                 int level = this.getLevel();
                 if (g != null)
                     if (!g.isPlayer() || this.get_size() <= 0) // Si c'est un groupe non joueur ou que l'on est invisible on cache l'aura
@@ -2194,26 +2189,28 @@ public class Player {
             return 0;
         if (_honor >= 17500)
             return 10;
-        for (int n = 1; n <= 10; n++)
-            if (_honor < World.world.getExpLevel(n).pvp)
-                return n - 1;
-        return 0;
+        return World.world.getExperiences().pvp.levelForXp(_honor);
     }
 
     public String xpString(String c) {
         if (!_morphMode) {
-            return this.getExp() + c + World.world.getPersoXpMin(this.getLevel()) + c + World.world.getPersoXpMax(this.getLevel());
-        } else {
-            if (this.getObjetByPos(Constant.ITEM_POS_ARME) != null)
-                if (Constant.isIncarnationWeapon(this.getObjetByPos(Constant.ITEM_POS_ARME).getTemplate().getId()))
-                    if (this.getObjetByPos(Constant.ITEM_POS_ARME).getSoulStat().get(Constant.ERR_STATS_XP) != null)
-                        return this.getObjetByPos(Constant.ITEM_POS_ARME).getSoulStat().get(Constant.ERR_STATS_XP)
-                                + c
-                                + World.world.getBanditsXpMin(this.getObjetByPos(Constant.ITEM_POS_ARME).getSoulStat().get(Constant.STATS_NIVEAU))
-                                + c
-                                + World.world.getBanditsXpMax(this.getObjetByPos(Constant.ITEM_POS_ARME).getSoulStat().get(Constant.STATS_NIVEAU));
+            ExperienceTables.ExperienceTable xpTable = World.world.getExperiences().players;
+            return this.getExp() + c + xpTable.minXpAt(this.getLevel()) + c + xpTable.maxXpAt(this.getLevel());
         }
-        return 1 + c + 1 + c + 1;
+        if(this.getObjetByPos(Constant.ITEM_POS_ARME) == null
+                || !Constant.isIncarnationWeapon(this.getObjetByPos(Constant.ITEM_POS_ARME).getTemplate().getId())
+                || this.getObjetByPos(Constant.ITEM_POS_ARME).getSoulStat().get(Constant.ERR_STATS_XP) == null) {
+            return 1 + c + 1 + c + 1;
+        }
+
+        // What if it's a tormentator ?
+        ExperienceTables.ExperienceTable xpTable = World.world.getExperiences().bandits;
+        int level = this.getObjetByPos(Constant.ITEM_POS_ARME).getSoulStat().get(Constant.STATS_NIVEAU);
+        return this.getObjetByPos(Constant.ITEM_POS_ARME).getSoulStat().get(Constant.ERR_STATS_XP)
+            + c
+            + xpTable.minXpAt(level)
+            + c
+            + xpTable.maxXpAt(level);
     }
 
     public int emoteActive() {
@@ -2524,7 +2521,7 @@ public class Player {
     }
 
     public boolean isMuted() {
-        return account.isMuted();
+        return getAccount().isMuted();
     }
 
     public String parseObjetsToDB() {
@@ -2755,7 +2752,8 @@ public class Player {
     }
 
     public boolean levelUp(boolean send, boolean addXp) {
-        if (this.getLevel() == World.world.getExpLevelSize())
+        ExperienceTables.ExperienceTable xpTable = World.world.getExperiences().players;
+        if (this.getLevel() == xpTable.maxLevel())
             return false;
         this.level++;
         _capital += 5;
@@ -2766,7 +2764,7 @@ public class Player {
             this.getStats().addOneStat(Constant.STATS_ADD_PA, 1);
         Constant.onLevelUpSpells(this, this.getLevel());
         if (addXp)
-            this.exp = World.world.getExpLevel(this.getLevel()).perso;
+            this.exp =  xpTable.minXpAt(this.getLevel());
         if (send && isOnline) {
             SocketManager.GAME_SEND_STATS_PACKET(this);
             SocketManager.GAME_SEND_SPELL_LIST(this);
@@ -2775,13 +2773,15 @@ public class Player {
     }
 
     public boolean addXp(long winxp) {
+        ExperienceTables.ExperienceTable xpTable = World.world.getExperiences().players;
+
         boolean up = false;
         this.exp += winxp;
-        while (this.getExp() >= World.world.getPersoXpMax(this.getLevel()) && this.getLevel() < World.world.getExpLevelSize())
+        while (this.getExp() >= xpTable.maxXpAt(this.level) && this.level < xpTable.maxLevel())
             up = levelUp(true, false);
         if (isOnline) {
             if (up)
-                SocketManager.GAME_SEND_NEW_LVL_PACKET(account.getGameClient(), this.getLevel());
+                SocketManager.GAME_SEND_NEW_LVL_PACKET(getAccount().getGameClient(), this.getLevel());
             SocketManager.GAME_SEND_STATS_PACKET(this);
         }
         return up;
@@ -2826,12 +2826,16 @@ public class Player {
         exp += winxp;
 
         if (Constant.isBanditsWeapon(this.getObjetByPos(Constant.ITEM_POS_ARME).getTemplate().getId())) {
-            while (exp >= World.world.getBanditsXpMax(level) && level < 50) {
+            ExperienceTables.ExperienceTable xpTable = World.world.getExperiences().bandits;
+
+            while (exp >= xpTable.maxXpAt(level) && level < xpTable.maxLevel()) {
                 up = levelUpIncarnations(true, false);
                 level = this.getObjetByPos(Constant.ITEM_POS_ARME).getSoulStat().get(Constant.STATS_NIVEAU);
             }
         } else if (Constant.isTourmenteurWeapon(this.getObjetByPos(Constant.ITEM_POS_ARME).getTemplate().getId())) {
-            while (exp >= World.world.getTourmenteursXpMax(level) && level < 50) {
+            ExperienceTables.ExperienceTable xpTable = World.world.getExperiences().tormentators;
+
+            while (exp >= xpTable.maxXpAt(level) && level < xpTable.maxLevel()) {
                 up = levelUpIncarnations(true, false);
                 level = this.getObjetByPos(Constant.ITEM_POS_ARME).getSoulStat().get(Constant.STATS_NIVEAU);
             }
@@ -2933,7 +2937,7 @@ public class Player {
             GameObject obj = getObjetByPos(Constant.ITEM_POS_ARME);
             if (obj != null)
                 if (sm.getTemplate().isValidTool(obj.getTemplate().getId()))
-                    SocketManager.GAME_SEND_OT_PACKET(account.getGameClient(), m.getId());
+                    SocketManager.GAME_SEND_OT_PACKET(getAccount().getGameClient(), m.getId());
         }
         return pos;
     }
@@ -3217,8 +3221,8 @@ public class Player {
     public void teleport(GameMap map, int cell) {
         if (this.getFight() != null) return;
         GameClient PW = null;
-        if (account.getGameClient() != null)
-            PW = account.getGameClient();
+        if (getAccount().getGameClient() != null)
+            PW = getAccount().getGameClient();
         if (map == null)
             return;
         if (map.getCase(cell) == null)
@@ -3302,7 +3306,7 @@ public class Player {
     }
 
     public int getBankCost() {
-        return account.getBank().size();
+        return getAccount().getBank().size();
     }
 
     public void openBank() {
@@ -3384,24 +3388,25 @@ public class Player {
         SocketManager.send(this, "ILS" + 2000);
         this.regenRate = 2000;
         this.curMap.addPlayer(this);
-        if (this.account.getGameClient() != null)
+        if (getAccount().getGameClient() != null)
             SocketManager.GAME_SEND_STATS_PACKET(this);
         this.fight = null;
         this.away = false;
     }
 
     public long getBankKamas() {
-        return account.getBankKamas();
+        return getAccount().getBankKamas();
     }
 
     public void setBankKamas(long i) {
+        Account account = getAccount();
         account.setBankKamas(i);
         ((BankData) DatabaseManager.get(BankData.class)).update(account);
     }
 
     public String parseBankPacket() {
         StringBuilder packet = new StringBuilder();
-        for (GameObject entry : account.getBank())
+        for (GameObject entry : getAccount().getBank())
             packet.append("O").append(entry.encodeItem()).append(";");
         if (getBankKamas() != 0)
             packet.append("G").append(getBankKamas());
@@ -3432,6 +3437,7 @@ public class Player {
         if (PersoObj == null || PersoObj.getPosition() != Constant.ITEM_POS_NO_EQUIPED) // Si c'est un item �quip� ...
             return;
 
+        Account account = getAccount();
         GameObject BankObj = getSimilarBankItem(PersoObj);
         int newQua = PersoObj.getQuantity() - qua;
         if (BankObj == null) // Ajout d'un nouvel objet dans la banque
@@ -3491,12 +3497,13 @@ public class Player {
         }
         SocketManager.GAME_SEND_Ow_PACKET(this);
         ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this);
-        ((BankData) DatabaseManager.get(BankData.class)).update(account);
+        ((BankData) DatabaseManager.get(BankData.class)).update(getAccount());
     }
 
     private GameObject getSimilarBankItem(GameObject exGameObject) {
-        if(this.account.getBank() != null)
-            for (GameObject gameObject : this.account.getBank())
+        Account account = getAccount();
+        if(account.getBank() != null)
+            for (GameObject gameObject : account.getBank())
                 if (gameObject != null && World.world.getConditionManager().stackIfSimilar(gameObject, exGameObject, true))
                     return gameObject;
         return null;
@@ -3508,7 +3515,7 @@ public class Player {
         GameObject BankObj = World.world.getGameObject(guid);
 
         //Si le joueur n'a pas l'item dans sa banque ...
-        int index = account.getBank().indexOf(BankObj);
+        int index = getAccount().getBank().indexOf(BankObj);
         if (index == -1)
             return;
 
@@ -3520,7 +3527,7 @@ public class Player {
             //S'il ne reste rien en banque
             if (newQua <= 0) {
                 //On retire l'item de la banque
-                account.getBank().remove(index);
+                getAccount().getBank().remove(index);
                 //On l'ajoute au joueur
 
                 objects.put(guid, BankObj);
@@ -3556,7 +3563,7 @@ public class Player {
             //S'il ne reste rien en banque
             if (newQua <= 0) {
                 //On retire l'item de la banque
-                account.getBank().remove(index);
+                getAccount().getBank().remove(index);
                 World.world.removeGameObject(BankObj.getGuid());
                 //On Modifie la quantit� de l'item du sac du joueur
                 PersoObj.setQuantity(PersoObj.getQuantity()
@@ -3587,7 +3594,7 @@ public class Player {
         SocketManager.GAME_SEND_Ow_PACKET(this);
 
         ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this);
-        ((BankData) DatabaseManager.get(BankData.class)).update(account);
+        ((BankData) DatabaseManager.get(BankData.class)).update(getAccount());
     }
 
     /**
@@ -3869,7 +3876,7 @@ public class Player {
         str.append(";");
         str.append("?;");
         str.append(this.getName()).append(";");
-        if (account.isFriendWith(guid)) {
+        if (getAccount().isFriendWith(guid)) {
             str.append(this.getLevel()).append(";");
             str.append(alignment).append(";");
         } else {
@@ -3887,7 +3894,7 @@ public class Player {
         str.append(";");
         str.append("?;");
         str.append(this.getName()).append(";");
-        if (account.isFriendWith(guid)) {
+        if (getAccount().isFriendWith(guid)) {
             str.append(this.getLevel()).append(";");
             str.append(alignment).append(";");
         } else {
@@ -4410,7 +4417,7 @@ public class Player {
     }
 
     public boolean isDispo(Player sender) {
-        return !_isAbsent && (!_isInvisible || account.isFriendWith(sender.getAccount().getId()));
+        return !_isAbsent && (!_isInvisible || getAccount().isFriendWith(sender.getAccount().getId()));
 
     }
 
@@ -4717,8 +4724,8 @@ public class Player {
         byte revive = ((PlayerData) DatabaseManager.get(PlayerData.class)).canRevive(this);
 
         if(revive == 1) {
-            this.curMap = World.world.getMap((short) 7411);
-            this.curCell = World.world.getMap((short) 7411).getCase(311);
+            this.curMap = World.world.getMap( 7411);
+            this.curCell = World.world.getMap( 7411).getCase(311);
         } else {
             if(this._morphMode) this.unsetFullMorph();
             if (this.getParty() != null) this.getParty().leave(this);
@@ -4861,7 +4868,7 @@ public class Player {
 
     public boolean castEndFightAction() {
         if(this.endFightAction != null) {
-            this.endFightAction.apply(this, null, -1, -1);
+            this.endFightAction.apply(this, null, -1, -1, getCurMap());
             this.endFightAction = null;
         } else
             return true;
@@ -5414,8 +5421,8 @@ public class Player {
     public void teleportWithoutBlocked(int newMapID, int newCellID)//Aucune condition genre <<en_prison>> etc
     {
         GameClient PW = null;
-        if (account.getGameClient() != null) {
-            PW = account.getGameClient();
+        if (getAccount().getGameClient() != null) {
+            PW = getAccount().getGameClient();
         }
         if (World.world.getMap(newMapID) == null) {
             GameServer.a();
@@ -5700,7 +5707,7 @@ public class Player {
     }
 
     public GameClient getGameClient() {
-        return account != null ? this.getAccount().getGameClient() : null;
+        return this.getAccount() != null ? this.getAccount().getGameClient() : null;
     }
 
     public void send(String packet) {
@@ -5997,7 +6004,7 @@ public class Player {
 
     public boolean consumeCurrency(Currency cur, long qua) {
         if(cur == Currency.KAMAS) return modKamasDisplay(-qua);
-        if(cur == Currency.POINTS) return account.modPoints(-qua);
+        if(cur == Currency.POINTS) return getAccount().modPoints(-qua);
         if(cur.isItem()) return removeItemByTemplateId(cur.item().getId(), (int)qua, false);
         throw new RuntimeException("unknown currency type");
     }

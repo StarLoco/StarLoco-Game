@@ -706,7 +706,7 @@ public class ObjectAction {
 
                     case 31://Cadeau bworker.
                         if (player0.getFight() != null) return;
-                        new Action(511, "", "", null).apply(player, null, objet, -1);
+                        new Action(511, "", "").apply(player, null, objet, -1, null);
                         break;
 
                     case 32://G�oposition traque.

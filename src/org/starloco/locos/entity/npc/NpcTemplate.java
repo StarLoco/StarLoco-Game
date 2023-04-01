@@ -19,7 +19,7 @@ import org.starloco.locos.other.Dopeul;
 import org.starloco.locos.quest.Quest;
 import org.starloco.locos.quest.QuestObjective;
 import org.starloco.locos.quest.QuestPlayer;
-import org.starloco.locos.script.NpcScriptVM;
+import org.starloco.locos.script.DataScriptVM;
 import org.starloco.locos.script.ScriptVM;
 
 import java.util.*;
@@ -137,7 +137,7 @@ public class NpcTemplate {
         }
         Object onTalk = recursiveGet(scriptVal,"onTalk");
         if(onTalk == null) return;
-        NpcScriptVM.getInstance().call(onTalk, scriptVal, player.scripted(), response);
+        DataScriptVM.getInstance().call(onTalk, scriptVal, player.scripted(), response);
     }
 
     public List<SaleOffer> salesList(Player player) {
@@ -147,10 +147,10 @@ public class NpcTemplate {
         Object salesList = recursiveGet(scriptVal,"salesList");
         if(salesList == null) return Collections.emptyList();
 
-        Object[] ret = NpcScriptVM.getInstance().call(salesList, scriptVal, player.scripted());
+        Object[] ret = DataScriptVM.getInstance().call(salesList, scriptVal, player.scripted());
 
         if(ret == null || ret.length == 0) return Collections.emptyList();
-        List<Object> offers = fromLuaTable((Table) ret[0]);
+        List<Object> offers = listFromLuaTable((Table) ret[0]);
 
         return offers.stream().map(o -> {
             Table t = (Table) o;
@@ -219,7 +219,7 @@ public class NpcTemplate {
             offer.rawset(i+1, stack);
         }
 
-        Object[] ret = NpcScriptVM.getInstance().call(barterOutcome, scriptVal, player.scripted(), offer);
+        Object[] ret = DataScriptVM.getInstance().call(barterOutcome, scriptVal, player.scripted(), offer);
         if(ret == null || ret.length == 0 || ret[0] == null) return null;
         if(ret.length > 1) throw new RuntimeException(String.format("unexpected count(%d) in legacy barterOutcome", ret.length));
 
@@ -448,11 +448,11 @@ public class NpcTemplate {
                     String date = player.getItemTemplate(9487, 1).getTxtStat().get(Constant.STATS_DATE);
                     long timeStamp = Long.parseLong(date);
                     if (System.currentTimeMillis() - timeStamp <= 1209600000) {
-                        new Action(1, "5522", "", World.world.getMap((short) 10255)).apply(player, null, -1, -1);
+                        new Action(1, "5522", "").apply(player, null, -1, -1, World.world.getMap( 10255));
                         return;
                     }
                 }
-                new Action(1, "5521", "", World.world.getMap((short) 10255)).apply(player, null, -1, -1);
+                new Action(1, "5521", "").apply(player, null, -1, -1, World.world.getMap( 10255));
                 return;
             }
 

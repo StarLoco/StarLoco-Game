@@ -33,15 +33,13 @@ public class AuctionManager extends Updatable {
 
     private final LinkedList<Auction> auctions = new LinkedList<>();
     private Auction current;
-    private final GameMap map;
-    private final Npc npc;
+    private final int map;
     private ScheduledFuture task;
     private byte counter;
 
     public AuctionManager() {
         super(10000);
-        this.map = World.world.getMap((short) 10111);
-        this.npc = this.map.getNpcByTemplateId(9605);
+        this.map = 10111;
     }
 
     public List<Auction> getAuctions() {
@@ -49,7 +47,10 @@ public class AuctionManager extends Updatable {
     }
 
     public void talk(String key, GameObject object, boolean tradeTalk, Object... params) {
-        for(Player player : this.map.getPlayers()) {
+        GameMap map = World.world.getMap(this.map);
+        Npc npc = map.getNpcByTemplateId(9605);
+
+        for(Player player : map.getPlayers()) {
             String msg = player.getLang().trans(key, params);
             if(object != null) msg = getTalkStringObject(object, msg);
             player.send("cMK|" + npc.getId() + "|Commissaire|" + msg + "|");
@@ -64,7 +65,9 @@ public class AuctionManager extends Updatable {
     }
 
     public void talkNext() {
-        for(Player player : this.map.getPlayers()) {
+        GameMap map = World.world.getMap(this.map);
+        Npc npc = map.getNpcByTemplateId(9605);
+        for(Player player : map.getPlayers()) {
             String msg = player.getLang().trans("game.auction.auctionmanager.stop.none")+ (this.auctions.size() == 0 ? "" : player.getLang().trans("game.auction.auctionmanager.stop.next"));
             player.send("cMK|" + npc.getId() + "|Commissaire|" + msg + "|");
         }
@@ -75,6 +78,8 @@ public class AuctionManager extends Updatable {
     }
 
     public void talk(Player player, String msg) {
+        GameMap map = World.world.getMap(this.map);
+        Npc npc = map.getNpcByTemplateId(9605);
         player.send("cMK|" + npc.getId() + "|Commissaire|" + msg + "|");
     }
 
@@ -347,7 +352,8 @@ public class AuctionManager extends Updatable {
     }
 
     private boolean isValid(Player player) {
-        if(!this.map.getPlayers().contains(player)) return false;
+        GameMap map = World.world.getMap(this.map);
+        if(!map.getPlayers().contains(player)) return false;
         if(player.getFight() != null || player.isDead() == 1 || player.isGhost()
                 || (player.getExchangeAction() != null && !(player.getExchangeAction().getValue() instanceof NpcExchange))) {
             player.sendTypeMessage("Auction", player.getLang().trans("game.auction.auctionmanager.isvalid"));

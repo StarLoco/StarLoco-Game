@@ -1,6 +1,7 @@
 package org.starloco.locos.area.map;
 
 import org.starloco.locos.client.Player;
+import org.starloco.locos.entity.monster.MobGroupDef;
 import org.starloco.locos.entity.monster.MonsterGrade;
 import org.starloco.locos.entity.monster.MonsterGroup;
 import org.starloco.locos.game.world.World;
@@ -12,9 +13,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class SQLMapData extends MapData {
+    // TODO: Remove GameCase/CellCache completely
     private List<GameCase> cases = new ArrayList<>();
     private final HashMap<Integer,List<Action>> moveEndActions = new HashMap<>();
-    private final List<Integer> npcs = new ArrayList<>();
+    private final List<MobGroupDef> staticMobGroups = new LinkedList<>();
 
     protected SQLMapData(int id, String date, String key, String data, int width, int height, int x, int y,
                          int subAreaID, boolean noSellers, boolean noCollectors, boolean noPrisms,
@@ -114,27 +116,27 @@ public class SQLMapData extends MapData {
     }
 
     @Override
-    public Optional<GameCase> getCase(int id) {
-        // Replace with direct array access. We just need to make sure there is no missing cells
-        return this.cases.stream().filter(c -> c.getId() == id).findFirst();
-    }
-
-    @Override
-    public List<GameCase> getCases() {
-        return Collections.unmodifiableList(this.cases);
-    }
-
-    @Override
-    public List<Integer> getNPCs() {
-        return npcs;
-    }
-
-    @Override
     public void onMoveEnd(Player player) {
         final GameCase cell = player.getCurCell();
         if (cell == null) return;
 
-        this.moveEndActions.getOrDefault(cell.getId(), Collections.emptyList()).forEach(action -> action.apply(player, null, -1, -1));
+        this.moveEndActions.getOrDefault(cell.getId(), Collections.emptyList()).forEach(action -> action.apply(player, null, -1, -1, player.getCurMap()));
+    }
+
+    @Override
+    public boolean cellHasMoveEndActions(int cellId) {
+        return !moveEndActions.getOrDefault(cellId, Collections.emptyList()).isEmpty();
+    }
+
+    public void addOnCellStopAction(int cellId, int id, String args, String cond, GameMap map) {
+        List<Action> actions = moveEndActions.computeIfAbsent(cellId, ArrayList::new);
+        actions.add(new Action(id, args, cond));
+    }
+
+
+    public void addStaticGroup(int cellID, String groupData) {
+        if(groupData.length() == 0) return;
+        this.staticMobGroups.add(new MobGroupDef(cellID, MonsterGroup.parseMobGroup(groupData)));
     }
 
     public String getForbidden() {

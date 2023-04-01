@@ -42,7 +42,7 @@ public class NpcAnswer {
     public boolean apply(Player player) {
         boolean leave = true;
         for (Action action : this.getActions())
-            leave = action.apply(player, null, -1, -1);
+            leave = action.apply(player, null, -1, -1, null);
         return leave;
     }
 

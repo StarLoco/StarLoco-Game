@@ -153,7 +153,7 @@ public class HeroicMobsGroupsData extends FunctionDAO<Object> {
                     if(object != null)
                         objects.add(object);
                 }
-                GameMap map = World.world.getMap((short) result.getInt("map"));
+                GameMap map = World.world.getMap( result.getInt("map"));
                 int cell = result.getInt("cell");
                 for(MonsterGroup group : map.getMobGroups().values()) {
                     if(group != null && group.getCellId() == cell)

@@ -47,13 +47,11 @@ public class Action {
     private int id;
     private String args;
     private String cond;
-    private GameMap map;
 
-    public Action(int id, String args, String cond, GameMap map) {
+    public Action(int id, String args, String cond) {
         this.setId(id);
         this.setArgs(args);
         this.setCond(cond);
-        this.setMap(map);
     }
 
     public static java.util.Map<Integer, Couple<Integer, Integer>> getDopeul() {
@@ -97,16 +95,8 @@ public class Action {
         this.cond = cond;
     }
 
-    public GameMap getMap() {
-        return map;
-    }
-
-    public void setMap(GameMap map) {
-        this.map = map;
-    }
-
     public boolean apply(final Player player, Player target, int itemID,
-                         int cellid) {
+                         int cellid, GameMap map) {
 
         if (player == null)
             return true;
@@ -281,12 +271,8 @@ public class Action {
                 break;
 
             case -1://Ouvrir banque
-                for (Npc npc : player.getCurMap().getNpcs().values()) {
-                    if (npc.getTemplate().getGfxId() == 9048) {
-                        player.openBank();
-                        break;
-                    }
-                }
+                Npc npc = player.getCurMap().getNpcByTemplateId(9048); // What if it's a different kind of bank teller
+                if(npc != null) player.openBank();
                 break;
 
             case 0://T�l�portation
@@ -1087,7 +1073,7 @@ public class Action {
                                     + price);
                         }
                         try {
-                            tuto.getStart().apply(player, null, -1, (short) -1);
+                            tuto.getStart().apply(player, null, -1, (short) -1, null);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -1938,11 +1924,11 @@ public class Action {
                 break;
 
             case 229://Animation d'incarnam � astrub
-                short map = Constant.getClassStatueMap(player.getClasse());
+                mapId = Constant.getClassStatueMap(player.getClasse());
                 int cell = Constant.getClassStatueCell(player.getClasse());
                 SocketManager.GAME_SEND_GA_PACKET(player.getGameClient(), "", "2", player.getId() + "", "7");
-                player.teleport(map, cell);
-                player.setSavePos(map ,cell);
+                player.teleport(mapId, cell);
+                player.setSavePos(mapId ,cell);
                 SocketManager.GAME_SEND_Im_PACKET(player, "06");
                 break;
 
@@ -2949,48 +2935,48 @@ public class Action {
                 }
                 break;
 
-            case 524://R�ponse Maitre corbac
-                if(client == null) return true;
-                int qID = MonsterGroup.MAITRE_CORBAC.check();
-                NpcQuestion quest = World.world.getNPCQuestion(qID);
-                if (quest == null) {
-                    SocketManager.GAME_SEND_END_DIALOG_PACKET(client);
-                    player.setExchangeAction(null);
-                    return true;
-                }
-                SocketManager.GAME_SEND_QUESTION_PACKET(client, quest.parse(player));
-                return false;
-
-            case 525://EndFight Action Maitre Corbac
-                MonsterGroup group = player.hasMobGroup();
-
-                split = args.split(";");
-
-                for (MonsterGrade mb : group.getMobs().values()) {
-                    switch (mb.getTemplate().getId()) {
-                        case 289:
-                            player.teleport((short) 9604, 403);
-                            return true;
-                        case 819:
-                            player.teleport(Short.parseShort(split[0].split(",")[0]), Integer.parseInt(split[0].split(",")[1]));
-                            return true;
-                        case 820:
-                            player.teleport(Short.parseShort(split[1].split(",")[0]), Integer.parseInt(split[1].split(",")[1]));
-                            return true;
-                    }
-                }
-                break;
-
-            case 526://Fin donjon maitre corbac
-                if (player.getCurMap().getId() != 9604)
-                    return true;
-
-                obj1 = World.world.getObjTemplate(7703).createNewItem(1, false);
-                if (player.addItem(obj1, true, false))
-                    World.world.addGameObject(obj1);
-                player.send("Im021;1~7703");
-                player.teleport((short) 2985, 279);
-                break;
+//            case 524://R�ponse Maitre corbac
+//                if(client == null) return true;
+//                int qID = MonsterGroup.MAITRE_CORBAC.check();
+//                NpcQuestion quest = World.world.getNPCQuestion(qID);
+//                if (quest == null) {
+//                    SocketManager.GAME_SEND_END_DIALOG_PACKET(client);
+//                    player.setExchangeAction(null);
+//                    return true;
+//                }
+//                SocketManager.GAME_SEND_QUESTION_PACKET(client, quest.parse(player));
+//                return false;
+//
+//            case 525://EndFight Action Maitre Corbac
+//                MonsterGroup group = player.hasMobGroup();
+//
+//                split = args.split(";");
+//
+//                for (MonsterGrade mb : group.getMobs().values()) {
+//                    switch (mb.getTemplate().getId()) {
+//                        case 289:
+//                            player.teleport((short) 9604, 403);
+//                            return true;
+//                        case 819:
+//                            player.teleport(Short.parseShort(split[0].split(",")[0]), Integer.parseInt(split[0].split(",")[1]));
+//                            return true;
+//                        case 820:
+//                            player.teleport(Short.parseShort(split[1].split(",")[0]), Integer.parseInt(split[1].split(",")[1]));
+//                            return true;
+//                    }
+//                }
+//                break;
+//
+//            case 526://Fin donjon maitre corbac
+//                if (player.getCurMap().getId() != 9604)
+//                    return true;
+//
+//                obj1 = World.world.getObjTemplate(7703).createNewItem(1, false);
+//                if (player.addItem(obj1, true, false))
+//                    World.world.addGameObject(obj1);
+//                player.send("Im021;1~7703");
+//                player.teleport((short) 2985, 279);
+//                break;
 
             case 527://Donjon ensabl� fin
                 if (player.getCurMap().getId() != 10165)
@@ -3048,7 +3034,7 @@ public class Action {
                     World.world.addGameObject(obj2);
                 }
 
-                quest = World.world.getNPCQuestion(Integer.parseInt(this.args));
+                NpcQuestion quest = World.world.getNPCQuestion(Integer.parseInt(this.args));
                 if (quest == null) {
                     SocketManager.GAME_SEND_END_DIALOG_PACKET(client);
                     player.setExchangeAction(null);
@@ -4285,21 +4271,21 @@ public class Action {
 
             /** Fin Donjon **/
             case 999:
-                player.teleport(this.map, Integer.parseInt(this.args));
+                player.teleport(map.getId(), Integer.parseInt(this.args));
                 break;
 
             case 1000:
-                map = Short.parseShort(this.args.split(",")[0]);
+                mapId = Integer.parseInt(this.args.split(",")[0]);
                 cell = Integer.parseInt(this.args.split(",")[1]);
-                player.teleport(map, cell);
-                player.setSavePos(map,cell);
+                player.teleport(mapId, cell);
+                player.setSavePos(mapId,cell);
                 SocketManager.GAME_SEND_Im_PACKET(player, "06");
                 break;
 
             case 1001:
-                map = Short.parseShort(this.args.split(",")[0]);
+                mapId = Integer.parseInt(this.args.split(",")[0]);
                 cell = Integer.parseInt(this.args.split(",")[1]);
-                player.teleport(map, cell);
+                player.teleport(mapId, cell);
                 break;
 
             case 1002: // Add Multiple objects

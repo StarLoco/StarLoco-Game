@@ -7,13 +7,11 @@ import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.Config;
 import org.starloco.locos.kernel.Constant;
 import org.starloco.locos.object.GameObject;
+import org.starloco.locos.util.Pair;
 
 import java.util.*;
 
 public class MonsterGroup {
-
-    public final static MaitreCorbac MAITRE_CORBAC = new MaitreCorbac();
-
     private final int id;
     private int cellId;
     private int orientation = 2;
@@ -138,7 +136,7 @@ public class MonsterGroup {
                 int min = Integer.parseInt(infos[1]);
                 int max = Integer.parseInt(infos[2]);
                 Monster m = World.world.getMonstre(idMonster);
-                List<MonsterGrade> mgs = new ArrayList<MonsterGrade>();
+                List<MonsterGrade> mgs = new ArrayList<>();
                 //on ajoute a la liste les grades possibles
 
                 for (MonsterGrade MG : m.getGrades().values()) {
@@ -162,6 +160,43 @@ public class MonsterGroup {
         }
         this.orientation = map != null && map.getId() == 11095 ? 3 : (Formulas.getRandomValue(0, 3) * 2) + 1;
         this.starBonus = (short) (star ? 0 : -1);
+    }
+    public MonsterGroup(int id, GameMap map, MobGroupDef def) {
+        this.id = id;
+        this.alignment = Constant.ALIGNEMENT_NEUTRE;
+        this.cellId = def.cellId;
+        this.isFix = true;
+        int guid = -1;
+        boolean star = false;
+
+        // Compute aggro distance, faction, if we should enable XP/Drop bonus
+        for(Pair<Integer, Integer> p : def.mobGrades) {
+            Monster m = World.world.getMonstre(p.first);
+            if(m.getAlign() != Constant.ALIGNEMENT_NEUTRE) alignment = m.getAlign();
+            if(m.getAggroDistance() > this.aggroDistance) aggroDistance = m.getAggroDistance();
+            MonsterGrade mg = m.getGrades().get(p.second);
+            if (mg.getBaseXp() != 0) star = true;
+            this.mobs.put(guid, mg);
+            guid--;
+        }
+
+        this.orientation = map != null && map.getId() == 11095 ? 3 : (Formulas.getRandomValue(0, 3) * 2) + 1;
+        this.starBonus = (short) (star ? 0 : -1);
+    }
+
+    public static List<Pair<Integer,Integer>> parseMobGroup(String groupData) {
+        List<Pair<Integer,Integer>> out = new LinkedList<>();
+        Arrays.stream(groupData.split(";")).forEach(s -> {
+            String[] parts = s.split(",");
+            int idMonster = Integer.parseInt(parts[0]);
+            int min = Integer.parseInt(parts[1]);
+            int max = Integer.parseInt(parts[2]);
+            // Add each grade
+            for(int g=min;g<=max;g++) {
+                out.add(new Pair<>(idMonster, g));
+            }
+        });
+        return out;
     }
 
     public void setSubArea(int sa) {

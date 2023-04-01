@@ -6,6 +6,7 @@ import org.starloco.locos.client.other.Stats;
 import org.starloco.locos.common.Formulas;
 import org.starloco.locos.common.PathFinding;
 import org.starloco.locos.common.SocketManager;
+import org.starloco.locos.database.data.game.ExperienceTables;
 import org.starloco.locos.entity.Collector;
 import org.starloco.locos.entity.Prism;
 import org.starloco.locos.entity.monster.MonsterGrade;
@@ -920,11 +921,10 @@ public class Fighter implements Comparable<Fighter> {
 
     public String xpString(String str) {
         if (this.player != null) {
-            int max = this.player.getLevel() + 1;
-            if (max > World.world.getExpLevelSize())
-                max = World.world.getExpLevelSize();
-            return World.world.getExpLevel(this.player.getLevel()).perso + str
-                    + this.player.getExp() + str + World.world.getExpLevel(max).perso;
+            ExperienceTables.ExperienceTable xpTable = World.world.getExperiences().players;
+
+            return xpTable.minXpAt(this.player.getLevel()) + str
+                    + this.player.getExp() + str + xpTable.maxXpAt(this.player.getLevel());
         }
         return "0" + str + "0" + str + "0";
     }
