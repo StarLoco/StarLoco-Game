@@ -2,12 +2,13 @@
 --- THOSE ARE ONLY FOR AUTO-COMPLETION
 
 ---@param path string
-local function loadDir(path)  end
+function loadDir(path)  end
 
 ---@param def Npc
-local function RegisterNPCDef(def)  end
+function RegisterNPCDef(def)  end
+
 ---@param def MapDef
-local function RegisterMapDef(def)  end
+function RegisterMapDef(def)  end
 
 ---@param name string
 ---@param args string
@@ -92,6 +93,12 @@ function Player:tryBuyItem(template, unitPrice, quantity, isPerfect) end
 
 ---@return number
 function Player:mapID() end
+
+---@return Map
+function Player:map() end
+
+---@return number
+function Player:cell() end
 
 ---@return number,number map,cell
 function Player:savedPosition() end

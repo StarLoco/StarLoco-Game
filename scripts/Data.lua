@@ -2,7 +2,7 @@
 
 -- Define classes
 require("./models/NPC")
--- require("./models/MapDef")
+require("./models/MapDef")
 
 
 -- Load data
@@ -11,4 +11,4 @@ require("./data/AdminGroups")
 require("./data/Experience")
 
 loadDir("./data/npcs")
--- loadDir("./scripts/maps")
+loadDir("./data/maps")

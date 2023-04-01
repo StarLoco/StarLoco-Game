@@ -4,6 +4,7 @@ import org.classdump.luna.Table;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.entity.monster.MonsterGrade;
 import org.starloco.locos.game.world.World;
+import org.starloco.locos.script.DataScriptVM;
 import org.starloco.locos.script.ScriptVM;
 import org.starloco.locos.util.Pair;
 
@@ -13,8 +14,9 @@ import java.util.stream.Collectors;
 import static org.starloco.locos.script.ScriptVM.*;
 
 public class ScriptMapData extends MapData {
+    private final Table scriptVal;
 
-    private ScriptMapData(int id, String date, String key, String cellsData, int width, int height, int x, int y, int subAreaID, int capabilities, Map<Integer, Pair<Integer,Integer>> npcs, int mobGroupsMaxCount, int mobGroupsMaxSize, List<MonsterGrade> mobPossibles, String placesStr) {
+    private ScriptMapData(Table scriptVal, int id, String date, String key, String cellsData, int width, int height, int x, int y, int subAreaID, int capabilities, Map<Integer, Pair<Integer,Integer>> npcs, int mobGroupsMaxCount, List<MonsterGrade> mobPossibles, String placesStr, int mobGroupsMaxSize) {
         super(id,
             date,
             key,
@@ -35,6 +37,7 @@ public class ScriptMapData extends MapData {
             mobGroupsMaxSize,
             mobPossibles,
             placesStr);
+        this.scriptVal = scriptVal;
 
         npcs.forEach((k,v) -> addNpc(k, v.first, v.second));
     }
@@ -54,7 +57,8 @@ public class ScriptMapData extends MapData {
         );
 
         return new ScriptMapData(
-                rawInt(val, "id"),
+            val,
+            rawInt(val, "id"),
             val.rawget("date").toString(),
             val.rawget("key").toString(),
             val.rawget("cellsData").toString(),
@@ -66,20 +70,20 @@ public class ScriptMapData extends MapData {
             rawInt(val, "capabilities"),
             npcs,
             rawInt(val, "mobGroupsCount"),
-            rawInt(val, "mobGroupsSize"),
-            allowedMonsters,
-            val.rawget("positions").toString()
+                allowedMonsters, val.rawget("positions").toString(), rawInt(val, "mobGroupsSize")
         );
     }
 
     @Override
     public void onMoveEnd(Player p) {
-
+        Object onTalk = recursiveGet(scriptVal,"onMovementEnd");
+        if(onTalk == null) return;
+        DataScriptVM.getInstance().call(onTalk, scriptVal, p.getCurMap().scripted(), p.scripted());
     }
 
     @Override
     public boolean cellHasMoveEndActions(int cellId) {
-        // FIXME
+        // TODO
         return false;
     }
 }

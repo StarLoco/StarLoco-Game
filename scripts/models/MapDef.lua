@@ -11,7 +11,8 @@
 ---@field y number
 ---@field subAreaId number
 ---@field capabilities number
----@field npcs {id:number, cell:number, orientation:number}[] All Npcs that may appear on this map
+---@field positions string
+---@field npcs table<number, number[]>[] All Npcs that may appear on this map: <template,[cell,orientation]>
 ---@field mobGroupsCount number
 ---@field mobGroupsSize number
 ---@field allowedMobGrades table<number,number>

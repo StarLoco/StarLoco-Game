@@ -1,6 +1,3 @@
-
--- '3', '3', '-1', '8', '0;0;0;0;0;0;0', '0'
-
 local map = MapDef(
     165,
     "0706141524",
@@ -13,7 +10,7 @@ local map = MapDef(
     1
 )
 
-map.position = "fcfFfGfUf9glgmgP|bcbdbebsbHbVbWbX"
+map.positions = "fcfFfGfUf9glgmgP|bcbdbebsbHbVbWbX"
 map.allowedMobGrades = {
     {63, 6},
     {31, 5},
@@ -22,6 +19,5 @@ map.allowedMobGrades = {
     {63, 4},
     {31, 2},
 }
-
 
 RegisterMapDef(map)

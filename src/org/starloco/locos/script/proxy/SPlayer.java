@@ -168,13 +168,17 @@ public class SPlayer extends DefaultUserdata<Player> {
 
     @SuppressWarnings("unused")
     private static int mapID(Player p, ArgumentIterator args) {
-        //  TODO: Replace with map():SMap
         return p.getCurMap().getId();
     }
 
     @SuppressWarnings("unused")
     private static SMap map(Player p, ArgumentIterator args) {
         return p.getCurMap().scripted();
+    }
+
+    @SuppressWarnings("unused")
+    private static int cell(Player p, ArgumentIterator args) {
+        return p.getCurCell().getId();
     }
 
     @SuppressWarnings("unused")
