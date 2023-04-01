@@ -31,7 +31,6 @@ public class GameCase {
 
     private List<Player> players;
     private ArrayList<Fighter> fighters;
-    private ArrayList<Action> onCellStop;
     private InteractiveObject object;
     private GameObject droppedItem;
 
@@ -143,12 +142,6 @@ public class GameCase {
         if(this.fighters != null && this.fighters.size() > 0)
             return fighters.get(0); // return this.fighters.get(0);o
         return null;
-    }
-
-    public void addOnCellStopAction(int id, String args, String cond, GameMap map) {
-        if (this.onCellStop == null)
-            this.onCellStop = new ArrayList<>();
-        this.onCellStop.add(new Action(id, args, cond));
     }
 
     public InteractiveObject getObject() {

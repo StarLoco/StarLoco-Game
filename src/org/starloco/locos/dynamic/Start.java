@@ -205,7 +205,12 @@ public class Start {
 			Start.this.player.unlearnSpell(661);
 			SocketManager.GAME_SEND_cMK_PACKET(player, "", helper.getId(), "Ganymede", "Je vais donc reprendre mon sort d'entrainement.");
 			try { Thread.sleep(3000); } catch (InterruptedException ignored) {}
-			mapUse.get(2).getCase(177).addOnCellStopAction(999, "388", "-1", mapUse.get(3));
+
+			data = mapUse.get(2).data;
+			if(data instanceof SQLMapData) {
+				((SQLMapData) data).addOnCellStopAction(177, 999, "388", "-1", mapUse.get(3));
+			}
+
 			SocketManager.GAME_SEND_cMK_PACKET(player, "", helper.getId(), "Ganymede", "Suis-moi dans la prochaine salle, tu auras 3 nouveaux sorts.");
 			try { Thread.sleep(2000); } catch (InterruptedException ignored) {}
 			player.setBlockMovement(false);
