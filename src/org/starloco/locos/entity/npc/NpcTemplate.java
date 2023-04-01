@@ -448,11 +448,11 @@ public class NpcTemplate {
                     String date = player.getItemTemplate(9487, 1).getTxtStat().get(Constant.STATS_DATE);
                     long timeStamp = Long.parseLong(date);
                     if (System.currentTimeMillis() - timeStamp <= 1209600000) {
-                        new Action(1, "5522", "", World.world.getMap( 10255)).apply(player, null, -1, -1);
+                        new Action(1, "5522", "").apply(player, null, -1, -1, World.world.getMap( 10255));
                         return;
                     }
                 }
-                new Action(1, "5521", "", World.world.getMap( 10255)).apply(player, null, -1, -1);
+                new Action(1, "5521", "").apply(player, null, -1, -1, World.world.getMap( 10255));
                 return;
             }
 

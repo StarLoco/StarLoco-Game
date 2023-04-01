@@ -76,4 +76,10 @@ public class ScriptMapData extends MapData {
     public void onMoveEnd(Player p) {
 
     }
+
+    @Override
+    public boolean cellHasMoveEndActions(int cellId) {
+        // FIXME
+        return false;
+    }
 }

@@ -74,4 +74,5 @@ public abstract class MapData {
     }
 
     public abstract void onMoveEnd(Player p);
+    public abstract boolean cellHasMoveEndActions(int cellId);
 }

@@ -21,9 +21,9 @@ public class Tutorial {
                 } else {
                     String[] split = str.split("@");
                     if (split.length >= 2) {
-                        this.reward.add(new Action(Integer.parseInt(split[0]), split[1], "", null));
+                        this.reward.add(new Action(Integer.parseInt(split[0]), split[1], ""));
                     } else {
-                        this.reward.add(new Action(Integer.parseInt(split[0]), "", "", null));
+                        this.reward.add(new Action(Integer.parseInt(split[0]), "", ""));
                     }
                 }
             }
@@ -33,9 +33,9 @@ public class Tutorial {
             } else {
                 String[] split = start.split("\\@");
                 if (split.length >= 2)
-                    this.start = new Action(Integer.parseInt(split[0]), split[1], "", null);
+                    this.start = new Action(Integer.parseInt(split[0]), split[1], "");
                 else
-                    this.start = new Action(Integer.parseInt(split[0]), "", "", null);
+                    this.start = new Action(Integer.parseInt(split[0]), "", "");
             }
 
             if (end.isEmpty()) {
@@ -43,9 +43,9 @@ public class Tutorial {
             } else {
                 String[] split = end.split("\\@");
                 if (split.length >= 2)
-                    this.end = new Action(Integer.parseInt(split[0]), split[1], "", null);
+                    this.end = new Action(Integer.parseInt(split[0]), split[1], "");
                 else
-                    this.end = new Action(Integer.parseInt(split[0]), "", "", null);
+                    this.end = new Action(Integer.parseInt(split[0]), "", "");
             }
         } catch (Exception e) {
             e.printStackTrace();

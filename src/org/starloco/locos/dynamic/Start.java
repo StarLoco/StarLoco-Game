@@ -1,6 +1,8 @@
 package org.starloco.locos.dynamic;
 
 import org.starloco.locos.area.map.GameMap;
+import org.starloco.locos.area.map.MapData;
+import org.starloco.locos.area.map.SQLMapData;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.common.PathFinding;
 import org.starloco.locos.common.SocketManager;
@@ -52,10 +54,22 @@ public class Start {
 			mapUse.put(1, World.world.getMap(6824).getMapCopy());
 			mapUse.put(2, World.world.getMap(6826).getMapCopy());
 			mapUse.put(3, World.world.getMap(6828).getMapCopy());
-			
-			mapUse.get(1).getCase(329).addOnCellStopAction(999, "192", "-1", mapUse.get(2));		
-			mapUse.get(1).getCase(325).addOnCellStopAction(999, "224", "-1", World.world.getMap( 1863));
-			mapUse.get(3).getCase(192).addOnCellStopAction(999, "389", "-1", World.world.getMap( 6829));
+
+
+			MapData data = mapUse.get(1).data;
+			if(data instanceof SQLMapData) {
+				((SQLMapData) data).addOnCellStopAction(329, 999, "192", "-1", mapUse.get(2));
+			}
+
+			data = mapUse.get(1).data;
+			if(data instanceof SQLMapData) {
+				((SQLMapData) data).addOnCellStopAction(325, 999, "224", "-1", World.world.getMap( 1863));
+			}
+
+			data = mapUse.get(2).data;
+			if(data instanceof SQLMapData) {
+				((SQLMapData) data).addOnCellStopAction(192, 999, "389", "-1", World.world.getMap( 6829));
+			}
 			
 			/* MAP 1 : Talk & Walk to begin Fight **/
 			try { Thread.sleep(2000); } catch (InterruptedException ignored) {}

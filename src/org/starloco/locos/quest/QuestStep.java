@@ -67,7 +67,7 @@ public class QuestStep {
         if (StringUtils.isNotBlank(actions)) {
             for (String action : actions.split(";")) {
                 String[] data = action.split("\\|");
-                this.actions.add(new Action(Integer.parseInt(data[0]), data[1], "-1", null));
+                this.actions.add(new Action(Integer.parseInt(data[0]), data[1], "-1"));
             }
         }
     }

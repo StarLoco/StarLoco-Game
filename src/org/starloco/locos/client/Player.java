@@ -4868,7 +4868,7 @@ public class Player {
 
     public boolean castEndFightAction() {
         if(this.endFightAction != null) {
-            this.endFightAction.apply(this, null, -1, -1);
+            this.endFightAction.apply(this, null, -1, -1, getCurMap());
             this.endFightAction = null;
         } else
             return true;

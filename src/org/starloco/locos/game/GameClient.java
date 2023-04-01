@@ -7011,14 +7011,14 @@ public class GameClient {
                 if (packet.charAt(2) != '0' && packet.charAt(2) != '4')
                     try {
                         int index = Integer.parseInt(packet.charAt(2) + "") - 1;
-                        tutorial.getReward().get(index).apply(this.player, null, -1, (short) -1);
+                        tutorial.getReward().get(index).apply(this.player, null, -1, (short) -1, null);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 try {
                     Action end = tutorial.getEnd();
                     if (end != null && this.player != null)
-                        end.apply(this.player, null, -1, (short) -1);
+                        end.apply(this.player, null, -1, (short) -1, null);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

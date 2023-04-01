@@ -8,7 +8,6 @@ import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.Main;
 import org.starloco.locos.other.Action;
 
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -30,7 +29,7 @@ public class NpcAnswerData extends FunctionDAO<NpcAnswer> {
                     answer = new NpcAnswer(id);
                     World.world.addNpcAnswer(answer);
                 }
-                answer.addAction(new Action(result.getInt("type"), result.getString("args"), "", null));
+                answer.addAction(new Action(result.getInt("type"), result.getString("args"), ""));
             }
         } catch (SQLException e) {
             super.sendError(e);

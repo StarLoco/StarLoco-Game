@@ -7,7 +7,6 @@ import org.starloco.locos.entity.monster.MonsterGroup;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.Config;
 import org.starloco.locos.other.Action;
-import org.starloco.locos.util.Pair;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -121,7 +120,17 @@ public class SQLMapData extends MapData {
         final GameCase cell = player.getCurCell();
         if (cell == null) return;
 
-        this.moveEndActions.getOrDefault(cell.getId(), Collections.emptyList()).forEach(action -> action.apply(player, null, -1, -1));
+        this.moveEndActions.getOrDefault(cell.getId(), Collections.emptyList()).forEach(action -> action.apply(player, null, -1, -1, player.getCurMap()));
+    }
+
+    @Override
+    public boolean cellHasMoveEndActions(int cellId) {
+        return !moveEndActions.getOrDefault(cellId, Collections.emptyList()).isEmpty();
+    }
+
+    public void addOnCellStopAction(int cellId, int id, String args, String cond, GameMap map) {
+        List<Action> actions = moveEndActions.computeIfAbsent(cellId, ArrayList::new);
+        actions.add(new Action(id, args, cond));
     }
 
 

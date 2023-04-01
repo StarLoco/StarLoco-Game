@@ -1405,73 +1405,6 @@ public class CommandAdmin extends AdminUser {
             this.sendMessage("Vous avez supprimé le métier "
                     + job + " sur le personnage " + perso.getName() + ".");
             return;
-        } else if (command.equalsIgnoreCase("ADDTRIGGER")) {
-            String args = "";
-            try {
-                args = infos[1];
-            } catch (Exception e) {
-                // ok
-            }
-
-            if (args.equals("")) {
-                String str = "Valeur invalide.";
-                this.sendMessage(str);
-                return;
-            }
-
-            this.getPlayer().getCurCell().addOnCellStopAction(0, args, "-1", null);
-            boolean success = ((ScriptedCellData) DatabaseManager.get(ScriptedCellData.class)).update(this.getPlayer().getCurMap().getId(), this.getPlayer().getCurCell().getId(), 0, 1, args, "-1");
-            String str = "";
-            if (success)
-                str = "Le trigger a ete ajoute.";
-            else
-                str = "Le trigger n'a pas ete ajoute.";
-            this.sendMessage(str);
-            return;
-        } else if (command.equalsIgnoreCase("DELTRIGGER")) {
-            int cellID = -1;
-            try {
-                cellID = Integer.parseInt(infos[1]);
-            } catch (Exception e) {
-                // ok
-            }
-
-            if (cellID == -1
-                    || this.getPlayer().getCurMap().getCase(cellID) == null) {
-                String str = "CellID invalide.";
-                this.sendMessage(str);
-                return;
-            }
-            this.getPlayer().getCurMap().getCase(cellID).clearOnCellAction();
-            boolean success = ((ScriptedCellData) DatabaseManager.get(ScriptedCellData.class)).delete(this.getPlayer().getCurMap().getId(), cellID);
-            String str = "";
-            if (success)
-                str = "Le trigger a ete retire.";
-            else
-                str = "Le trigger n'a pas ete retire.";
-            this.sendMessage(str);
-            return;
-        } else if (command.equalsIgnoreCase("SAVETHAT")) {
-            this.getPlayer().thatMap = this.getPlayer().getCurMap().getId();
-            this.getPlayer().thatCell = this.getPlayer().getCurCell().getId();
-            this.sendMessage("Vous avez sauvegarde la map "
-                    + this.getPlayer().thatMap
-                    + " et la cellule "
-                    + this.getPlayer().thatCell + ".");
-            return;
-        } else if (command.equalsIgnoreCase("APPLYTHAT")) {
-            if (this.getPlayer().thatMap == -1 || this.getPlayer().thatCell == -1) {
-                this.sendMessage("Impossible d'ajouter le trigger, veuillez utiliser la commande SAVETHAT avant.");
-                return;
-            }
-            this.getPlayer().getCurCell().addOnCellStopAction(0, this.getPlayer().thatMap + "," + this.getPlayer().thatCell, "-1", null);
-            ((ScriptedCellData) DatabaseManager.get(ScriptedCellData.class)).update(this.getPlayer().getCurMap().getId(), this.getPlayer().getCurCell().getId(), 0, 1, this.getPlayer().thatMap + "," + this.getPlayer().thatCell, "-1");
-            this.sendMessage("REPLACE INTO `scripted_cells` VALUES ('" + this.getPlayer().getCurMap().getId() + "', '" + this.getPlayer().getCurCell().getId() + "','0','1','" + this.getPlayer().thatMap + "," + this.getPlayer().thatCell + "','-1');" +
-                    "\nVous avez applique le trigger.");
-            this.getPlayer().thatMap = -1;
-            this.getPlayer().thatCell = -1;
-
-            return;
         } else if (command.equalsIgnoreCase("STRIGGER")) {
             this.getPlayer().thatMap = this.getPlayer().getCurMap().getId();
             this.getPlayer().thatCell = this.getPlayer().getCurCell().getId();
@@ -1479,20 +1412,6 @@ public class CommandAdmin extends AdminUser {
                     + this.getPlayer().thatMap
                     + " et la cellule "
                     + this.getPlayer().thatCell + ".");
-            return;
-        } else if (command.equalsIgnoreCase("APTRIGGER")) {
-            if (this.getPlayer().thatMap == -1
-                    || this.getPlayer().thatCell == -1) {
-                this.sendMessage("Impossible d'ajouter le trigger, veuillez utiliser la commande STRIGGER avant.");
-                return;
-            }
-            World.world.getMap( this.getPlayer().thatMap).getCase(this.getPlayer().thatCell).addOnCellStopAction(0, this.getPlayer().getCurMap().getId()
-                    + "," + this.getPlayer().getCurCell().getId(), "-1", null);
-            ((ScriptedCellData) DatabaseManager.get(ScriptedCellData.class)).update(this.getPlayer().thatMap, this.getPlayer().thatCell, 0, 1, this.getPlayer().getCurMap().getId()
-                    + "," + this.getPlayer().getCurCell().getId(), "-1");
-            this.getPlayer().thatMap = -1;
-            this.getPlayer().thatCell = -1;
-            this.sendMessage("Vous avez applique le trigger.");
             return;
         } else if (command.equalsIgnoreCase("INFOS")) {
             long uptime = System.currentTimeMillis() - Config.startTime;

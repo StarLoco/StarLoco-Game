@@ -92,7 +92,7 @@ public class Quest {
             String[] arguments = args.split(";");
 
             for (String id : action.split(",")) {
-                actions.add(new Action(Integer.parseInt(id), arguments[count], "-1", null));
+                actions.add(new Action(Integer.parseInt(id), arguments[count], "-1"));
                 count++;
             }
         }
@@ -294,7 +294,7 @@ public class Quest {
 
         if (!this.actions.isEmpty()) {
             for (Action action : this.actions) {
-                action.apply(player, player, -1, -1);
+                action.apply(player, player, -1, -1, null);
             }
         }
 
@@ -332,7 +332,7 @@ public class Quest {
 
         if (getNextStep(questStep) != questStep.getId()) { //On passe au nouveau objectif on applique les actions
             for (Action action : questStep.getActions()) {
-                action.apply(player, null, 0, 0);
+                action.apply(player, null, 0, 0, null);
             }
         }
     }

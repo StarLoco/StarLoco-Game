@@ -369,8 +369,8 @@ public class World {
         DatabaseManager.get(GameMapData.class).loadFully();
         logger.debug("The maps were loaded successfully.");
 
-//        DatabaseManager.get(ScriptedCellData.class).loadFully();
-//        logger.debug("The scripted cells were loaded successfully.");
+        DatabaseManager.get(ScriptedCellData.class).loadFully();
+        logger.debug("The scripted cells were loaded successfully.");
 
 //        DatabaseManager.get(EndFightActionData.class).loadFully();
 //        logger.debug("The end fight actions were loaded successfully.");

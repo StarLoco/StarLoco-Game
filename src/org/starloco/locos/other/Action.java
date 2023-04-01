@@ -47,13 +47,11 @@ public class Action {
     private int id;
     private String args;
     private String cond;
-    private GameMap map;
 
-    public Action(int id, String args, String cond, GameMap map) {
+    public Action(int id, String args, String cond) {
         this.setId(id);
         this.setArgs(args);
         this.setCond(cond);
-        this.setMap(map);
     }
 
     public static java.util.Map<Integer, Couple<Integer, Integer>> getDopeul() {
@@ -97,16 +95,8 @@ public class Action {
         this.cond = cond;
     }
 
-    public GameMap getMap() {
-        return map;
-    }
-
-    public void setMap(GameMap map) {
-        this.map = map;
-    }
-
     public boolean apply(final Player player, Player target, int itemID,
-                         int cellid) {
+                         int cellid, GameMap map) {
 
         if (player == null)
             return true;
@@ -1083,7 +1073,7 @@ public class Action {
                                     + price);
                         }
                         try {
-                            tuto.getStart().apply(player, null, -1, (short) -1);
+                            tuto.getStart().apply(player, null, -1, (short) -1, null);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -1934,11 +1924,11 @@ public class Action {
                 break;
 
             case 229://Animation d'incarnam � astrub
-                short map = Constant.getClassStatueMap(player.getClasse());
+                mapId = Constant.getClassStatueMap(player.getClasse());
                 int cell = Constant.getClassStatueCell(player.getClasse());
                 SocketManager.GAME_SEND_GA_PACKET(player.getGameClient(), "", "2", player.getId() + "", "7");
-                player.teleport(map, cell);
-                player.setSavePos(map ,cell);
+                player.teleport(mapId, cell);
+                player.setSavePos(mapId ,cell);
                 SocketManager.GAME_SEND_Im_PACKET(player, "06");
                 break;
 
@@ -4281,21 +4271,21 @@ public class Action {
 
             /** Fin Donjon **/
             case 999:
-                player.teleport(this.map, Integer.parseInt(this.args));
+                player.teleport(map.getId(), Integer.parseInt(this.args));
                 break;
 
             case 1000:
-                map = Short.parseShort(this.args.split(",")[0]);
+                mapId = Integer.parseInt(this.args.split(",")[0]);
                 cell = Integer.parseInt(this.args.split(",")[1]);
-                player.teleport(map, cell);
-                player.setSavePos(map,cell);
+                player.teleport(mapId, cell);
+                player.setSavePos(mapId,cell);
                 SocketManager.GAME_SEND_Im_PACKET(player, "06");
                 break;
 
             case 1001:
-                map = Short.parseShort(this.args.split(",")[0]);
+                mapId = Integer.parseInt(this.args.split(",")[0]);
                 cell = Integer.parseInt(this.args.split(",")[1]);
-                player.teleport(map, cell);
+                player.teleport(mapId, cell);
                 break;
 
             case 1002: // Add Multiple objects

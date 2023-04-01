@@ -4,6 +4,8 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.lang.NotImplementedException;
 import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.area.map.GameMap;
+import org.starloco.locos.area.map.MapData;
+import org.starloco.locos.area.map.SQLMapData;
 import org.starloco.locos.database.data.FunctionDAO;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.Main;
@@ -26,16 +28,16 @@ public class ScriptedCellData extends FunctionDAO<Object> {
             while (result.next()) {
                 int mapId = result.getShort("MapID");
                 int cellId = result.getInt("CellID");
+                int eventId = result.getInt("EventID");
+                int actionId = result.getInt("ActionID");
+                String args = result.getString("ActionsArgs");
+                String conds = result.getString("Conditions");
 
-                GameMap map = World.world.getMap(mapId);
-                if (map == null) continue;
-                GameCase cell = map.getCase(cellId);
-                if (cell == null) continue;
-
-                switch (result.getInt("EventID")) {
-                    case 1: // Stop sur la case (triggers)
-                        cell.addOnCellStopAction(result.getInt("ActionID"), result.getString("ActionsArgs"), result.getString("Conditions"), null);
-                        break;
+                if(eventId == 1) {
+                    World.world.getMapData(mapId)
+                        .filter(SQLMapData.class::isInstance)
+                        .map(SQLMapData.class::cast)
+                        .ifPresent(md -> md.addOnCellStopAction(cellId, actionId, args, conds, null));
                 }
             }
         } catch (SQLException e) {

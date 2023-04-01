@@ -516,12 +516,12 @@ public class GameMap {
             for (Action A : this.endFightAction.get(player.needEndFight())) {
                 String args = A.getArgs();
                 A.setArgs("8547,390");
-                A.apply(player, null, -1, -1);
+                A.apply(player, null, -1, -1, this);
                 A.setArgs(args);
             }
         } else {
             for (Action A : this.endFightAction.get(player.needEndFight()))
-                A.apply(player, null, -1, -1);
+                A.apply(player, null, -1, -1, this);
         }
         player.setNeededEndFight(-1, null);
     }
@@ -1140,7 +1140,7 @@ public class GameMap {
                     if (npc != null)
                         if (npc.getCellId() == entry.getId())
                             ok = false;
-            if (!ok || !entry.getPlayers().isEmpty() || entry.getOnCellStopAction())
+            if (!ok || !entry.getPlayers().isEmpty() || data.cellHasMoveEndActions(entry.getId()))
                 continue;
             freecell.add(entry.getId());
         }
@@ -1194,7 +1194,7 @@ public class GameMap {
             GameCase gameCase = this.getCase(entry);
             if (gameCase == null)
                 continue;
-            if(gameCase.getOnCellStopAction())
+            if(data.cellHasMoveEndActions(gameCase.getId()))
                 continue;
             //Si la case n'est pas marchable
             if (!gameCase.isWalkable(true))
@@ -1493,7 +1493,8 @@ public class GameMap {
         }
 
         InteractiveDoor.check(player, this);
-        this.getCase(id).applyOnCellStopActions(player);
+        this.data.onMoveEnd(player);
+
         if (data.placesStr.equalsIgnoreCase("|"))
             return;
         if (player.getCurMap().getId() != data.id || !player.canAggro())

@@ -148,28 +148,7 @@ public class GameCase {
     public void addOnCellStopAction(int id, String args, String cond, GameMap map) {
         if (this.onCellStop == null)
             this.onCellStop = new ArrayList<>();
-        this.onCellStop.add(new Action(id, args, cond, map));
-    }
-
-    public void applyOnCellStopActions(Player player) {
-        if (this.onCellStop != null)
-            for (Action action : this.onCellStop)
-                action.apply(player, null, -1, -1);
-    }
-
-    public boolean getOnCellStopAction() {
-        return this.onCellStop != null;
-    }
-
-    public ArrayList<Action> getOnCellStop() {
-        return onCellStop;
-    }
-
-    public void setOnCellStop(ArrayList<Action> onCellStop) {
-        this.onCellStop = onCellStop;
-    }
-    public void clearOnCellAction() {
-        this.onCellStop = null;
+        this.onCellStop.add(new Action(id, args, cond));
     }
 
     public InteractiveObject getObject() {
