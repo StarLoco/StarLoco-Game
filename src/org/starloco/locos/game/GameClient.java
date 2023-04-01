@@ -4513,7 +4513,7 @@ public class GameClient {
                 sendExtraInformations();
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Main.logger.error("getExtraInformations", e);
         }
     }
 

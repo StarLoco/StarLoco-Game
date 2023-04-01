@@ -1,5 +1,6 @@
 package org.starloco.locos.area.map;
 
+import org.classdump.luna.Table;
 import org.starloco.locos.area.Area;
 import org.starloco.locos.area.SubArea;
 import org.starloco.locos.area.map.entity.InteractiveDoor;
@@ -29,6 +30,8 @@ import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.*;
 import org.starloco.locos.object.GameObject;
 import org.starloco.locos.other.Action;
+import org.starloco.locos.script.proxy.SMap;
+import org.starloco.locos.script.proxy.SPlayer;
 import org.starloco.locos.util.Pair;
 import org.starloco.locos.util.TimerWaiter;
 
@@ -131,6 +134,8 @@ public class GameMap {
         }
     };
 
+    private final SMap scriptVal;
+
     public final MapData data;
 
     public int nextObjectId = -1;
@@ -150,10 +155,13 @@ public class GameMap {
 
     public GameMap(MapData data) {
         Objects.requireNonNull(data);
+        this.scriptVal = new SMap(this);
         this.data = data;
         Pair<CellCache, List<GameCase>> p = World.world.getCryptManager().decompileMapData(this, data.cellsData, data.key, data.width, data.height);
         this.cellCache = p.first;
         this.cases = p.second;
+
+        this.data.getNPCs().forEach((k, v) -> addNpc(k, v.first, v.second));
     }
 
     public CellCache getCellCache() {
@@ -475,6 +483,7 @@ public class GameMap {
             npc = new Npc(this.nextObjectId, cellID, (byte) dir, npcID);
         else
             npc = new NpcMovable(this.nextObjectId, cellID, (byte) dir, data.id, npcID);
+
 
         this.npcs.put(this.nextObjectId, npc);
         this.nextObjectId--;
@@ -1517,4 +1526,6 @@ public class GameMap {
         return f;
 	
 	}
+
+    public SMap scripted() { return scriptVal; }
 }

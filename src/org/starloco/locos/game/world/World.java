@@ -193,12 +193,8 @@ public class World {
     }
 
     public GameMap getMap(int id) {
-        try {
-            // Atomically get or load map
-            return maps.computeIfAbsent(id, mapID -> new GameMap(mapsData.get(mapID)));
-        }catch (NullPointerException ignored){
-            return null;
-        }
+        // Atomically get or load map
+        return maps.computeIfAbsent(id, mapID -> new GameMap(mapsData.get(mapID)));
     }
 
     //endregion

@@ -173,6 +173,11 @@ public class SPlayer extends DefaultUserdata<Player> {
     }
 
     @SuppressWarnings("unused")
+    private static SMap map(Player p, ArgumentIterator args) {
+        return p.getCurMap().scripted();
+    }
+
+    @SuppressWarnings("unused")
     private static void teleport(Player p, ArgumentIterator args) {
         int mapID = args.nextInt();
         int cellID = args.nextInt();

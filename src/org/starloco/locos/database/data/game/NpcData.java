@@ -36,7 +36,8 @@ public class NpcData extends FunctionDAO<Pair<Npc, Integer>> {
                     continue;
 
                 if(md instanceof SQLMapData) {
-                    ((SQLMapData)md).addNpc(id, result.getInt("cellid"), result.getInt("orientation"));
+                    // We don't want to override script map data
+                    md.addNpc(id, result.getInt("cellid"), result.getInt("orientation"));
                 }
             }
         } catch (SQLException e) {

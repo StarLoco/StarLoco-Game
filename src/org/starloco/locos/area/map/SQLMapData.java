@@ -17,7 +17,6 @@ public class SQLMapData extends MapData {
     // TODO: Remove GameCase/CellCache completely
     private List<GameCase> cases = new ArrayList<>();
     private final HashMap<Integer,List<Action>> moveEndActions = new HashMap<>();
-    private final Map<Integer, Pair<Integer,Integer>> npcs = new HashMap<>();
     private final List<MobGroupDef> staticMobGroups = new LinkedList<>();
 
     protected SQLMapData(int id, String date, String key, String data, int width, int height, int x, int y,
@@ -118,11 +117,6 @@ public class SQLMapData extends MapData {
     }
 
     @Override
-    public List<Integer> getNPCs() {
-        return new ArrayList<>(npcs.keySet());
-    }
-
-    @Override
     public void onMoveEnd(Player player) {
         final GameCase cell = player.getCurCell();
         if (cell == null) return;
@@ -146,9 +140,5 @@ public class SQLMapData extends MapData {
                 noAgro,
                 noCanal
         ).map(b -> b?"1":"0").collect(Collectors.joining(";"));
-    }
-
-    public void addNpc(int id, int cellid, int orientation) {
-        this.npcs.put(id, new Pair<>(cellid, orientation));
     }
 }

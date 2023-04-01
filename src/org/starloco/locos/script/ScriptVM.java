@@ -27,10 +27,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 public class ScriptVM {
     public static final Logger logger = LoggerFactory.getLogger("Script");
+
     protected final Table env;
     protected final StateContext state;
     protected final ChunkLoader loader;
@@ -123,6 +125,7 @@ public class ScriptVM {
             context.getReturnBuffer().setTo(true);
         }
     }
+
 
     public static int rawOptionalInt(Table v, Object key, int val) {
         Object n = v.rawget(key);
@@ -226,5 +229,17 @@ public class ScriptVM {
         int id = rawInt(t, "itemID");
         int qua = rawInt(t, "quantity");
         return new Couple<>(id, qua);
+    }
+
+    public static <K,V> Map<K,V> mapFromScript(Table t, Function<Object,K> keyMapper, Function<Object,V> valMapper) {
+        Map<K,V> out = new HashMap<>();
+
+        for(Object key = t.initialKey(); key != null; key = t.successorKeyOf(key)) {
+            Object val = t.rawget(key);
+
+            out.put(keyMapper.apply(key), valMapper.apply(val));
+        }
+
+        return out;
     }
 }

@@ -281,12 +281,8 @@ public class Action {
                 break;
 
             case -1://Ouvrir banque
-                for (Npc npc : player.getCurMap().getNpcs().values()) {
-                    if (npc.getTemplate().getGfxId() == 9048) {
-                        player.openBank();
-                        break;
-                    }
-                }
+                Npc npc = player.getCurMap().getNpcByTemplateId(9048); // What if it's a different kind of bank teller
+                if(npc != null) player.openBank();
                 break;
 
             case 0://T�l�portation
