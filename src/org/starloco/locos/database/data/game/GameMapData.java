@@ -56,12 +56,16 @@ public class GameMapData extends FunctionDAO<GameMap> {
 
             result = getData("SELECT * FROM mobgroups_fix");
             while (result.next()) {
-                int mapId = result.getShort("mapid");
-                MapData md = World.world.getMapData(mapId).orElse(null);
-                if (md instanceof SQLMapData) {
-                    int cellId = result.getInt("cellid");
-                    ((SQLMapData)md).addStaticGroup(cellId, result.getString("groupData"));
-                    World.world.addGroupFix(mapId + ";" + cellId, result.getString("groupData"), result.getInt("Timer"));
+                int mapId = result.getInt("mapid");
+                try {
+                    MapData md = World.world.getMapData(mapId).orElse(null);
+                    if (md instanceof SQLMapData) {
+                        int cellId = result.getInt("cellid");
+                        ((SQLMapData)md).addStaticGroup(cellId, result.getString("groupData"));
+                        World.world.addGroupFix(mapId + ";" + cellId, result.getString("groupData"), result.getInt("Timer"));
+                    }
+                }catch(SQLException e) {
+                    throw new SQLException("Map #"+mapId, e);
                 }
             }
         } catch (SQLException e) {
