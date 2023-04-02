@@ -182,3 +182,12 @@ function Item:consumeTxtStat(stat, val) end
 ---@class Map
 local Map = {}
 
+-- FighterInfo
+---@class FighterInfo
+local FighterInfo = {}
+
+---@return number
+function FighterInfo:id() end
+
+---@return number
+function FighterInfo:id() end

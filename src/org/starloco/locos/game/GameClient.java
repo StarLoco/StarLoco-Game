@@ -1115,14 +1115,12 @@ public class GameClient {
             return;
         int MapX = Integer.parseInt(datas.split(",")[0]);
         int MapY = Integer.parseInt(datas.split(",")[1]);
-        ArrayList<GameMap> i = World.world.getMapByPosInArrayPlayer(MapX, MapY, this.player);
-        GameMap map = null;
-        if (i.size() <= 0)
+        List<Integer> i = World.world.getMapIdByPosInSuperArea(MapX, MapY, this.player.getCurMap().getArea().getSuperArea());
+
+        if (i.isEmpty())
             return;
-        else if (i.size() > 1)
-            map = i.get(Formulas.getRandomValue(0, i.size() - 1));
-        else if (i.size() == 1)
-            map = i.get(0);
+
+        GameMap map = World.world.getMap(i.get(Formulas.getRandomValue(0, i.size() - 1)));
         if (map == null)
             return;
         int CellId = map.getRandomFreeCellId();

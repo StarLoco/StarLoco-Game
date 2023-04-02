@@ -927,8 +927,13 @@ public class World {
         return i;
     }
 
-    public ArrayList<GameMap> getMapByPosInArrayPlayer(int mapX, int mapY, Player player) {
-        return maps.values().stream().filter(map -> map != null && map.getSubArea() != null && player.getCurMap().getSubArea() != null).filter(map -> map.getX() == mapX && map.getY() == mapY && map.getSubArea().getArea().getSuperArea() == player.getCurMap().getSubArea().getArea().getSuperArea()).collect(Collectors.toCollection(ArrayList::new));
+    public List<Integer> getMapIdByPosInSuperArea(int mapX, int mapY, int superArea) {
+        return mapsData.values().stream()
+            .filter(Objects::nonNull)
+            .filter(map -> map.x == mapX && map.y == mapY)
+            .filter(map -> Optional.ofNullable(map.getSubArea()).map(SubArea::getArea).map(Area::getSuperArea).orElse(-1) == superArea)
+            .map(md -> md.id)
+            .collect(Collectors.toList());
     }
 
     public void addGuild(Guild g) {

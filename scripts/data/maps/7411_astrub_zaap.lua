@@ -25,11 +25,11 @@ function map:onMovementEnd(inst, player)
     local cell = player:cell()
 
     if cell == 376 then player:teleport(7427, 363)
-    elseif cell == 456 then player:teleport( 7412,36)
-    elseif cell == 202 then player:teleport(10111,181)
-    elseif cell == 193 then player:teleport( 7553,342)
-    elseif cell == 22 then player:teleport(7410,458)
-    elseif cell == 247 then player:teleport( 7395,245)
+    elseif cell == 456 then player:teleport(7412, 36)
+    elseif cell == 202 then player:teleport(10111, 181)
+    elseif cell == 193 then player:teleport(7553, 342)
+    elseif cell == 22 then player:teleport(7410, 458)
+    elseif cell == 247 then player:teleport(7395, 245)
     end
 end
 
