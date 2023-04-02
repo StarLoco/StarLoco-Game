@@ -20,7 +20,7 @@ import java.util.ArrayList;
 
 public class InteractiveObject {
 
-    public final static Updatable updatable = new Updatable(0) {
+    public final static Updatable<ArrayList<InteractiveObject>> updatable = new Updatable<ArrayList<InteractiveObject>>(0) {
         private final ArrayList<InteractiveObject> queue = new ArrayList<>();
 
         @Override

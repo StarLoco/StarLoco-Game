@@ -1,6 +1,5 @@
 package org.starloco.locos.area.map;
 
-import org.classdump.luna.Table;
 import org.starloco.locos.area.Area;
 import org.starloco.locos.area.SubArea;
 import org.starloco.locos.area.map.entity.InteractiveDoor;
@@ -43,7 +42,7 @@ import java.util.stream.Collectors;
 public class GameMap {
 
     public static final Map<String, ArrayList<GameObject>> fixMobGroupObjects = new HashMap<>();
-    public static final Updatable updatable = new Updatable(30000) {
+    public static final Updatable<ArrayList<RespawnGroup>> updatable = new Updatable<ArrayList<RespawnGroup>>(30000) {
         private final ArrayList<RespawnGroup> groups = new ArrayList<>();
 
         private MobGroupDef randomizeMobGroup(int cellID, String data) {
@@ -668,15 +667,14 @@ public class GameMap {
     }
 
     public void spawnAfterTimeGroup() {
-        ((ArrayList<RespawnGroup>) updatable.get()).add(new RespawnGroup(this, -1, System.currentTimeMillis()));
+        updatable.get().add(new RespawnGroup(this, -1, System.currentTimeMillis()));
     }
 
     public void spawnAfterTimeGroupFix(final int cell) {
-        ((ArrayList<RespawnGroup>) updatable.get()).add(new RespawnGroup(this, cell, System.currentTimeMillis()));
+        updatable.get().add(new RespawnGroup(this, cell, System.currentTimeMillis()));
     }
 
     private static class RespawnGroup {
-
         private final GameMap map;
         private final int cell;
         private final long lastTime;

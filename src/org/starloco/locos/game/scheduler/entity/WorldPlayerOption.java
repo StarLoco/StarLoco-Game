@@ -5,9 +5,9 @@ import org.starloco.locos.database.data.login.AccountData;
 import org.starloco.locos.game.scheduler.Updatable;
 import org.starloco.locos.game.world.World;
 
-public class WorldPlayerOption extends Updatable {
+public class WorldPlayerOption extends Updatable<Void> {
 
-    public final static Updatable updatable = new WorldPub(300000);
+    public final static WorldPub instance = new WorldPub(300000);
 
     public WorldPlayerOption(int wait) {
         super(wait);
@@ -22,7 +22,7 @@ public class WorldPlayerOption extends Updatable {
     }
 
     @Override
-    public Object get() {
+    public Void get() {
         return null;
     }
 }

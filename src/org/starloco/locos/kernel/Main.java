@@ -2,7 +2,6 @@ package org.starloco.locos.kernel;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
-import org.apache.mina.filter.logging.LogLevel;
 import org.fusesource.jansi.AnsiConsole;
 import org.slf4j.LoggerFactory;
 import org.starloco.locos.area.map.GameMap;
@@ -92,8 +91,8 @@ public class Main {
 	        }
 
 	        final List<Updatable> updatables = Arrays.asList(
-	                WorldSave.updatable, GameMap.updatable, InteractiveObject.updatable, Mount.updatable,
-                    WorldPlayerOption.updatable, WorldPub.updatable,
+	                WorldSave.instance, GameMap.updatable, InteractiveObject.updatable, Mount.updatable,
+                    WorldPlayerOption.instance, WorldPub.instance,
                     AuctionManager.getInstance(), /*Tavernier.getInstance(),*/ EventManager.getInstance());
 
             while (Config.isRunning) {

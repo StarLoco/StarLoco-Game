@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by Locos on 02/10/2016.
  */
-public class EventManager extends Updatable {
+public class EventManager extends Updatable<Long> {
 
     public final static int TOKEN = 50007, NPC = 16000;
     private final static EventManager singleton = new EventManager();
@@ -197,7 +197,7 @@ public class EventManager extends Updatable {
     }
 
     @Override
-    public Object get() {
+    public Long get() {
         return lastTime;
     }
 

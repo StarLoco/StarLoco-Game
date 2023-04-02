@@ -3,7 +3,7 @@ package org.starloco.locos.game.scheduler;
 /**
  * Created by Locos on 23/06/2015.
  */
-public abstract class Updatable implements IUpdatable {
+public abstract class Updatable<T> implements IUpdatable<T> {
 
     private final long wait;
     protected long lastTime = System.currentTimeMillis();

@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by Locos on 31/01/2018.
  */
-public class AuctionManager extends Updatable {
+public class AuctionManager extends Updatable<Void> {
 
     //region static
     private static AuctionManager instance;
@@ -206,7 +206,7 @@ public class AuctionManager extends Updatable {
     }
 
     @Override
-    public Object get() {
+    public Void get() {
         return null;
     }
 

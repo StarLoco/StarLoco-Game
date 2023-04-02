@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class Tavernier extends Updatable {
+public class Tavernier extends Updatable<Void> {
 
     private static final Tavernier instance = new Tavernier();
 
@@ -75,7 +75,7 @@ public class Tavernier extends Updatable {
     }
 
     @Override
-    public Object get() {
+    public Void get() {
         return null;
     }
 

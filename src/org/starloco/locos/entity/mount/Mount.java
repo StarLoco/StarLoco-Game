@@ -22,7 +22,7 @@ import java.util.List;
 
 public class Mount {
 
-    public final static Updatable updatable = new Updatable(3600000) {
+    public final static Updatable<Void> updatable = new Updatable<Void>(3600000) {
         @Override
         public void update() {
             if(this.verify()) {
@@ -35,7 +35,7 @@ public class Mount {
         }
 
         @Override
-        public Object get() {
+        public Void get() {
             return null;
         }
     };

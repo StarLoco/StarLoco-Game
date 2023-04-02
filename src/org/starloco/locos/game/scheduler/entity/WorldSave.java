@@ -15,9 +15,9 @@ import org.starloco.locos.object.GameObject;
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class WorldSave extends Updatable {
+public class WorldSave extends Updatable<Void> {
 
-    public final static Updatable updatable = new WorldSave(60 * 60 * 1000);
+    public final static WorldSave instance = new WorldSave(60 * 60 * 1000);
     private static Thread thread;
 
     private WorldSave(int wait) {
@@ -126,7 +126,7 @@ public class WorldSave extends Updatable {
     }
 
     @Override
-    public GameObject get() {
+    public Void get() {
         return null;
     }
 }

@@ -7,9 +7,9 @@ import org.starloco.locos.util.TimerWaiter;
 
 import java.util.ArrayList;
 
-public class WorldPub extends Updatable {
+public class WorldPub extends Updatable<Void> {
 
-    public final static Updatable updatable = new WorldPub(600000);
+    public final static WorldPub instance = new WorldPub(600000);
     public final static ArrayList<String> pubs = new ArrayList<>();
 
     private int last;
@@ -35,7 +35,7 @@ public class WorldPub extends Updatable {
     }
 
     @Override
-    public Object get() {
+    public Void get() {
         return null;
     }
 }
