@@ -150,7 +150,6 @@ public class GameMap {
     private final Map<Integer, MonsterGroup> mobGroups = new HashMap<>();
     private final Map<Integer, MonsterGroup> fixMobGroups = new HashMap<>();
     private final Map<Integer, Npc> npcs = new HashMap<>();
-    private final Map<Integer, ArrayList<Action>> endFightAction = new HashMap<>();
     private final Map<Integer, Integer> mobExtras = new HashMap<>();
 
     public GameMap(MapData data) {
@@ -166,6 +165,8 @@ public class GameMap {
             SQLMapData md = (SQLMapData) this.data;
             md.getStaticGroups().forEach(this::addStaticGroup);
         }
+
+        this.refreshSpawns();
     }
 
     public CellCache getCellCache() {

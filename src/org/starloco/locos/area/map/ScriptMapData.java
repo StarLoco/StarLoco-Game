@@ -92,6 +92,6 @@ public class ScriptMapData extends MapData {
     public void onFightEnd(Fight f, Player p) {
         Object onFightEnd = recursiveGet(scriptVal,"onFightEnd");
         if(onFightEnd == null) return;
-        DataScriptVM.getInstance().call(onFightEnd, scriptVal, p.getCurMap().scripted() /*ADD FIGHTERS*/);
+        DataScriptVM.getInstance().call(onFightEnd, scriptVal, p.getCurMap().scripted(), p.scripted() /*ADD FIGHTERS*/);
     }
 }
