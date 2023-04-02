@@ -6,6 +6,7 @@ import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.area.map.MapData;
 import org.starloco.locos.area.map.SQLMapData;
+import org.starloco.locos.database.DatabaseManager;
 import org.starloco.locos.database.data.FunctionDAO;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.Constant;
@@ -46,7 +47,10 @@ public class GameMapData extends FunctionDAO<GameMap> {
 
             while (result.next()) {
                 try {
-                    World.world.addMapData(mapDataFromResultSet(result));
+                    MapData md = mapDataFromResultSet(result);
+                    World.world.addMapData(md);
+
+                    DatabaseManager.get(EndFightActionData.class).load(md.id);
                 } catch (Exception e) {
                     e.printStackTrace();
                     Main.stop("SQLMapTemplate");
@@ -68,6 +72,8 @@ public class GameMapData extends FunctionDAO<GameMap> {
                     throw new SQLException("Map #"+mapId, e);
                 }
             }
+
+
         } catch (SQLException e) {
             super.sendError(e);
         } finally {

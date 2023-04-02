@@ -4,6 +4,7 @@ import org.starloco.locos.client.Player;
 import org.starloco.locos.entity.monster.MobGroupDef;
 import org.starloco.locos.entity.monster.MonsterGrade;
 import org.starloco.locos.entity.monster.MonsterGroup;
+import org.starloco.locos.fight.Fight;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.Config;
 import org.starloco.locos.other.Action;
@@ -14,8 +15,9 @@ import java.util.stream.Stream;
 
 public class SQLMapData extends MapData {
     // TODO: Remove GameCase/CellCache completely
-    private List<GameCase> cases = new ArrayList<>();
     private final HashMap<Integer,List<Action>> moveEndActions = new HashMap<>();
+    private final Map<Integer, List<Action>> endFightActions = new HashMap<>();
+
     private final List<MobGroupDef> staticMobGroups = new LinkedList<>();
 
     protected SQLMapData(int id, String date, String key, String data, int width, int height, int x, int y,
@@ -128,11 +130,31 @@ public class SQLMapData extends MapData {
         return !moveEndActions.getOrDefault(cellId, Collections.emptyList()).isEmpty();
     }
 
-    public void addOnCellStopAction(int cellId, int id, String args, String cond, GameMap map) {
+    @Override
+    public void onFightEnd(Fight f, Player p) {
+        if (endFightActions.get(p.needEndFight()) == null)
+            return;
+        if (id == 8545 && p.hasMobGroup() != null && p.hasMobGroup().getMobs().size() == 6) {
+            for (Action A : endFightActions.get(p.needEndFight())) {
+                String args = A.getArgs();
+                A.setArgs("8547,390");
+                A.apply(p, null, -1, -1, p.getCurMap());
+                A.setArgs(args);
+            }
+        } else {
+            for (Action A : endFightActions.get(p.needEndFight()))
+                A.apply(p, null, -1, -1, p.getCurMap());
+        }
+    }
+
+    public void addEndFightAction(int type, Action action) {
+        endFightActions.computeIfAbsent(type, ArrayList::new).add(action);
+    }
+
+    public void addOnCellStopAction(int cellId, int id, String args, String cond) {
         List<Action> actions = moveEndActions.computeIfAbsent(cellId, ArrayList::new);
         actions.add(new Action(id, args, cond));
     }
-
 
     public void addStaticGroup(int cellID, String groupData) {
         if(groupData.length() == 0) return;
@@ -151,5 +173,9 @@ public class SQLMapData extends MapData {
                 noAgro,
                 noCanal
         ).map(b -> b?"1":"0").collect(Collectors.joining(";"));
+    }
+
+    public void clearEndFightActions() {
+        endFightActions.clear();
     }
 }

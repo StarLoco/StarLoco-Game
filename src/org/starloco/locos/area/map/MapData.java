@@ -4,6 +4,7 @@ import org.starloco.locos.area.Area;
 import org.starloco.locos.area.SubArea;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.entity.monster.MonsterGrade;
+import org.starloco.locos.fight.Fight;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.util.Pair;
 
@@ -75,4 +76,6 @@ public abstract class MapData {
 
     public abstract void onMoveEnd(Player p);
     public abstract boolean cellHasMoveEndActions(int cellId);
+
+    public abstract void onFightEnd(Fight f, Player p);
 }

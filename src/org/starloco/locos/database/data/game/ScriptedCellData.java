@@ -2,9 +2,6 @@ package org.starloco.locos.database.data.game;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.lang.NotImplementedException;
-import org.starloco.locos.area.map.GameCase;
-import org.starloco.locos.area.map.GameMap;
-import org.starloco.locos.area.map.MapData;
 import org.starloco.locos.area.map.SQLMapData;
 import org.starloco.locos.database.data.FunctionDAO;
 import org.starloco.locos.game.world.World;
@@ -37,7 +34,7 @@ public class ScriptedCellData extends FunctionDAO<Object> {
                     World.world.getMapData(mapId)
                         .filter(SQLMapData.class::isInstance)
                         .map(SQLMapData.class::cast)
-                        .ifPresent(md -> md.addOnCellStopAction(cellId, actionId, args, conds, null));
+                        .ifPresent(md -> md.addOnCellStopAction(cellId, actionId, args, conds));
                 }
             }
         } catch (SQLException e) {

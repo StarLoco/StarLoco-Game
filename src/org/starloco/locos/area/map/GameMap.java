@@ -514,44 +514,8 @@ public class GameMap {
     }
 
     public void applyEndFightAction(Player player) {
-        if (this.endFightAction.get(player.needEndFight()) == null)
-            return;
-        if (data.id == 8545 && player.hasMobGroup() != null && player.hasMobGroup().getMobs().size() == 6) {
-            for (Action A : this.endFightAction.get(player.needEndFight())) {
-                String args = A.getArgs();
-                A.setArgs("8547,390");
-                A.apply(player, null, -1, -1, this);
-                A.setArgs(args);
-            }
-        } else {
-            for (Action A : this.endFightAction.get(player.needEndFight()))
-                A.apply(player, null, -1, -1, this);
-        }
+        this.data.onFightEnd(player.getFight(), player);
         player.setNeededEndFight(-1, null);
-    }
-
-    public boolean hasEndFightAction(int type) {
-        return this.endFightAction.get(type) != null;
-    }
-
-    public Map<Integer, ArrayList<Action>> getEndFightAction() {
-        return endFightAction;
-    }
-
-    public void addEndFightAction(int type, Action A) {
-        if (this.endFightAction.get(type) == null)
-            this.endFightAction.put(type, new ArrayList<>()); // On retire l'action si elle existait d�j�
-        delEndFightAction(type, A.getId());
-        this.endFightAction.get(type).add(A);
-    }
-
-    public void delEndFightAction(int type, int aType) {
-        if (this.endFightAction.get(type) != null)
-            new ArrayList<>(this.endFightAction.get(type)).stream().filter(A -> A.getId() == aType).forEach(A -> this.endFightAction.get(type).remove(A));
-    }
-
-    public void delAllEndFightAction() {
-        this.endFightAction.clear();
     }
 
     public int getX() {

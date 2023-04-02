@@ -1292,7 +1292,7 @@ public class Fight {
             String[] chalInfo;
 
             int challengeID, challengeXP, challengeDP, bonusGroupe;
-            int challengeNumber = ((this.getMapOld().hasEndFightAction(this.getType()) || SoulStone.isInArenaMap(this.getMapOld().getId())) ? 2 : 1);
+            int challengeNumber = ((/* FIXME: Check if in dungeon */ false || SoulStone.isInArenaMap(this.getMapOld().getId())) ? 2 : 1);
 
             for (String chalInfos : World.world.getRandomChallenge(challengeNumber, challenges)) {
                 chalInfo = chalInfos.split(",");
@@ -1596,8 +1596,8 @@ public class Fight {
                                         } else {
                                             if (getType() != Constant.FIGHT_TYPE_PVT)
                                                 player.setNeededEndFightAction(new Action(1001, player.getSavePosition().toString(","), ""));
-                                            else if (!player.getCurMap().hasEndFightAction(0))
-                                                player.setNeededEndFightAction(new Action(1001, player.getSavePosition().toString(","), ""));
+//                                            else if (!player.getCurMap().hasEndFightAction(0))
+//                                                player.setNeededEndFightAction(new Action(1001, player.getSavePosition().toString(","), ""));
                                         }
                                         player.setPdv(1);
                                     }
@@ -3876,7 +3876,7 @@ public class Fight {
                 }
 
                 if (this.type != -1) {
-                    if (Constant.FIGHT_TYPE_PVM == this.getType() && this.getMapOld().hasEndFightAction(this.getType())) {
+                    if (Constant.FIGHT_TYPE_PVM == this.getType()) {
                         for (Fighter fighter : winTeam) {
                             Player player = fighter.getPlayer();
                             if (player == null)

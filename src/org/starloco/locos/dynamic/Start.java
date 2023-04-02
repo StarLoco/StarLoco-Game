@@ -58,17 +58,17 @@ public class Start {
 
 			MapData data = mapUse.get(1).data;
 			if(data instanceof SQLMapData) {
-				((SQLMapData) data).addOnCellStopAction(329, 999, "192", "-1", mapUse.get(2));
+				((SQLMapData) data).addOnCellStopAction(329, 999, "192", "-1");
 			}
 
 			data = mapUse.get(1).data;
 			if(data instanceof SQLMapData) {
-				((SQLMapData) data).addOnCellStopAction(325, 999, "224", "-1", World.world.getMap( 1863));
+				((SQLMapData) data).addOnCellStopAction(325, 999, "224", "-1");
 			}
 
 			data = mapUse.get(2).data;
 			if(data instanceof SQLMapData) {
-				((SQLMapData) data).addOnCellStopAction(192, 999, "389", "-1", World.world.getMap( 6829));
+				((SQLMapData) data).addOnCellStopAction(192, 999, "389", "-1");
 			}
 			
 			/* MAP 1 : Talk & Walk to begin Fight **/
@@ -208,7 +208,7 @@ public class Start {
 
 			data = mapUse.get(2).data;
 			if(data instanceof SQLMapData) {
-				((SQLMapData) data).addOnCellStopAction(177, 999, "388", "-1", mapUse.get(3));
+				((SQLMapData) data).addOnCellStopAction(177, 999, "388", "-1");
 			}
 
 			SocketManager.GAME_SEND_cMK_PACKET(player, "", helper.getId(), "Ganymede", "Suis-moi dans la prochaine salle, tu auras 3 nouveaux sorts.");

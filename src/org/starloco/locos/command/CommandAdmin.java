@@ -1813,9 +1813,6 @@ public class CommandAdmin extends AdminUser {
                     DatabaseManager.get(BaseHouseData.class).loadFully();
                     DatabaseManager.get(HouseData.class).loadFully();
                     break;
-                case "ENDFIGHTACTIONS":
-                    DatabaseManager.get(EndFightActionData.class).loadFully();
-                    break;
                 case "QUESTS":
                     DatabaseManager.get(QuestData.class).loadFully();
                     DatabaseManager.get(QuestStepData.class).loadFully();

@@ -3,6 +3,7 @@ package org.starloco.locos.area.map;
 import org.classdump.luna.Table;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.entity.monster.MonsterGrade;
+import org.starloco.locos.fight.Fight;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.script.DataScriptVM;
 import org.starloco.locos.script.ScriptVM;
@@ -76,14 +77,21 @@ public class ScriptMapData extends MapData {
 
     @Override
     public void onMoveEnd(Player p) {
-        Object onTalk = recursiveGet(scriptVal,"onMovementEnd");
-        if(onTalk == null) return;
-        DataScriptVM.getInstance().call(onTalk, scriptVal, p.getCurMap().scripted(), p.scripted());
+        Object onMovementEnd = recursiveGet(scriptVal,"onMovementEnd");
+        if(onMovementEnd == null) return;
+        DataScriptVM.getInstance().call(onMovementEnd, scriptVal, p.getCurMap().scripted(), p.scripted());
     }
 
     @Override
     public boolean cellHasMoveEndActions(int cellId) {
         // TODO
         return false;
+    }
+
+    @Override
+    public void onFightEnd(Fight f, Player p) {
+        Object onFightEnd = recursiveGet(scriptVal,"onFightEnd");
+        if(onFightEnd == null) return;
+        DataScriptVM.getInstance().call(onFightEnd, scriptVal, p.getCurMap().scripted() /*ADD FIGHTERS*/);
     }
 }
