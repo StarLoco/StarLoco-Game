@@ -162,6 +162,10 @@ public class GameMap {
         this.cases = p.second;
 
         this.data.getNPCs().forEach((k, v) -> addNpc(k, v.first, v.second));
+        if(this.data instanceof SQLMapData) {
+            SQLMapData md = (SQLMapData) this.data;
+            md.getStaticGroups().forEach(this::addStaticGroup);
+        }
     }
 
     public CellCache getCellCache() {
@@ -1527,6 +1531,18 @@ public class GameMap {
         return f;
 	
 	}
+
+    private void addStaticGroup(MobGroupDef def) {
+        while(this.mobGroups.get(this.nextObjectId) != null)
+            this.nextObjectId--;
+        MonsterGroup group = new MonsterGroup(this.nextObjectId, this, def);
+
+        if (group.getMobs().isEmpty())
+            return;
+        this.mobGroups.put(this.nextObjectId, group);
+        this.nextObjectId--;
+        this.fixMobGroups.put(-1000 + this.nextObjectId, group);
+    }
 
     public SMap scripted() { return scriptVal; }
 }

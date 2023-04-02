@@ -136,8 +136,10 @@ public class SQLMapData extends MapData {
 
     public void addStaticGroup(int cellID, String groupData) {
         if(groupData.length() == 0) return;
-        this.staticMobGroups.add(new MobGroupDef(cellID, MonsterGroup.parseMobGroup(groupData)));
+        this.staticMobGroups.add(new MobGroupDef(cellID, MonsterGroup.parseMobGroupLevels(groupData)));
     }
+
+    public List<MobGroupDef> getStaticGroups() { return this.staticMobGroups; }
 
     public String getForbidden() {
         return Stream.of(

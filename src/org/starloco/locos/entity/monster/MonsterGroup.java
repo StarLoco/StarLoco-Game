@@ -2,7 +2,6 @@ package org.starloco.locos.entity.monster;
 
 import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.common.Formulas;
-import org.starloco.locos.entity.monster.boss.MaitreCorbac;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.Config;
 import org.starloco.locos.kernel.Constant;
@@ -184,16 +183,21 @@ public class MonsterGroup {
         this.starBonus = (short) (star ? 0 : -1);
     }
 
-    public static List<Pair<Integer,Integer>> parseMobGroup(String groupData) {
+    public static List<Pair<Integer,Integer>> parseMobGroupLevels(String groupData) {
         List<Pair<Integer,Integer>> out = new LinkedList<>();
         Arrays.stream(groupData.split(";")).forEach(s -> {
             String[] parts = s.split(",");
             int idMonster = Integer.parseInt(parts[0]);
             int min = Integer.parseInt(parts[1]);
             int max = Integer.parseInt(parts[2]);
-            // Add each grade
-            for(int g=min;g<=max;g++) {
-                out.add(new Pair<>(idMonster, g));
+
+            try {
+                // Not really random anymore, but that will be replaced by script anyway
+                World.world.getMonstre(idMonster).getGrades().values().stream()
+                    .filter(g -> g.getLevel() >= min && g.getLevel() <= max)
+                    .findAny().ifPresent(g -> out.add(new Pair<>(idMonster, g.getGrade())));
+            }catch(NullPointerException e) {
+                throw new NullPointerException(String.format("Monster #%d Grade for levels %d or %d does not exist", idMonster, min, max));
             }
         });
         return out;
