@@ -1,12 +1,12 @@
-local npc = Npc(797, 1001)
+local npc = Npc(772, 30)
 
-npc.gender = 1
+npc.accessories = {0, 0x1b12, 0, 0, 0}
 
 ---@param p Player
-local dungeon = TreechnidDungeon
-function npc:onTalk(p, answer)
-    if answer == 0 then p:ask(3174, {2796})
-    elseif answer == 2796 then
+local dungeon = CracklerDungeon
+function npc:onTalk(p, answer) 
+    if answer == 0 then p:ask(3162, {2780})
+    elseif answer == 2780 then
         -- Check if p has item / keychain
         local responses = {}
         if p:getItem(dungeon.keyID, 1) then table.insert(responses, dungeon.keyResponseID) end
