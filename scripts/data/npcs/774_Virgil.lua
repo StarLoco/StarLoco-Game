@@ -3,7 +3,7 @@ local npc = Npc(774, 9048)
 ---@param p Player
 function npc:onTalk(p, answer)
     if p:mapID() == 2985 then 
-		LordCrow:onTalkToGateKeeper(p, answer)
+		LordCrowDungeon:onTalkToGateKeeper(p, answer)
 	elseif p:mapID() == 9604 then
 		if answer == 0 then p:ask(3181, {2810})
 		elseif answer == 2810 then
