@@ -220,7 +220,7 @@ public class SPlayer extends DefaultUserdata<Player> {
     @SuppressWarnings("unused")
     private static SItem getItem(Player p, ArgumentIterator args) {
         int itemID = args.nextInt();
-        int quantity = args.nextInt();
+        int quantity = args.nextOptionalInt(1);
         GameObject item = p.getItemTemplate(itemID, quantity);
         if(item == null) {
             // No item return null
