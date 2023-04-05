@@ -9,8 +9,9 @@ The most advanced public 1.39.8 dofus emulator written in Java 8.
 
 ## Requirements
 
-To be able to run this project, you'll need to be sure your computer has :
-- Java - JRE 8 
+To be able to use this project, you'll need to be sure your computer has :
+- Java - JDK 8 if you intend to compile the source code
+- Java - JRE 8 if you only want to run the .jar
 - MySQL - Version 8
 
 ## Usage

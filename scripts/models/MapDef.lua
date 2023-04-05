@@ -52,7 +52,7 @@ setmetatable(MapDef, {
         self.mobGroupsSize = 8
         self.allowedMobGrades = {}
         self.positions = ""
-
+        self.onMovementEnd = {}
         return self
     end,
 })
@@ -64,9 +64,6 @@ function MapDef:update(inst) end
 ---@param winners Fighter[]
 ---@param losers Fighter[]
 function MapDef:onFightEnd(inst, winners, losers) end
-
-
-
 
 ---@param mapId number
 ---@param cellId number
