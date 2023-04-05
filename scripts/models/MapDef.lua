@@ -16,6 +16,7 @@
 ---@field mobGroupsCount number
 ---@field mobGroupsSize number
 ---@field allowedMobGrades table<number,number>
+---@field onMovementEnd table<number, function(md:MapDef, m:Map, p:Player)>
 ---
 
 -- Capabilities:
@@ -60,10 +61,19 @@ setmetatable(MapDef, {
 function MapDef:update(inst) end
 
 ---@param inst Map
----@param player Player
-function MapDef:onMovementEnd(inst, player) end
-
----@param inst Map
 ---@param winners Fighter[]
 ---@param losers Fighter[]
 function MapDef:onFightEnd(inst, winners, losers) end
+
+
+
+
+---@param mapId number
+---@param cellId number
+---@return function(MapDef, Map, Player)
+function moveEndTeleport(mapId, cellId)
+    ---@param p Player
+    return function(md, m, p)
+        p:teleport(mapId, cellId)
+    end
+end

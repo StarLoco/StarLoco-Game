@@ -17,20 +17,20 @@ map.capabilities = 47
 
 -- '1;1;1;0;0;0;0' forbiddens -> capabilities ? Or script ?
 
----@param inst Map
----@param player Player
-function map:onMovementEnd(inst, player)
-    local cell = player:cell()
 
-    if cell == 305 then player:teleport(809, 303)
-    elseif cell == 21 then player:teleport(821, 440)
-    elseif cell == 356 then
-		if player:getItem(961, 1) and player:getItem(962, 1) and player:getItem(963, 1) then
-		   player:teleport(1767, 394)
-		else -- TODO: send error (in chat)
-		end
+
+local function tryEntering(_, _, p)
+    if p:getItem(961) and p:getItem(962) and p:getItem(963) then
+        p:teleport(1767, 394)
+    else
+        -- TODO: send error (in chat)
     end
 end
 
+map.onMovementEnd = {
+    [305] = moveEndTeleport(809, 303),
+    [21] = moveEndTeleport(821, 440),
+    [356] = tryEntering,
+}
 
 RegisterMapDef(map)

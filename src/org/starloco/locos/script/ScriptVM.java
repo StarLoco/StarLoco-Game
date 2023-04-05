@@ -97,7 +97,10 @@ public class ScriptVM {
 
         Object v = t.rawget(key);
         if(v != null) return v;
-        return recursiveGet(t.getMetatable(), key);
+        Object mtIndex = t.getMetatable().rawget("__index");
+        if(!(mtIndex instanceof Table)) return null;
+
+        return recursiveGet((Table) mtIndex, key);
     }
 
 
