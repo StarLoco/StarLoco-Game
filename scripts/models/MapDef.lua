@@ -15,7 +15,7 @@
 ---@field npcs table<number, number[]>[] All Npcs that may appear on this map: <template,[cell,orientation]>
 ---@field mobGroupsCount number
 ---@field mobGroupsSize number
----@field allowedMobGrades table<number,number>
+---@field allowedMobGrades table<number,number> K: MobTemplateID, V: Grade
 ---@field onMovementEnd table<number, function(md:MapDef, m:Map, p:Player)>
 ---@field onFightEnd table<number, function(md:MapDef, m:Map, winners:Fighter[], losers:Fighter[])> K: fight type, V: Handler function
 ---
