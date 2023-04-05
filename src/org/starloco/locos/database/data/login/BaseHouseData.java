@@ -22,10 +22,6 @@ public class BaseHouseData extends FunctionDAO<House> {
 		try {
 			result = getData("SELECT * FROM " + getTableName() + ";");
 			while (result.next()) {
-				GameMap map = World.world.getMap(result.getShort("map_id"));
-				if (map == null)
-					continue;
-
 				World.world.addHouse(new House(result.getInt("id"), result.getShort("map_id"), result.getInt("cell_id"), result.getInt("mapid"), result.getInt("caseid")));
 				/* Set base price to all houses
 				long saleBase = RS.getLong("saleBase");

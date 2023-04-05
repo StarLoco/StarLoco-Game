@@ -415,10 +415,10 @@ public class World {
         DatabaseManager.get(CollectorData.class).loadFully();
         logger.debug("The collectors were loaded successfully.");
 
-//        DatabaseManager.get(BaseHouseData.class).loadFully();
-//        logger.debug("The statics houses were loaded successfully.");
-//        DatabaseManager.get(HouseData.class).loadFully();
-//        logger.debug("The dynamics houses were loaded successfully.");
+        DatabaseManager.get(BaseHouseData.class).loadFully();
+        logger.debug("The statics houses were loaded successfully.");
+        DatabaseManager.get(HouseData.class).loadFully();
+        logger.debug("The dynamics houses were loaded successfully.");
 
         DatabaseManager.get(BaseTrunkData.class).loadFully();
         logger.debug("The statics trunks were loaded successfully.");
