@@ -38,6 +38,10 @@ public class SPlayer extends DefaultUserdata<Player> {
        return p.getSexe();
     }
 
+    @SuppressWarnings("unused")
+    private static int faction(Player p) {
+        return p.getAlignment();
+    }
 
     @SuppressWarnings("unused")
     private static void openBank(Player p) {
