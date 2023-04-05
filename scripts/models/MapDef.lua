@@ -17,6 +17,7 @@
 ---@field mobGroupsSize number
 ---@field allowedMobGrades table<number,number>
 ---@field onMovementEnd table<number, function(md:MapDef, m:Map, p:Player)>
+---@field onFightEnd table<number, function(md:MapDef, m:Map, winners:Fighter[], losers:Fighter[])> K: fight type, V: Handler function
 ---
 
 -- Capabilities:
@@ -60,14 +61,6 @@ setmetatable(MapDef, {
 ---@param inst Map
 function MapDef:update(inst) end
 
----@param inst Map
----@param winners Fighter[]
----@param losers Fighter[]
-function MapDef:onFightEnd(inst, winners, losers) end
-
-
-
-
 ---@param mapId number
 ---@param cellId number
 ---@return function(MapDef, Map, Player)
@@ -75,5 +68,16 @@ function moveEndTeleport(mapId, cellId)
     ---@param p Player
     return function(md, m, p)
         p:teleport(mapId, cellId)
+    end
+end
+
+function fightEndTeleportWinnerPlayers(mapId, cellId)
+    return function(md, m, winners, losers)
+        for winner in ipairs(winners) do
+            JLogF("DEBUG ENDFIGHT: %s", winner)
+            if winner:player() then
+                winner:player():teleport(mapId, cellId)
+            end
+        end
     end
 end
