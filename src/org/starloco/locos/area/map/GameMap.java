@@ -202,7 +202,9 @@ public class GameMap {
                 park.setPrice(3000000);
                 ((MountParkData) DatabaseManager.get(MountParkData.class)).update(park);
 
-                for (Player p : park.getMap().getPlayers())
+                GameMap map = World.world.getMap(park.getMap());
+                if(map == null) return;
+                for (Player p : map.getPlayers())
                     SocketManager.GAME_SEND_Rp_PACKET(p, park);
             });
         } catch (Exception e) {
@@ -277,13 +279,14 @@ public class GameMap {
         }
         int durabilityMax = Integer.parseInt(infos[2]);
 
+        GameMap map = World.world.getMap(MP.getMap());
         if (durability <= 0) {
             //if (MP.delObject(cell)) {
             durability = 0;
             Map<Integer, Integer> InDurab = new HashMap<>();
             InDurab.put(durabilityMax, durability);
             MP.getObjDurab().put(cell, InDurab);
-            SocketManager.SEND_GDO_PUT_OBJECT_MOUNT(MP.getMap(), cell
+            SocketManager.SEND_GDO_PUT_OBJECT_MOUNT(map, cell
                     + ";" + itemID + ";1;" + durability + ";" + durabilityMax);
             return 0;
             //}
@@ -291,7 +294,7 @@ public class GameMap {
             Map<Integer, Integer> InDurab = new HashMap<>();
             InDurab.put(durabilityMax, durability);
             MP.getObjDurab().put(cell, InDurab);
-            SocketManager.SEND_GDO_PUT_OBJECT_MOUNT(MP.getMap(), cell + ";"
+            SocketManager.SEND_GDO_PUT_OBJECT_MOUNT(map, cell + ";"
                     + itemID + ";1;" + durability + ";" + durabilityMax);
         }
         return durabilityMax;

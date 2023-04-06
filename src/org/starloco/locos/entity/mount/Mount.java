@@ -179,6 +179,8 @@ public class Mount {
 
 	private static int checkCanKen(MountPark park, Mount mount, int cellTest, int action) {
 		if(park.getListOfRaising().size() > 1) {
+			GameMap map = World.world.getMap(park.getMap());
+
 			for(Integer arg : park.getListOfRaising()) {
 				Mount mountArg = World.world.getMountById(arg);
 				if(mountArg == null) continue;
@@ -194,10 +196,10 @@ public class Mount {
 							mount.aumReproduction();
 							if (mount.getSavage() == 1) {
 								park.getListOfRaising().remove(mount.id);
-								park.getMap().send("GM|-" + mount.getId());
+								map.send("GM|-" + mount.getId());
 								Player player = World.world.getPlayer(mount.getOwner());
 								if (player != null && player.isOnline()) {
-									player.send("Im0111;~" + park.getMap().getX() + "," + park.getMap().getY());
+									player.send("Im0111;~" + map.getX() + "," + map.getY());
 									SocketManager.GAME_SEND_Ee_PACKET(player, '-', String.valueOf(mount.getId()));
 								}
 								mount.setMapId((short) -1);
@@ -214,10 +216,10 @@ public class Mount {
 							mountArg.aumReproduction();
 							if (mountArg.getSavage() == 1) {
 								park.getListOfRaising().remove(mountArg.id);
-								park.getMap().send("GM|-" + mountArg.getId());
+								map.send("GM|-" + mountArg.getId());
 								Player player = World.world.getPlayer(mountArg.getOwner());
 								if (player != null && player.isOnline()) {
-									player.send("Im0111;~" + park.getMap().getX() + "," + park.getMap().getY());
+									player.send("Im0111;~" + map.getX() + "," + map.getY());
 									SocketManager.GAME_SEND_Ee_PACKET(player, '-', String.valueOf(mountArg.getId()));
 								}
 								mountArg.setMapId((short) -1);
@@ -652,7 +654,7 @@ public class Mount {
 		int cellTest = this.cellId;
 		for(int i = 0; i < cellules; i++) 
 		{
-			cellTest = PathFinding.GetCaseIDFromDirrection(cellTest, dir, map.getMountPark().getMap(), false);
+			cellTest = PathFinding.GetCaseIDFromDirrection(cellTest, dir, map, false);
 			if(map.getCase(cellTest) == null)
 				return;
             if(MP.getCellAndObject().containsKey(cellTest) && (this.fatigue >= 240 || this.isFecund() == 10))

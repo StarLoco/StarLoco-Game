@@ -24,10 +24,7 @@ public class BaseMountParkData extends FunctionDAO<MountPark> {
 	public void loadFully() {
 		try (ResultSet result = getData("SELECT * FROM " + getTableName() + ";")) {
 			while (result.next()) {
-				GameMap map = World.world.getMap(result.getShort("mapid"));
-				if (map == null)
-					continue;
-				MountPark MP = new MountPark(map, result.getInt("cellid"), result.getInt("size"), result.getInt("priceBase"), result.getInt("cellMount"), result.getInt("cellporte"), result.getString("cellEnclos"), result.getInt("sizeObj"));
+				MountPark MP = new MountPark(result.getShort("mapid"), result.getInt("cellid"), result.getInt("size"), result.getInt("priceBase"), result.getInt("cellMount"), result.getInt("cellporte"), result.getString("cellEnclos"), result.getInt("sizeObj"));
 				World.world.addMountPark(MP);
 				((MountParkData) DatabaseManager.get(MountParkData.class)).exist(MP);
 			}
@@ -42,10 +39,7 @@ public class BaseMountParkData extends FunctionDAO<MountPark> {
 			// Not found
 			if(!result.next()) return null;
 
-			GameMap map = World.world.getMap(result.getShort("mapid"));
-			if (map == null) return null;
-
-			MountPark MP = new MountPark(map, result.getInt("cellid"), result.getInt("size"), result.getInt("priceBase"), result.getInt("cellMount"), result.getInt("cellporte"), result.getString("cellEnclos"), result.getInt("sizeObj"));
+			MountPark MP = new MountPark(result.getInt("mapid"), result.getInt("cellid"), result.getInt("size"), result.getInt("priceBase"), result.getInt("cellMount"), result.getInt("cellporte"), result.getString("cellEnclos"), result.getInt("sizeObj"));
 			World.world.addMountPark(MP);
 			((MountParkData) DatabaseManager.get(MountParkData.class)).exist(MP);
 		} catch (SQLException e) {
@@ -72,7 +66,7 @@ public class BaseMountParkData extends FunctionDAO<MountPark> {
 			p.setInt(1, entity.getMountcell());
 			p.setInt(2, entity.getDoor());
 			p.setString(3, entity.parseStringCellObject());
-			p.setInt(4, entity.getMap().getId());
+			p.setInt(4, entity.getMap());
 			execute(p);
 		} catch (SQLException e) {
 			super.sendError(e);

@@ -407,10 +407,10 @@ public class World {
         DatabaseManager.get(TutorialData.class).loadFully();
         logger.debug("The tutorials were loaded successfully.");
 
-//        DatabaseManager.get(BaseMountParkData.class).loadFully();
-//        logger.debug("The statics parks of the mounts were loaded successfully.");
-//        DatabaseManager.get(MountParkData.class).loadFully();
-//        logger.debug("The dynamics parks of the mounts were loaded successfully.");
+        DatabaseManager.get(BaseMountParkData.class).loadFully();
+        logger.debug("The statics parks of the mounts were loaded successfully.");
+        DatabaseManager.get(MountParkData.class).loadFully();
+        logger.debug("The dynamics parks of the mounts were loaded successfully.");
 
         DatabaseManager.get(CollectorData.class).loadFully();
         logger.debug("The collectors were loaded successfully.");
@@ -1158,7 +1158,7 @@ public class World {
     }
 
     public void addMountPark(MountPark mp) {
-        MountPark.put(mp.getMap().getId(), mp);
+        MountPark.put(mp.getMap(), mp);
     }
 
     public Map<Integer, MountPark> getMountPark() {
@@ -1174,7 +1174,7 @@ public class World {
         for (Entry<Integer, MountPark> mp : MountPark.entrySet()) {
             if (mp.getValue().getGuild() != null
                     && mp.getValue().getGuild().getId() == GuildID) {
-                packet.append("|").append(mp.getValue().getMap().getId()).append(";").append(mp.getValue().getSize()).append(";").append(mp.getValue().getMaxObject());// Nombre d'objets pour le dernier
+                packet.append("|").append(mp.getValue().getMap()).append(";").append(mp.getValue().getSize()).append(";").append(mp.getValue().getMaxObject());// Nombre d'objets pour le dernier
                 if (mp.getValue().getListOfRaising().size() > 0) {
                     packet.append(";");
                     boolean primero = false;

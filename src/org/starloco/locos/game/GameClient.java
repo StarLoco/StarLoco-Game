@@ -2859,6 +2859,7 @@ public class GameClient {
     private synchronized void putInMountPark(String packet) {
         if(this.player.getExchangeAction() != null && this.player.getExchangeAction().getType() == ExchangeAction.IN_MOUNTPARK) {
             int id = -1;
+            GameMap map = this.player.getCurMap();
             MountPark park = this.player.getCurMap().getMountPark();
             if(park == null) return;
             try { id = Integer.parseInt(packet.substring(3));	} catch (Exception ignored) {}
@@ -2916,13 +2917,13 @@ public class GameClient {
 
                     if((mount = park.containsMountInList(park.getEtable(), mount)) != null) {
                         mount.setOwner(this.player.getId());
-                        mount.setMapId(park.getMap().getId());
+                        mount.setMapId(park.getMap());
                         mount.setCellId(park.getPlaceOfSpawn());
                         park.getEtable().remove(mount);
                         park.addRaising(id);
                         SocketManager.GAME_SEND_Ef_MOUNT_TO_ETABLE(this.player, '+', mount.parse());
                         SocketManager.GAME_SEND_Ee_PACKET(this.player, '-', mount.getId() + "");
-                        SocketManager.GAME_SEND_GM_MOUNT_TO_MAP(park.getMap(), mount);
+                        SocketManager.GAME_SEND_GM_MOUNT_TO_MAP(map, mount);
 
                         ((MountData) DatabaseManager.get(MountData.class)).update(mount);
                         ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this.player);

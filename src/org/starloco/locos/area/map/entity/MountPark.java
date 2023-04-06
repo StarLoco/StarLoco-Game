@@ -16,7 +16,7 @@ public class MountPark {
     private int owner;
     private int size;
     private Guild guild;
-    private GameMap map;
+    private int map;
     private int cell = -1;
     private int price, priceBase;
     private int placeOfSpawn;
@@ -29,7 +29,7 @@ public class MountPark {
     private CopyOnWriteArrayList<Integer> raising = new CopyOnWriteArrayList<>();
     private ArrayList<Mount> etable = new ArrayList<>();
 
-    public MountPark(GameMap map, int cellid, int size, int priceBase, int placeOfSpawn, int door, String cellOfObject, int maxObject) {
+    public MountPark(int map, int cellid, int size, int priceBase, int placeOfSpawn, int door, String cellOfObject, int maxObject) {
         this.map = map;
         this.cell = cellid;
         this.size = size;
@@ -65,12 +65,11 @@ public class MountPark {
                 try {
                     this.raising.add(Integer.parseInt(dd));
                     Mount mount = World.world.getMountById(Integer.parseInt(dd));
-                    mount.setMapId(this.map.getId());
+                    mount.setMapId(this.map);
                     mount.setCellId(mount.getCellId());
                 } catch(Exception ignored) {}
             }
-        if(this.map != null)
-            this.map.setMountPark(this);
+
         for(String firstCut: etable.split(";"))//PosseseurID,DragoID;PosseseurID2,DragoID2;PosseseurID,DragoID3
         {
             try	{
@@ -124,7 +123,7 @@ public class MountPark {
         this.guild = guild;
     }
 
-    public GameMap getMap() {
+    public int getMap() {
         return this.map;
     }
 

@@ -61,7 +61,7 @@ public class MountParkData extends FunctionDAO<MountPark> {
         boolean ok = true;
         try {
             p = getPreparedStatement("INSERT INTO " + getTableName() + " (`mapid`, `owner`, `guild`, `price`, `data`, `enclos`, `ObjetPlacer`, `durabilite`) VALUES (?, ?, ?, ?, '', '', '', '');");
-            p.setInt(1, entity.getMap().getId());
+            p.setInt(1, entity.getMap());
             p.setInt(2, 0);
             p.setInt(3, -1);
             p.setInt(4, entity.getPriceBase());
@@ -92,7 +92,7 @@ public class MountParkData extends FunctionDAO<MountPark> {
             p.setString(5, entity.parseRaisingToString());
             p.setString(6, entity.getStringObject());
             p.setString(7, entity.getStringObjDurab());
-            p.setInt(8, entity.getMap().getId());
+            p.setInt(8, entity.getMap());
             execute(p);
         } catch (SQLException e) {
             super.sendError(e);
@@ -109,7 +109,7 @@ public class MountParkData extends FunctionDAO<MountPark> {
     public void exist(MountPark mountPark) {
         ResultSet result = null;
         try {
-            result = getData("SELECT * FROM " + getTableName() + " WHERE `mapid` = '" + mountPark.getMap().getId() + "';");
+            result = getData("SELECT * FROM " + getTableName() + " WHERE `mapid` = '" + mountPark.getMap() + "';");
             if(!result.next()) this.insert(mountPark);
         } catch (SQLException e) {
             super.sendError(e);
