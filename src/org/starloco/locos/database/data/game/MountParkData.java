@@ -22,26 +22,23 @@ public class MountParkData extends FunctionDAO<MountPark> {
         try {
             result = getData("SELECT * from mountpark_data");
             while (result.next()) {
-                GameMap map = World.world.getMap(result.getShort("mapid"));
-                if (map != null) {
-                    MountPark park = World.world.getMountPark().get(map.getId());
-                    if (park != null) {
-                        int owner = result.getInt("owner");
-                        int guild = result.getInt("guild");
-                        guild = World.world.getGuild(guild) != null ? guild : -1;
-                        int price = result.getInt("price");
-                        String data = result.getString("data");
-                        String enclos = result.getString("enclos");
-                        String objetPlacer = result.getString("ObjetPlacer");
-                        String durabilite = result.getString("durabilite");
+                int map = result.getInt("mapid");
+                MountPark park = World.world.getMountPark().get(map);
+                if(park==null)continue;
+                int owner = result.getInt("owner");
+                int guild = result.getInt("guild");
+                guild = World.world.getGuild(guild) != null ? guild : -1;
+                int price = result.getInt("price");
+                String data = result.getString("data");
+                String enclos = result.getString("enclos");
+                String objetPlacer = result.getString("ObjetPlacer");
+                String durabilite = result.getString("durabilite");
 
-                        enclos = enclos.equals(" ") ? "" : enclos;
-                        objetPlacer = objetPlacer.equals(" ") ? "" : objetPlacer;
-                        durabilite = durabilite.equals(" ") ? "" : durabilite;
+                enclos = enclos.equals(" ") ? "" : enclos;
+                objetPlacer = objetPlacer.equals(" ") ? "" : objetPlacer;
+                durabilite = durabilite.equals(" ") ? "" : durabilite;
 
-                        park.setData(owner, guild, price, data, objetPlacer, durabilite, enclos);
-                    }
-                }
+                park.setData(owner, guild, price, data, objetPlacer, durabilite, enclos);
             }
         } catch (SQLException e) {
             super.sendError(e);
