@@ -81,7 +81,7 @@ public class PlayerData extends FunctionDAO<Player> {
                         result.getString("deadInformation"), result.getByte("deathCount"), result.getLong("totalKills"));
 
                 if(oldPlayer != null)
-                    player.setNeededEndFight(oldPlayer.lastFight());
+                    player.setLastFightForEndFightAction(oldPlayer.getLastFight());
 
                 player.VerifAndChangeItemPlace();
                 World.world.addPlayer(player);
@@ -319,7 +319,7 @@ public class PlayerData extends FunctionDAO<Player> {
                 Player player = new Player(result.getInt("id"), result.getString("name"), result.getInt("groupe"), result.getInt("sexe"), result.getInt("class"), result.getInt("color1"), result.getInt("color2"), result.getInt("color3"), result.getLong("kamas"), result.getInt("spellboost"), result.getInt("capital"), result.getInt("energy"), result.getInt("level"), result.getLong("xp"), result.getInt("size"), result.getInt("gfx"), result.getByte("alignement"), result.getInt("account"), stats, result.getByte("seeFriend"), result.getByte("seeAlign"), result.getByte("seeSeller"), result.getString("canaux"), result.getShort("map"), result.getInt("cell"), result.getString("objets"), result.getString("storeObjets"), result.getInt("pdvper"), result.getString("spells"), result.getString("savepos"), result.getString("jobs"), result.getInt("mountxpgive"), result.getInt("mount"), result.getInt("honor"), result.getInt("deshonor"), result.getInt("alvl"), result.getString("zaaps"), result.getByte("title"), result.getInt("wife"), result.getString("morphMode"), result.getString("allTitle"), result.getString("emotes"), result.getLong("prison"), false, result.getString("parcho"), result.getLong("timeDeblo"), result.getBoolean("noall"), result.getString("deadInformation"), result.getByte("deathCount"), result.getLong("totalKills"));
 
                 if(p != null)
-                        player.setNeededEndFight(p.lastFight());
+                    player.setLastFightForEndFightAction(p.getLastFight());
                 player.VerifAndChangeItemPlace();
                 World.world.addPlayer(player);
                 //TODO: Need to finihs database system

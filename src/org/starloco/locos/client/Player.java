@@ -25,7 +25,6 @@ import org.starloco.locos.database.data.login.PlayerData;
 import org.starloco.locos.dynamic.Start;
 import org.starloco.locos.entity.Collector;
 import org.starloco.locos.entity.Prism;
-import org.starloco.locos.entity.monster.MonsterGroup;
 import org.starloco.locos.entity.mount.Mount;
 import org.starloco.locos.entity.pet.Pet;
 import org.starloco.locos.entity.pet.PetEntry;
@@ -1946,7 +1945,7 @@ public class Player {
         ((PlayerData) DatabaseManager.get(PlayerData.class)).updateLogged(this.id, 1);
         this.verifEquiped();
 
-        if (this.lastFight() == null) {
+        if (this.getLastFight() == null) {
             SocketManager.GAME_SEND_MAPDATA(client, this.curMap.getId(), this.curMap.getDate(), this.curMap.getKey());
             SocketManager.GAME_SEND_MAP_FIGHT_COUNT(client, this.getCurMap());
             if (this.getFight() == null) this.curMap.addPlayer(this);
@@ -4846,11 +4845,11 @@ public class Player {
         return _storeItems;
     }
 
-    public Fight lastFight() {
+    public Fight getLastFight() {
         return lastFight;
     }
 
-    public void setNeededEndFight(Fight fight) {
+    public void setLastFightForEndFightAction(Fight fight) {
         this.endFightAction = null;
         this.lastFight = fight;
     }
@@ -4860,13 +4859,13 @@ public class Player {
         this.endFightAction = endFightAction;
     }
 
-    public boolean castEndFightAction() {
-        if(this.endFightAction != null) {
-            this.endFightAction.apply(this, null, -1, -1, getCurMap());
-            this.endFightAction = null;
-        } else
-            return true;
-        return false;
+    public boolean applyEndFightAction() {
+        if(this.endFightAction == null) {
+            return false;
+        }
+        this.endFightAction.apply(this, null, -1, -1, getCurMap());
+        this.endFightAction = null;
+        return true;
     }
 
     public String parseStoreItemsList() {

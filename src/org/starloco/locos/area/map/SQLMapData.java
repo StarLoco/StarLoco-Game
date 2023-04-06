@@ -133,7 +133,7 @@ public class SQLMapData extends MapData {
 
     @Override
     public void onFightEnd(Fight f, Player p, List<Fighter> winTeam, List<Fighter> looseTeam) {
-        for (Action A : endFightActions.get(p.lastFight().getType()))
+        for (Action A : endFightActions.getOrDefault(p.getLastFight().getType(), Collections.emptyList()))
             A.apply(p, null, -1, -1, p.getCurMap());
     }
 
@@ -163,6 +163,11 @@ public class SQLMapData extends MapData {
                 noAgro,
                 noCanal
         ).map(b -> b?"1":"0").collect(Collectors.joining(";"));
+    }
+
+    @Override
+    public boolean hasFightEndForType(int type) {
+        return !this.endFightActions.getOrDefault(type, Collections.emptyList()).isEmpty();
     }
 
     public void clearEndFightActions() {

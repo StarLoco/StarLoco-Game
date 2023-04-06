@@ -3887,11 +3887,11 @@ public class Fight {
                         player.setFight(null);
 
                         if (fighter.isDeconnected()) {
-                            player.setNeededEndFight(this);
+                            player.setLastFightForEndFightAction(this);
                             player.getCurMap().applyEndFightAction(player);
-                            player.setNeededEndFight(null);
-                        } else {
-                            player.setNeededEndFight(this);
+                            player.setLastFightForEndFightAction(null);
+                        } else if (this.mapOld.data.hasFightEndForType(this.type)) {
+                            player.setLastFightForEndFightAction(this);
                         }
                     }
                 }

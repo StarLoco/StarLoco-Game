@@ -79,5 +79,6 @@ public abstract class MapData {
     public abstract void onMoveEnd(Player p);
     public abstract boolean cellHasMoveEndActions(int cellId);
 
+    public abstract boolean hasFightEndForType(int type);
     public abstract void onFightEnd(Fight f, Player p, List<Fighter> winTeam, List<Fighter> looseTeam);
 }

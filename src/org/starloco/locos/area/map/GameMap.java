@@ -512,9 +512,9 @@ public class GameMap {
     }
 
     public void applyEndFightAction(Player player) {
-        Fight fight = player.lastFight();
+        Fight fight = player.getLastFight();
         this.data.onFightEnd(fight, player, fight.getWinners(), fight.getLosers());
-        player.setNeededEndFight(null);
+        player.setLastFightForEndFightAction(null);
     }
 
     public int getX() {

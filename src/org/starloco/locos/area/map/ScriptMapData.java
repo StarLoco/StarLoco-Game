@@ -119,4 +119,14 @@ public class ScriptMapData extends MapData {
 
         DataScriptVM.getInstance().call(onFightEndFn, scriptVal, p.getCurMap().scripted(), winners, losers);
     }
+
+    @Override
+    public boolean hasFightEndForType(int type) {
+        Object tmp = recursiveGet(scriptVal,"onFightEnd");
+        if(!(tmp instanceof Table)) return false;
+
+        Object onFightEndFn = ((Table)tmp).rawget(type);
+        if(!(onFightEndFn instanceof LuaFunction)) return false;
+        return true;
+    }
 }
