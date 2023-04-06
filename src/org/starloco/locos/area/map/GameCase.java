@@ -105,8 +105,7 @@ public class GameCase {
 
     public synchronized void removePlayer(Player player) {
         if (this.players != null) {
-            if(this.players.contains(player))
-                this.players.remove(player);
+            this.players.remove(player);
             if (this.players.isEmpty()) this.players = null;
         }
     }

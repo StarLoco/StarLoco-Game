@@ -15,15 +15,15 @@ import java.util.Map.Entry;
 
 public class Spell {
 
-    private int id;
-    private String name;
+    private final int id;
+    private final String name;
     private int spriteId;
     private String spriteInfo;
     private int type;
     private short duration;
-    private ArrayList<Integer> effectTargets = new ArrayList<>();
-    private ArrayList<Integer> effectTargetsCC = new ArrayList<>();
-    private Map<Integer, SortStats> spellsStats = new HashMap<>();
+    private final ArrayList<Integer> effectTargets = new ArrayList<>();
+    private final ArrayList<Integer> effectTargetsCC = new ArrayList<>();
+    private final Map<Integer, SortStats> spellsStats = new HashMap<>();
     private List<Byte> invalidStates, neededStates;
 
     public Spell(int id, String name, int spriteId, String spriteInfo, String effectTargets, int type, short duration, String invalidState, String neededState) {
@@ -162,25 +162,25 @@ public class Spell {
 
     public static class SortStats {
 
-        private int spellID;
-        private int level;
-        private int PACost;
-        private int minPO;
-        private int maxPO;
-        private int TauxCC;
-        private int TauxEC;
-        private boolean isLineLaunch;
-        private boolean hasLDV;
-        private boolean isEmptyCell;
-        private boolean isModifPO;
-        private int maxLaunchbyTurn;
-        private int maxLaunchbyByTarget;
-        private int coolDown;
-        private int reqLevel;
-        private boolean isEcEndTurn;
-        private ArrayList<SpellEffect> effects;
-        private ArrayList<SpellEffect> CCeffects;
-        private String porteeType;
+        private final int spellID;
+        private final int level;
+        private final int PACost;
+        private final int minPO;
+        private final int maxPO;
+        private final int TauxCC;
+        private final int TauxEC;
+        private final boolean isLineLaunch;
+        private final boolean hasLDV;
+        private final boolean isEmptyCell;
+        private final boolean isModifPO;
+        private final int maxLaunchbyTurn;
+        private final int maxLaunchbyByTarget;
+        private final int coolDown;
+        private final int reqLevel;
+        private final boolean isEcEndTurn;
+        private final ArrayList<SpellEffect> effects;
+        private final ArrayList<SpellEffect> CCeffects;
+        private final String porteeType;
 
         public SortStats(int AspellID, int Alevel, int cost, int minPO,
                          int maxPO, int tauxCC, int tauxEC, boolean isLineLaunch,
@@ -457,40 +457,40 @@ public class Spell {
             }
         }
 
-        public boolean hasEffectOnTarget(Fighter caster, Fighter target) {
-            boolean ok = false;
-            int TE = 0, num =0;
-            for (SpellEffect SE : this.effects) {
-                if (this.getSpell() != null && this.getSpell().getEffectTargets().size() > num)
-                    TE = getSpell().getEffectTargets().get(num);
-                // Ne touches pas les alli�s : 1
-                if (((TE & 1) == 1) && (target.getTeam() == caster.getTeam()))
-                    continue;
-                // Ne touche pas le lanceur : 2
-                if ((((TE >> 1) & 1) == 1) && (target.getId() == caster.getId()))
-                    continue;
-                // Ne touche pas les ennemies : 4
-                if ((((TE >> 2) & 1) == 1) && (target.getTeam() != caster.getTeam()))
-                    continue;
-                // Ne touche pas les combatants (seulement invocations) : 8
-                if ((((TE >> 3) & 1) == 1) && (!target.isInvocation()))
-                    continue;
-                // Ne touche pas les invocations : 16
-                if ((((TE >> 4) & 1) == 1) && (target.isInvocation()))
-                    continue;
-                // N'affecte que le lanceur : 32
-                if ((((TE >> 5) & 1) == 1) && (target.getId() != caster.getId()))
-                    continue;
-                // N'affecte que les alliés (pas le lanceur) : 64
-                if ((((TE >> 6) & 1) == 1) && (target.getTeam() != caster.getTeam() || target.getId() == caster.getId()))
-                    continue;
-                // N'affecte PERSONNE : 1024
-                if ((((TE >> 10) & 1) == 1))
-                    continue;
-                num++;
-                ok = true;
-            }
-            return ok;
-        }
+//        public boolean hasEffectOnTarget(Fighter caster, Fighter target) {
+//            boolean ok = false;
+//            int TE = 0, num =0;
+//            for (SpellEffect SE : this.effects) {
+//                if (this.getSpell() != null && this.getSpell().getEffectTargets().size() > num)
+//                    TE = getSpell().getEffectTargets().get(num);
+//                // Ne touches pas les alli�s : 1
+//                if (((TE & 1) == 1) && (target.getTeam() == caster.getTeam()))
+//                    continue;
+//                // Ne touche pas le lanceur : 2
+//                if ((((TE >> 1) & 1) == 1) && (target.getId() == caster.getId()))
+//                    continue;
+//                // Ne touche pas les ennemies : 4
+//                if ((((TE >> 2) & 1) == 1) && (target.getTeam() != caster.getTeam()))
+//                    continue;
+//                // Ne touche pas les combatants (seulement invocations) : 8
+//                if ((((TE >> 3) & 1) == 1) && (!target.isInvocation()))
+//                    continue;
+//                // Ne touche pas les invocations : 16
+//                if ((((TE >> 4) & 1) == 1) && (target.isInvocation()))
+//                    continue;
+//                // N'affecte que le lanceur : 32
+//                if ((((TE >> 5) & 1) == 1) && (target.getId() != caster.getId()))
+//                    continue;
+//                // N'affecte que les alliés (pas le lanceur) : 64
+//                if ((((TE >> 6) & 1) == 1) && (target.getTeam() != caster.getTeam() || target.getId() == caster.getId()))
+//                    continue;
+//                // N'affecte PERSONNE : 1024
+//                if ((((TE >> 10) & 1) == 1))
+//                    continue;
+//                num++;
+//                ok = true;
+//            }
+//            return ok;
+//        }
     }
 }
