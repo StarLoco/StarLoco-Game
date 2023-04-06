@@ -34,6 +34,16 @@ public class SPlayer extends DefaultUserdata<Player> {
 
     //region Basic stuff
     @SuppressWarnings("unused")
+    private static String name(Player p) {
+        return p.getName();
+    }
+
+    @SuppressWarnings("unused")
+    private static int level(Player p) {
+        return p.getLevel();
+    }
+
+    @SuppressWarnings("unused")
     private static int gender(Player p) {
        return p.getSexe();
     }

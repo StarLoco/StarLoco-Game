@@ -34,6 +34,10 @@ function RegisterExpTables(players, guilds, jobs, mounts, pvp, livitinems, torme
 ---@class Player
 local Player = {}
 
+---@return string
+function Player:name() end
+---@return number
+function Player:level() end
 
 ---@return number
 function Player:gender() end
@@ -182,12 +186,33 @@ function Item:consumeTxtStat(stat, val) end
 ---@class Map
 local Map = {}
 
--- FighterInfo
----@class FighterInfo
-local FighterInfo = {}
+
+-- MobGrade
+---@class MobGrade
+local MobGrade = {}
 
 ---@return number
-function FighterInfo:id() end
+function MobGrade:id() end
 
 ---@return number
-function FighterInfo:id() end
+function MobGrade:grade() end
+
+---@return number
+function MobGrade:level() end
+
+
+---- FighterInfo
+-----@class FighterInfo
+--local FighterInfo = {}
+--
+-----@return number
+--function FighterInfo:id() end
+--
+-----@return number
+--function FighterInfo:level() end
+--
+-----@return Player
+--function FighterInfo:player() end
+--
+-----@return MobGrade
+--function FighterInfo:mob() end

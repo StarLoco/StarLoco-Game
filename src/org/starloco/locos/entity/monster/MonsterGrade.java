@@ -7,6 +7,8 @@ import org.starloco.locos.fight.spells.Spell;
 import org.starloco.locos.fight.spells.SpellEffect;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.Constant;
+import org.starloco.locos.script.proxy.SMobGrade;
+import org.starloco.locos.script.proxy.SPlayer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,6 +16,8 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 public class MonsterGrade {
+    private final SMobGrade scriptVal;
+
     private static int pSize = 2;
     private Monster template;
     private int grade;
@@ -32,6 +36,7 @@ public class MonsterGrade {
     private ArrayList<Integer> statsInfos = new ArrayList<>();
 
     public MonsterGrade(Monster template, int grade, int level, int pa, int pm, String resists, String stats, String statsInfos, String allSpells, int pdvMax, int aInit, int xp, int n) {
+        this.scriptVal = new SMobGrade(this);
         this.size = 100 + n * pSize;
         this.template = template;
         this.grade = grade;
@@ -113,6 +118,7 @@ public class MonsterGrade {
                          Map<Integer, Integer> stats,
                          ArrayList<Integer> statsInfos,
                          Map<Integer, Spell.SortStats> spells, int xp, int n) {
+        this.scriptVal = new SMobGrade(this);
         this.size = 100 + n * pSize;
         this.template = template;
         this.grade = grade;
@@ -274,5 +280,9 @@ public class MonsterGrade {
                 Constant.STATS_ADD_VITA).forEach(stat -> stats.put(stat, stats.getOrDefault(stat, 0) * 3));
         pdvMax = stats.get(Constant.STATS_ADD_VITA);
         pdv = pdvMax;
+    }
+
+    public SMobGrade scripted() {
+        return this.scriptVal;
     }
 }

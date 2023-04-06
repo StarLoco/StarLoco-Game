@@ -1,5 +1,6 @@
 package org.starloco.locos.fight;
 
+import org.classdump.luna.impl.ImmutableTable;
 import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.client.other.Stats;
@@ -1082,6 +1083,22 @@ public class Fighter implements Comparable<Fighter> {
 
     @Override
     public int compareTo(Fighter t) {
-        return ((this.getPros() > t.getPros() && !this.isInvocation()) ? 1 : 0);
+        if(this.isInvocation()) return 0;
+        return this.getPros() - t.getPros();
+    }
+
+    public Object scripted() {
+        switch(this.type) {
+        case 1:
+            return this.getPlayer().scripted();
+        case 2:
+            return this.getMob().scripted();
+        default:
+            return (new ImmutableTable.Builder())
+                .add("id", this.id)
+                .add("type", this.type)
+                .add("level", this.getLvl())
+                .build();
+        }
     }
 }

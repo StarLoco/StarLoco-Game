@@ -15,8 +15,9 @@
 ---@field npcs table<number, number[]>[] All Npcs that may appear on this map: <template,[cell,orientation]>
 ---@field mobGroupsCount number
 ---@field mobGroupsSize number
----@field allowedMobGrades table<number,number>
+---@field allowedMobGrades table<number,number> K: MobTemplateID, V: Grade
 ---@field onMovementEnd table<number, function(md:MapDef, m:Map, p:Player)>
+---@field onFightEnd table<number, function(md:MapDef, m:Map, winners:Fighter[], losers:Fighter[])> K: fight type, V: Handler function
 ---
 
 -- Capabilities:
@@ -60,10 +61,6 @@ setmetatable(MapDef, {
 ---@param inst Map
 function MapDef:update(inst) end
 
----@param inst Map
----@param winners Fighter[]
----@param losers Fighter[]
-function MapDef:onFightEnd(inst, winners, losers) end
 
 ---@param mapId number
 ---@param cellId number
@@ -72,5 +69,16 @@ function moveEndTeleport(mapId, cellId)
     ---@param p Player
     return function(md, m, p)
         p:teleport(mapId, cellId)
+    end
+end
+
+function fightEndTeleportWinnerPlayers(mapId, cellId)
+    return function(md, m, winners, losers)
+        for _, winner in ipairs(winners) do
+            -- This ensure the winner entity can be teleported
+            if winner.teleport then
+                winner:teleport(mapId, cellId)
+            end
+        end
     end
 end

@@ -5,6 +5,7 @@ import org.starloco.locos.entity.monster.MobGroupDef;
 import org.starloco.locos.entity.monster.MonsterGrade;
 import org.starloco.locos.entity.monster.MonsterGroup;
 import org.starloco.locos.fight.Fight;
+import org.starloco.locos.fight.Fighter;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.Config;
 import org.starloco.locos.other.Action;
@@ -131,20 +132,9 @@ public class SQLMapData extends MapData {
     }
 
     @Override
-    public void onFightEnd(Fight f, Player p) {
-        if (endFightActions.get(p.needEndFight()) == null)
-            return;
-        if (id == 8545 && p.hasMobGroup() != null && p.hasMobGroup().getMobs().size() == 6) {
-            for (Action A : endFightActions.get(p.needEndFight())) {
-                String args = A.getArgs();
-                A.setArgs("8547,390");
-                A.apply(p, null, -1, -1, p.getCurMap());
-                A.setArgs(args);
-            }
-        } else {
-            for (Action A : endFightActions.get(p.needEndFight()))
-                A.apply(p, null, -1, -1, p.getCurMap());
-        }
+    public void onFightEnd(Fight f, Player p, List<Fighter> winTeam, List<Fighter> looseTeam) {
+        for (Action A : endFightActions.getOrDefault(p.getLastFight().getType(), Collections.emptyList()))
+            A.apply(p, null, -1, -1, p.getCurMap());
     }
 
     public void addEndFightAction(int type, Action action) {
@@ -173,6 +163,11 @@ public class SQLMapData extends MapData {
                 noAgro,
                 noCanal
         ).map(b -> b?"1":"0").collect(Collectors.joining(";"));
+    }
+
+    @Override
+    public boolean hasFightEndForType(int type) {
+        return !this.endFightActions.getOrDefault(type, Collections.emptyList()).isEmpty();
     }
 
     public void clearEndFightActions() {

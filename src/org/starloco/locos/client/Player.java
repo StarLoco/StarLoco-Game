@@ -25,7 +25,6 @@ import org.starloco.locos.database.data.login.PlayerData;
 import org.starloco.locos.dynamic.Start;
 import org.starloco.locos.entity.Collector;
 import org.starloco.locos.entity.Prism;
-import org.starloco.locos.entity.monster.MonsterGroup;
 import org.starloco.locos.entity.mount.Mount;
 import org.starloco.locos.entity.pet.Pet;
 import org.starloco.locos.entity.pet.PetEntry;
@@ -177,9 +176,8 @@ public class Player {
     private boolean _livreArti = false;
 
     //Fight end
-    private int hasEndFight = -1;
+    private Fight lastFight;
     private Action endFightAction;
-    private MonsterGroup hasMonsterGroup = null;
     //Item classe
     private ArrayList<Integer> objectsClass = new ArrayList<>();
     private Map<Integer, World.Couple<Integer, Integer>> objectsClassSpell = new HashMap<>();
@@ -1947,7 +1945,7 @@ public class Player {
         ((PlayerData) DatabaseManager.get(PlayerData.class)).updateLogged(this.id, 1);
         this.verifEquiped();
 
-        if (this.needEndFight() == -1) {
+        if (this.getLastFight() == null) {
             SocketManager.GAME_SEND_MAPDATA(client, this.curMap.getId(), this.curMap.getDate(), this.curMap.getKey());
             SocketManager.GAME_SEND_MAP_FIGHT_COUNT(client, this.getCurMap());
             if (this.getFight() == null) this.curMap.addPlayer(this);
@@ -4847,32 +4845,27 @@ public class Player {
         return _storeItems;
     }
 
-    public int needEndFight() {
-        return hasEndFight;
+    public Fight getLastFight() {
+        return lastFight;
     }
 
-    public MonsterGroup hasMobGroup() {
-        return hasMonsterGroup;
-    }
-
-    public void setNeededEndFight(int hasEndFight, MonsterGroup group) {
+    public void setLastFightForEndFightAction(Fight fight) {
         this.endFightAction = null;
-        this.hasEndFight = hasEndFight;
-        this.hasMonsterGroup = group;
+        this.lastFight = fight;
     }
 
     public void setNeededEndFightAction(Action endFightAction) {
-        this.hasEndFight = -2;
+        this.lastFight = null;
         this.endFightAction = endFightAction;
     }
 
-    public boolean castEndFightAction() {
-        if(this.endFightAction != null) {
-            this.endFightAction.apply(this, null, -1, -1, getCurMap());
-            this.endFightAction = null;
-        } else
-            return true;
-        return false;
+    public boolean applyEndFightAction() {
+        if(this.endFightAction == null) {
+            return false;
+        }
+        this.endFightAction.apply(this, null, -1, -1, getCurMap());
+        this.endFightAction = null;
+        return true;
     }
 
     public String parseStoreItemsList() {

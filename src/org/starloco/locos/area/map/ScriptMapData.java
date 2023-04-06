@@ -1,10 +1,12 @@
 package org.starloco.locos.area.map;
 
 import org.classdump.luna.Table;
+import org.classdump.luna.impl.DefaultTable;
 import org.classdump.luna.runtime.LuaFunction;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.entity.monster.MonsterGrade;
 import org.starloco.locos.fight.Fight;
+import org.starloco.locos.fight.Fighter;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.script.DataScriptVM;
 import org.starloco.locos.script.ScriptVM;
@@ -87,14 +89,44 @@ public class ScriptMapData extends MapData {
 
     @Override
     public boolean cellHasMoveEndActions(int cellId) {
-        // TODO
-        return false;
+        Object tmp = recursiveGet(scriptVal,"onMovementEnd");
+        if(!(tmp instanceof Table)) return false;
+
+        Object onMovementEndFn = ((Table)tmp).rawget(cellId);
+        if(!(onMovementEndFn instanceof LuaFunction)) return false;
+
+        return true;
     }
 
     @Override
-    public void onFightEnd(Fight f, Player p) {
-        Object onFightEnd = recursiveGet(scriptVal,"onFightEnd");
-        if(onFightEnd == null) return;
-        DataScriptVM.getInstance().call(onFightEnd, scriptVal, p.getCurMap().scripted(), p.scripted() /*ADD FIGHTERS*/);
+    public void onFightEnd(Fight f, Player p, List<Fighter> winTeam, List<Fighter> looseTeam) {
+        Object tmp = recursiveGet(scriptVal,"onFightEnd");
+        if(!(tmp instanceof Table)) return;
+
+        Object onFightEndFn = ((Table)tmp).rawget(f.getType());
+        if(!(onFightEndFn instanceof LuaFunction)) return;
+
+        DefaultTable winners = new DefaultTable();
+        DefaultTable losers = new DefaultTable();
+
+        for(int i=0; i < winTeam.size(); i++) {
+            winners.rawset(1+i, winTeam.get(i).scripted());
+        }
+
+        for(int i=0; i < looseTeam.size(); i++) {
+            losers.rawset(1+i, looseTeam.get(i).scripted());
+        }
+
+        DataScriptVM.getInstance().call(onFightEndFn, scriptVal, p.getCurMap().scripted(), winners, losers);
+    }
+
+    @Override
+    public boolean hasFightEndForType(int type) {
+        Object tmp = recursiveGet(scriptVal,"onFightEnd");
+        if(!(tmp instanceof Table)) return false;
+
+        Object onFightEndFn = ((Table)tmp).rawget(type);
+        if(!(onFightEndFn instanceof LuaFunction)) return false;
+        return true;
     }
 }
