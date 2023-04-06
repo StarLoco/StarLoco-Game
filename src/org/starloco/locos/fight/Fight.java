@@ -103,6 +103,9 @@ public class Fight {
     private int nextId = -100;
     private MonsterGroup monsterGroup2;
 
+    private final List<Fighter> winners = new ArrayList<>();
+    private final List<Fighter> losers = new ArrayList<>();
+
     public Fight(int type, int id, GameMap map, Player perso, Player init2) {
         launchTime = System.currentTimeMillis();
         setType(type); // 0: D�fie (4: Pvm) 1:PVP (5:Perco)
@@ -3844,7 +3847,6 @@ public class Fight {
             final boolean winners = team0;
 
             final ArrayList<Fighter> fighters = new ArrayList<>();
-            final ArrayList<Fighter> winTeam = new ArrayList<>(), looseTeam = new ArrayList<>();
             fighters.addAll(copyTeam0.values());
             fighters.addAll(copyTeam1.values());
             if(this.turn != null) {
@@ -3868,32 +3870,32 @@ public class Fight {
 
 
                 if (winners) {
-                    looseTeam.addAll(copyTeam0.values());
-                    winTeam.addAll(copyTeam1.values());
+                    losers.addAll(copyTeam0.values());
+                    this.winners.addAll(copyTeam1.values());
                 } else {
-                    winTeam.addAll(copyTeam0.values());
-                    looseTeam.addAll(copyTeam1.values());
+                    this.winners.addAll(copyTeam0.values());
+                    losers.addAll(copyTeam1.values());
                 }
 
-                if (this.type != -1) {
-                    if (Constant.FIGHT_TYPE_PVM == this.getType()) {
-                        for (Fighter fighter : winTeam) {
-                            Player player = fighter.getPlayer();
-                            if (player == null)
-                                continue;
 
-                            player.setFight(null);
+                if (Constant.FIGHT_TYPE_PVM == this.type) {
+                    for (Fighter fighter : this.winners) {
+                        Player player = fighter.getPlayer();
+                        if (player == null)
+                            continue;
 
-                            if (fighter.isDeconnected()) {
-                                player.setNeededEndFight(this.getType(), this.getMobGroup());
-                                player.getCurMap().applyEndFightAction(player);
-                                player.setNeededEndFight(-1, null);
-                            } else {
-                                player.setNeededEndFight(this.getType(), this.getMobGroup());
-                            }
+                        player.setFight(null);
+
+                        if (fighter.isDeconnected()) {
+                            player.setNeededEndFight(this);
+                            player.getCurMap().applyEndFightAction(player);
+                            player.setNeededEndFight(null);
+                        } else {
+                            player.setNeededEndFight(this);
                         }
                     }
                 }
+
 
                 final String packet = this.type == -1 ? "GE" : this.getGE(winners ? 2 : 1);
 
@@ -3944,7 +3946,7 @@ public class Fight {
 
                 if (this.type != -1) {
                     /** WINNER **/
-                    for (Fighter fighter : winTeam) {
+                    for (Fighter fighter : this.winners) {
                         /** Collector **/
                         if (fighter.getCollector() != null) {
                             World.world.getGuild(getGuildId()).getPlayers().stream().filter(Objects::nonNull).filter(Player::isOnline).forEach(player -> {
@@ -3974,12 +3976,12 @@ public class Fight {
                             continue;
                         if (fighter.hasLeft())
                             continue;
-                        this.onPlayerWin(fighter, looseTeam);
+                        this.onPlayerWin(fighter, losers);
                     }
                     /** END WINNER **/
 
                     /** LOOSER **/
-                    for (Fighter fighter : looseTeam) {
+                    for (Fighter fighter : losers) {
                         if (fighter.getCollector() != null) {
                             World.world.getGuild(getGuildId()).getPlayers().stream().filter(Objects::nonNull).filter(Player::isOnline).forEach(player -> {
                                 SocketManager.GAME_SEND_gITM_PACKET(player, Collector.parseToGuild(player.getGuild().getId()));
@@ -4114,7 +4116,7 @@ public class Fight {
 
     }
 
-    void onPlayerWin(Fighter fighter, ArrayList<Fighter> looseTeam) {
+    void onPlayerWin(Fighter fighter, List<Fighter> looseTeam) {
         Player player = fighter.getPlayer();
 
         if (player == null)
@@ -5368,7 +5370,6 @@ public class Fight {
             winners.stream().filter(fighter -> !(fighter.isInvocation() && fighter.getMob() != null && fighter.getMob().getTemplate().getId() != 285)).filter(fighter -> !fighter.isDouble() && gains.get(fighter.getId()) != null).forEach(fighter -> packet.append(gains.get(fighter.getId()).toString()));
 
             //endregion End winner
-            System.out.println("TEAM WINNERS : " + (System.currentTimeMillis() - t));
             t = System.currentTimeMillis();
             //region Looser
             for (Fighter i : loosers) {
@@ -5592,8 +5593,6 @@ public class Fight {
                 ((CollectorData) DatabaseManager.get(CollectorData.class)).update(collector);
             }
             //endregion
-            System.out.println("TEAM LOOSERS : " + (System.currentTimeMillis() - t));
-            System.out.println("FIN TEMPS DROP GE : " + (System.currentTimeMillis() - t1));
             return packet.toString();
         } catch (Exception e) {
             e.printStackTrace();
@@ -5813,5 +5812,13 @@ public class Fight {
 
     public void setMobGroup2(MonsterGroup monsterGroup2) {
         this.monsterGroup2 = monsterGroup2;
+    }
+
+    public List<Fighter> getWinners() {
+        return this.winners;
+    }
+
+    public List<Fighter> getLosers() {
+        return this.losers;
     }
 }

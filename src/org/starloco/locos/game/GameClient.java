@@ -4503,10 +4503,11 @@ public class GameClient {
 
     private void getExtraInformations() {
         try {
-            if (this.player != null && this.player.needEndFight() != -1) {
-                if (player.castEndFightAction())
+            if (this.player != null && this.player.lastFight() != null) {
+                if (player.castEndFightAction()) {
                     player.getCurMap().applyEndFightAction(player);
-                player.setNeededEndFight(-1, null);
+                }
+                player.setNeededEndFight(null);
             } else {
                 sendExtraInformations();
             }

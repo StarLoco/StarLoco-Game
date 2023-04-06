@@ -73,10 +73,10 @@ end
 
 function fightEndTeleportWinnerPlayers(mapId, cellId)
     return function(md, m, winners, losers)
-        for winner in ipairs(winners) do
-            JLogF("DEBUG ENDFIGHT: %s", winner)
-            if winner:player() then
-                winner:player():teleport(mapId, cellId)
+        for _, winner in ipairs(winners) do
+            -- This ensure the winner entity can be teleported
+            if winner.teleport then
+                winner:teleport(mapId, cellId)
             end
         end
     end

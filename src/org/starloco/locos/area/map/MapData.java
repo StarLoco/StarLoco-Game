@@ -5,9 +5,11 @@ import org.starloco.locos.area.SubArea;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.entity.monster.MonsterGrade;
 import org.starloco.locos.fight.Fight;
+import org.starloco.locos.fight.Fighter;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.util.Pair;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -77,5 +79,5 @@ public abstract class MapData {
     public abstract void onMoveEnd(Player p);
     public abstract boolean cellHasMoveEndActions(int cellId);
 
-    public abstract void onFightEnd(Fight f, Player p);
+    public abstract void onFightEnd(Fight f, Player p, List<Fighter> winTeam, List<Fighter> looseTeam);
 }

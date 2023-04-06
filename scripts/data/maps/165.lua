@@ -28,4 +28,9 @@ map.onMovementEnd = {
     [202] = moveEndTeleport(167,204),
 }
 
+map.onFightEnd = {
+    [PVMFightType] = fightEndTeleportWinnerPlayers(7427, 363),
+}
+
+
 RegisterMapDef(map)

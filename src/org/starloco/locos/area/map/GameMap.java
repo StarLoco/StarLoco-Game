@@ -28,9 +28,7 @@ import org.starloco.locos.game.scheduler.Updatable;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.*;
 import org.starloco.locos.object.GameObject;
-import org.starloco.locos.other.Action;
 import org.starloco.locos.script.proxy.SMap;
-import org.starloco.locos.script.proxy.SPlayer;
 import org.starloco.locos.util.Pair;
 import org.starloco.locos.util.TimerWaiter;
 
@@ -514,8 +512,9 @@ public class GameMap {
     }
 
     public void applyEndFightAction(Player player) {
-        this.data.onFightEnd(player.getFight(), player);
-        player.setNeededEndFight(-1, null);
+        Fight fight = player.lastFight();
+        this.data.onFightEnd(fight, player, fight.getWinners(), fight.getLosers());
+        player.setNeededEndFight(null);
     }
 
     public int getX() {

@@ -177,9 +177,8 @@ public class Player {
     private boolean _livreArti = false;
 
     //Fight end
-    private int hasEndFight = -1;
+    private Fight lastFight;
     private Action endFightAction;
-    private MonsterGroup hasMonsterGroup = null;
     //Item classe
     private ArrayList<Integer> objectsClass = new ArrayList<>();
     private Map<Integer, World.Couple<Integer, Integer>> objectsClassSpell = new HashMap<>();
@@ -1947,7 +1946,7 @@ public class Player {
         ((PlayerData) DatabaseManager.get(PlayerData.class)).updateLogged(this.id, 1);
         this.verifEquiped();
 
-        if (this.needEndFight() == -1) {
+        if (this.lastFight() == null) {
             SocketManager.GAME_SEND_MAPDATA(client, this.curMap.getId(), this.curMap.getDate(), this.curMap.getKey());
             SocketManager.GAME_SEND_MAP_FIGHT_COUNT(client, this.getCurMap());
             if (this.getFight() == null) this.curMap.addPlayer(this);
@@ -4847,22 +4846,17 @@ public class Player {
         return _storeItems;
     }
 
-    public int needEndFight() {
-        return hasEndFight;
+    public Fight lastFight() {
+        return lastFight;
     }
 
-    public MonsterGroup hasMobGroup() {
-        return hasMonsterGroup;
-    }
-
-    public void setNeededEndFight(int hasEndFight, MonsterGroup group) {
+    public void setNeededEndFight(Fight fight) {
         this.endFightAction = null;
-        this.hasEndFight = hasEndFight;
-        this.hasMonsterGroup = group;
+        this.lastFight = fight;
     }
 
     public void setNeededEndFightAction(Action endFightAction) {
-        this.hasEndFight = -2;
+        this.lastFight = null;
         this.endFightAction = endFightAction;
     }
 
