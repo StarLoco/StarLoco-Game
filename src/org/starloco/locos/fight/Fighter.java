@@ -18,13 +18,14 @@ import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.Config;
 import org.starloco.locos.kernel.Constant;
 import org.starloco.locos.guild.Guild;
+import org.starloco.locos.script.Scripted;
 import org.starloco.locos.util.TimerWaiter;
 
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-public class Fighter implements Comparable<Fighter> {
+public class Fighter implements Comparable<Fighter>, Scripted<Object> {
 
     public int nbrInvoc;
     private boolean trapped = false, glyphed = false;
@@ -1087,6 +1088,7 @@ public class Fighter implements Comparable<Fighter> {
         return this.getPros() - t.getPros();
     }
 
+    @Override
     public Object scripted() {
         switch(this.type) {
         case 1:

@@ -520,6 +520,13 @@ public class GameMap {
         player.setLastFightForEndFightAction(null);
     }
 
+    public void applyInitFightAction(Fight fight) {
+        data.onFightInit(fight, fight.getTeam0().values(), fight.getTeam1().values());
+    }
+    public void applyStartFightAction(Fight fight) {
+        data.onFightStart(fight, fight.getTeam0().values(), fight.getTeam1().values());
+    }
+
     public int getX() {
         return data.x;
     }

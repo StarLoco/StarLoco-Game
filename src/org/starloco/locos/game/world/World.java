@@ -41,6 +41,8 @@ import org.starloco.locos.object.entity.Fragment;
 import org.starloco.locos.object.entity.SoulStone;
 import org.starloco.locos.guild.Guild;
 import org.starloco.locos.script.DataScriptVM;
+import org.starloco.locos.script.Scripted;
+import org.starloco.locos.script.proxy.SWorld;
 import org.starloco.locos.util.TimerWaiter;
 
 import java.text.SimpleDateFormat;
@@ -51,7 +53,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-public class World {
+public class World implements Scripted<SWorld> {
+    private final SWorld scriptVal;
 
     public final static World world = new World();
 
@@ -97,6 +100,10 @@ public class World {
     private final Map<Integer, GameMap> extraMonstreOnMap = new HashMap<>();
     private final Map<Integer, org.starloco.locos.area.map.entity.Tutorial> Tutorial = new HashMap<>();
     private final Map<Integer, Long> delayCollectors = new HashMap<>();
+
+    public World() {
+        this.scriptVal = new SWorld(this);
+    }
 
     public Map<Integer, Long> getDelayCollectors() {
         return delayCollectors;
@@ -1317,7 +1324,7 @@ public class World {
                                                     boolean sevAll, boolean bothSex, boolean EvenEnn, boolean MoreEnn,
                                                     boolean hasCaw, boolean hasChaf, boolean hasRoul, boolean hasArak,
                                                     int isBoss, boolean ecartLvlPlayer, boolean hasArround,
-                                                    boolean hasDisciple, boolean isSolo) {
+                                                    boolean hasIndirectDamage, boolean isSolo) {
         StringBuilder toReturn = new StringBuilder();
         boolean isFirst = true, isGood = false;
         int cond;
@@ -1365,7 +1372,7 @@ public class World {
             if (!hasArround && id == 36)
                 isGood = false;
             //Mains propre
-            if (!hasDisciple && id == 19)
+            if (!hasIndirectDamage && id == 19)
                 isGood = false;
 
             switch (id) {
@@ -1701,6 +1708,11 @@ public class World {
                         .filter(player -> player != null && player.getGameClient() != null && player.isOnline() && player.getLang() != null)
                         .forEach(player -> player.sendMessage(player.getLang().trans(key, str))),
                 0, TimeUnit.SECONDS);
+    }
+
+    @Override
+    public SWorld scripted() {
+        return scriptVal;
     }
 
 

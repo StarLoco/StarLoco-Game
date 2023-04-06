@@ -17,6 +17,8 @@
 ---@field mobGroupsSize number
 ---@field allowedMobGrades table<number,number> K: MobTemplateID, V: Grade
 ---@field onMovementEnd table<number, function(md:MapDef, m:Map, p:Player)>
+---@field onFightInit table<number, function(md:MapDef, m:Map,team1:Fighter[], team2:Fighter[])> K: fight type, V: Handler function
+---@field onFightStart table<number, function(md:MapDef, m:Map,team1:Fighter[], team2:Fighter[])> K: fight type, V: Handler function
 ---@field onFightEnd table<number, function(md:MapDef, m:Map, winners:Fighter[], losers:Fighter[])> K: fight type, V: Handler function
 ---
 
@@ -54,6 +56,7 @@ setmetatable(MapDef, {
         self.allowedMobGrades = {}
         self.positions = ""
         self.onMovementEnd = {}
+        self.onFightEnd = {}
         return self
     end,
 })

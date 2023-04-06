@@ -58,6 +58,7 @@ import org.starloco.locos.other.Dopeul;
 import org.starloco.locos.guild.Guild;
 import org.starloco.locos.quest.Quest;
 import org.starloco.locos.quest.QuestPlayer;
+import org.starloco.locos.script.Scripted;
 import org.starloco.locos.script.proxy.SPlayer;
 import org.starloco.locos.util.Pair;
 import org.starloco.locos.util.TimerWaiter;
@@ -70,7 +71,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-public class Player {
+public class Player implements Scripted<SPlayer> {
     private final SPlayer scriptVal;
 
     public Stats stats;
@@ -5991,6 +5992,7 @@ public class Player {
         return LangEnum.ENGLISH;
     }
 
+    @Override
     public SPlayer scripted() {
         return this.scriptVal;
     }

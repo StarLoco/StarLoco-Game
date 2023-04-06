@@ -9,10 +9,7 @@ import org.starloco.locos.fight.Fighter;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.util.Pair;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 // Holds all static data for maps
 public abstract class MapData {
@@ -78,6 +75,10 @@ public abstract class MapData {
 
     public abstract void onMoveEnd(Player p);
     public abstract boolean cellHasMoveEndActions(int cellId);
+
+
+    public void onFightInit(Fight f, Collection<Fighter> team0, Collection<Fighter> team1) {}
+    public void onFightStart(Fight f, Collection<Fighter> team0, Collection<Fighter> team1) {}
 
     public abstract boolean hasFightEndForType(int type);
     public abstract void onFightEnd(Fight f, Player p, List<Fighter> winTeam, List<Fighter> looseTeam);

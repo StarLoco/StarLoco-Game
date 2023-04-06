@@ -166,6 +166,8 @@ function Player:startQuest(quest) end
 ---@return boolean
 function Player:completeObjective(quest, objective) end
 
+---@param grades table<number,number>[] {mobID,grade}
+function Player:forceFight(grades) end
 
 --endregion
 
@@ -182,9 +184,43 @@ function Item:hasTxtStat(stat, val) end
 ---@return boolean
 function Item:consumeTxtStat(stat, val) end
 
+---@class World
+local World = {}
+
+---@param id number
+---@return SubArea
+function World:subArea(id) end
+
+---@param id number
+---@return Map
+function World:map(id) end
+
 -- Map instance
 ---@class Map
 local Map = {}
+
+---@return number
+function Map:id() end
+
+---@return SubArea
+function Map:subArea() end
+
+---@param cellId number
+---@return Player[]
+function Map:cellPlayers(cellId) end
+
+-- SubArea
+---@class SubArea
+local SubArea = {}
+
+---@return number
+function SubArea:id() end
+
+---@return number
+function SubArea:faction() end
+
+---@return boolean
+function SubArea:conquerable() end
 
 
 -- MobGrade
@@ -200,19 +236,3 @@ function MobGrade:grade() end
 ---@return number
 function MobGrade:level() end
 
-
----- FighterInfo
------@class FighterInfo
---local FighterInfo = {}
---
------@return number
---function FighterInfo:id() end
---
------@return number
---function FighterInfo:level() end
---
------@return Player
---function FighterInfo:player() end
---
------@return MobGrade
---function FighterInfo:mob() end

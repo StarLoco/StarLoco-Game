@@ -28,6 +28,7 @@ public final class MetaTables {
     // Only methods with the following signatures are allowed:
     // static void method(T)
     // static void method(T, ArgumentIterator)
+    // static ? method(T)
     // static ? method(T, ArgumentIterator)
     // TODO: support multiple return values
     @SuppressWarnings("unchecked")

@@ -4,10 +4,14 @@ import org.classdump.luna.ByteString;
 import org.classdump.luna.impl.DefaultUserdata;
 import org.classdump.luna.impl.ImmutableTable;
 import org.classdump.luna.lib.ArgumentIterator;
+import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.database.DatabaseManager;
 import org.starloco.locos.database.data.login.PlayerData;
+import org.starloco.locos.entity.monster.MobGroupDef;
+import org.starloco.locos.entity.monster.MonsterGrade;
+import org.starloco.locos.entity.monster.MonsterGroup;
 import org.starloco.locos.fight.spells.Spell;
 import org.starloco.locos.game.action.ExchangeAction;
 import org.starloco.locos.game.action.type.NpcDialogActionData;
@@ -331,6 +335,18 @@ public class SPlayer extends DefaultUserdata<Player> {
 
         p.modifAlignement(faction);
         return true;
+    }
+    //endregion
+
+    //region Other
+    @SuppressWarnings("unused")
+    private static void forceFight(Player p, ArgumentIterator args) {
+        List<Pair<Integer,Integer>> mobGrades = ScriptVM.listOfIntPairs(args.nextTable());
+        MobGroupDef def = new MobGroupDef(0, mobGrades);
+
+        GameMap map = p.getCurMap();
+        MonsterGroup group = new MonsterGroup(0, map, def);
+        map.startFightVersusMonstres(p, group);
     }
     //endregion
 }

@@ -10,6 +10,7 @@ import org.classdump.luna.env.RuntimeEnvironments;
 import org.classdump.luna.exec.CallException;
 import org.classdump.luna.exec.CallPausedException;
 import org.classdump.luna.exec.DirectCallExecutor;
+import org.classdump.luna.impl.DefaultTable;
 import org.classdump.luna.impl.ImmutableTable;
 import org.classdump.luna.impl.StateContexts;
 import org.classdump.luna.lib.*;
@@ -19,6 +20,7 @@ import org.classdump.luna.runtime.ExecutionContext;
 import org.classdump.luna.runtime.LuaFunction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.starloco.locos.game.world.World;
 import org.starloco.locos.game.world.World.Couple;
 import org.starloco.locos.util.Pair;
 
@@ -55,6 +57,7 @@ public class ScriptVM {
 
         this.env.rawset("JLogF", new LogF());
         this.env.rawset("loadDir", new LoadDir());
+        this.env.rawset("World", World.world.scripted());
         this.loadData();
     }
 
@@ -243,6 +246,22 @@ public class ScriptVM {
             out.put(keyMapper.apply(key), valMapper.apply(val));
         }
 
+        return out;
+    }
+
+    public static Table scriptedValsTable(Collection<? extends Scripted<?>> vals) {
+        return scriptedValsTable(vals.stream());
+    }
+
+    public static Table scriptedValsTable(Stream<? extends Scripted<?>> vals) {
+        DefaultTable out = new DefaultTable();
+
+        int i=1;
+        Iterator<? extends Scripted<?>> it = vals.iterator();
+        while(it.hasNext()) {
+            out.rawset(i, it.next().scripted());
+            i++;
+        }
         return out;
     }
 }

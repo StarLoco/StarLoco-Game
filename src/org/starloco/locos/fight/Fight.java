@@ -179,6 +179,7 @@ public class Fight {
         SocketManager.GAME_SEND_ADD_IN_TEAM_PACKET_TO_MAP(perso.getCurMap(), getInit1().getId(), getInit1());
         SocketManager.GAME_SEND_MAP_FIGHT_GMS_PACKETS_TO_FIGHT(this, 7, getMap());
 
+        mapOld.applyInitFightAction(this);
         setState(Constant.FIGHT_STATE_PLACE);
     }
 
@@ -256,6 +257,8 @@ public class Fight {
         for (Fighter f : getTeam1().values())
             SocketManager.GAME_SEND_ADD_IN_TEAM_PACKET_TO_MAP(getMapOld(), group2.getId(), f);
         SocketManager.GAME_SEND_MAP_FIGHT_GMS_PACKETS_TO_FIGHT(this, 7, getMap());
+
+        mapOld.applyInitFightAction(this);
         setState(Constant.FIGHT_STATE_PLACE);
         this.startFight();
     }
@@ -332,6 +335,8 @@ public class Fight {
         for (Fighter f : getTeam1().values())
             SocketManager.GAME_SEND_ADD_IN_TEAM_PACKET_TO_MAP(getInit0().getPlayer().getCurMap(), group.getId(), f);
         SocketManager.GAME_SEND_MAP_FIGHT_GMS_PACKETS_TO_FIGHT(this, 7, getMap());
+
+        mapOld.applyInitFightAction(this);
         setState(Constant.FIGHT_STATE_PLACE);
     }
 
@@ -409,6 +414,8 @@ public class Fight {
         for (Fighter f : getTeam1().values())
             SocketManager.GAME_SEND_ADD_IN_TEAM_PACKET_TO_MAP(getInit0().getPlayer().getCurMap(), group.getId(), f);
         SocketManager.GAME_SEND_MAP_FIGHT_GMS_PACKETS_TO_FIGHT(this, 7, getMap());
+
+        mapOld.applyInitFightAction(this);
         setState(Constant.FIGHT_STATE_PLACE);
     }
 
@@ -500,6 +507,8 @@ public class Fight {
             SocketManager.GAME_SEND_ADD_IN_TEAM_PACKET_TO_MAP(getInit0().getPlayer().getCurMap(), perco.getId(), f);
 
         SocketManager.GAME_SEND_MAP_FIGHT_GMS_PACKETS_TO_FIGHT(this, 7, getMap());
+
+        mapOld.applyInitFightAction(this);
         setState(Constant.FIGHT_STATE_PLACE);
 
         String str = "";
@@ -593,6 +602,8 @@ public class Fight {
         for (Fighter f : getTeam1().values())
             SocketManager.GAME_SEND_ADD_IN_TEAM_PACKET_TO_MAP(getInit0().getPlayer().getCurMap(), prism.getId(), f);
         SocketManager.GAME_SEND_MAP_FIGHT_GMS_PACKETS_TO_FIGHT(this, 7, getMap());
+
+        mapOld.applyInitFightAction(this);
         setState(Constant.FIGHT_STATE_PLACE);
         String str = "";
         if (getPrism() != null)
@@ -693,9 +704,8 @@ public class Fight {
 
         SocketManager.GAME_SEND_MAP_FIGHT_GMS_PACKETS_TO_FIGHT(this, 7, getMap());
 
+        mapOld.applyInitFightAction(this);
         setState(Constant.FIGHT_STATE_PLACE);
-
-
     }
 
     public static void FightStateAddFlag(GameMap map, Player player) {
@@ -1135,6 +1145,8 @@ public class Fight {
 
             this.collectorProtect = true;
             this.scheduleTimer(15);
+
+            this.mapOld.applyStartFightAction(this);
             return;
         }
 
@@ -1189,7 +1201,7 @@ public class Fight {
         /** Challenges **/
         if (getType() == Constant.FIGHT_TYPE_PVM
                 || getType() == Constant.FIGHT_TYPE_DOPEUL) {
-            boolean hasMale = false, hasFemale = false, hasDisciple = false;
+            boolean hasMale = false, hasFemale = false, hasIndirectDamage = false;
             boolean hasCawotte = false, hasChafer = false, hasRoulette = false, hasArakne = false, hasArround = false;
             boolean severalEnnemies, severalAllies, bothSexes, EvenEnnemies, MoreEnnemies, ecartLvlPlayer = false;
             int hasBoss = -1;
@@ -1217,7 +1229,7 @@ public class Fight {
                         case Constant.CLASS_SADIDA:
                         case Constant.CLASS_XELOR:
                         case Constant.CLASS_SRAM:
-                            hasDisciple = true;
+                            hasIndirectDamage = true;
                             break;
                     }
 
@@ -1236,13 +1248,10 @@ public class Fight {
                 }
             }
 
-            String boss = "58 85 86 107 113 121 147 173 180 225 226 230 232 251 252 257 289 295 374 375 377 382 404 423 430 457 478 568 605 612 669 670"
-                    + " 673 675 677 681 780 792 797 799 800 827 854 926 939 940 943 1015 1027 1045 1051 1071 1072 1085 1086 1087 1159 1184 1185 1186 1187 1188";
-
             for (Fighter fighter : getTeam1().values()) {
                 if (fighter.getMob() != null) {
                     if (fighter.getMob().getTemplate() != null) {
-                        if (boss.contains(String.valueOf(fighter.getMob().getTemplate().getId())))
+                        if (fighter.getMob().getTemplate().isBoss())
                             hasBoss = fighter.getMob().getTemplate().getId();
                         for (Fighter fighter2 : getTeam0().values())
                             if (PathFinding.getDistanceBetween(this.getMap(), fighter2.getCell().getId(), fighter.getCell().getId()) >= 5)
@@ -1291,7 +1300,7 @@ public class Fight {
             EvenEnnemies = (getTeam1().size() % 2 == 0);
             MoreEnnemies = (getTeam1().size() >= getTeam0().size());
 
-            String challenges = World.world.getChallengeFromConditions(severalEnnemies, severalAllies, bothSexes, EvenEnnemies, MoreEnnemies, hasCawotte, hasChafer, hasRoulette, hasArakne, hasBoss, ecartLvlPlayer, hasArround, hasDisciple, (this.getTeam0().size() != 1));
+            String challenges = World.world.getChallengeFromConditions(severalEnnemies, severalAllies, bothSexes, EvenEnnemies, MoreEnnemies, hasCawotte, hasChafer, hasRoulette, hasArakne, hasBoss, ecartLvlPlayer, hasArround, hasIndirectDamage, (this.getTeam0().size() != 1));
             String[] chalInfo;
 
             int challengeID, challengeXP, challengeDP, bonusGroupe;
@@ -1323,6 +1332,8 @@ public class Fight {
                     SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(this, 3, 950, player.getId() + "", player.getId() + "," + Constant.ETAT_CHEVAUCHANT + ",1");
             }
         }
+
+        this.mapOld.applyStartFightAction(this);
 
         this.startTurn();
         this.getFighters(3).stream().filter(Objects::nonNull).forEach(F -> getRholBack().put(F.getId(), F.getCell()));

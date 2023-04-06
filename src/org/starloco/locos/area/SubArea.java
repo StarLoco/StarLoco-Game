@@ -5,13 +5,16 @@ import org.starloco.locos.client.Player;
 import org.starloco.locos.entity.Prism;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.Constant;
+import org.starloco.locos.script.Scripted;
+import org.starloco.locos.script.proxy.SSubArea;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class SubArea {
+public class SubArea implements Scripted<SSubArea> {
+    private final SSubArea scriptVal;
     public static int BONTA = 0, BRAK = 0;
 
     private final int id;
@@ -25,6 +28,7 @@ public class SubArea {
     private final List<Short> nearestSubAreas = new ArrayList<>();
 
     public SubArea(int id, String name, int area, String nearest) {
+        this.scriptVal = new SSubArea(this);
         this.id = id;
         this.name = name;
         this.area = World.world.getArea(area);
@@ -101,5 +105,10 @@ public class SubArea {
             }
         }
         return player.getAlignment() == Constant.ALIGNEMENT_BRAKMARIEN ? brak > bonta : bonta > brak;
+    }
+
+    @Override
+    public SSubArea scripted() {
+        return scriptVal;
     }
 }
