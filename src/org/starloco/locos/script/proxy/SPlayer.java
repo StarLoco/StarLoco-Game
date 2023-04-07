@@ -1,5 +1,6 @@
 package org.starloco.locos.script.proxy;
 
+import com.sun.org.apache.xpath.internal.Arg;
 import org.classdump.luna.ByteString;
 import org.classdump.luna.impl.DefaultUserdata;
 import org.classdump.luna.impl.ImmutableTable;
@@ -15,6 +16,7 @@ import org.starloco.locos.entity.monster.MonsterGroup;
 import org.starloco.locos.fight.spells.Spell;
 import org.starloco.locos.game.action.ExchangeAction;
 import org.starloco.locos.game.action.type.NpcDialogActionData;
+import org.starloco.locos.game.world.World;
 import org.starloco.locos.job.JobStat;
 import org.starloco.locos.kernel.Constant;
 import org.starloco.locos.object.GameObject;
@@ -26,8 +28,10 @@ import org.starloco.locos.script.ScriptVM;
 import org.starloco.locos.script.types.MetaTables;
 import org.starloco.locos.util.Pair;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class SPlayer extends DefaultUserdata<Player> {
     private static final ImmutableTable META_TABLE= MetaTables.MetaTable(MetaTables.ReflectIndexTable(SPlayer.class));
@@ -74,6 +78,14 @@ public class SPlayer extends DefaultUserdata<Player> {
         SocketManager.GAME_SEND_GA_PACKET(p.getGameClient(), actionIDStr, String.valueOf(actionType),  String.valueOf(p.getId()), actionValue.toString());
     }
 
+    @SuppressWarnings("unused")
+    private static void compassTo(Player p, ArgumentIterator args) {
+        int mapId = args.nextInt();
+        GameMap map = World.world.getMap(mapId);
+
+        if (p.getFight() == null) return;
+        SocketManager.GAME_SEND_FLAG_PACKET(p, map);
+    }
     //endregion
 
     //region Dialogs
@@ -341,8 +353,11 @@ public class SPlayer extends DefaultUserdata<Player> {
     //region Other
     @SuppressWarnings("unused")
     private static void forceFight(Player p, ArgumentIterator args) {
+        // TODO: Refactor to allow list of grades
         List<Pair<Integer,Integer>> mobGrades = ScriptVM.listOfIntPairs(args.nextTable());
-        MobGroupDef def = new MobGroupDef(0, mobGrades);
+        List<Pair<Integer,List<Integer>>> mobGradeLists = mobGrades.stream().map(pair -> new Pair<>(pair.first, Collections.singletonList(pair.second))).collect(Collectors.toList());
+
+        MobGroupDef def = new MobGroupDef(0, mobGradeLists);
 
         GameMap map = p.getCurMap();
         MonsterGroup group = new MonsterGroup(0, map, def);

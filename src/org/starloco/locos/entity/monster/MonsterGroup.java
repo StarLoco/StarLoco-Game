@@ -9,6 +9,7 @@ import org.starloco.locos.object.GameObject;
 import org.starloco.locos.util.Pair;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class MonsterGroup {
     private final int id;
@@ -169,11 +170,7 @@ public class MonsterGroup {
         boolean star = false;
 
         // Compute aggro distance, faction, if we should enable XP/Drop bonus
-        for(Pair<Integer, Integer> p : def.mobGrades) {
-            Monster m = World.world.getMonstre(p.first);
-            if(m.getAlign() != Constant.ALIGNEMENT_NEUTRE) alignment = m.getAlign();
-            if(m.getAggroDistance() > this.aggroDistance) aggroDistance = m.getAggroDistance();
-            MonsterGrade mg = m.getGrades().get(p.second);
+        for(MonsterGrade mg : def.randomize()) {
             if (mg.getBaseXp() != 0) star = true;
             this.mobs.put(guid, mg);
             guid--;
@@ -183,8 +180,8 @@ public class MonsterGroup {
         this.starBonus = (short) (star ? 0 : -1);
     }
 
-    public static List<Pair<Integer,Integer>> parseMobGroupLevels(String groupData) {
-        List<Pair<Integer,Integer>> out = new LinkedList<>();
+    public static List<Pair<Integer, List<Integer>>> parseMobGroupLevels(String groupData) {
+        List<Pair<Integer,List<Integer>>> out = new LinkedList<>();
         Arrays.stream(groupData.split(";")).forEach(s -> {
             String[] parts = s.split(",");
             int idMonster = Integer.parseInt(parts[0]);
@@ -193,9 +190,8 @@ public class MonsterGroup {
 
             try {
                 // Not really random anymore, but that will be replaced by script anyway
-                World.world.getMonstre(idMonster).getGrades().values().stream()
-                    .filter(g -> g.getLevel() >= min && g.getLevel() <= max)
-                    .findAny().ifPresent(g -> out.add(new Pair<>(idMonster, g.getGrade())));
+                out.add(new Pair<>(idMonster, World.world.getMonstre(idMonster).getGrades().values().stream()
+                        .filter(g -> g.getLevel() >= min && g.getLevel() <= max).map(MonsterGrade::getGrade).collect(Collectors.toList())));
             }catch(NullPointerException e) {
                 throw new NullPointerException(String.format("Monster #%d Grade for levels %d or %d does not exist", idMonster, min, max));
             }

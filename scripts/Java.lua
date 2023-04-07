@@ -76,7 +76,6 @@ function Player:modKamas(quantity) end
 ---@return number,number used,max
 function Player:pods() end
 
-
 ---@param pos number
 ---@return Item
 function Player:gearAt(pos) end
@@ -169,7 +168,11 @@ function Player:completeObjective(quest, objective) end
 ---@param grades table<number,number>[] {mobID,grade}
 function Player:forceFight(grades) end
 
+---@param mapId number
+function Player:compassTo(mapId) end
+
 --endregion
+
 
 ---@class Item
 local Item = {}

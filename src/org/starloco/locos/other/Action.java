@@ -1220,9 +1220,9 @@ public class Action {
             case 53: //Suivre le d�placement pour une map pr�sice
                 if (args == null)
                     break;
-                if (World.world.getMap(Short.parseShort(args)) == null)
+                if (World.world.getMap(Integer.parseInt(args)) == null)
                     break;
-                GameMap CurMap = World.world.getMap(Short.parseShort(args));
+                GameMap CurMap = World.world.getMap(Integer.parseInt(args));
                 if (player.getFight() == null) {
                     SocketManager.GAME_SEND_FLAG_PACKET(player, CurMap);
                 }
