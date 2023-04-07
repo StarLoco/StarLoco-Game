@@ -19,7 +19,8 @@ public class Prism {
     public final static byte NEW = 1, NORMAL = 2, FIGHTING = 3;
 
     private int id;
-    private byte alignment, state;
+    private int alignment;
+    private byte state;
     private int level;
     private int Map;
     private int cell;
@@ -125,7 +126,7 @@ public class Prism {
         return this.id;
     }
 
-    public byte getAlignment() {
+    public int getAlignment() {
         return this.alignment;
     }
 
