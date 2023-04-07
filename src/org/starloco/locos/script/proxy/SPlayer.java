@@ -271,8 +271,8 @@ public class SPlayer extends DefaultUserdata<Player> {
     @SuppressWarnings("unused")
     private static void addItem(Player p, ArgumentIterator args) {
         int itemID = args.nextInt();
-        int quantity = args.nextInt();
-        boolean isPerfect = args.nextOptionalBoolean(true);
+        int quantity = args.nextOptionalInt(1);
+        boolean isPerfect = args.nextOptionalBoolean(false);
         boolean display = args.nextOptionalBoolean(true);
 
         p.addItem(itemID, quantity, isPerfect, display);

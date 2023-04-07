@@ -7,8 +7,8 @@ function npc:onTalk(p, answer)
     -- TODO: Missing a way to create an item with a txt stat date
     if answer == 0 then p:ask(1686, {1302})
     elseif answer == 1302 then
-        if p:modKamas() then
-            p:addItem(1728, 1, false)
+        if p:modKamas(50) then
+            p:addItem(1728)
             p:teleport(1856, 226)
         end
         p:endDialog()

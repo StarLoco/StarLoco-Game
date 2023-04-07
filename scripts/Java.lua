@@ -87,8 +87,8 @@ function Player:pods() end
 function Player:gearAt(pos) end
 
 ---@param template number
----@param quantity number
----@param isPerfect boolean defaults to true
+---@param quantity number defaults to 1
+---@param isPerfect boolean defaults to false
 ---@param display boolean defaults to true
 ---@return void
 function Player:addItem(template, quantity, isPerfect, display) end

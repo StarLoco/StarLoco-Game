@@ -24,7 +24,7 @@ local hasAllItems = p:getItem(8003) and p:getItem(8004) and p:getItem(8005) and 
 			p:consumeItem(8007, 1)
 			p:consumeItem(8008, 1)
 			p:consumeItem(8009, 1)
-			p:addItem(7911, 1, false)
+			p:addItem(7911)
 			p:endDialog()
 		else
 			p:ask(4074, {})

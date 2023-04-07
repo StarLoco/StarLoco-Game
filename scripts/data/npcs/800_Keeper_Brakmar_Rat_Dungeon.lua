@@ -8,7 +8,7 @@ function npc:onTalk(p, answer)
         if answer == 0 then 
             p:ask(3294, {2963})
         elseif answer == 2963 then
-            p:addItem(8477, 1, false)
+            p:addItem(8477)
             p:teleport(6738, 213)
             p:endDialog()
         end
