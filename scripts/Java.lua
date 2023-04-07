@@ -212,6 +212,9 @@ function Map:subArea() end
 ---@return Player[]
 function Map:cellPlayers(cellId) end
 
+---@return number[]
+function Map:mobGroupIDs() end
+
 -- SubArea
 ---@class SubArea
 local SubArea = {}

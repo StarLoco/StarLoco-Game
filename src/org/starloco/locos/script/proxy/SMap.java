@@ -40,4 +40,8 @@ public class SMap extends DefaultUserdata<GameMap> {
         return ScriptVM.scriptedValsTable(m.getCase(cellID).getPlayers().stream());
     }
 
+    @SuppressWarnings("unused")
+    private static Table mobGroupIDs(GameMap m) {
+        return ScriptVM.intTable(m.getMobGroups().keySet().stream());
+    }
 }
