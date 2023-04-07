@@ -265,10 +265,10 @@ public class ScriptVM {
         return out;
     }
 
-    public static Table intTable(Stream<Integer> vals) {
+    public static <T> Table listOf(Stream<T> vals) {
         DefaultTable out = new DefaultTable();
         int i=1;
-        Iterator<Integer> it = vals.iterator();
+        Iterator<T> it = vals.iterator();
         while(it.hasNext()) {
             out.rawset(i, it.next());
             i++;

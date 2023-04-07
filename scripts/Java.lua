@@ -212,8 +212,8 @@ function Map:subArea() end
 ---@return Player[]
 function Map:cellPlayers(cellId) end
 
----@return number[]
-function Map:mobGroupIDs() end
+---@return MobGrade[][]
+function Map:mobGroups() end
 
 -- SubArea
 ---@class SubArea

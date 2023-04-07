@@ -5,18 +5,14 @@ import org.classdump.luna.impl.DefaultTable;
 import org.classdump.luna.impl.DefaultUserdata;
 import org.classdump.luna.impl.ImmutableTable;
 import org.classdump.luna.lib.ArgumentIterator;
-import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.area.map.GameMap;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.entity.monster.MonsterGroup;
 import org.starloco.locos.script.ScriptVM;
-import org.starloco.locos.script.Scripted;
 import org.starloco.locos.script.types.MetaTables;
+import sun.font.Script;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Stream;
+import java.util.Map;
 
 public class SMap extends DefaultUserdata<GameMap> {
     private static final ImmutableTable META_TABLE= MetaTables.MetaTable(MetaTables.ReflectIndexTable(SMap.class));
@@ -41,7 +37,12 @@ public class SMap extends DefaultUserdata<GameMap> {
     }
 
     @SuppressWarnings("unused")
-    private static Table mobGroupIDs(GameMap m) {
-        return ScriptVM.intTable(m.getMobGroups().keySet().stream());
+    private static Table mobGroups(GameMap m) {
+        return ScriptVM.listOf(m.getMobGroups().values().stream()
+                .map(MonsterGroup::getMobs)
+                .map(Map::values)
+                .map(Collection::stream)
+                .map(ScriptVM::listOf)
+        );
     }
 }
