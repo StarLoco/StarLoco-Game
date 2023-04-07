@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
  */
 public abstract class AbstractIA implements IA {
 
-    private final static ScheduledExecutorService executor = Executors.newScheduledThreadPool(5);
+    private final static ScheduledExecutorService executor = Executors.newScheduledThreadPool(5, r ->  new Thread(r, "AbstractIA"));
 
     protected Fight fight;
     protected Fighter fighter;

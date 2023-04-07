@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 public class TimerWaiter {
 
     private static final int numberOfThread = 10;
-    private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(numberOfThread);
+    private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(numberOfThread, r -> new Thread(r, "TimerWaiter"));
 
     public static ScheduledFuture<?> addNext(Runnable run, long time, TimeUnit unit) {
         return TimerWaiter.scheduler.schedule(catchRunnable(run), time, unit);
