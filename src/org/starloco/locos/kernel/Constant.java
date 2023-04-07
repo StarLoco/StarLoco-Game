@@ -192,10 +192,10 @@ public class Constant {
     public static final int ITEM_TYPE_FRAGM_AME_SHUSHU = 115;
     public static final int ITEM_TYPE_POTION_FAMILIER = 116;
     //Alignement
-    public static final byte ALIGNEMENT_NEUTRE = -1;
-    public static final byte ALIGNEMENT_BONTARIEN = 1;
-    public static final byte ALIGNEMENT_BRAKMARIEN = 2;
-    public static final byte ALIGNEMENT_MERCENAIRE = 3;
+    public static final int ALIGNEMENT_NEUTRE = -1;
+    public static final int ALIGNEMENT_BONTARIEN = 1;
+    public static final int ALIGNEMENT_BRAKMARIEN = 2;
+    public static final int ALIGNEMENT_MERCENAIRE = 3;
     //Elements
     public static final int ELEMENT_NULL = -1;
     public static final int ELEMENT_NEUTRE = 0;
@@ -354,7 +354,7 @@ public class Constant {
     public static final int STATS_SIGNATURE = 988;
     public static final int ERR_STATS_XP = 1000;
     //ZAAPI <alignID,{mapID,mapID,...,mapID}>
-    public static Map<Byte, String> ZAAPI = new HashMap<>();
+    public static Map<Integer, String> ZAAPI = new HashMap<>();
     //ZAAP <mapID,cellID>
     public static final Map<Integer, Integer> ZAAPS = new HashMap<>();
     //Valeur des droits de guilde

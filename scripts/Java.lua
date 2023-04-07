@@ -31,6 +31,12 @@ function RegisterAdminGroup(id, name, isPlayer, commands) end
 ---@param bandits number[]
 function RegisterExpTables(players, guilds, jobs, mounts, pvp, livitinems, tormentators, bandits) end
 
+
+---@param id number
+---@param areaId number
+---@param neighbors number[]
+function RegisterSubArea(id, areaId, neighbors) end
+
 ---@class Player
 local Player = {}
 

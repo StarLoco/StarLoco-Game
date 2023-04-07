@@ -1270,13 +1270,20 @@ public class World implements Scripted<SWorld> {
             str.append(area.getId()).append(",").append(area.getAlignement()).append(",1,").append(area.getPrismId() == 0 ? 0 : 1);
             first = true;
         }
+
+        Map<Integer, Long> factionAreaCounts = subAreaCountByFaction();
+        long bontaAndBrakCount = factionAreaCounts.get(Constant.ALIGNEMENT_BONTARIEN) + factionAreaCounts.get(Constant.ALIGNEMENT_BRAKMARIEN);
         if (alignement == 1)
             str.insert(0, Area.bontarians + "|" + subareas + "|"
-                    + (subareas - (SubArea.BONTA + SubArea.BRAK)) + "|");
+                    + (subareas - (bontaAndBrakCount)) + "|");
         else if (alignement == 2)
             str.insert(0, Area.brakmarians + "|" + subareas + "|"
-                    + (subareas - (SubArea.BONTA + SubArea.BRAK)) + "|");
+                    + (subareas - (bontaAndBrakCount)) + "|");
         return str.toString();
+    }
+
+    public Map<Integer, Long> subAreaCountByFaction() {
+        return subAreas.values().stream().collect(Collectors.groupingBy(SubArea::getAlignment, Collectors.counting()));
     }
 
     public void showPrismes(Player perso) {

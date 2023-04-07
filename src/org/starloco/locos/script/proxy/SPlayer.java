@@ -337,10 +337,10 @@ public class SPlayer extends DefaultUserdata<Player> {
     //region Factions
     @SuppressWarnings("unused")
     private static boolean setFaction(Player p, ArgumentIterator args) {
-        byte faction = (byte)args.nextInt();
+        int faction = args.nextInt();
         boolean replace = args.nextOptionalBoolean(false);
 
-        byte current = p.getAlignment();
+        int current = p.getAlignment();
         if(current == faction) return true;
 
         // We're not allowed to replace an existing faction

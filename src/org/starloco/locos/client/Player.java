@@ -121,7 +121,7 @@ public class Player implements Scripted<SPlayer> {
     //Emote
     private List<Integer> emotes = new ArrayList<>();
     //Variables d'ali
-    private byte alignment = 0;
+    private int alignment = 0;
     private int _deshonor = 0;
     private int _honor = 0;
     private boolean _showWings = false;
@@ -503,7 +503,7 @@ public class Player implements Scripted<SPlayer> {
     public Player(int id, String name, int groupe, int sexe, int classe,
                   int color1, int color2, int color3, int level, int _size,
                   int _gfxid, Map<Integer, Integer> stats, String stuff,
-                  int pdvPer, byte seeAlign, int mount, int alvl, byte alignement) {
+                  int pdvPer, byte seeAlign, int mount, int alvl, int alignement) {
         this.scriptVal = null; // FIXME if we ever use scripts for fights
 
         this.id = id;
@@ -2387,11 +2387,11 @@ public class Player implements Scripted<SPlayer> {
         setPdv(this.curPdv + diff);
     }
 
-    public byte getAlignment() {
+    public int getAlignment() {
         return alignment;
     }
 
-    public void setAlignment(byte alignment) {
+    public void setAlignment(int alignment) {
         this.alignment = alignment;
     }
 

@@ -15,12 +15,10 @@ import java.util.stream.Collectors;
 
 public class SubArea implements Scripted<SSubArea> {
     private final SSubArea scriptVal;
-    public static int BONTA = 0, BRAK = 0;
-
     private final int id;
     private final String name;
     private final Area area;
-    private byte alignment;
+    private int alignment;
     private Prism prism;
     private boolean conquerable;
 
@@ -53,11 +51,7 @@ public class SubArea implements Scripted<SSubArea> {
         return alignment;
     }
 
-    public void setAlignment(byte alignment) {
-        if (this.alignment == 1 && alignment == -1) BONTA--;
-        else if (this.alignment == 2 && alignment == -1) BRAK--;
-        else if (this.alignment == -1 && alignment == 1) BONTA++;
-        else if (this.alignment == -1 && alignment == 2) BRAK++;
+    public void setAlignment(int alignment) {
         this.alignment = alignment;
     }
 
