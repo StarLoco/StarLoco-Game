@@ -793,18 +793,19 @@ public class GameMap {
         return group;
     }
 
-    public void spawnMobGroup(MobGroupDef def, boolean send) {
+    public int spawnMobGroup(MobGroupDef def, boolean send) {
         while(this.mobGroups.get(this.nextObjectId) != null)
             this.nextObjectId--;
         MonsterGroup group = new MonsterGroup(this.nextObjectId, this, def);
 
         if (group.getMobs().isEmpty())
-            return;
+            return 0;
         this.mobGroups.put(this.nextObjectId, group);
         this.nextObjectId--;
         this.fixMobGroups.put(-1000 + this.nextObjectId, group);
         if (send)
             SocketManager.GAME_SEND_MAP_MOBS_GM_PACKET(this, group);
+        return group.getId();
     }
 
     public void refreshSpawns() {

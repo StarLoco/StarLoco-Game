@@ -214,11 +214,16 @@ function Map:subArea() end
 ---@return Player[]
 function Map:cellPlayers(cellId) end
 
+---@param actorId number
+---@return MobGrade[][]
+function Map:mobGroupById(actorId) end
+
 ---@return MobGrade[][]
 function Map:mobGroups() end
 
 ---@param cellId number
 ---@param def MobGroupDef
+---@return number actorId
 function Map:spawnGroupDef(cellId, def) end
 
 -- SubArea
