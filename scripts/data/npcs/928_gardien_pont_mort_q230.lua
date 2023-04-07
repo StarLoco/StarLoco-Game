@@ -10,7 +10,7 @@ local coralWeight = 10
 local fail = function(p)
     p:endDialog()
     p:forceFight({
-        {1094, 5}
+        {1094, {5}}
     })
 end
 

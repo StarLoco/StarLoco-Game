@@ -58,6 +58,7 @@ public class Formulas {
         return 2 * (i) * (i + 1);
     }
 
+    /**  Returns a random int between i1 and i2 included */
     public static int getRandomValue(int i1, int i2) {
         if (i2 < i1)
             return 0;

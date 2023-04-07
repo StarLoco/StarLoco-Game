@@ -147,7 +147,7 @@ public class ScriptVM {
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> ArrayList<T> listFromLuaTable(Table t) {
+    public static <T> List<T> listFromLuaTable(Table t) {
         ArrayList<T> out = new ArrayList<>();
 
         long len = t.rawlen();
@@ -158,6 +158,11 @@ public class ScriptVM {
         return out;
     }
 
+    @SuppressWarnings("unchecked")
+    public static <K,V> Pair<K,V> toPair(Table t) {
+        return new Pair<>((K)t.rawget(1L), (V)t.rawget(2L));
+    }
+
     public static List<Pair<Integer,Integer>> listOfIntPairs(Table t) {
         if(t == null) return null;
 
@@ -165,8 +170,7 @@ public class ScriptVM {
         List<Pair<Integer,Integer>> out = new LinkedList<>();
 
         for(long i=0;i<len;i++){
-            Table pair = (Table)t.rawget(i+1);
-            out.add(new Pair<>(rawInt(pair, 1L), rawInt(pair, 2L)));
+            out.add(ScriptVM.<Long,Long>toPair((Table)t.rawget(i+1)).map(Long::intValue,Long::intValue));
         }
 
         return out;
@@ -186,7 +190,7 @@ public class ScriptVM {
         return out;
     }
 
-    public static ArrayList<Integer> intsFromLuaTable(Table t) {
+    public static List<Integer> intsFromLuaTable(Table t) {
         ArrayList<Integer> out = new ArrayList<>();
         if(t == null) return out;
 

@@ -165,13 +165,15 @@ function Player:startQuest(quest) end
 ---@return boolean
 function Player:completeObjective(quest, objective) end
 
----@param grades table<number,number>[] {mobID,grade}
+---@param grades MobGroupDef {mobID,grade}
 function Player:forceFight(grades) end
 
 ---@param mapId number
 function Player:compassTo(mapId) end
 
 --endregion
+
+---@class MobGroupDef:table<number,number[]>[]
 
 
 ---@class Item
@@ -214,6 +216,10 @@ function Map:cellPlayers(cellId) end
 
 ---@return MobGrade[][]
 function Map:mobGroups() end
+
+---@param cellId number
+---@param def MobGroupDef
+function Map:spawnGroupDef(cellId, def) end
 
 -- SubArea
 ---@class SubArea

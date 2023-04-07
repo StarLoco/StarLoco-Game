@@ -2,6 +2,7 @@ package org.starloco.locos.script.proxy;
 
 import com.sun.org.apache.xpath.internal.Arg;
 import org.classdump.luna.ByteString;
+import org.classdump.luna.Table;
 import org.classdump.luna.impl.DefaultUserdata;
 import org.classdump.luna.impl.ImmutableTable;
 import org.classdump.luna.lib.ArgumentIterator;
@@ -352,16 +353,11 @@ public class SPlayer extends DefaultUserdata<Player> {
 
     //region Other
     @SuppressWarnings("unused")
-    private static void forceFight(Player p, ArgumentIterator args) {
-        // TODO: Refactor to allow list of grades
-        List<Pair<Integer,Integer>> mobGrades = ScriptVM.listOfIntPairs(args.nextTable());
-        List<Pair<Integer,List<Integer>>> mobGradeLists = mobGrades.stream().map(pair -> new Pair<>(pair.first, Collections.singletonList(pair.second))).collect(Collectors.toList());
-
-        MobGroupDef def = new MobGroupDef(0, mobGradeLists);
-
-        GameMap map = p.getCurMap();
+    private static void forceFight(Player player, ArgumentIterator args) {
+        MobGroupDef def = MobGroupDef.Mapper.get().from(args.nextTable());
+        GameMap map = player.getCurMap();
         MonsterGroup group = new MonsterGroup(0, map, def);
-        map.startFightVersusMonstres(p, group);
+        map.startFightVersusMonstres(player, group);
     }
     //endregion
 }

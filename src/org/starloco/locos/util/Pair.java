@@ -2,6 +2,7 @@ package org.starloco.locos.util;
 
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.function.Function;
 
 /**
  * Created by Locos on 13/06/2018.
@@ -43,6 +44,9 @@ public class Pair<K, V> implements Serializable {
         if(!Objects.equals(this.first, var2.first))  return false;
 
         return Objects.equals(this.second, var2.second);
+    }
 
+    public <OK,OV> Pair<OK,OV> map(Function<K,OK> km, Function<V,OV> vm) {
+        return new Pair<>(km.apply(first), vm.apply(second));
     }
 }

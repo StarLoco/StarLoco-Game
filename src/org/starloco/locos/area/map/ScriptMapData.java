@@ -48,7 +48,10 @@ public class ScriptMapData extends MapData {
     public static ScriptMapData build(Table val) {
         Table lMobGrades = (Table)val.rawget("allowedMobGrades");
         List<MonsterGrade> allowedMonsters = listOfIntPairs(lMobGrades).stream()
-            .map(p -> Optional.ofNullable(World.world.getMonstre(p.first)).map(m -> m.getGrades().get(p.second)).orElse(null))
+            .map(p -> Optional.ofNullable(World.world.getMonstre(p.first))
+                    .map(m -> m.getGrades().get(p.second))
+                    .orElse(null)
+            )
             .filter(Objects::nonNull).collect(Collectors.toList());
 
         Map<Integer, Pair<Integer,Integer>> npcs = ScriptVM.mapFromScript((Table)val.rawget("npcs"),
