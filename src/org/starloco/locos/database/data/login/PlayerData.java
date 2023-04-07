@@ -293,8 +293,7 @@ public class PlayerData extends FunctionDAO<Player> {
     public void loadByAccountId(int id) {
         try {
             Account account = World.world.ensureAccountLoaded(id);
-            if (account != null)
-                if (account.getPlayers() != null)
+            if (account != null && account.getPlayers() != null)
                     account.getPlayers().values().stream().filter(Objects::nonNull).forEach(World.world::verifyClone);
         } catch (Exception e) {
             super.sendError(e);
@@ -309,7 +308,7 @@ public class PlayerData extends FunctionDAO<Player> {
                     }
                 }
 
-                HashMap<Integer, Integer> stats = new HashMap<Integer, Integer>();
+                HashMap<Integer, Integer> stats = new HashMap<>();
                 stats.put(Constant.STATS_ADD_VITA, result.getInt("vitalite"));
                 stats.put(Constant.STATS_ADD_FORC, result.getInt("force"));
                 stats.put(Constant.STATS_ADD_SAGE, result.getInt("sagesse"));
