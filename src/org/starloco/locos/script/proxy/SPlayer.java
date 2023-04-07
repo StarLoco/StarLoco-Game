@@ -83,7 +83,7 @@ public class SPlayer extends DefaultUserdata<Player> {
         int mapId = args.nextInt();
         GameMap map = World.world.getMap(mapId);
 
-        if (p.getFight() == null) return;
+        if (p.getFight() != null) return;
         SocketManager.GAME_SEND_FLAG_PACKET(p, map);
     }
     //endregion
