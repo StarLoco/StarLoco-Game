@@ -131,6 +131,10 @@ function Player:sendAction(id,type, val) end
 function Player:jobLevel(job) end
 
 ---@param job number
+---@return boolean worked
+function Player:tryLearnJob(job) end
+
+---@param job number
 ---@param xp number
 ---@return boolean worked
 function Player:addJobXP(job, xp) end

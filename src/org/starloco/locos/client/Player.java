@@ -1345,6 +1345,47 @@ public class Player implements Scripted<SPlayer> {
         return _capital;
     }
 
+    public boolean tryLearnJob(int jobID) {
+        Job job = World.world.getMetier(jobID);
+        if(job == null) return false;
+
+        if(_metiers.get(jobID) != null) {
+            SocketManager.GAME_SEND_Im_PACKET(this, "111");
+            return false;
+        }
+
+        // Common Precondition: Less than 3 basic jobs
+        if(totalJobBasic()>2) {
+            SocketManager.GAME_SEND_Im_PACKET(this, "19");
+            return false;
+        }
+
+        // Common Precondition: All current jobs > 30
+        int min = _metiers.values().stream().mapToInt(JobStat::get_lvl).min().orElse(100);// 100 is the max level, so that's sure to be enough
+        if(min < 30) {
+            SocketManager.GAME_SEND_Im_PACKET(this, "19");
+            return false;
+        }
+
+        // If we're trying to learn magus job, check base job level
+        if(job.isMaging()) {
+            // Magus Precondition: Less than 3 magus jobs
+            if(totalJobFM()>2) {
+                SocketManager.GAME_SEND_Im_PACKET(this, "19");
+                return false;
+            }
+
+            JobStat baseJobStats = _metiers.get(World.world.getMetierByMaging(jobID));
+            if(baseJobStats == null || baseJobStats.get_lvl() < 65) {
+                SocketManager.GAME_SEND_Im_PACKET(this, "111");
+                return false;
+            }
+        }
+
+        learnJob(job);
+        return true;
+    }
+
     public static class EnsureSpellLevelResult {
         public final boolean changed;
         public final int ptsDelta, oldLevel;

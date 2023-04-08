@@ -295,6 +295,12 @@ public class SPlayer extends DefaultUserdata<Player> {
     //endregion
 
     //region Jobs
+
+    @SuppressWarnings("unused")
+    private static boolean tryLearnJob(Player p, ArgumentIterator args) {
+        int jobID = args.nextInt();
+        return p.tryLearnJob(jobID);
+    }
     @SuppressWarnings("unused")
     private static int jobLevel(Player p, ArgumentIterator args) {
         int jobID = args.nextInt();
