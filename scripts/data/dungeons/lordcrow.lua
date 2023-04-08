@@ -6,6 +6,7 @@ local bossMobId = 289
 local downMobId = 819
 local rightMobId = 820
 
+-- TODO: Fix npcPos and down/right cell destinations
 local mapInfos = {
     -- -19/-62 (Entrance)
     [9590] = {groupsCells={166,169}, npcPos={205,1}, down={9594,44}, right={9591,117}, dialog=3185},
