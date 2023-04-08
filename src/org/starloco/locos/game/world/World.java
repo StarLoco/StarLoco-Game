@@ -1272,7 +1272,7 @@ public class World implements Scripted<SWorld> {
         }
 
         Map<Integer, Long> factionAreaCounts = subAreaCountByFaction();
-        long bontaAndBrakCount = factionAreaCounts.get(Constant.ALIGNEMENT_BONTARIEN) + factionAreaCounts.get(Constant.ALIGNEMENT_BRAKMARIEN);
+        long bontaAndBrakCount = factionAreaCounts.getOrDefault(Constant.ALIGNEMENT_BONTARIEN,0L) + factionAreaCounts.getOrDefault(Constant.ALIGNEMENT_BRAKMARIEN, 0L);
         if (alignement == 1)
             str.insert(0, Area.bontarians + "|" + subareas + "|"
                     + (subareas - (bontaAndBrakCount)) + "|");
