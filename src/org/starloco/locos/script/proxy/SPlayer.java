@@ -29,6 +29,7 @@ import org.starloco.locos.script.ScriptVM;
 import org.starloco.locos.script.types.MetaTables;
 import org.starloco.locos.util.Pair;
 
+import java.net.Socket;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -87,6 +88,14 @@ public class SPlayer extends DefaultUserdata<Player> {
         ByteString actionValue = args.nextString();
 
         SocketManager.GAME_SEND_GA_PACKET(p.getGameClient(), actionIDStr, String.valueOf(actionType),  String.valueOf(p.getId()), actionValue.toString());
+    }
+    @SuppressWarnings("unused")
+    private static void sendInfoMsg(Player p, ArgumentIterator args) {
+        int type = args.nextInt();
+        if(type>9) throw new IllegalArgumentException("SPlayer:sendInfoMsg type param must be < 10");
+        int msgId = args.nextInt();
+
+        SocketManager.GAME_SEND_Im_PACKET(p, type+""+msgId);
     }
 
     @SuppressWarnings("unused")

@@ -40,10 +40,12 @@ public class InteractiveObject {
         }
     };
 
-    private int id, state;
-    private GameMap map;
-    private GameCase cell;
-    private boolean interactive = true, walkable;
+    private final int id;
+    private int state;
+    private final GameMap map;
+    private final GameCase cell;
+    private boolean interactive = true;
+    private final boolean walkable;
     private long lastTime = 0;
     private InteractiveObjectTemplate template;
 
@@ -401,17 +403,17 @@ public class InteractiveObject {
 
     public void disable() {
         this.lastTime = System.currentTimeMillis();
-        ArrayList<InteractiveObject> array = (ArrayList<InteractiveObject>) InteractiveObject.updatable.get();
+        ArrayList<InteractiveObject> array = InteractiveObject.updatable.get();
         array.add(this);
     }
 
     public static class InteractiveObjectTemplate {
 
-        private int id;
-        private int respawnTime;
-        private int duration;
-        private int unk;
-        private boolean walkable;
+        private final int id;
+        private final int respawnTime;
+        private final int duration;
+        private final int unk;
+        private final boolean walkable;
 
         public InteractiveObjectTemplate(int id, int respawnTime, int duration, int unk, boolean walkable) {
             this.id = id;

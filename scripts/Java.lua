@@ -137,6 +137,11 @@ function Player:learnEmote(emote) end
 ---@return void
 function Player:sendAction(id,type, val) end
 
+---@param type number
+---@param id number
+---@return void
+function Player:sendInfoMsg(type, id) end
+
 ---@param job number
 ---@return number -- 0 if not known
 function Player:jobLevel(job) end

@@ -2,6 +2,7 @@ package org.starloco.locos.area.map;
 
 import org.starloco.locos.area.Area;
 import org.starloco.locos.area.SubArea;
+import org.starloco.locos.area.map.entity.InteractiveObject;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.entity.monster.MobGroupDef;
 import org.starloco.locos.entity.monster.MonsterGrade;
@@ -31,6 +32,7 @@ public abstract class MapData {
     public final String cellsData;
     public final List<MonsterGrade> mobPossibles;
     public final String placesStr;
+    private final HashMap<Integer, InteractiveObject.InteractiveObjectTemplate> interactiveObjects = new HashMap<>();
 
 
     protected MapData(int id, String date, String key, String cellsData, int width, int height, int x, int y, int subAreaID, boolean noSellers, boolean noCollectors, boolean noPrisms, boolean noTp, boolean noDefy, boolean noAgro, boolean noCanal, int mobGroupsMaxCount, int mobGroupsMaxSize, List<MonsterGrade> mobPossibles, String placesStr) {
