@@ -49,8 +49,12 @@ function Player:id() end
 
 ---@return string
 function Player:name() end
+
 ---@return number
 function Player:level() end
+
+---@return number Player's Class
+function Player:breed() end
 
 ---@return number
 function Player:gender() end
