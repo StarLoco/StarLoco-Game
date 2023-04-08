@@ -12,6 +12,9 @@ import java.sql.*;
  * Created by Locos on 14/07/2017.
  */
 public abstract class FunctionDAO<T> implements DAO<T> {
+    public interface ResultSetConsumer {
+        void apply(ResultSet rs) throws SQLException;
+    }
 
     private final Object locker = new Object();
     private String tableName;
@@ -72,6 +75,14 @@ public abstract class FunctionDAO<T> implements DAO<T> {
         } catch (SQLException e) {
             logger.error("Can't execute prepared statement on datasource connection", e);
             return null;
+        }
+    }
+
+    protected void getData(String query, ResultSetConsumer consumer) throws SQLException {
+        try(Connection conn = dataSource.getConnection()) {
+            try(Statement stat = conn.createStatement()) {
+                consumer.apply(stat.executeQuery(query));
+            }
         }
     }
 
