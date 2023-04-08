@@ -4384,10 +4384,10 @@ public class Fight {
         //region Purge team
         ArrayList<Fighter> winners = new ArrayList<>(), loosers = new ArrayList<>();
 
-        Iterator iterator = this.getTeam0().entrySet().iterator();
+        Iterator<Entry<Integer, Fighter>> iterator = this.getTeam0().entrySet().iterator();
         while (iterator.hasNext()) {
-            Entry entry = (Entry) iterator.next();
-            Fighter fighter = (Fighter) entry.getValue();
+            Entry<Integer,Fighter> entry = iterator.next();
+            Fighter fighter = entry.getValue();
 
             if (fighter.isInvocation() && fighter.getMob() != null && fighter.getMob().getTemplate().getId() != 285)
                 iterator.remove();
@@ -4396,8 +4396,8 @@ public class Fight {
 
         iterator = this.getTeam1().entrySet().iterator();
         while (iterator.hasNext()) {
-            Entry entry = (Entry) iterator.next();
-            Fighter fighter = (Fighter) entry.getValue();
+            Entry<Integer,Fighter> entry = iterator.next();
+            Fighter fighter = entry.getValue();
 
             if (fighter.isInvocation() && fighter.getMob() != null && fighter.getMob().getTemplate().getId() != 285)
                 iterator.remove();
@@ -4641,7 +4641,7 @@ public class Fight {
             Couple<Integer, Integer> kamas;
 
             if (this.getType() == Constant.FIGHT_TYPE_PVT && win == 1) {
-                int kamasCollector = (int) Math.ceil(collector.getKamas() / winners.size());
+                int kamasCollector = (int) Math.ceil((double)collector.getKamas() / (double)winners.size());
                 kamas = new Couple<>(kamasCollector, kamasCollector);
                 dropsCollector = this.getCollector().getDrops();
             } else {
@@ -4866,14 +4866,14 @@ public class Fight {
 
 
                     winKamas = (int) ((this.getType() == Constant.FIGHT_TYPE_PVT && win == 1) ?
-                            Math.floor(kamas.first / winners.size()) : Formulas.getKamasWin(i, winners, kamas.first, kamas.second));
+                            Math.floor((double)kamas.first / (double)winners.size()) : Formulas.getKamasWin(i, winners, kamas.first, kamas.second));
                     /** Xp,kamas **/
                     /**********************/
                     /**       Drop       **/
                     /**********************/
                     Map<Integer, Integer> objectsWon = new HashMap<>(), itemWon2 = new HashMap<>();
                     if (this.getType() == Constant.FIGHT_TYPE_PVT && win == 1 && dropsCollector != null) {
-                        int objectPerPlayer = (int) Math.floor(dropsCollector.size() / winners.size()), counter = 0;
+                        int objectPerPlayer = (int) Math.floor((double)dropsCollector.size() / (double)winners.size()), counter = 0;
                         ArrayList<GameObject> temporary2 = new ArrayList<>(dropsCollector);
                         Collections.shuffle(temporary2);
 
@@ -5396,9 +5396,6 @@ public class Fight {
                 if (this.getType() != Constant.FIGHT_TYPE_AGRESSION && this.getType() != Constant.FIGHT_TYPE_CONQUETE) {
                     StringBuilder temporary = new StringBuilder();
                     temporary.append("0;").append(i.getId()).append(";").append(i.getPacketsName()).append(";").append(i.getLvl()).append(";");
-                    if(i.getPlayer() != null) {
-                        temporary.append(i.getDefaultGfx()).append(";");
-                    }
                     temporary.append(";").append(i.getPdv() == 0 || i.hasLeft() || i.isDead()?1:0).append(";");
                     temporary.append(i.xpString(";")).append(";;;;|");
                     packet.append(temporary);
@@ -5423,7 +5420,8 @@ public class Fight {
                         ExperienceTables.ExperienceTable xpTable = World.world.getExperiences().pvp;
                         long maxHonor = xpTable.maxXpAt(player.getGrade());
 
-                        packet.append("0;").append(i.getId()).append(";").append(i.getPacketsName()).append(";").append(i.getLvl()).append(";").append(i.getDefaultGfx()).append(";").append((i.isDead() ? "1" : "0")).append(";");
+                        packet.append("0;").append(i.getId()).append(";").append(i.getPacketsName()).append(";").append(i.getLvl()).append(";");
+                        packet.append(i.getDefaultGfx()).append(";").append((i.isDead() ? "1" : "0")).append(";");
                         packet.append(player.getAlignment() != Constant.ALIGNEMENT_NEUTRE ? xpTable.minXpAt(player.getGrade()) : 0).append(";");
                         packet.append(player.get_honor()).append(";");
                         packet.append(player.getAlignment() != Constant.ALIGNEMENT_NEUTRE ? maxHonor : 0).append(";");
@@ -5444,7 +5442,8 @@ public class Fight {
                             long maxHonor = xpTable.maxXpAt(player.getGrade());
 
                             player.setDeshonor(player.getDeshonor() - winD);
-                            packet.append("0;").append(i.getId()).append(";").append(i.getPacketsName()).append(";").append(i.getLvl()).append(";").append(i.getDefaultGfx()).append(";").append((i.isDead() ? "1" : "0")).append(";");
+                            packet.append("0;").append(i.getId()).append(";").append(i.getPacketsName()).append(";").append(i.getLvl()).append(";");
+                            packet.append(i.getDefaultGfx()).append(";").append((i.isDead() ? "1" : "0")).append(";");
                             packet.append(player.getAlignment() != Constant.ALIGNEMENT_NEUTRE ? xpTable.minXpAt(player.getGrade()) : 0).append(";");
                             packet.append(player.get_honor()).append(";");
                             packet.append(player.getAlignment() != Constant.ALIGNEMENT_NEUTRE ? maxHonor : 0).append(";");
@@ -5462,7 +5461,8 @@ public class Fight {
                             long maxHonor = xpTable.maxXpAt(prism.getLevel());
 
                             prism.addHonor(winH);
-                            packet.append("0;").append(i.getId()).append(";").append(i.getPacketsName()).append(";").append(i.getLvl()).append(";").append(i.getDefaultGfx()).append(";").append((i.isDead() ? "1" : "0")).append(";");
+                            packet.append("0;").append(i.getId()).append(";").append(i.getPacketsName()).append(";").append(i.getLvl()).append(";");
+                            packet.append(i.getDefaultGfx()).append(";").append((i.isDead() ? "1" : "0")).append(";");
                             packet.append(xpTable.minXpAt(prism.getLevel())).append(";");
                             packet.append(prism.getHonor()).append(";");
                             packet.append(maxHonor).append(";");
