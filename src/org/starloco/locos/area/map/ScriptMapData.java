@@ -3,11 +3,13 @@ package org.starloco.locos.area.map;
 import org.classdump.luna.Table;
 import org.classdump.luna.runtime.LuaFunction;
 import org.starloco.locos.client.Player;
+import org.starloco.locos.entity.monster.MobGroupDef;
 import org.starloco.locos.entity.monster.MonsterGrade;
 import org.starloco.locos.fight.Fight;
 import org.starloco.locos.fight.Fighter;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.script.DataScriptVM;
+import org.starloco.locos.script.ScriptMapper;
 import org.starloco.locos.script.ScriptVM;
 import org.starloco.locos.util.Pair;
 
@@ -19,7 +21,7 @@ import static org.starloco.locos.script.ScriptVM.*;
 public class ScriptMapData extends MapData {
     private final Table scriptVal;
 
-    private ScriptMapData(Table scriptVal, int id, String date, String key, String cellsData, int width, int height, int x, int y, int subAreaID, int capabilities, Map<Integer, Pair<Integer,Integer>> npcs, int mobGroupsMaxCount, List<MonsterGrade> mobPossibles, String placesStr, int mobGroupsMaxSize) {
+    private ScriptMapData(Table scriptVal, int id, String date, String key, String cellsData, int width, int height, int x, int y, int subAreaID, int capabilities, int mobGroupsMaxCount, List<MonsterGrade> mobPossibles, String placesStr, int mobGroupsMaxSize) {
         super(id,
             date,
             key,
@@ -41,8 +43,6 @@ public class ScriptMapData extends MapData {
             mobPossibles,
             placesStr);
         this.scriptVal = scriptVal;
-
-        npcs.forEach((k,v) -> addNpc(k, v.first, v.second));
     }
 
     public static ScriptMapData build(Table val) {
@@ -53,14 +53,6 @@ public class ScriptMapData extends MapData {
                     .orElse(null)
             )
             .filter(Objects::nonNull).collect(Collectors.toList());
-
-        Map<Integer, Pair<Integer,Integer>> npcs = ScriptVM.mapFromScript((Table)val.rawget("npcs"),
-                o -> ((Long)o).intValue(),
-                o -> {
-                    Table pair = (Table)o;
-                    return new Pair<>(rawInt(pair, 1L), rawInt(pair, 2L));
-                }
-        );
 
         return new ScriptMapData(
             val,
@@ -74,10 +66,29 @@ public class ScriptMapData extends MapData {
             rawInt(val, "y"),
             rawInt(val, "subAreaId"),
             rawInt(val, "capabilities"),
-            npcs,
             rawInt(val, "mobGroupsCount"),
-                allowedMonsters, val.rawget("positions").toString(), rawInt(val, "mobGroupsSize")
+            allowedMonsters, val.rawget("positions").toString(), rawInt(val, "mobGroupsSize")
         );
+    }
+
+    @Override
+    public Map<Integer, Pair<Integer, Integer>> getNPCs() {
+        return ScriptVM.mapFromScript((Table)recursiveGet(scriptVal, "npcs"),
+            o -> ((Long)o).intValue(),
+            o -> {
+                Table pair = (Table)o;
+                return new Pair<>(rawInt(pair, 1L), rawInt(pair, 2L));
+            }
+        );
+    }
+
+    @Override
+    public List<MobGroupDef> getStaticGroups() {
+        ScriptMapper<MobGroupDef> mapper = MobGroupDef.Mapper.get();
+        return ScriptVM.<Table>listFromLuaTable((Table)recursiveGet(scriptVal, "staticGroups")).stream()
+            .map(Table.class::cast)
+            .map(mapper::from)
+            .collect(Collectors.toList());
     }
 
     @Override

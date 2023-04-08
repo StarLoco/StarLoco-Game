@@ -165,6 +165,10 @@ public class MonsterGroup {
         this.id = id;
         this.alignment = Constant.ALIGNEMENT_NEUTRE;
         this.cellId = def.cellId;
+        if(this.cellId == -1) {
+            this.cellId = map.getRandomFreeCellId();
+        }
+
         this.isFix = true;
         int guid = -1;
         boolean star = false;

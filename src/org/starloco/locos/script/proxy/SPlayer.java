@@ -43,6 +43,11 @@ public class SPlayer extends DefaultUserdata<Player> {
 
     //region Basic stuff
     @SuppressWarnings("unused")
+    private static int id(Player p) {
+        return p.getId();
+    }
+
+    @SuppressWarnings("unused")
     private static String name(Player p) {
         return p.getName();
     }

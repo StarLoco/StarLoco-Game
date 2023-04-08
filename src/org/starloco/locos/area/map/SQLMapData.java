@@ -9,6 +9,7 @@ import org.starloco.locos.fight.Fighter;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.Config;
 import org.starloco.locos.other.Action;
+import org.starloco.locos.util.Pair;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -19,7 +20,8 @@ public class SQLMapData extends MapData {
     private final HashMap<Integer,List<Action>> moveEndActions = new HashMap<>();
     private final Map<Integer, List<Action>> endFightActions = new HashMap<>();
 
-    private final List<MobGroupDef> staticMobGroups = new LinkedList<>();
+    private final Map<Integer, Pair<Integer,Integer>> npcs = new HashMap<>();
+    protected final List<MobGroupDef> staticMobGroups = new LinkedList<>();
 
     protected SQLMapData(int id, String date, String key, String data, int width, int height, int x, int y,
                          int subAreaID, boolean noSellers, boolean noCollectors, boolean noPrisms,
@@ -118,6 +120,12 @@ public class SQLMapData extends MapData {
         return new SQLMapData(id, date, key, data, w, h, x, y, subAreaID, noSellers, noCollectors, noPrisms, noTp, noDefy, noAgro, noCanal, maxGroupCnt, maxSize, mobPossibles, places);
     }
 
+    public void addNpc(int id, int cellid, int orientation) {
+        this.npcs.put(id, new Pair<>(cellid, orientation));
+    }
+
+    public Map<Integer, Pair<Integer, Integer>> getNPCs() { return npcs; };
+
     @Override
     public void onMoveEnd(Player player) {
         final GameCase cell = player.getCurCell();
@@ -146,13 +154,6 @@ public class SQLMapData extends MapData {
         actions.add(new Action(id, args, cond));
     }
 
-    public void addStaticGroup(int cellID, String groupData) {
-        if(groupData.length() == 0) return;
-        this.staticMobGroups.add(new MobGroupDef(cellID, MonsterGroup.parseMobGroupLevels(groupData)));
-    }
-
-    public List<MobGroupDef> getStaticGroups() { return this.staticMobGroups; }
-
     public String getForbidden() {
         return Stream.of(
                 noSellers,
@@ -163,6 +164,12 @@ public class SQLMapData extends MapData {
                 noAgro,
                 noCanal
         ).map(b -> b?"1":"0").collect(Collectors.joining(";"));
+    }
+
+    public List<MobGroupDef> getStaticGroups() { return this.staticMobGroups; }
+    public void addStaticGroup(int cellID, String groupData) {
+        if(groupData.length() == 0) return;
+        this.staticMobGroups.add(new MobGroupDef(cellID, MonsterGroup.parseMobGroupLevels(groupData)));
     }
 
     @Override

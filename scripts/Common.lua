@@ -17,3 +17,16 @@ ItemStack = {}
 function ItemStack.itemIDASC(self, other)
     return self.itemID < other.itemID
 end
+
+
+---@param players Player[]
+---@param mapId number
+---@param cellId number
+function teleportPlayers(players, mapId, cellId)
+    for _, player in ipairs(players) do
+        -- This ensure the player entity can be teleported
+        if player.teleport then
+            player:teleport(mapId, cellId)
+        end
+    end
+end

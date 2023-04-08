@@ -1,5 +1,8 @@
 local npc = Npc(774, 9048)
 
+-- TODO: How to get to questions 3183, 3200 ?
+
+
 ---@param p Player
 function npc:onTalk(p, answer)
     if p:mapID() == 2985 then 
@@ -14,4 +17,5 @@ function npc:onTalk(p, answer)
 		end
 	end
 end
+
 RegisterNPCDef(npc)

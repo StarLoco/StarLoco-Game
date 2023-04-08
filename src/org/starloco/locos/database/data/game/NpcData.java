@@ -5,7 +5,6 @@ import org.starloco.locos.area.map.MapData;
 import org.starloco.locos.area.map.SQLMapData;
 import org.starloco.locos.util.Pair;
 import org.apache.commons.lang.NotImplementedException;
-import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.database.data.FunctionDAO;
 import org.starloco.locos.entity.npc.Npc;
 import org.starloco.locos.game.world.World;
@@ -37,7 +36,7 @@ public class NpcData extends FunctionDAO<Pair<Npc, Integer>> {
 
                 if(md instanceof SQLMapData) {
                     // We don't want to override script map data
-                    md.addNpc(id, result.getInt("cellid"), result.getInt("orientation"));
+                    ((SQLMapData)md).addNpc(id, result.getInt("cellid"), result.getInt("orientation"));
                 }
             }
         } catch (SQLException e) {

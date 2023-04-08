@@ -158,10 +158,7 @@ public class GameMap {
         this.cases = p.second;
 
         this.data.getNPCs().forEach((k, v) -> addNpc(k, v.first, v.second));
-        if(this.data instanceof SQLMapData) {
-            SQLMapData md = (SQLMapData) this.data;
-            md.getStaticGroups().forEach(this::addStaticGroup);
-        }
+        this.data.getStaticGroups().forEach(this::addStaticGroup);
 
         this.refreshSpawns();
     }

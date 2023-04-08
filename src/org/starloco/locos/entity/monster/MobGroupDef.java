@@ -33,8 +33,11 @@ public class MobGroupDef {
         @Override
         public MobGroupDef from(Object o) {
             if(!(o instanceof Table)) throw new IllegalArgumentException("MobGroupDef must be a Table");
+            Table t = (Table)o;
+            int cellId = ScriptVM.rawInt(t, 1L);
+            Table def = (Table) t.rawget(2L);
 
-            return new MobGroupDef(0, ScriptVM.<Table>listFromLuaTable((Table)o)
+            return new MobGroupDef(cellId, ScriptVM.<Table>listFromLuaTable((Table)def)
                 .stream()
                 .map(ScriptVM::<Long,Table>toPair)
                 .map(p -> new Pair<>(p.first.intValue(), ScriptVM.intsFromLuaTable(p.second)))

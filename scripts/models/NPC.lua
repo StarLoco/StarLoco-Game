@@ -14,6 +14,7 @@ require("./data/Dungeons")
 Npc = {}
 Npc.__index = Npc
 
+NPCS = {}
 setmetatable(Npc, {
     __call = function (cls, id, gfxID)
         local self = setmetatable({}, Npc)
@@ -29,6 +30,7 @@ setmetatable(Npc, {
         self.sales = {}
         self.barters = {}
 
+        NPCS[id] = self
         return self
     end,
 })

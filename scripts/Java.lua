@@ -4,6 +4,10 @@
 ---@param path string
 function loadDir(path)  end
 
+---@param fmt string
+---@vararg any
+function JLogF(fmt, ...)  end
+
 ---@param def Npc
 function RegisterNPCDef(def)  end
 
@@ -39,6 +43,9 @@ function RegisterSubArea(id, areaId, neighbors) end
 
 ---@class Player
 local Player = {}
+
+---@return number
+function Player:id() end
 
 ---@return string
 function Player:name() end
@@ -175,15 +182,15 @@ function Player:startQuest(quest) end
 ---@return boolean
 function Player:completeObjective(quest, objective) end
 
----@param grades MobGroupDef {mobID,grade}
-function Player:forceFight(grades) end
+---@param def MobGroupDef {cellId, {mobID,grade}[]}
+function Player:forceFight(def) end
 
 ---@param mapId number
 function Player:compassTo(mapId) end
 
 --endregion
 
----@class MobGroupDef:table<number,number[]>[]
+---@class MobGroupDef table<number, table<number,number[]>[]>
 
 
 ---@class Item
@@ -231,10 +238,9 @@ function Map:mobGroupById(actorId) end
 ---@return MobGrade[][]
 function Map:mobGroups() end
 
----@param cellId number
 ---@param def MobGroupDef
 ---@return number actorId
-function Map:spawnGroupDef(cellId, def) end
+function Map:spawnGroupDef(def) end
 
 -- SubArea
 ---@class SubArea
@@ -263,3 +269,5 @@ function MobGrade:grade() end
 ---@return number
 function MobGrade:level() end
 
+-- Fighter
+---@class Fighter =(Player|MobGrade)
