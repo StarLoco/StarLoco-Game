@@ -56,6 +56,7 @@ public class SPlayer extends DefaultUserdata<Player> {
     private static int level(Player p) {
         return p.getLevel();
     }
+
     @SuppressWarnings("unused")
     private static int breed(Player p) {
         return p.getClasse();
