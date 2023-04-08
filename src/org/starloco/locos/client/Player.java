@@ -1363,7 +1363,7 @@ public class Player implements Scripted<SPlayer> {
         // Common Precondition: All current jobs > 30
         int min = _metiers.values().stream().mapToInt(JobStat::get_lvl).min().orElse(100);// 100 is the max level, so that's sure to be enough
         if(min < 30) {
-            SocketManager.GAME_SEND_Im_PACKET(this, "19");
+            // Offi serveur don't send Im in this case
             return false;
         }
 
