@@ -37,7 +37,7 @@ public class MobGroupDef {
             int cellId = ScriptVM.rawInt(t, 1L);
             Table def = (Table) t.rawget(2L);
 
-            return new MobGroupDef(cellId, ScriptVM.<Table>listFromLuaTable((Table)def)
+            return new MobGroupDef(cellId, ScriptVM.<Table>listFromLuaTable(def)
                 .stream()
                 .map(ScriptVM::<Long,Table>toPair)
                 .map(p -> new Pair<>(p.first.intValue(), ScriptVM.intsFromLuaTable(p.second)))
