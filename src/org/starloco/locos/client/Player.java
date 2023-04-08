@@ -4761,7 +4761,7 @@ public class Player implements Scripted<SPlayer> {
     }
 
     public void revive() {
-        byte revive = ((PlayerData) DatabaseManager.get(PlayerData.class)).canRevive(this);
+        int revive = ((PlayerData) DatabaseManager.get(PlayerData.class)).canRevive(this);
 
         if(revive == 1) {
             this.curMap = World.world.getMap( 7411);

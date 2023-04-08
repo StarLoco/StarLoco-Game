@@ -12,6 +12,9 @@ import java.sql.*;
  * Created by Locos on 14/07/2017.
  */
 public abstract class FunctionDAO<T> implements DAO<T> {
+    public interface ResultSetFunction<R> {
+        R apply(ResultSet rs) throws SQLException;
+    }
     public interface ResultSetConsumer {
         void apply(ResultSet rs) throws SQLException;
     }
@@ -42,18 +45,13 @@ public abstract class FunctionDAO<T> implements DAO<T> {
 
     protected void execute(String query) {
         synchronized (locker) {
-            Statement statement = null;
-            Connection connection = null;
-            try {
-                connection = this.getConnection();
-                statement = connection.createStatement();
-                statement.execute(query);
-                logger.debug("SQL request executed successfully {}", query);
+            try(Connection connection = this.getConnection()){
+                try(Statement statement = connection.createStatement()) {
+                    statement.execute(query);
+                    logger.debug("SQL request executed successfully {}", query);
+                }
             } catch (SQLException e) {
                 logger.error("Can't execute SQL Request :" + query, e);
-            } finally {
-                close(statement);
-                close(connection);
             }
         }
     }
@@ -79,13 +77,23 @@ public abstract class FunctionDAO<T> implements DAO<T> {
     }
 
     protected void getData(String query, ResultSetConsumer consumer) throws SQLException {
-        try(Connection conn = dataSource.getConnection()) {
-            try(Statement stat = conn.createStatement()) {
+        try (Connection conn = dataSource.getConnection()) {
+            try (Statement stat = conn.createStatement()) {
                 consumer.apply(stat.executeQuery(query));
             }
         }
     }
 
+    protected <R> R getData(String query, ResultSetFunction<R> consumer) throws SQLException {
+        try(Connection conn = dataSource.getConnection()) {
+            try(Statement stat = conn.createStatement()) {
+                return consumer.apply(stat.executeQuery(query));
+            }
+        }
+    }
+
+    /** Use version with consumer instead */
+    @Deprecated
     protected ResultSet getData(String query) {
         synchronized (locker) {
             ResultSet result = null;

@@ -27,11 +27,10 @@ public class PlayerData extends FunctionDAO<Player> {
 
     @Override
     public void loadFully() {
-        ResultSet result = null;
         try {
-            result = getData("SELECT * FROM " + getTableName() + " WHERE server = " + Config.gameServerId + ";");
-            while (result.next()) {
-                Player player = new Player(result.getInt("id"), result.getString("name"), result.getInt("groupe"),
+            getData("SELECT * FROM " + getTableName() + " WHERE server = " + Config.gameServerId + ";", result ->{
+                while (result.next()) {
+                    Player player = new Player(result.getInt("id"), result.getString("name"), result.getInt("groupe"),
                         result.getInt("sexe"), result.getInt("class"), result.getInt("color1"), result.getInt("color2"),
                         result.getInt("color3"), result.getLong("kamas"), result.getInt("spellboost"),
                         result.getInt("capital"), result.getInt("energy"), result.getInt("level"), result.getLong("xp"),
@@ -46,53 +45,52 @@ public class PlayerData extends FunctionDAO<Player> {
                         result.getBoolean("noall"), result.getString("deadInformation"), result.getByte("deathCount"),
                         result.getLong("totalKills"));
 
-                player.VerifAndChangeItemPlace();
-                World.world.addPlayer(player);
-                if (player.isShowSeller())
-                    World.world.addSeller(player);
-            }
+                    player.VerifAndChangeItemPlace();
+                    World.world.addPlayer(player);
+                    if (player.isShowSeller())
+                        World.world.addSeller(player);
+                }
+            });
         } catch (SQLException e) {
             super.sendError(e);
             Main.stop("Can't load players");
-        } finally {
-            close(result);
         }
+    }
+
+    private Player buildFromResultSet(ResultSet result) throws SQLException {
+        return new Player(result.getInt("id"), result.getString("name"), result.getInt("groupe"), result.getInt("sexe"),
+                result.getInt("class"), result.getInt("color1"), result.getInt("color2"), result.getInt("color3"), result.getLong("kamas"),
+                result.getInt("spellboost"), result.getInt("capital"), result.getInt("energy"), result.getInt("level"), result.getLong("xp"),
+                result.getInt("size"), result.getInt("gfx"), result.getByte("alignement"), result.getInt("account"), this.getStats(result),
+                result.getByte("seeFriend"), result.getByte("seeAlign"), result.getByte("seeSeller"), result.getString("canaux"),
+                result.getShort("map"), result.getInt("cell"), result.getString("objets"), result.getString("storeObjets"),
+                result.getInt("pdvper"), result.getString("spells"), result.getString("savepos"), result.getString("jobs"),
+                result.getInt("mountxpgive"), result.getInt("mount"), result.getInt("honor"), result.getInt("deshonor"),
+                result.getInt("alvl"), result.getString("zaaps"), result.getByte("title"), result.getInt("wife"),
+                result.getString("morphMode"), result.getString("allTitle"), result.getString("emotes"), result.getLong("prison"),
+                false, result.getString("parcho"), result.getLong("timeDeblo"), result.getBoolean("noall"),
+                result.getString("deadInformation"), result.getByte("deathCount"), result.getLong("totalKills"));
     }
 
     @Override
     public Player load(int id) {
-        ResultSet result = null;
-        Player player = null;
+        Player oldPlayer = World.world.getPlayer(id);
         try {
-            result = getData("SELECT * FROM " + getTableName() + " WHERE id = '" + id + "' AND server = " + Config.gameServerId + ";");
-            while (result.next()) {
-                Player oldPlayer = World.world.getPlayer(id);
-                player = new Player(result.getInt("id"), result.getString("name"), result.getInt("groupe"), result.getInt("sexe"),
-                        result.getInt("class"), result.getInt("color1"), result.getInt("color2"), result.getInt("color3"), result.getLong("kamas"),
-                        result.getInt("spellboost"), result.getInt("capital"), result.getInt("energy"), result.getInt("level"), result.getLong("xp"),
-                        result.getInt("size"), result.getInt("gfx"), result.getByte("alignement"), result.getInt("account"), this.getStats(result),
-                        result.getByte("seeFriend"), result.getByte("seeAlign"), result.getByte("seeSeller"), result.getString("canaux"),
-                        result.getShort("map"), result.getInt("cell"), result.getString("objets"), result.getString("storeObjets"),
-                        result.getInt("pdvper"), result.getString("spells"), result.getString("savepos"), result.getString("jobs"),
-                        result.getInt("mountxpgive"), result.getInt("mount"), result.getInt("honor"), result.getInt("deshonor"),
-                        result.getInt("alvl"), result.getString("zaaps"), result.getByte("title"), result.getInt("wife"),
-                        result.getString("morphMode"), result.getString("allTitle"), result.getString("emotes"), result.getLong("prison"),
-                        false, result.getString("parcho"), result.getLong("timeDeblo"), result.getBoolean("noall"),
-                        result.getString("deadInformation"), result.getByte("deathCount"), result.getLong("totalKills"));
+            Player player = getData("SELECT * FROM " + getTableName() + " WHERE id = '" + id + "' AND server = " + Config.gameServerId + ";", result -> {
+                if(!result.next())return null;
+                return buildFromResultSet(result);
+            });
+            if(oldPlayer != null)
+                player.setLastFightForEndFightAction(oldPlayer.getLastFight());
 
-                if(oldPlayer != null)
-                    player.setLastFightForEndFightAction(oldPlayer.getLastFight());
-
-                player.VerifAndChangeItemPlace();
-                World.world.addPlayer(player);
-            }
+            player.VerifAndChangeItemPlace();
+            World.world.addPlayer(player);
+            return player;
         } catch (SQLException e) {
             super.sendError(e);
             Main.stop("unknown");
-        } finally {
-            close(result);
         }
-        return player;
+        return null;
     }
 
     @Override
@@ -257,39 +255,6 @@ public class PlayerData extends FunctionDAO<Player> {
         return stats;
     }
 
-    public Player loadClone(int id) {
-        ResultSet result = null;
-        Player player = null;
-        try {
-            result = getData("SELECT * FROM " + getTableName() + " WHERE id = '" + id + "';");
-            while (result.next()) {
-                if (result.getInt("server") != Config.gameServerId)
-                    continue;
-
-                player = new Player(result.getInt("id"), result.getString("name"), result.getInt("groupe"), result.getInt("sexe"),
-                        result.getInt("class"), result.getInt("color1"), result.getInt("color2"), result.getInt("color3"), result.getLong("kamas"),
-                        result.getInt("spellboost"), result.getInt("capital"), result.getInt("energy"), result.getInt("level"), result.getLong("xp"),
-                        result.getInt("size"), result.getInt("gfx"), result.getByte("alignement"), result.getInt("account"), this.getStats(result),
-                        result.getByte("seeFriend"), result.getByte("seeAlign"), result.getByte("seeSeller"), result.getString("canaux"),
-                        result.getShort("map"), result.getInt("cell"), result.getString("objets"), result.getString("storeObjets"),
-                        result.getInt("pdvper"), result.getString("spells"), result.getString("savepos"), result.getString("jobs"),
-                        result.getInt("mountxpgive"), result.getInt("mount"), result.getInt("honor"), result.getInt("deshonor"),
-                        result.getInt("alvl"), result.getString("zaaps"), result.getByte("title"), result.getInt("wife"),
-                        result.getString("morphMode"), result.getString("allTitle"), result.getString("emotes"), result.getLong("prison"),
-                        false, result.getString("parcho"), result.getLong("timeDeblo"), result.getBoolean("noall"),
-                        result.getString("deadInformation"), result.getByte("deathCount"), result.getLong("totalKills"));
-
-                player.VerifAndChangeItemPlace();
-            }
-        } catch (SQLException e) {
-            super.sendError(e);
-            Main.stop("unknown");
-        } finally {
-            close(result);
-        }
-        return player;
-    }
-    
     public void loadByAccountId(int id) {
         try {
             Account account = World.world.ensureAccountLoaded(id);
@@ -299,33 +264,36 @@ public class PlayerData extends FunctionDAO<Player> {
             super.sendError(e);
         }
 
-        try (ResultSet result = getData("SELECT * FROM " + getTableName() + " WHERE account = '" + id + "' AND server = '"+Config.gameServerId+"'")){
-            while (result.next()) {
-                Player p = World.world.getPlayer(result.getInt("id"));
-                if (p != null) {
-                    if (p.getFight() != null) {
-                        continue;
+        try {
+            getData("SELECT * FROM " + getTableName() + " WHERE account = '" + id + "' AND server = '"+Config.gameServerId+"'", result -> {
+                while (result.next()) {
+                    Player p = World.world.getPlayer(result.getInt("id"));
+                    if (p != null) {
+                        if (p.getFight() != null) {
+                            continue;
+                        }
                     }
-                }
 
-                HashMap<Integer, Integer> stats = new HashMap<>();
-                stats.put(Constant.STATS_ADD_VITA, result.getInt("vitalite"));
-                stats.put(Constant.STATS_ADD_FORC, result.getInt("force"));
-                stats.put(Constant.STATS_ADD_SAGE, result.getInt("sagesse"));
-                stats.put(Constant.STATS_ADD_INTE, result.getInt("intelligence"));
-                stats.put(Constant.STATS_ADD_CHAN, result.getInt("chance"));
-                stats.put(Constant.STATS_ADD_AGIL, result.getInt("agilite"));
-                Player player = new Player(result.getInt("id"), result.getString("name"), result.getInt("groupe"), result.getInt("sexe"), result.getInt("class"), result.getInt("color1"), result.getInt("color2"), result.getInt("color3"), result.getLong("kamas"), result.getInt("spellboost"), result.getInt("capital"), result.getInt("energy"), result.getInt("level"), result.getLong("xp"), result.getInt("size"), result.getInt("gfx"), result.getByte("alignement"), result.getInt("account"), stats, result.getByte("seeFriend"), result.getByte("seeAlign"), result.getByte("seeSeller"), result.getString("canaux"), result.getShort("map"), result.getInt("cell"), result.getString("objets"), result.getString("storeObjets"), result.getInt("pdvper"), result.getString("spells"), result.getString("savepos"), result.getString("jobs"), result.getInt("mountxpgive"), result.getInt("mount"), result.getInt("honor"), result.getInt("deshonor"), result.getInt("alvl"), result.getString("zaaps"), result.getByte("title"), result.getInt("wife"), result.getString("morphMode"), result.getString("allTitle"), result.getString("emotes"), result.getLong("prison"), false, result.getString("parcho"), result.getLong("timeDeblo"), result.getBoolean("noall"), result.getString("deadInformation"), result.getByte("deathCount"), result.getLong("totalKills"));
+                    HashMap<Integer, Integer> stats = new HashMap<>();
+                    stats.put(Constant.STATS_ADD_VITA, result.getInt("vitalite"));
+                    stats.put(Constant.STATS_ADD_FORC, result.getInt("force"));
+                    stats.put(Constant.STATS_ADD_SAGE, result.getInt("sagesse"));
+                    stats.put(Constant.STATS_ADD_INTE, result.getInt("intelligence"));
+                    stats.put(Constant.STATS_ADD_CHAN, result.getInt("chance"));
+                    stats.put(Constant.STATS_ADD_AGIL, result.getInt("agilite"));
 
-                if(p != null)
-                    player.setLastFightForEndFightAction(p.getLastFight());
-                player.VerifAndChangeItemPlace();
-                World.world.addPlayer(player);
-                //TODO: Need to finihs database system
+                    Player player = new Player(result.getInt("id"), result.getString("name"), result.getInt("groupe"), result.getInt("sexe"), result.getInt("class"), result.getInt("color1"), result.getInt("color2"), result.getInt("color3"), result.getLong("kamas"), result.getInt("spellboost"), result.getInt("capital"), result.getInt("energy"), result.getInt("level"), result.getLong("xp"), result.getInt("size"), result.getInt("gfx"), result.getByte("alignement"), result.getInt("account"), stats, result.getByte("seeFriend"), result.getByte("seeAlign"), result.getByte("seeSeller"), result.getString("canaux"), result.getShort("map"), result.getInt("cell"), result.getString("objets"), result.getString("storeObjets"), result.getInt("pdvper"), result.getString("spells"), result.getString("savepos"), result.getString("jobs"), result.getInt("mountxpgive"), result.getInt("mount"), result.getInt("honor"), result.getInt("deshonor"), result.getInt("alvl"), result.getString("zaaps"), result.getByte("title"), result.getInt("wife"), result.getString("morphMode"), result.getString("allTitle"), result.getString("emotes"), result.getLong("prison"), false, result.getString("parcho"), result.getLong("timeDeblo"), result.getBoolean("noall"), result.getString("deadInformation"), result.getByte("deathCount"), result.getLong("totalKills"));
+
+                    if(p != null)
+                        player.setLastFightForEndFightAction(p.getLastFight());
+                    player.VerifAndChangeItemPlace();
+                    World.world.addPlayer(player);
+                    //TODO: Need to finihs database system
                 /*int guild = DatabaseManager.getDynamics().getGuildMemberData().isPersoInGuild(result.getInt("id"));
                 if (guild >= 0)
                     player.setGuildMember(World.world.getGuild(guild).getMember(result.getInt("id")));*/
-            }
+                }
+            });
         } catch (SQLException e) {
             super.sendError(e);
             Main.stop("unknown");
@@ -333,20 +301,15 @@ public class PlayerData extends FunctionDAO<Player> {
     }
 
     public String loadTitles(int guid) {
-        ResultSet result = null;
-        String title = "";
         try {
-            result = getData("SELECT * FROM " + getTableName() + " WHERE id = '" + guid + "';");
-            
-            if (result.next()) {
-                title = result.getString("allTitle");
-            }
+            return getData("SELECT * FROM " + getTableName() + " WHERE id = '" + guid + "';", result -> {
+                if (!result.next()) return "";
+                return result.getString("allTitle");
+            });
         } catch (SQLException e) {
             super.sendError(e);
-        } finally {
-            close(result);
         }
-        return title;
+        return "";
     }
 
     public void updateInfos(Player perso) {
@@ -457,68 +420,40 @@ public class PlayerData extends FunctionDAO<Player> {
     }
 
     public boolean exist(String name) {
-        ResultSet result = null;
-        boolean exist = false;
         try {
-            result = getData("SELECT COUNT(*) AS exist FROM " + getTableName() + " WHERE name LIKE '" + name + "';");
-            if (result.next()) {
-                if (result.getInt("exist") > 0)
-                    exist = true;
-            }
+            return getData("SELECT COUNT(*) AS exist FROM " + getTableName() + " WHERE name LIKE '" + name + "';", result -> {
+                if(!result.next()) return false;
+                return result.getInt("exist")>0;
+            });
         } catch (SQLException e) {
             super.sendError(e);
-        } finally {
-            close(result);
         }
-        return exist;
-    }
-
-    public String haveOtherPlayer(int account) {
-        ResultSet result = null;
-        String servers = "";
-        try {
-            result = getData("SELECT server FROM " + getTableName() + " WHERE account = '"
-                    + account + "' AND NOT server = '" + Config.gameServerId + "'");
-            while (result.next()) {
-                servers += (servers.isEmpty() ? result.getInt("server") : ","
-                        + result.getInt("server"));
-            }
-        } catch (SQLException e) {
-            super.sendError(e);
-        } finally {
-            close(result);
-        }
-        return servers;
+        return false;
     }
 
     public void reloadGroup(Player p) {
-        ResultSet result = null;
         try {
-            result = getData("SELECT groupe FROM " + getTableName() + " WHERE id = '" + p.getId() + "'");
-            if (result.next()) {
-                int group = result.getInt("groupe");
-                p.setGroupe(group, false);
-            }
+            getData("SELECT groupe FROM " + getTableName() + " WHERE id = '" + p.getId() + "'", result -> {
+                if (result.next()) {
+                    int group = result.getInt("groupe");
+                    p.setGroupe(group, false);
+                }
+            });
         } catch (SQLException e) {
             super.sendError(e);
-        } finally {
-            close(result);
         }
     }
 
-    public byte canRevive(Player player) {
-        ResultSet result = null;
-        byte revive = 0;
+    public int canRevive(Player player) {
         try {
-            result = getData("SELECT id, revive FROM " + getTableName() + " WHERE `id` = '" + player.getId() + "';");
-            while (result.next())
-                revive = result.getByte("revive");
+            return getData("SELECT id, revive FROM " + getTableName() + " WHERE `id` = '" + player.getId() + "';", result -> {
+                if(!result.next()) return 0;
+                return result.getInt("revive");
+            });
         } catch (SQLException e) {
             super.sendError(e);
-        } finally {
-            close(result);
         }
-        return revive;
+        return 0;
     }
 
     public void setRevive(Player player) {

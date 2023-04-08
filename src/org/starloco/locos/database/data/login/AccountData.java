@@ -25,16 +25,18 @@ public class AccountData extends FunctionDAO<Account> {
 
     @Override
     public Account load(int id) {
-        try(ResultSet result = super.getData("SELECT * FROM " + getTableName() + " WHERE guid = " + id)) {
-            if(!result.next()) return null;
-            Account acc = new Account(result.getInt("guid"), result.getString("account").toLowerCase(), result.getString("pseudo"), result.getString("reponse"), (result.getInt("banned") == 1), result.getString("lastIP"), result.getString("lastConnectionDate"), result.getString("friends"), result.getString("enemy"), result.getInt("points"), result.getLong("subscribe"), result.getLong("muteTime"), result.getString("mutePseudo"), result.getString("lastVoteIP"), result.getString("heurevote"));
-            World.world.addAccount(acc);
-            ((BankData) DatabaseManager.get(BankData.class)).load(acc.getId());
+        try {
+            return getData("SELECT * FROM " + getTableName() + " WHERE guid = " + id, result -> {
+                if(!result.next()) return null;
+                Account acc = new Account(result.getInt("guid"), result.getString("account").toLowerCase(), result.getString("pseudo"), result.getString("reponse"), (result.getInt("banned") == 1), result.getString("lastIP"), result.getString("lastConnectionDate"), result.getString("friends"), result.getString("enemy"), result.getInt("points"), result.getLong("subscribe"), result.getLong("muteTime"), result.getString("mutePseudo"), result.getString("lastVoteIP"), result.getString("heurevote"));
+                World.world.addAccount(acc);
+                ((BankData) DatabaseManager.get(BankData.class)).load(acc.getId());
 
-            // Ensure players are loaded too
-            ((PlayerData) DatabaseManager.get(PlayerData.class)).loadByAccountId(acc.getId());
+                // Ensure players are loaded too
+                ((PlayerData) DatabaseManager.get(PlayerData.class)).loadByAccountId(acc.getId());
 
-            return acc;
+                return acc;
+            });
         } catch (Exception e) {
             super.sendError(e);
             return null;
