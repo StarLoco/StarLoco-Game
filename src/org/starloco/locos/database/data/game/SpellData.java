@@ -10,7 +10,6 @@ import org.starloco.locos.fight.spells.Spell.SortStats;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.Main;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class SpellData extends FunctionDAO<Spell> {
@@ -20,47 +19,45 @@ public class SpellData extends FunctionDAO<Spell> {
 
     @Override
     public void loadFully() {
-        ResultSet result = null;
         try {
-            result = getData("SELECT * FROM " + getTableName() + ";");
-            boolean modif = false;
+            getData("SELECT * FROM " + getTableName() + ";", result -> {
+                boolean modif = false;
 
-            while (result.next()) {
-                int id = result.getInt("id");
-                Spell spell = World.world.getSort(id);
+                while (result.next()) {
+                    int id = result.getInt("id");
+                    Spell spell = World.world.getSort(id);
 
-                SortStats l1 = parseSortStats(id, 1, result.getString("lvl1")), l2 = parseSortStats(id, 2, result.getString("lvl2")),
-                        l3 = parseSortStats(id, 3, result.getString("lvl3")), l4 = parseSortStats(id, 4, result.getString("lvl4")), l5 = null, l6 = null;
-                if (!result.getString("lvl5").equalsIgnoreCase("-1"))
-                    l5 = parseSortStats(id, 5, result.getString("lvl5"));
-                if (!result.getString("lvl6").equalsIgnoreCase("-1"))
-                    l6 = parseSortStats(id, 6, result.getString("lvl6"));
+                    SortStats l1 = parseSortStats(id, 1, result.getString("lvl1")), l2 = parseSortStats(id, 2, result.getString("lvl2")),
+                            l3 = parseSortStats(id, 3, result.getString("lvl3")), l4 = parseSortStats(id, 4, result.getString("lvl4")), l5 = null, l6 = null;
+                    if (!result.getString("lvl5").equalsIgnoreCase("-1"))
+                        l5 = parseSortStats(id, 5, result.getString("lvl5"));
+                    if (!result.getString("lvl6").equalsIgnoreCase("-1"))
+                        l6 = parseSortStats(id, 6, result.getString("lvl6"));
 
 
-                if (spell != null) {
-                    spell.setInfo(result.getInt("sprite"), result.getString("spriteInfos"), result.getString("effectTarget"), result.getInt("type"), result.getShort("duration"));
-                    modif = true;
-                } else {
-                    spell = new Spell(id, result.getString("nom"), result.getInt("sprite"), result.getString("spriteInfos"), result.getString("effectTarget"), result.getInt("type"), result.getShort("duration"), result.getString("invalid_state"), result.getString("needed_state"));
-                    World.world.addSort(spell);
+                    if (spell != null) {
+                        spell.setInfo(result.getInt("sprite"), result.getString("spriteInfos"), result.getString("effectTarget"), result.getInt("type"), result.getShort("duration"));
+                        modif = true;
+                    } else {
+                        spell = new Spell(id, result.getString("nom"), result.getInt("sprite"), result.getString("spriteInfos"), result.getString("effectTarget"), result.getInt("type"), result.getShort("duration"), result.getString("invalid_state"), result.getString("needed_state"));
+                        World.world.addSort(spell);
+                    }
+                    spell.getSpellsStats().clear();
+                    spell.addSpellStats(1, l1);
+                    spell.addSpellStats(2, l2);
+                    spell.addSpellStats(3, l3);
+                    spell.addSpellStats(4, l4);
+                    spell.addSpellStats(5, l5);
+                    spell.addSpellStats(6, l6);
+
                 }
-                spell.getSpellsStats().clear();
-                spell.addSpellStats(1, l1);
-                spell.addSpellStats(2, l2);
-                spell.addSpellStats(3, l3);
-                spell.addSpellStats(4, l4);
-                spell.addSpellStats(5, l5);
-                spell.addSpellStats(6, l6);
-
-            }
-            if (modif)
-                for (Monster monster : World.world.getMonstres())
-                    monster.getGrades().values().forEach(MonsterGrade::refresh);
+                if (modif)
+                    for (Monster monster : World.world.getMonstres())
+                        monster.getGrades().values().forEach(MonsterGrade::refresh);
+            });
         } catch (SQLException e) {
             super.sendError(e);
             Main.stop("Can't load spells");
-        } finally {
-            close(result);
         }
     }
 

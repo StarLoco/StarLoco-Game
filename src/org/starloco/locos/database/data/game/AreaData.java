@@ -7,7 +7,6 @@ import org.starloco.locos.database.data.FunctionDAO;
 import org.starloco.locos.game.world.World;
 
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class AreaData extends FunctionDAO<Area> {
@@ -19,22 +18,20 @@ public class AreaData extends FunctionDAO<Area> {
 
 	@Override
 	public void loadFully() {
-		ResultSet result = null;
 		try	{
-			result = getData("SELECT * FROM " + getTableName() + ";");
-			while (result.next()) {
-				int id = result.getInt("id");
-				Area area = World.world.getArea(id);
+			getData("SELECT * FROM " + getTableName() + ";", result -> {
+				while (result.next()) {
+					int id = result.getInt("id");
+					Area area = World.world.getArea(id);
 
-				if(area != null) {
-					area.setAlignement(result.getInt("alignement"));
-					area.setPrismId(result.getInt("Prisme"));
+					if (area != null) {
+						area.setAlignement(result.getInt("alignement"));
+						area.setPrismId(result.getInt("Prisme"));
+					}
 				}
-			}
+			});
 		} catch (SQLException e) {
 			super.sendError(e);
-		} finally	{
-			close(result);
 		}
 	}
 

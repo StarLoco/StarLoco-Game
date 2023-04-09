@@ -3,22 +3,15 @@ package org.starloco.locos.fight.ia.type.boss;
 import org.starloco.locos.fight.Fight;
 import org.starloco.locos.fight.Fighter;
 import org.starloco.locos.fight.ia.AbstractEasyIA;
-import org.starloco.locos.fight.ia.AbstractIA;
-import org.starloco.locos.fight.ia.util.Function;
 import org.starloco.locos.fight.ia.util.newia.AttackFighterMind;
 import org.starloco.locos.fight.ia.util.newia.BuffFighterMind;
 import org.starloco.locos.fight.ia.util.newia.FighterMind;
 import org.starloco.locos.fight.ia.util.newia.InvocationFighterMind;
 import org.starloco.locos.fight.ia.util.newia.action.AttackAction;
 import org.starloco.locos.fight.ia.util.newia.action.IAAction;
-import org.starloco.locos.fight.spells.Spell;
-import org.starloco.locos.game.world.World;
-import org.starloco.locos.kernel.Constant;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Created by Locos on 04/10/2015.

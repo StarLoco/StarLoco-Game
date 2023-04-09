@@ -2,12 +2,10 @@ package org.starloco.locos.database.data.login;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.lang.NotImplementedException;
-import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.area.map.entity.House;
 import org.starloco.locos.database.data.FunctionDAO;
 import org.starloco.locos.game.world.World;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class BaseHouseData extends FunctionDAO<House> {
@@ -18,19 +16,17 @@ public class BaseHouseData extends FunctionDAO<House> {
 
 	@Override
 	public void loadFully() {
-		ResultSet result = null;
 		try {
-			result = getData("SELECT * FROM " + getTableName() + ";");
-			while (result.next()) {
-				World.world.addHouse(new House(result.getInt("id"), result.getShort("map_id"), result.getInt("cell_id"), result.getInt("mapid"), result.getInt("caseid")));
+			getData("SELECT * FROM " + getTableName() + ";", result -> {
+				while (result.next()) {
+					World.world.addHouse(new House(result.getInt("id"), result.getShort("map_id"), result.getInt("cell_id"), result.getInt("mapid"), result.getInt("caseid")));
 				/* Set base price to all houses
 				long saleBase = RS.getLong("saleBase");
 				DatabaseManager.getDynamics().getHouseData().update(RS.getInt("id"), saleBase);*/
-			}
+				}
+			});
 		} catch (SQLException e) {
 			super.sendError(e);
-		} finally {
-			close(result);
 		}
 	}
 

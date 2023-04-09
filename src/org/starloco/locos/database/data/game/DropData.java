@@ -18,34 +18,32 @@ public class DropData extends FunctionDAO<World.Drop> {
 
     @Override
     public void loadFully() {
-        ResultSet result = null;
         try {
             World.world.getMonstres().forEach(monster -> monster.getDrops().clear());
-            result = getData("SELECT * FROM " + getTableName() + ";");
-            while (result.next()) {
-                Monster MT = World.world.getMonstre(result.getInt("monsterId"));
-                String action = result.getString("action");
-                String condition = "";
-                ArrayList<Double> percents = getPercents(result);
+            getData("SELECT * FROM " + getTableName() + ";", result -> {
+                while (result.next()) {
+                    Monster MT = World.world.getMonstre(result.getInt("monsterId"));
+                    String action = result.getString("action");
+                    String condition = "";
+                    ArrayList<Double> percents = getPercents(result);
 
-                if (!action.equals("-1") && !action.equals("1") && action.contains(":")) {
-                    condition = action.split(":")[1];
-                    action = action.split(":")[0];
-                }
+                    if (!action.equals("-1") && !action.equals("1") && action.contains(":")) {
+                        condition = action.split(":")[1];
+                        action = action.split(":")[0];
+                    }
 
-                if (World.world.getObjTemplate(result.getInt("objectId")) != null && MT != null) {
-                    MT.addDrop(new World.Drop(result.getInt("objectId"), percents, result.getInt("ceil"), Integer.parseInt(action), result.getInt("level"), condition));
-                } else {
-                    if(MT == null && result.getInt("monsterId") == 0) {
-                        World.Drop drop = new World.Drop(result.getInt("objectId"), percents, result.getInt("ceil"), Integer.parseInt(action), result.getInt("level"), condition);
-                        World.world.getMonstres().stream().filter(Objects::nonNull).forEach(monster -> monster.addDrop(drop));
+                    if (World.world.getObjTemplate(result.getInt("objectId")) != null && MT != null) {
+                        MT.addDrop(new World.Drop(result.getInt("objectId"), percents, result.getInt("ceil"), Integer.parseInt(action), result.getInt("level"), condition));
+                    } else {
+                        if (MT == null && result.getInt("monsterId") == 0) {
+                            World.Drop drop = new World.Drop(result.getInt("objectId"), percents, result.getInt("ceil"), Integer.parseInt(action), result.getInt("level"), condition);
+                            World.world.getMonstres().stream().filter(Objects::nonNull).forEach(monster -> monster.addDrop(drop));
+                        }
                     }
                 }
-            }
+            });
         } catch (SQLException e) {
             super.sendError(e);
-        } finally {
-            close(result);
         }
     }
 

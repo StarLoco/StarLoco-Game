@@ -10,7 +10,6 @@ import org.starloco.locos.object.ObjectTemplate;
 import org.starloco.locos.quest.Quest;
 
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class NpcTemplateData extends FunctionDAO<NpcTemplate> {
@@ -20,35 +19,33 @@ public class NpcTemplateData extends FunctionDAO<NpcTemplate> {
 
     @Override
     public void loadFully() {
-        ResultSet result = null;
         try {
-            result = getData("SELECT * FROM " + getTableName() + ";");
-            while (result.next()) {
-                int id = result.getInt("id");
-                int bonusValue = result.getInt("bonusValue");
-                int gfxID = result.getInt("gfxID");
-                int scaleX = result.getInt("scaleX");
-                int scaleY = result.getInt("scaleY");
-                int sex = result.getInt("sex");
-                int color1 = result.getInt("color1");
-                int color2 = result.getInt("color2");
-                int color3 = result.getInt("color3");
-                String access = result.getString("accessories");
-                int extraClip = result.getInt("extraClip");
-                int customArtWork = result.getInt("customArtWork");
-                String initQId = result.getString("initQuestion");
-                String ventes = result.getString("ventes");
-                String quests = result.getString("quests");
-                String exchanges = result.getString("exchanges");
+             getData("SELECT * FROM " + getTableName() + ";", result -> {
+                 while (result.next()) {
+                     int id = result.getInt("id");
+                     int bonusValue = result.getInt("bonusValue");
+                     int gfxID = result.getInt("gfxID");
+                     int scaleX = result.getInt("scaleX");
+                     int scaleY = result.getInt("scaleY");
+                     int sex = result.getInt("sex");
+                     int color1 = result.getInt("color1");
+                     int color2 = result.getInt("color2");
+                     int color3 = result.getInt("color3");
+                     String access = result.getString("accessories");
+                     int extraClip = result.getInt("extraClip");
+                     int customArtWork = result.getInt("customArtWork");
+                     String initQId = result.getString("initQuestion");
+                     String ventes = result.getString("ventes");
+                     String quests = result.getString("quests");
+                     String exchanges = result.getString("exchanges");
 
-                NpcTemplate template = new NpcTemplate(id, bonusValue, gfxID, scaleX, scaleY, sex, color1, color2, color3, access, extraClip, customArtWork, initQId, ventes, quests, exchanges, result.getString("path"), result.getByte("informations"));
-                World.world.addNpcTemplate(template);
-            }
+                     NpcTemplate template = new NpcTemplate(id, bonusValue, gfxID, scaleX, scaleY, sex, color1, color2, color3, access, extraClip, customArtWork, initQId, ventes, quests, exchanges, result.getString("path"), result.getByte("informations"));
+                     World.world.addNpcTemplate(template);
+                 }
+             });
         } catch (SQLException e) {
             super.sendError(e);
-            Main.stop("Can't load npc templates");
-        } finally {
-            close(result);
+            Main.stop("Loading npc templates failed");
         }
     }
 
@@ -98,25 +95,23 @@ public class NpcTemplateData extends FunctionDAO<NpcTemplate> {
     }
 
     public void loadQuest() {
-        ResultSet result = null;
         try {
-            result = getData("SELECT id, quests FROM " + getTableName() + ";");
-            while (result.next()) {
-                int id = result.getInt("id");
-                String quests = result.getString("quests");
-                if (quests.equalsIgnoreCase(""))
-                    continue;
-                NpcTemplate nt = World.world.getNPCTemplate(id);
-                Quest quest = Quest.quests.get(Integer.parseInt(quests));
-                if (nt == null || quest == null)
-                    continue;
-                nt.setQuest(quest);
-            }
+            getData("SELECT id, quests FROM " + getTableName() + ";", result -> {
+                while (result.next()) {
+                    int id = result.getInt("id");
+                    String quests = result.getString("quests");
+                    if (quests.equalsIgnoreCase(""))
+                        continue;
+                    NpcTemplate nt = World.world.getNPCTemplate(id);
+                    Quest quest = Quest.quests.get(Integer.parseInt(quests));
+                    if (nt == null || quest == null)
+                        continue;
+                    nt.setQuest(quest);
+                }
+            });
         } catch (Exception e) {
             super.sendError(e);
             Main.stop("unknown");
-        } finally {
-            close(result);
         }
     }
 }

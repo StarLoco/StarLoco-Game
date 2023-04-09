@@ -18,7 +18,6 @@ import org.starloco.locos.kernel.Main;
 import org.starloco.locos.object.GameObject;
 
 import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -145,17 +144,6 @@ public class Account {
     public long getPoints() {
         points = ((AccountData) DatabaseManager.get(AccountData.class)).loadPoints(name);
         return points;
-    }
-
-    public void setPoints(long i) {
-        points = i;
-        ((AccountData) DatabaseManager.get(AccountData.class)).updatePoints(id, points);
-    }
-
-    public void addPoints(long i) {
-        this.getPoints();
-        points += i;
-        ((AccountData) DatabaseManager.get(AccountData.class)).updatePoints(id, points);
     }
 
     public boolean modPoints(long d) {

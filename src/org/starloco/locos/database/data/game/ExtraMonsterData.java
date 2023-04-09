@@ -5,7 +5,6 @@ import org.apache.commons.lang.NotImplementedException;
 import org.starloco.locos.database.data.FunctionDAO;
 import org.starloco.locos.game.world.World;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class ExtraMonsterData extends FunctionDAO<Object> {
@@ -15,16 +14,14 @@ public class ExtraMonsterData extends FunctionDAO<Object> {
 
     @Override
     public void loadFully() {
-        ResultSet result = null;
         try {
-            result = getData("SELECT * from extra_monster");
-            while (result.next()) {
-                World.world.addExtraMonster(result.getInt("idMob"), result.getString("superArea"), result.getString("subArea"), result.getInt("chances"));
-            }
+            getData("SELECT * from extra_monster", result -> {
+                while (result.next()) {
+                    World.world.addExtraMonster(result.getInt("idMob"), result.getString("superArea"), result.getString("subArea"), result.getInt("chances"));
+                }
+            });
         } catch (SQLException e) {
             super.sendError(e);
-        } finally {
-            close(result);
         }
     }
 

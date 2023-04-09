@@ -6,11 +6,9 @@ import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.common.Formulas;
-import org.starloco.locos.entity.npc.Npc;
 import org.starloco.locos.event.EventManager;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.object.GameObject;
-import org.starloco.locos.object.ObjectTemplate;
 import org.starloco.locos.util.TimerWaiter;
 
 import java.util.ArrayList;

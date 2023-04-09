@@ -21,25 +21,23 @@ public class BigStoreListingData extends FunctionDAO<BigStoreListing> {
 
     @Override
     public void loadFully() {
-        ResultSet result = null;
         try {
-            result = getData("SELECT * FROM " + getTableName() + ";");
-            while (result.next()) {
-                BigStore bigStore = World.world.getHdv(result.getInt("map"));
-                if (bigStore != null) {
-                    GameObject object = World.world.getGameObject(result.getInt("itemID"));
-                    if (object == null) {
-                        this.delete(new BigStoreListing(result.getInt("id"), 0, (byte) 0, 0, null));
-                        continue;
+            getData("SELECT * FROM " + getTableName() + ";", result -> {
+                while (result.next()) {
+                    BigStore bigStore = World.world.getHdv(result.getInt("map"));
+                    if (bigStore != null) {
+                        GameObject object = World.world.getGameObject(result.getInt("itemID"));
+                        if (object == null) {
+                            this.delete(new BigStoreListing(result.getInt("id"), 0, (byte) 0, 0, null));
+                            continue;
+                        }
+                        BigStoreListing entry = new BigStoreListing(result.getInt("id"), result.getInt("price"), result.getByte("count"), result.getInt("ownerGuid"), object);
+                        bigStore.addEntry(entry);
                     }
-                    BigStoreListing entry = new BigStoreListing(result.getInt("id"), result.getInt("price"), result.getByte("count"), result.getInt("ownerGuid"), object);
-                    bigStore.addEntry(entry);
                 }
-            }
+            });
         } catch (SQLException e) {
             super.sendError(e);
-        } finally {
-            close(result);
         }
     }
 

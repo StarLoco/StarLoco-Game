@@ -8,7 +8,6 @@ import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.Main;
 
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class ScriptedCellData extends FunctionDAO<Object> {
@@ -18,30 +17,27 @@ public class ScriptedCellData extends FunctionDAO<Object> {
 
     @Override
     public void loadFully() {
-        ResultSet result = null;
         try {
-            result = getData("SELECT * FROM " + getTableName() + ";");
+            getData("SELECT * FROM " + getTableName() + ";", result -> {
+                while (result.next()) {
+                    int mapId = result.getShort("MapID");
+                    int cellId = result.getInt("CellID");
+                    int eventId = result.getInt("EventID");
+                    int actionId = result.getInt("ActionID");
+                    String args = result.getString("ActionsArgs");
+                    String conds = result.getString("Conditions");
 
-            while (result.next()) {
-                int mapId = result.getShort("MapID");
-                int cellId = result.getInt("CellID");
-                int eventId = result.getInt("EventID");
-                int actionId = result.getInt("ActionID");
-                String args = result.getString("ActionsArgs");
-                String conds = result.getString("Conditions");
-
-                if(eventId == 1) {
-                    World.world.getMapData(mapId)
-                        .filter(SQLMapData.class::isInstance)
-                        .map(SQLMapData.class::cast)
-                        .ifPresent(md -> md.addOnCellStopAction(cellId, actionId, args, conds));
+                    if (eventId == 1) {
+                        World.world.getMapData(mapId)
+                                .filter(SQLMapData.class::isInstance)
+                                .map(SQLMapData.class::cast)
+                                .ifPresent(md -> md.addOnCellStopAction(cellId, actionId, args, conds));
+                    }
                 }
-            }
+            });
         } catch (SQLException e) {
             super.sendError(e);
             Main.stop("unknown");
-        } finally {
-            close(result);
         }
     }
 

@@ -6,7 +6,6 @@ import org.apache.commons.lang.NotImplementedException;
 import org.starloco.locos.database.data.FunctionDAO;
 
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class ObvijevanData extends FunctionDAO<Pair<Integer, Integer>> {
@@ -22,18 +21,11 @@ public class ObvijevanData extends FunctionDAO<Pair<Integer, Integer>> {
 
     @Override
     public Pair<Integer, Integer> load(int id) {
-        ResultSet result = null;
         int template = -1;
         try {
-            result = getData("SELECT * FROM " + getTableName() + " WHERE `id` = '" + id + "';");
-
-            if (result.next()) {
-                template = result.getInt("template");
-            }
+            template = getData("SELECT * FROM " + getTableName() + " WHERE `id` = '" + id + "';", result -> result.next() ? result.getInt("template") : -1);
         } catch (SQLException e) {
             super.sendError(e);
-        } finally {
-            close(result);
         }
         return new Pair<>(template, template);
     }

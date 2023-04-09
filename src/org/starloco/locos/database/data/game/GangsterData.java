@@ -6,7 +6,6 @@ import org.starloco.locos.database.data.FunctionDAO;
 import org.starloco.locos.entity.monster.boss.Bandit;
 
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class GangsterData extends FunctionDAO<Bandit> {
@@ -16,16 +15,14 @@ public class GangsterData extends FunctionDAO<Bandit> {
 
     @Override
     public void loadFully() {
-        ResultSet result = null;
         try {
-            result = getData("SELECT * FROM " + getTableName() + ";");
-            while (result.next()) {
-                new Bandit(result.getString("mobs"), result.getString("maps"), result.getLong("time"));
-            }
+            getData("SELECT * FROM " + getTableName() + ";", result -> {
+                while (result.next()) {
+                    new Bandit(result.getString("mobs"), result.getString("maps"), result.getLong("time"));
+                }
+            });
         } catch (SQLException e) {
             super.sendError(e);
-        } finally {
-            close(result);
         }
     }
 

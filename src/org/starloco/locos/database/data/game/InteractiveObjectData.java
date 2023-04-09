@@ -6,7 +6,6 @@ import org.starloco.locos.area.map.entity.InteractiveObject.InteractiveObjectTem
 import org.starloco.locos.database.data.FunctionDAO;
 import org.starloco.locos.game.world.World;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class InteractiveObjectData extends FunctionDAO<Object> {
@@ -16,17 +15,15 @@ public class InteractiveObjectData extends FunctionDAO<Object> {
 
     @Override
     public void loadFully() {
-        ResultSet result = null;
         try {
-            result = getData("SELECT * FROM " + getTableName() + ";");
-            while (result.next()) {
-                World.world.addIOTemplate(new InteractiveObjectTemplate(result.getInt("id"), result.getInt("respawn"),
-                        result.getInt("duration"), result.getInt("unknow"), result.getInt("walkable") == 1));
-            }
+            getData("SELECT * FROM " + getTableName() + ";", result -> {
+                while (result.next()) {
+                    World.world.addIOTemplate(new InteractiveObjectTemplate(result.getInt("id"), result.getInt("respawn"),
+                            result.getInt("duration"), result.getInt("unknow"), result.getInt("walkable") == 1));
+                }
+            });
         } catch (SQLException e) {
             super.sendError(e);
-        } finally {
-            close(result);
         }
     }
 

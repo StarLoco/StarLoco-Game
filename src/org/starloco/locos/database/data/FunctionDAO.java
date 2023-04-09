@@ -4,7 +4,6 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import com.zaxxer.hikari.HikariDataSource;
 import org.slf4j.LoggerFactory;
-import org.starloco.locos.database.DatabaseManager;
 
 import java.sql.*;
 
@@ -92,73 +91,21 @@ public abstract class FunctionDAO<T> implements DAO<T> {
         }
     }
 
-    /** Use version with consumer instead */
-    @Deprecated
-    protected ResultSet getData(String query) {
-        synchronized (locker) {
-            ResultSet result = null;
-            try {
-                if (!query.endsWith(";")) query += ";";
-                Connection connection = this.getConnection();
-                Statement statement = connection.createStatement();
-                DatabaseManager.closeStatementsUnused();
-                result = statement.executeQuery(query);
-                DatabaseManager.addToClose(statement);
-                logger.debug("SQL request executed successfully {}", query);
-            } catch (SQLException e) {
-                logger.error("Can't execute SQL Request :" + query, e);
-            }
-            return result;
-        }
-    }
-
     protected void close(PreparedStatement statement) {
         if (statement != null) {
             try {
                 if (!statement.isClosed()) {
                     statement.clearParameters();
                     statement.close();
-                    this.close(statement.getConnection());
+                    Connection connection = statement.getConnection();
+                    if (connection != null && !connection.isClosed()) {
+                        connection.close();
+                        logger.trace("{} released", connection);
+                    }
                 }
             } catch (Exception e) {
                 logger.error("Can't close statement", e);
             }
-        }
-    }
-
-    protected void close(Connection connection) {
-        if (connection != null) {
-            try {
-                if (!connection.isClosed()) {
-                    connection.close();
-                    logger.trace("{} released", connection);
-                }
-            } catch (Exception e) {
-                logger.error("Can't close connection", e);
-            }
-        }
-    }
-
-    protected void close(Statement statement) {
-        if (statement == null)
-            return;
-        try {
-            if(!statement.isClosed()) {
-                statement.close();
-            }
-        } catch (Exception e) {
-            logger.error("Can't close statement", e);
-        }
-    }
-
-    protected void close(ResultSet resultSet) {
-        if (resultSet == null)
-            return;
-        try {
-            if(!resultSet.isClosed())
-                resultSet.close();
-        } catch (Exception e) {
-            logger.error("Can't close resultSet", e);
         }
     }
 

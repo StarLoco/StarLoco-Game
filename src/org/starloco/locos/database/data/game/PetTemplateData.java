@@ -6,7 +6,6 @@ import org.starloco.locos.database.data.FunctionDAO;
 import org.starloco.locos.entity.pet.Pet;
 import org.starloco.locos.game.world.World;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class PetTemplateData extends FunctionDAO<Pet> {
@@ -16,17 +15,15 @@ public class PetTemplateData extends FunctionDAO<Pet> {
 
     @Override
     public void loadFully() {
-        ResultSet result = null;
         try {
-            result = getData("SELECT * FROM " + getTableName() + ";");
-            while (result.next()) {
-                World.world.addPets(new Pet(result.getInt("TemplateID"), result.getInt("Type"), result.getString("Gap"),
-                        result.getString("StatsUp"), result.getInt("Max"), result.getInt("Gain"), result.getInt("DeadTemplate"), result.getInt("Epo"), result.getString("jet")));
-            }
+            getData("SELECT * FROM " + getTableName() + ";", result -> {
+                while (result.next()) {
+                    World.world.addPets(new Pet(result.getInt("TemplateID"), result.getInt("Type"), result.getString("Gap"),
+                            result.getString("StatsUp"), result.getInt("Max"), result.getInt("Gain"), result.getInt("DeadTemplate"), result.getInt("Epo"), result.getString("jet")));
+                }
+            });
         } catch (SQLException e) {
             super.sendError(e);
-        } finally {
-            close(result);
         }
     }
 

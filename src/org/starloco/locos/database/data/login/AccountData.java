@@ -79,39 +79,27 @@ public class AccountData extends FunctionDAO<Account> {
     }
 
     public long getSubscribe(int id) {
-        long subscribe = 0;
-        ResultSet result = null;
         try {
-            result = super.getData("SELECT guid, subscribe FROM " + getTableName() + " WHERE guid = " + id);
-
-            if(result != null) {
-                while (result.next()) {
-                    subscribe = result.getLong("subscribe");
-                }
-            }
+            return getData("SELECT guid, subscribe FROM " + getTableName() + " WHERE guid = " + id, result ->
+                    result.next() ? result.getLong("subscribe") : 0);
         } catch (Exception e) {
             super.sendError(e);
-        } finally {
-            close(result);
         }
-        return subscribe;
+        return 0;
     }
 
     public void updateVoteAll() {
-        ResultSet result = null;
-        Account a = null;
         try {
-            result = super.getData("SELECT guid, heurevote, lastVoteIP FROM " + getTableName() + ";");
-            while (result.next()) {
-                a = World.world.ensureAccountLoaded(result.getInt("guid"));
-                if (a == null)
-                    continue;
-                a.updateVote(result.getString("heurevote"), result.getString("lastVoteIP"));
-            }
+            getData("SELECT guid, heurevote, lastVoteIP FROM " + getTableName() + ";", result -> {
+                while (result.next()) {
+                    Account a = World.world.ensureAccountLoaded(result.getInt("guid"));
+                    if (a != null) {
+                        a.updateVote(result.getString("heurevote"), result.getString("lastVoteIP"));
+                    }
+                }
+            });
         } catch (SQLException e) {
             super.sendError(e);
-        } finally {
-            close(result);
         }
     }
 
@@ -146,42 +134,30 @@ public class AccountData extends FunctionDAO<Account> {
         }
     }
 
-    public boolean updateBannedTime(Account acc, long time) {
+    public void updateBannedTime(Account acc, long time) {
         PreparedStatement statement = null;
         try {
             statement = getPreparedStatement("UPDATE " + getTableName() + " SET banned = '" + (acc.isBanned() ? 1 : 0) + "', bannedTime = '" + time + "' WHERE guid = '" + acc.getId() + "'");
             execute(statement);
-            return true;
         } catch (Exception e) {
             super.sendError(e);
         } finally {
             close(statement);
         }
-        return false;
     }
 
     public int loadPoints(String user) {
         return this.loadPointsWithoutUsersDb(user);
     }
 
-    public void updatePoints(int id, long points) {
-        this.updatePointsWithoutUsersDb(id, points);
-    }
-
     public int loadPointsWithoutUsersDb(String user) {
-        ResultSet result = null;
-        int points = 0;
         try {
-            result = super.getData("SELECT * FROM " + getTableName() + " WHERE `account` LIKE '" + user + "'");
-            if (result.next()) {
-                points = result.getInt("points");
-            }
+            return getData("SELECT * FROM " + getTableName() + " WHERE `account` LIKE '" + user + "'", result ->
+                    result.next() ? result.getInt("points") : 0);
         } catch (SQLException e) {
             super.sendError(e);
-        } finally {
-            close(result);
         }
-        return points;
+        return 0;
     }
 
     public World.Couple<Long, Boolean> modPoints(int id, long points) {
@@ -201,64 +177,6 @@ public class AccountData extends FunctionDAO<Account> {
         } catch (SQLException e) {
             super.sendError(e);
             return new World.Couple<>(0L, false);
-        }
-    }
-
-    @Deprecated // Use modPoints instead
-    public void updatePointsWithoutUsersDb(int id, long points) {
-        PreparedStatement p = null;
-        try {
-            p = getPreparedStatement("UPDATE " + getTableName() + " SET `points` = ? WHERE `guid` = ?");
-            p.setLong(1, points);
-            p.setInt(2, id);
-            execute(p);
-        } catch (SQLException e) {
-            super.sendError(e);
-        } finally {
-            close(p);
-        }
-    }
-
-    public int loadPointsWithUsersDb(String account) {
-        ResultSet result = null;
-        int points = 0, user = -1;
-        try {
-            result = super.getData("SELECT account, users FROM " + getTableName() + " WHERE `account` LIKE '" + account + "'");
-            
-            if (result.next()) user = result.getInt("users");
-            close(result);
-
-            if(user == -1) {
-                result = super.getData("SELECT id, points FROM `users` WHERE `id` = " + user + ";");
-                if (result.next()) points = result.getInt("users");
-            }
-        } catch (SQLException e) {
-            super.sendError(e);
-        } finally {
-            close(result);
-        }
-        return points;
-    }
-
-    public void updatePointsWithUsersDb(int id, int points) {
-        PreparedStatement p = null;
-        int user = -1;
-        try {
-            ResultSet result = super.getData("SELECT guid, users FROM " + getTableName() + " WHERE `guid` LIKE '" + id + "'");
-            
-            if (result.next()) user = result.getInt("users");
-            close(result);
-
-            if(user != -1) {
-                p = getPreparedStatement("UPDATE `users` SET `points` = ? WHERE `id` = ?;");
-                p.setInt(1, points);
-                p.setInt(2, id);
-                execute(p);
-            }
-        } catch (SQLException e) {
-            super.sendError(e);
-        } finally {
-            close(p);
         }
     }
 }

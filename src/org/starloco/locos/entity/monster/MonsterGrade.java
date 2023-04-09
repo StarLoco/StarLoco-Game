@@ -8,7 +8,6 @@ import org.starloco.locos.fight.spells.SpellEffect;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.Constant;
 import org.starloco.locos.script.proxy.SMobGrade;
-import org.starloco.locos.script.proxy.SPlayer;
 
 import java.util.ArrayList;
 import java.util.HashMap;

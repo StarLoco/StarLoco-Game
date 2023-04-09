@@ -5,11 +5,9 @@ import org.apache.commons.lang.NotImplementedException;
 import org.starloco.locos.database.data.FunctionDAO;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.Main;
-import org.starloco.locos.object.GameObject;
 import org.starloco.locos.object.ObjectTemplate;
 
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class ObjectTemplateData extends FunctionDAO<ObjectTemplate> {
@@ -19,28 +17,26 @@ public class ObjectTemplateData extends FunctionDAO<ObjectTemplate> {
 
     @Override
     public void loadFully() {
-        ResultSet result = null;
         try {
-            result = getData("SELECT * FROM " + getTableName() + ";");
-            while (result.next()) {
-                ObjectTemplate template = World.world.getObjTemplate(result.getInt("id"));
-                if (template != null) {
-                    template.setInfos(result.getString("statsTemplate"), result.getString("name"), result.getInt("type"),
-                            result.getInt("level"), result.getInt("pod"), result.getInt("prix"), result.getInt("panoplie"),
-                            result.getString("conditions"), result.getString("armesInfos"), result.getInt("sold"), result.getInt("avgPrice"),
-                            result.getInt("points"), result.getInt("newPrice"));
-                } else {
-                    World.world.addObjTemplate(new ObjectTemplate(result.getInt("id"), result.getString("statsTemplate"),
-                            result.getString("name"), result.getInt("type"), result.getInt("level"), result.getInt("pod"),
-                            result.getInt("prix"), result.getInt("panoplie"), result.getString("conditions"), result.getString("armesInfos"),
-                            result.getInt("sold"), result.getInt("avgPrice"), result.getInt("points"), result.getInt("newPrice")));
+            getData("SELECT * FROM " + getTableName() + ";", result -> {
+                while (result.next()) {
+                    ObjectTemplate template = World.world.getObjTemplate(result.getInt("id"));
+                    if (template != null) {
+                        template.setInfos(result.getString("statsTemplate"), result.getString("name"), result.getInt("type"),
+                                result.getInt("level"), result.getInt("pod"), result.getInt("prix"), result.getInt("panoplie"),
+                                result.getString("conditions"), result.getString("armesInfos"), result.getInt("sold"), result.getInt("avgPrice"),
+                                result.getInt("points"), result.getInt("newPrice"));
+                    } else {
+                        World.world.addObjTemplate(new ObjectTemplate(result.getInt("id"), result.getString("statsTemplate"),
+                                result.getString("name"), result.getInt("type"), result.getInt("level"), result.getInt("pod"),
+                                result.getInt("prix"), result.getInt("panoplie"), result.getString("conditions"), result.getString("armesInfos"),
+                                result.getInt("sold"), result.getInt("avgPrice"), result.getInt("points"), result.getInt("newPrice")));
+                    }
                 }
-            }
+            });
         } catch (SQLException e) {
             super.sendError(e);
             Main.stop("Can't load objects templates");
-        } finally {
-            close(result);
         }
     }
 

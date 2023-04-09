@@ -4,10 +4,8 @@ import com.mysql.jdbc.Statement;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.lang.NotImplementedException;
 import org.starloco.locos.area.map.entity.Trunk;
-import org.starloco.locos.client.Account;
 import org.starloco.locos.database.DatabaseManager;
 import org.starloco.locos.database.data.FunctionDAO;
-import org.starloco.locos.database.data.game.BankData;
 import org.starloco.locos.database.data.game.TrunkData;
 import org.starloco.locos.game.world.World;
 
@@ -24,22 +22,20 @@ public class BaseTrunkData extends FunctionDAO<Trunk> {
 
     @Override
     public void loadFully() {
-        ResultSet result = null;
         try {
-            result = getData("SELECT * FROM " + getTableName() + ";");
-            while (result.next()) {
-                int id = result.getInt("id");
+            getData("SELECT * FROM " + getTableName() + ";", result -> {
+                while (result.next()) {
+                    int id = result.getInt("id");
 
-                if(World.world.getTrunk(id) == null) {
-                    Trunk trunk = new Trunk(id, result.getInt("id_house"), result.getShort("mapid"), result.getInt("cellid"));
-                    World.world.addTrunk(trunk);
-                    ((TrunkData) DatabaseManager.get(TrunkData.class)).exist(trunk);
+                    if (World.world.getTrunk(id) == null) {
+                        Trunk trunk = new Trunk(id, result.getInt("id_house"), result.getShort("mapid"), result.getInt("cellid"));
+                        World.world.addTrunk(trunk);
+                        ((TrunkData) DatabaseManager.get(TrunkData.class)).exist(trunk);
+                    }
                 }
-            }
+            });
         } catch (SQLException e) {
             super.sendError(e);
-        } finally {
-            close(result);
         }
     }
 
@@ -63,22 +59,21 @@ public class BaseTrunkData extends FunctionDAO<Trunk> {
 
 
             if(ok) {
+                final Trunk trunk = entity;
                 boolean found = false;
-                ResultSet result = null;
                 try {
-                    result = getData("SELECT * FROM " + getTableName() + ";");
-                    while (result.next()) {
-                        if(result.getInt("id_house") == entity.getHouseId() && result.getShort("mapid") == entity.getMapId() && result.getShort("cellid") == entity.getCellId()) {
-                            entity.setId(result.getInt("id"));
-                            ((TrunkData) DatabaseManager.get(TrunkData.class)).exist(entity);
-                            found = true;
-                            break;
+                    found = getData("SELECT * FROM " + getTableName() + ";", result -> {
+                        while (result.next()) {
+                            if (result.getInt("id_house") == trunk.getHouseId() && result.getShort("mapid") == trunk.getMapId() && result.getShort("cellid") == trunk.getCellId()) {
+                                trunk.setId(result.getInt("id"));
+                                ((TrunkData) DatabaseManager.get(TrunkData.class)).exist(trunk);
+                                return true;
+                            }
                         }
-                    }
+                        return false;
+                    });
                 } catch (SQLException e) {
                     super.sendError(e);
-                } finally {
-                    close(result);
                 }
 
                 if(!found) {

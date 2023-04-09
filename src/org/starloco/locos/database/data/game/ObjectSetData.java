@@ -6,7 +6,6 @@ import org.starloco.locos.database.data.FunctionDAO;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.object.ObjectSet;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class ObjectSetData extends FunctionDAO<ObjectSet> {
@@ -16,17 +15,14 @@ public class ObjectSetData extends FunctionDAO<ObjectSet> {
 
     @Override
     public void loadFully() {
-        ResultSet result = null;
         try {
-            result = getData("SELECT * FROM " + getTableName() + ";");
-            while (result.next()) {
-                World.world.addItemSet(new ObjectSet(result.getInt("id"), result.getString("items"), result.getString("bonus")));
-            }
-            close(result);
+            getData("SELECT * FROM " + getTableName() + ";", result -> {
+                while (result.next()) {
+                    World.world.addItemSet(new ObjectSet(result.getInt("id"), result.getString("items"), result.getString("bonus")));
+                }
+            });
         } catch (SQLException e) {
             super.sendError(e);
-        } finally {
-            close(result);
         }
     }
 

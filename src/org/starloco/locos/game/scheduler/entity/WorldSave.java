@@ -10,7 +10,6 @@ import org.starloco.locos.game.GameServer;
 import org.starloco.locos.game.scheduler.Updatable;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.Config;
-import org.starloco.locos.object.GameObject;
 
 import java.util.ArrayList;
 import java.util.Objects;

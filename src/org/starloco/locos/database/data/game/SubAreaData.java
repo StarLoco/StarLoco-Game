@@ -7,7 +7,6 @@ import org.starloco.locos.database.data.FunctionDAO;
 import org.starloco.locos.game.world.World;
 
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class SubAreaData extends FunctionDAO<SubArea> {
@@ -18,23 +17,21 @@ public class SubAreaData extends FunctionDAO<SubArea> {
 
     @Override
     public void loadFully() {
-        ResultSet result = null;
         try {
-            result = getData("SELECT * FROM " + getTableName() + ";");
-            while (result.next()) {
-                int id = result.getInt("id");
-                SubArea subArea = World.world.getSubArea(id);
+            getData("SELECT * FROM " + getTableName() + ";", result -> {
+                while (result.next()) {
+                    int id = result.getInt("id");
+                    SubArea subArea = World.world.getSubArea(id);
 
-                if(subArea != null) {
-                    subArea.setAlignment(result.getByte("alignement"));
-                    subArea.setPrism(World.world.getPrisme(result.getInt("Prisme")));
-                    subArea.setConquerable(result.getInt("conquistable") == 0);
+                    if (subArea != null) {
+                        subArea.setAlignment(result.getByte("alignement"));
+                        subArea.setPrism(World.world.getPrisme(result.getInt("Prisme")));
+                        subArea.setConquerable(result.getInt("conquistable") == 0);
+                    }
                 }
-            }
+            });
         } catch (SQLException e) {
             super.sendError(e);
-        } finally {
-            close(result);
         }
     }
 

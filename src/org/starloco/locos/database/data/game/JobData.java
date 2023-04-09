@@ -6,7 +6,6 @@ import org.starloco.locos.database.data.FunctionDAO;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.job.Job;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class JobData extends FunctionDAO<Job> {
@@ -16,20 +15,18 @@ public class JobData extends FunctionDAO<Job> {
 
     @Override
     public void loadFully() {
-        ResultSet result = null;
         try {
-            result = getData("SELECT * FROM " + getTableName() + ";");
-            while (result.next()) {
+            getData("SELECT * FROM " + getTableName() + ";", result -> {
+                while (result.next()) {
 
-                String skills = "";
-                if (result.getString("skills") != null)
-                    skills = result.getString("skills");
-                World.world.addJob(new Job(result.getInt("id"), result.getString("tools"), result.getString("crafts"), skills));
-            }
+                    String skills = "";
+                    if (result.getString("skills") != null)
+                        skills = result.getString("skills");
+                    World.world.addJob(new Job(result.getInt("id"), result.getString("tools"), result.getString("crafts"), skills));
+                }
+            });
         } catch (SQLException e) {
             super.sendError(e);
-        } finally {
-            close(result);
         }
     }
 

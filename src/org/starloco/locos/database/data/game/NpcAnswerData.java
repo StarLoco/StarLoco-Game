@@ -8,7 +8,6 @@ import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.Main;
 import org.starloco.locos.other.Action;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class NpcAnswerData extends FunctionDAO<NpcAnswer> {
@@ -18,24 +17,22 @@ public class NpcAnswerData extends FunctionDAO<NpcAnswer> {
 
     @Override
     public void loadFully() {
-        ResultSet result = null;
         try {
-            result = getData("SELECT * FROM " + getTableName() + ";");
-            while (result.next()) {
-                int id = result.getInt("ID");
-                NpcAnswer answer = World.world.getNpcAnswer(id);
+            getData("SELECT * FROM " + getTableName() + ";", result -> {
+                while (result.next()) {
+                    int id = result.getInt("ID");
+                    NpcAnswer answer = World.world.getNpcAnswer(id);
 
-                if (answer == null) {
-                    answer = new NpcAnswer(id);
-                    World.world.addNpcAnswer(answer);
+                    if (answer == null) {
+                        answer = new NpcAnswer(id);
+                        World.world.addNpcAnswer(answer);
+                    }
+                    answer.addAction(new Action(result.getInt("type"), result.getString("args"), ""));
                 }
-                answer.addAction(new Action(result.getInt("type"), result.getString("args"), ""));
-            }
+            });
         } catch (SQLException e) {
             super.sendError(e);
-            Main.stop("unknown");
-        } finally {
-            close(result);
+            Main.stop("Loading npc answers failed");
         }
     }
 

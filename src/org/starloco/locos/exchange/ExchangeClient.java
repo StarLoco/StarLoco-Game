@@ -9,7 +9,6 @@ import org.apache.mina.core.session.IoSession;
 import org.apache.mina.transport.socket.nio.NioSocketConnector;
 import org.slf4j.LoggerFactory;
 import org.starloco.locos.kernel.Config;
-import org.starloco.locos.kernel.Main;
 
 import java.net.InetSocketAddress;
 

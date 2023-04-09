@@ -1,7 +1,6 @@
 package org.starloco.locos.database.data.game;
 
 import java.util.Arrays;
-import java.util.List;
 
 public class ExperienceTables {
     public static class ExperienceTable {

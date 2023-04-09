@@ -7,7 +7,6 @@ import org.starloco.locos.entity.pet.PetEntry;
 import org.starloco.locos.game.world.World;
 
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class PetData extends FunctionDAO<PetEntry> {
@@ -18,17 +17,14 @@ public class PetData extends FunctionDAO<PetEntry> {
 
     @Override
     public void loadFully() {
-        ResultSet result = null;
         try {
-            result = getData("SELECT * FROM " + getTableName() + ";");
-
-            while (result.next()) {
-                World.world.addPetsEntry(new PetEntry(result.getInt("id"), result.getInt("template"), result.getLong("lastEatDate"), result.getInt("quantityEat"), result.getInt("pdv"), result.getInt("corpulence"), (result.getInt("isEPO") == 1)));
-            }
+            getData("SELECT * FROM " + getTableName() + ";", result -> {
+                while (result.next()) {
+                    World.world.addPetsEntry(new PetEntry(result.getInt("id"), result.getInt("template"), result.getLong("lastEatDate"), result.getInt("quantityEat"), result.getInt("pdv"), result.getInt("corpulence"), (result.getInt("isEPO") == 1)));
+                }
+            });
         } catch (SQLException e) {
             super.sendError(e);
-        } finally {
-            close(result);
         }
     }
 

@@ -9,7 +9,6 @@ import org.starloco.locos.database.data.FunctionDAO;
 import org.starloco.locos.game.world.World;
 
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class HouseData extends FunctionDAO<House> {
@@ -19,32 +18,30 @@ public class HouseData extends FunctionDAO<House> {
 
     @Override
     public void loadFully() {
-        ResultSet result = null;
         try {
-            result = getData("SELECT * FROM houses");
-            while (result.next()) {
-                int id = result.getInt("id");
-                int owner = result.getInt("owner_id");
-                int sale = result.getInt("sale");
-                int guild = result.getInt("guild_id");
-                int access = result.getInt("access");
-                String key = result.getString("key");
-                int guildRights = result.getInt("guild_rights");
-                House house = World.world.getHouse(id);
-                if (house == null)
-                    continue;
+            getData("SELECT * FROM houses", result -> {
+                while (result.next()) {
+                    int id = result.getInt("id");
+                    int owner = result.getInt("owner_id");
+                    int sale = result.getInt("sale");
+                    int guild = result.getInt("guild_id");
+                    int access = result.getInt("access");
+                    String key = result.getString("key");
+                    int guildRights = result.getInt("guild_rights");
+                    House house = World.world.getHouse(id);
+                    if (house == null)
+                        continue;
 
-                house.setOwnerId(owner);
-                house.setSale(sale);
-                house.setGuildId(guild);
-                house.setAccess(access);
-                house.setKey(key);
-                house.setGuildRightsWithParse(guildRights);
-            }
+                    house.setOwnerId(owner);
+                    house.setSale(sale);
+                    house.setGuildId(guild);
+                    house.setAccess(access);
+                    house.setKey(key);
+                    house.setGuildRightsWithParse(guildRights);
+                }
+            });
         } catch (SQLException e) {
             super.sendError(e);
-        } finally {
-            close(result);
         }
     }
 

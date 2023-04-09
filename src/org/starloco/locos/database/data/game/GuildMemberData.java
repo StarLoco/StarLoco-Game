@@ -9,7 +9,6 @@ import org.starloco.locos.guild.Guild;
 import org.starloco.locos.guild.GuildMember;
 
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class GuildMemberData extends FunctionDAO<Player> {
@@ -19,24 +18,20 @@ public class GuildMemberData extends FunctionDAO<Player> {
 
     @Override
     public void loadFully() {
-        ResultSet result = null;
         try {
-            result = getData("SELECT * FROM guild_members");
-
-            while (result.next()) {
-                try {
-                    Guild g = World.world.getGuild(result.getInt("guild"));
-                    if (g != null)
-                        g.addMember(result.getInt("guid"), result.getInt("rank"), result.getByte("pxp"), result.getLong("xpdone"), result.getInt("rights"), result.getString("lastConnection").replaceAll("-", "~"));
-                } catch(Exception e) {
-                    e.printStackTrace();
+            getData("SELECT * FROM guild_members", result -> {
+                while (result.next()) {
+                    try {
+                        Guild g = World.world.getGuild(result.getInt("guild"));
+                        if (g != null)
+                            g.addMember(result.getInt("guid"), result.getInt("rank"), result.getByte("pxp"), result.getLong("xpdone"), result.getInt("rights"), result.getString("lastConnection").replaceAll("-", "~"));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
-            }
-
+            });
         } catch (SQLException e) {
             super.sendError(e);
-        } finally {
-            close(result);
         }
     }
 
@@ -112,36 +107,22 @@ public class GuildMemberData extends FunctionDAO<Player> {
     }
 
     public int isPersoInGuild(int id) {
-        ResultSet result = null;
-        int guildId = -1;
         try {
-            result = getData("SELECT guild FROM " + getTableName() + " WHERE guid = " + id + ";");
-            boolean found = result.first();
-            if (found)
-                guildId = result.getInt("guild");
+            return getData("SELECT guild FROM " + getTableName() + " WHERE guid = " + id + ";", result ->
+                    result.first() ? result.getInt("guild") : -1);
         } catch (SQLException e) {
             super.sendError(e);
-        } finally {
-            close(result);
         }
-        return guildId;
+        return -1;
     }
 
     public int[] isPersoInGuild(String name) {
-        ResultSet result = null;
-        int guild = -1, id = -1;
         try {
-            result = getData("SELECT guild,guid FROM " + getTableName() + " WHERE name = '" + name + "';");
-            boolean found = result.first();
-            if (found) {
-                guild = result.getInt("guild");
-                id = result.getInt("guid");
-            }
+            return getData("SELECT guild,guid FROM " + getTableName() + " WHERE name = '" + name + "';", result ->
+                    result.first() ? new int[]{result.getInt("guid"), result.getInt("guild")} : new int[]{-1, -1});
         } catch (SQLException e) {
             super.sendError(e);
-        } finally {
-            close(result);
         }
-        return new int[]{id, guild};
+        return new int[]{-1, -1};
     }
 }

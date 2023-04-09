@@ -14,16 +14,12 @@ import org.starloco.locos.kernel.Main;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 public class DatabaseManager {
 
     private static final DatabaseManager instance = new DatabaseManager();
-    private static final List<Statement> statements = Collections.synchronizedList(new ArrayList<>());
 
     private final Logger logger = (Logger) LoggerFactory.getLogger(DatabaseManager.class);
 
@@ -35,10 +31,10 @@ public class DatabaseManager {
      * Construct the two connection database
      */
     public DatabaseManager() {
-        ((Logger) LoggerFactory.getLogger("com.zaxxer.hikari.HikariDataSource")).setLevel(Level.ERROR);
+        /*((Logger) LoggerFactory.getLogger("com.zaxxer.hikari.HikariDataSource")).setLevel(Level.ERROR);
         ((Logger) LoggerFactory.getLogger("com.zaxxer.hikari.HikariConfig")).setLevel(Level.ERROR);
         ((Logger) LoggerFactory.getLogger("com.zaxxer.hikari.pool.HikariPool")).setLevel(Level.ERROR);
-        ((Logger) LoggerFactory.getLogger("DEBUG com.zaxxer.hikari.pool.PoolBase")).setLevel(Level.ERROR);
+        ((Logger) LoggerFactory.getLogger("DEBUG com.zaxxer.hikari.pool.PoolBase")).setLevel(Level.ERROR);*/
 
         logger.trace("Reading database config");
         this.login = this.createHikariDataSource(Config.databaseLoginHost, String.valueOf(Config.databaseLoginPort), Config.databaseLoginName, Config.databaseLoginUser, Config.databaseLoginPass);
@@ -201,31 +197,5 @@ public class DatabaseManager {
 
     public static DatabaseManager getInstance() {
         return instance;
-    }
-
-    public static void addToClose(Statement statement) {
-        DatabaseManager.statements.add(statement);
-    }
-
-    public static void closeStatementsUnused() throws SQLException {
-        Iterator<Statement> statements = DatabaseManager.statements.iterator();
-
-        while(statements.hasNext()) {
-            Statement statement = statements.next();
-            try {
-                if(!statement.isClosed()) {
-                    if (statement.getResultSet() != null && statement.getResultSet().isClosed()) {
-                        statement.close();
-                        statement.getConnection().close();
-                    } else if (statement.getResultSet() == null) {
-                        statement.close();
-                        statement.getConnection().close();
-                    }
-                    statements.remove();
-                }
-            } catch(Exception e) {
-                e.printStackTrace();
-            }
-        }
     }
 }

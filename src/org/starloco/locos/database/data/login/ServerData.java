@@ -5,7 +5,6 @@ import org.apache.commons.lang.NotImplementedException;
 import org.starloco.locos.database.DatabaseManager;
 import org.starloco.locos.database.data.FunctionDAO;
 import org.starloco.locos.kernel.Config;
-import org.starloco.locos.kernel.Main;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;

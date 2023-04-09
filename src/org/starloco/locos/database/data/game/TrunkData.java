@@ -9,7 +9,6 @@ import org.starloco.locos.database.data.FunctionDAO;
 import org.starloco.locos.game.world.World;
 
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class TrunkData extends FunctionDAO<Trunk> {
@@ -20,27 +19,25 @@ public class TrunkData extends FunctionDAO<Trunk> {
 
     @Override
     public void loadFully() {
-        ResultSet result = null;
         try {
-            result = getData("SELECT * FROM " + getTableName() + "");
+            getData("SELECT * FROM " + getTableName(), result -> {
 
-            while (result.next()) {
-                int id = result.getInt("id");
-                String objects = result.getString("object");
-                objects = (objects == null || objects.equals(" ") ? "" : objects);
-                Trunk trunk = World.world.getTrunk(id);
+                while (result.next()) {
+                    int id = result.getInt("id");
+                    String objects = result.getString("object");
+                    objects = (objects == null || objects.equals(" ") ? "" : objects);
+                    Trunk trunk = World.world.getTrunk(id);
 
-                if(trunk != null) {
-                    trunk.setObjects(objects);
-                    trunk.setKamas(result.getInt("kamas"));
-                    trunk.setOwnerId(result.getInt("owner_id"));
-                    trunk.setKey(result.getString("key"));
+                    if (trunk != null) {
+                        trunk.setObjects(objects);
+                        trunk.setKamas(result.getInt("kamas"));
+                        trunk.setOwnerId(result.getInt("owner_id"));
+                        trunk.setKey(result.getString("key"));
+                    }
                 }
-            }
+            });
         } catch (SQLException e) {
             super.sendError(e);
-        } finally {
-            close(result);
         }
     }
 
@@ -97,16 +94,14 @@ public class TrunkData extends FunctionDAO<Trunk> {
     }
 
     public void exist(Trunk trunk) {
-        ResultSet result = null;
         try {
-            result = getData("SELECT * FROM " + getTableName() + " WHERE `id` = '" + trunk.getId() + "';");
-            if(!result.next()) {
-                this.insert(trunk);
-            }
+            getData("SELECT * FROM " + getTableName() + " WHERE `id` = '" + trunk.getId() + "';", result -> {
+                if (!result.next()) {
+                    this.insert(trunk);
+                }
+            });
         } catch (SQLException e) {
             super.sendError(e);
-        } finally {
-            close(result);
         }
     }
 

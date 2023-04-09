@@ -6,7 +6,6 @@ import org.starloco.locos.database.data.FunctionDAO;
 import org.starloco.locos.game.scheduler.entity.WorldPub;
 import org.starloco.locos.kernel.Config;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class PubData extends FunctionDAO<Object> {
@@ -18,15 +17,14 @@ public class PubData extends FunctionDAO<Object> {
 
     @Override
     public void loadFully() {
-        ResultSet result = null;
         try {
-            result = getData("SELECT * FROM " + getTableName() + " WHERE `server` = " + Config.gameServerId);
-            while (result.next())
-                WorldPub.pubs.add(result.getString("data"));
+            getData("SELECT * FROM " + getTableName() + " WHERE `server` = " + Config.gameServerId, result -> {
+                while (result.next()) {
+                    WorldPub.pubs.add(result.getString("data"));
+                }
+            });
         } catch (SQLException e) {
             super.sendError(e);
-        } finally {
-            close(result);
         }
     }
 

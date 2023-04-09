@@ -6,7 +6,6 @@ import org.starloco.locos.area.Area;
 import org.starloco.locos.database.data.FunctionDAO;
 import org.starloco.locos.game.world.World;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class BaseAreaData extends FunctionDAO<Area>  {
@@ -18,17 +17,15 @@ public class BaseAreaData extends FunctionDAO<Area>  {
 
 	@Override
 	public void loadFully() {
-		ResultSet result = null;
 		try {
-			result = getData("SELECT * FROM " + getTableName() + ";");
-			while (result.next()) {
-				Area area = new Area(result.getInt("id"), result.getInt("superarea"));
-				World.world.addArea(area);
-			}
+			getData("SELECT * FROM " + getTableName() + ";", result -> {
+				while (result.next()) {
+					Area area = new Area(result.getInt("id"), result.getInt("superarea"));
+					World.world.addArea(area);
+				}
+			});
 		} catch (SQLException e) {
 			super.sendError(e);
-		} finally	{
-			close(result);
 		}
 	}
 

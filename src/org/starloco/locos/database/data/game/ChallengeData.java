@@ -5,7 +5,6 @@ import org.apache.commons.lang.NotImplementedException;
 import org.starloco.locos.database.data.FunctionDAO;
 import org.starloco.locos.game.world.World;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class ChallengeData extends FunctionDAO<Object> {
@@ -15,16 +14,14 @@ public class ChallengeData extends FunctionDAO<Object> {
 
     @Override
     public void loadFully() {
-        ResultSet result = null;
         try {
-            result = getData("SELECT * FROM " + getTableName() + ";");
-            while (result.next()) {
-                World.world.addChallenge(String.valueOf(result.getInt("id")) + "," + result.getInt("gainXP") + "," + result.getInt("gainDrop") + "," + result.getInt("gainParMob") + "," + result.getInt("conditions"));
-            }
+            getData("SELECT * FROM " + getTableName() + ";", result -> {
+                while (result.next()) {
+                    World.world.addChallenge(result.getInt("id") + "," + result.getInt("gainXP") + "," + result.getInt("gainDrop") + "," + result.getInt("gainParMob") + "," + result.getInt("conditions"));
+                }
+            });
         } catch (SQLException e) {
             super.sendError(e);
-        } finally {
-            close(result);
         }
     }
 

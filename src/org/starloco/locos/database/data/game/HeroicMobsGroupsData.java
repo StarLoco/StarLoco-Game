@@ -9,7 +9,6 @@ import org.starloco.locos.game.world.World;
 import org.starloco.locos.object.GameObject;
 
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Map;
@@ -24,20 +23,18 @@ public class HeroicMobsGroupsData extends FunctionDAO<Object> {
 
     @Override
     public void loadFully() {
-        ResultSet result = null;
         try {
-            result = getData("SELECT * FROM `heroic_mobs_groups`;");
-            while (result.next()) {
-                final GameMap map = World.world.getMap(result.getShort("map"));
-                if(map != null) {
-                    final MonsterGroup group = new MonsterGroup(result.getInt("id"), result.getInt("cell"), result.getString("group"), result.getString("objects"), result.getShort("stars"));
-                    map.respawnGroup(group);
+            getData("SELECT * FROM `heroic_mobs_groups`;", result -> {
+                while (result.next()) {
+                    final GameMap map = World.world.getMap(result.getShort("map"));
+                    if (map != null) {
+                        final MonsterGroup group = new MonsterGroup(result.getInt("id"), result.getInt("cell"), result.getString("group"), result.getString("objects"), result.getShort("stars"));
+                        map.respawnGroup(group);
+                    }
                 }
-            }
+            });
         } catch (SQLException e) {
             super.sendError(e);
-        } finally {
-            close(result);
         }
     }
 
@@ -143,28 +140,26 @@ public class HeroicMobsGroupsData extends FunctionDAO<Object> {
     }
 
     public void loadFix() {
-        ResultSet result = null;
         try {
-            result = getData("SELECT * FROM `heroic_mobs_groups_fix`;");
-            while (result.next()) {
-                ArrayList<GameObject> objects = new ArrayList<>();
-                for(String value : result.getString("objects").split(",")) {
-                    final GameObject object = World.world.getGameObject(Integer.parseInt(value));
-                    if(object != null)
-                        objects.add(object);
+            getData("SELECT * FROM `heroic_mobs_groups_fix`;", result -> {
+                while (result.next()) {
+                    ArrayList<GameObject> objects = new ArrayList<>();
+                    for (String value : result.getString("objects").split(",")) {
+                        final GameObject object = World.world.getGameObject(Integer.parseInt(value));
+                        if (object != null)
+                            objects.add(object);
+                    }
+                    GameMap map = World.world.getMap(result.getInt("map"));
+                    int cell = result.getInt("cell");
+                    for (MonsterGroup group : map.getMobGroups().values()) {
+                        if (group != null && group.getCellId() == cell)
+                            group.setStarBonus(result.getShort("stars"));
+                    }
+                    GameMap.fixMobGroupObjects.put(result.getInt("map") + "," + result.getInt("cell"), objects);
                 }
-                GameMap map = World.world.getMap( result.getInt("map"));
-                int cell = result.getInt("cell");
-                for(MonsterGroup group : map.getMobGroups().values()) {
-                    if(group != null && group.getCellId() == cell)
-                        group.setStarBonus(result.getShort("stars"));
-                }
-                GameMap.fixMobGroupObjects.put(result.getInt("map") + "," + result.getInt("cell"), objects);
-            }
+            });
         } catch (SQLException e) {
             super.sendError(e);
-        } finally {
-            close(result);
         }
     }
 

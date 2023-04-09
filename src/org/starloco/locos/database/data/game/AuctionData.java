@@ -9,7 +9,6 @@ import org.starloco.locos.game.world.World;
 import org.starloco.locos.object.GameObject;
 
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
@@ -23,25 +22,23 @@ public class AuctionData extends FunctionDAO<Auction> {
 
     @Override
     public void loadFully() {
-        ResultSet result = null;
         try {
-            result = getData("SELECT * FROM " + getTableName() + ";");
-            while (result.next()) {
-                final Player player = World.world.getPlayer(result.getInt("owner"));
-                final GameObject object = World.world.getGameObject(result.getInt("object"));
+            getData("SELECT * FROM " + getTableName() + ";", result -> {
+                while (result.next()) {
+                    final Player player = World.world.getPlayer(result.getInt("owner"));
+                    final GameObject object = World.world.getGameObject(result.getInt("object"));
 
-                if(object == null || player == null) {
-                    final Auction auction = new Auction(result.getInt("price"), player, new GameObject(result.getInt("object"), -1, 1, -1, "", 0), result.getByte("retry"));
-                    this.delete(auction);
-                } else {
-                    final Auction auction = new Auction(result.getInt("price"), player, object, result.getByte("retry"));
-                    AuctionManager.getInstance().getAuctions().add(auction);
+                    if (object == null || player == null) {
+                        final Auction auction = new Auction(result.getInt("price"), player, new GameObject(result.getInt("object"), -1, 1, -1, "", 0), result.getByte("retry"));
+                        this.delete(auction);
+                    } else {
+                        final Auction auction = new Auction(result.getInt("price"), player, object, result.getByte("retry"));
+                        AuctionManager.getInstance().getAuctions().add(auction);
+                    }
                 }
-            }
+            });
         } catch (SQLException e) {
             super.sendError(e);
-        } finally {
-            close(result);
         }
     }
 

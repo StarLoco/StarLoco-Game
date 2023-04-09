@@ -2,13 +2,11 @@ package org.starloco.locos.database.data.game;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.lang.NotImplementedException;
-import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.area.map.entity.MountPark;
 import org.starloco.locos.database.data.FunctionDAO;
 import org.starloco.locos.game.world.World;
 
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class MountParkData extends FunctionDAO<MountPark> {
@@ -18,32 +16,30 @@ public class MountParkData extends FunctionDAO<MountPark> {
 
     @Override
     public void loadFully() {
-        ResultSet result = null;
         try {
-            result = getData("SELECT * from mountpark_data");
-            while (result.next()) {
-                int map = result.getInt("mapid");
-                MountPark park = World.world.getMountPark().get(map);
-                if(park==null)continue;
-                int owner = result.getInt("owner");
-                int guild = result.getInt("guild");
-                guild = World.world.getGuild(guild) != null ? guild : -1;
-                int price = result.getInt("price");
-                String data = result.getString("data");
-                String enclos = result.getString("enclos");
-                String objetPlacer = result.getString("ObjetPlacer");
-                String durabilite = result.getString("durabilite");
+            getData("SELECT * from mountpark_data", result -> {
+                while (result.next()) {
+                    int map = result.getInt("mapid");
+                    MountPark park = World.world.getMountPark().get(map);
+                    if (park == null) continue;
+                    int owner = result.getInt("owner");
+                    int guild = result.getInt("guild");
+                    guild = World.world.getGuild(guild) != null ? guild : -1;
+                    int price = result.getInt("price");
+                    String data = result.getString("data");
+                    String enclos = result.getString("enclos");
+                    String objetPlacer = result.getString("ObjetPlacer");
+                    String durabilite = result.getString("durabilite");
 
-                enclos = enclos.equals(" ") ? "" : enclos;
-                objetPlacer = objetPlacer.equals(" ") ? "" : objetPlacer;
-                durabilite = durabilite.equals(" ") ? "" : durabilite;
+                    enclos = enclos.equals(" ") ? "" : enclos;
+                    objetPlacer = objetPlacer.equals(" ") ? "" : objetPlacer;
+                    durabilite = durabilite.equals(" ") ? "" : durabilite;
 
-                park.setData(owner, guild, price, data, objetPlacer, durabilite, enclos);
-            }
+                    park.setData(owner, guild, price, data, objetPlacer, durabilite, enclos);
+                }
+            });
         } catch (SQLException e) {
             super.sendError(e);
-        } finally {
-            close(result);
         }
     }
 
@@ -104,41 +100,14 @@ public class MountParkData extends FunctionDAO<MountPark> {
     }
 
     public void exist(MountPark mountPark) {
-        ResultSet result = null;
         try {
-            result = getData("SELECT * FROM " + getTableName() + " WHERE `mapid` = '" + mountPark.getMap() + "';");
-            if(!result.next()) this.insert(mountPark);
-        } catch (SQLException e) {
-            super.sendError(e);
-        } finally {
-            close(result);
-        }
-    }
-
-    public void reload(int i) {
-        ResultSet result = null;
-        try {
-            result = getData("SELECT * FROM " + getTableName() + ";");
-            while (result.next()) {
-                GameMap map = World.world.getMap(result.getShort("mapid"));
-                if (map != null && result.getShort("mapid") == i) {
-                    MountPark park = World.world.getMountPark().get(map.getId());
-                    if (park != null) {
-                        int owner = result.getInt("owner");
-                        int guild = result.getInt("guild");
-                        int price = result.getInt("price");
-                        String data = result.getString("data");
-                        String enclos = result.getString("enclos");
-                        String objetPlacer = result.getString("ObjetPlacer");
-                        String durabilite = result.getString("durabilite");
-                        park.setData(owner, guild, price, data, objetPlacer, durabilite, enclos);
-                    }
+            getData("SELECT * FROM " + getTableName() + " WHERE `mapid` = '" + mountPark.getMap() + "';", result -> {
+                if (!result.next()) {
+                    this.insert(mountPark);
                 }
-            }
+            });
         } catch (SQLException e) {
             super.sendError(e);
-        } finally {
-            close(result);
         }
     }
 }

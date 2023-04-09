@@ -5,7 +5,6 @@ import org.apache.commons.lang.NotImplementedException;
 import org.starloco.locos.database.data.FunctionDAO;
 import org.starloco.locos.event.type.Event;
 import org.starloco.locos.event.type.EventFindMe;
-import org.starloco.locos.event.type.EventSmiley;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -20,47 +19,41 @@ public class EventData extends FunctionDAO<Event> {
     }
 
     public Event[] load() {
-        ResultSet result = null;
         Event[] events = new Event[this.getNumberOfEvent()];
-
         try {
-            result = getData("SELECT * FROM " + getTableName() + ";");
+            getData("SELECT * FROM " + getTableName() + ";", result -> {
+                if (result != null) {
+                    byte i = 0;
 
-            if (result != null) {
-                byte i = 0;
+                    while (result.next()) {
+                        Event event = this.getEventById(result.getByte("id"), result);
 
-                while (result.next()) {
-                    Event event = this.getEventById(result.getByte("id"), result);
-
-                    if (event != null) {
-                        events[i] = event;
-                        i++;
+                        if (event != null) {
+                            events[i] = event;
+                            i++;
+                        }
                     }
                 }
-            }
+            });
         } catch(SQLException e) {
             super.sendError(e);
-        } finally {
-            close(result);
         }
         return events;
     }
 
     private byte getNumberOfEvent() {
-        ResultSet result = null;
         byte numbers = 0;
 
         try {
-            result = getData("SELECT COUNT(id) AS numbers FROM " + getTableName() + ";");
-
-            if (result != null) {
-                result.next();
-                numbers = result.getByte("numbers");
-            }
+            numbers = getData("SELECT COUNT(id) AS numbers FROM " + getTableName() + ";", result -> {
+                if (result != null) {
+                    result.next();
+                    return result.getByte("numbers");
+                }
+                return (byte) 0;
+            });
         } catch(SQLException e) {
             super.sendError(e);
-        } finally {
-            close(result);
         }
         return numbers;
     }

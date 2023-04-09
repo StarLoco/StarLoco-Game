@@ -2756,12 +2756,8 @@ public class CommandAdmin extends AdminUser {
                 if (perso == null)
                     perso = this.getPlayer();
             }
-            long pointtotal = perso.getAccount().getPoints() + count;
-            if (pointtotal < 0)
-                pointtotal = 0;
-            if (pointtotal > 50000)
-                pointtotal = 50000;
-            perso.getAccount().setPoints(pointtotal);
+
+            perso.getAccount().modPoints(count);
             if (perso.isOnline())
                 SocketManager.GAME_SEND_STATS_PACKET(perso);
             String mess = "Vous venez de donner " + count

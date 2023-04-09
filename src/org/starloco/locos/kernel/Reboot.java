@@ -1,11 +1,8 @@
 package org.starloco.locos.kernel;
 
-import org.starloco.locos.database.DatabaseManager;
-
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
 
 public class Reboot {
 

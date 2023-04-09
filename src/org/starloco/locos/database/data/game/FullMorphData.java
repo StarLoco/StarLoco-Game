@@ -5,7 +5,6 @@ import org.apache.commons.lang.NotImplementedException;
 import org.starloco.locos.database.data.FunctionDAO;
 import org.starloco.locos.game.world.World;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class FullMorphData extends FunctionDAO<Object> {
@@ -15,22 +14,19 @@ public class FullMorphData extends FunctionDAO<Object> {
 
     @Override
     public void loadFully() {
-        ResultSet result = null;
         try {
-            result = getData("SELECT * FROM " + getTableName() + ";");
+            getData("SELECT * FROM " + getTableName() + ";", result -> {
+                while (result.next()) {
+                    String[] args = null;
+                    if (!result.getString("args").equals("0")) {
+                        args = result.getString("args").split("@")[1].split(",");
+                    }
 
-            while (result.next()) {
-                String[] args = null;
-                if (!result.getString("args").equals("0")) {
-                    args = result.getString("args").split("@")[1].split(",");
+                    World.world.addFullMorph(result.getInt("id"), result.getString("name"), result.getInt("gfxId"), result.getString("spells"), args);
                 }
-
-                World.world.addFullMorph(result.getInt("id"), result.getString("name"), result.getInt("gfxId"), result.getString("spells"), args);
-            }
+            });
         } catch (SQLException e) {
             super.sendError(e);
-        } finally {
-            close(result);
         }
     }
 

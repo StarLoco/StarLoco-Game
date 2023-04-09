@@ -1936,11 +1936,7 @@ public class Action {
                 try {
                     int pts = Integer.parseInt(args);
                     long ptsTotal = player.getAccount().getPoints() + pts;
-                    if (ptsTotal < 0)
-                        ptsTotal = 0;
-                    if (ptsTotal > 50000)
-                        ptsTotal = 50000;
-                    player.getAccount().setPoints(ptsTotal);
+                    player.getAccount().modPoints(pts);
                     if (player.isOnline())
                         SocketManager.GAME_SEND_STATS_PACKET(player);
                     SocketManager.GAME_SEND_MESSAGE(player, player.getLang().trans("other.action.apply.shop", pts, ptsTotal));

@@ -11,7 +11,6 @@ import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.Config;
 
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class NpcData extends FunctionDAO<Pair<Npc, Integer>> {
@@ -21,28 +20,26 @@ public class NpcData extends FunctionDAO<Pair<Npc, Integer>> {
 
     @Override
     public void loadFully() {
-        ResultSet result = null;
         try {
-            result = getData("SELECT * FROM " + getTableName() + ";");
-            while (result.next()) {
-                int mapID = result.getInt("mapid");
-                MapData md = World.world.getMapData(mapID).orElseThrow(() -> new IllegalArgumentException(String.format("unknown map #%d", mapID)));
+            getData("SELECT * FROM " + getTableName() + ";", result -> {
+                while (result.next()) {
+                    int mapID = result.getInt("mapid");
+                    MapData md = World.world.getMapData(mapID).orElseThrow(() -> new IllegalArgumentException(String.format("unknown map #%d", mapID)));
 
-                int id = result.getInt("npcid");
-                if (!Config.modeChristmas && id == 795) // PNJ Noel
-                    continue;
-                if(Config.modeHeroic && (id == 1121 || id == 1127)) // PNJ Traque Heroic
-                    continue;
+                    int id = result.getInt("npcid");
+                    if (!Config.modeChristmas && id == 795) // PNJ Noel
+                        continue;
+                    if (Config.modeHeroic && (id == 1121 || id == 1127)) // PNJ Traque Heroic
+                        continue;
 
-                if(md instanceof SQLMapData) {
-                    // We don't want to override script map data
-                    ((SQLMapData)md).addNpc(id, result.getInt("cellid"), result.getInt("orientation"));
+                    if (md instanceof SQLMapData) {
+                        // We don't want to override script map data
+                        ((SQLMapData) md).addNpc(id, result.getInt("cellid"), result.getInt("orientation"));
+                    }
                 }
-            }
+            });
         } catch (SQLException e) {
             super.sendError(e);
-        } finally {
-            close(result);
         }
     }
 

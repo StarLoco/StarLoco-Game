@@ -19,28 +19,25 @@ public class CollectorData extends FunctionDAO<Collector> {
 
     @Override
     public void loadFully() {
-        ResultSet result = null;
         try {
-            result = getData("SELECT * FROM " + getTableName() + ";");
+            getData("SELECT * FROM " + getTableName() + ";", result -> {
+                while (result.next()) {
+                    GameMap map = World.world.getMap(result.getShort("mapid"));
+                    if (map != null) {
+                        int poseur_id = result.getInt("poseur_id");
+                        Player player = World.world.getPlayer(poseur_id);
+                        String date = result.getString("date");
+                        long time = 0;
+                        if (date != null && !date.equals("")) {
+                            time = Long.parseLong(date);
+                        }
 
-            while (result.next()) {
-                GameMap map = World.world.getMap(result.getShort("mapid"));
-                if (map != null) {
-                    int poseur_id = result.getInt("poseur_id");
-                    Player player = World.world.getPlayer(poseur_id);
-                    String date = result.getString("date");
-                    long time = 0;
-                    if (date != null && !date.equals("")) {
-                        time = Long.parseLong(date);
+                        World.world.addCollector(new Collector(result.getInt("guid"), result.getShort("mapid"), result.getInt("cellid"), result.getByte("orientation"), result.getInt("guild_id"), result.getShort("N1"), result.getShort("N2"), player, time, result.getString("objets"), result.getLong("kamas"), result.getLong("xp")));
                     }
-
-                    World.world.addCollector(new Collector(result.getInt("guid"), result.getShort("mapid"), result.getInt("cellid"), result.getByte("orientation"), result.getInt("guild_id"), result.getShort("N1"), result.getShort("N2"), player, time, result.getString("objets"), result.getLong("kamas"), result.getLong("xp")));
                 }
-            }
+            });
         } catch (SQLException e) {
             super.sendError(e);
-        } finally {
-            close(result);
         }
     }
 
@@ -126,21 +123,20 @@ public class CollectorData extends FunctionDAO<Collector> {
     }
 
     private int getId() {
-        ResultSet result = null;
-        int i = -100;//Pour �viter les conflits avec touts autre NPC
+        int id = -100;//Pour �viter les conflits avec touts autre NPC
         try {
-            result = getData("SELECT `guid` FROM `percepteurs` ORDER BY `guid` ASC LIMIT 0 , 1");
-            while (result.next()) {
-                i = result.getInt("guid") - 1;
-            }
+            id = getData("SELECT `guid` FROM `percepteurs` ORDER BY `guid` ASC LIMIT 0 , 1", result -> {
+                int i = -100;
+                while (result.next()) {
+                    i = result.getInt("guid") - 1;
+                }
+                return i;
+            });
         } catch (SQLException e) {
             super.sendError(e);
-        } finally {
-            close(result);
         }
-        if (i >= -9999)
-            i = -10000;
-
-        return i;
+        if (id >= -9999)
+            id = -10000;
+        return id;
     }
 }

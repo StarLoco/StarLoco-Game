@@ -25,22 +25,19 @@ public class GuildData extends FunctionDAO<Guild> {
 
     @Override
     public Guild load(int id) {
-        ResultSet result = null;
-        Guild guild = null;
-
         try {
-            result = getData("SELECT * FROM " + getTableName() + " WHERE `id` = " + id + ";");
-
-            while (result.next()) {
-                guild = new Guild(result.getInt("id"), result.getString("name"), result.getString("emblem"), result.getInt("lvl"), result.getLong("xp"), result.getInt("capital"), result.getInt("maxCollectors"), result.getString("spells"), result.getString("stats"), result.getLong("date"));
-                World.world.addGuild(guild);
-            }
+            return getData("SELECT * FROM " + getTableName() + " WHERE `id` = " + id + ";", result -> {
+                if (result.next()) {
+                    Guild guild = new Guild(result.getInt("id"), result.getString("name"), result.getString("emblem"), result.getInt("lvl"), result.getLong("xp"), result.getInt("capital"), result.getInt("maxCollectors"), result.getString("spells"), result.getString("stats"), result.getLong("date"));
+                    World.world.addGuild(guild);
+                    return guild;
+                }
+                return null;
+            });
         } catch (SQLException e) {
             super.sendError(e);
-        } finally {
-            close(result);
         }
-        return guild;
+        return null;
     }
 
     @Override

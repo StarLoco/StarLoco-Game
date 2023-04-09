@@ -5,7 +5,6 @@ import org.apache.commons.lang.NotImplementedException;
 import org.starloco.locos.database.data.FunctionDAO;
 import org.starloco.locos.kernel.Constant;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class ZaapiData extends FunctionDAO<Object> {
@@ -15,29 +14,27 @@ public class ZaapiData extends FunctionDAO<Object> {
 
     @Override
     public void loadFully() {
-        ResultSet result = null;
-        String bontarien = "", brakmarien = "", neutre = "";
         try {
-            result = getData("SELECT mapid, align FROM " + getTableName() + ";");
-            while (result.next()) {
-                if (result.getInt("align") == Constant.ALIGNEMENT_BONTARIEN) {
-                    bontarien += result.getString("mapid");
-                    if (!result.isLast()) bontarien += ",";
-                } else if (result.getInt("align") == Constant.ALIGNEMENT_BRAKMARIEN) {
-                    brakmarien += result.getString("mapid");
-                    if (!result.isLast()) brakmarien += ",";
-                } else {
-                    neutre += result.getString("mapid");
-                    if (!result.isLast()) neutre += ",";
+            getData("SELECT mapid, align FROM " + getTableName() + ";", result -> {
+                StringBuilder angels = new StringBuilder(), demons = new StringBuilder(), neutral = new StringBuilder();
+                while (result.next()) {
+                    if (result.getInt("align") == Constant.ALIGNEMENT_BONTARIEN) {
+                        angels.append(result.getString("mapid"));
+                        if (!result.isLast()) angels.append(",");
+                    } else if (result.getInt("align") == Constant.ALIGNEMENT_BRAKMARIEN) {
+                        demons.append(result.getString("mapid"));
+                        if (!result.isLast()) demons.append(",");
+                    } else {
+                        neutral.append(result.getString("mapid"));
+                        if (!result.isLast()) neutral.append(",");
+                    }
                 }
-            }
-            Constant.ZAAPI.put(Constant.ALIGNEMENT_BONTARIEN, bontarien);
-            Constant.ZAAPI.put(Constant.ALIGNEMENT_BRAKMARIEN, brakmarien);
-            Constant.ZAAPI.put(Constant.ALIGNEMENT_NEUTRE, neutre);
+                Constant.ZAAPI.put(Constant.ALIGNEMENT_BONTARIEN, angels.toString());
+                Constant.ZAAPI.put(Constant.ALIGNEMENT_BRAKMARIEN, demons.toString());
+                Constant.ZAAPI.put(Constant.ALIGNEMENT_NEUTRE, neutral.toString());
+            });
         } catch (SQLException e) {
             super.sendError(e);
-        } finally {
-            close(result);
         }
     }
 

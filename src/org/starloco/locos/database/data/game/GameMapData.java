@@ -2,7 +2,6 @@ package org.starloco.locos.database.data.game;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.lang.NotImplementedException;
-import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.area.map.MapData;
 import org.starloco.locos.area.map.SQLMapData;
@@ -41,43 +40,38 @@ public class GameMapData extends FunctionDAO<GameMap> {
 
     @Override
     public void loadFully() {
-        ResultSet result = null;
         try {
-            result = getData("SELECT * FROM " + getTableName() + " LIMIT " + Constant.DEBUG_MAP_LIMIT + ";");
+            getData("SELECT * FROM " + getTableName() + " LIMIT " + Constant.DEBUG_MAP_LIMIT + ";", result -> {
+                while (result.next()) {
+                    try {
+                        MapData md = mapDataFromResultSet(result);
+                        World.world.addMapData(md);
 
-            while (result.next()) {
-                try {
-                    MapData md = mapDataFromResultSet(result);
-                    World.world.addMapData(md);
-
-                    DatabaseManager.get(EndFightActionData.class).load(md.id);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Main.stop("SQLMapTemplate");
-                }
-            }
-            close(result);
-
-            result = getData("SELECT * FROM mobgroups_fix");
-            while (result.next()) {
-                int mapId = result.getInt("mapid");
-                try {
-                    MapData md = World.world.getMapData(mapId).orElse(null);
-                    if (md instanceof SQLMapData) {
-                        int cellId = result.getInt("cellid");
-                        ((SQLMapData)md).addStaticGroup(cellId, result.getString("groupData"));
-                        World.world.addGroupFix(mapId + ";" + cellId, result.getString("groupData"), result.getInt("Timer"));
+                        DatabaseManager.get(EndFightActionData.class).load(md.id);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Main.stop("SQLMapTemplate");
                     }
-                }catch(SQLException e) {
-                    throw new SQLException("Map #"+mapId, e);
                 }
-            }
+            });
 
-
+            getData("SELECT * FROM mobgroups_fix", result -> {
+                while (result.next()) {
+                    int mapId = result.getInt("mapid");
+                    try {
+                        MapData md = World.world.getMapData(mapId).orElse(null);
+                        if (md instanceof SQLMapData) {
+                            int cellId = result.getInt("cellid");
+                            ((SQLMapData) md).addStaticGroup(cellId, result.getString("groupData"));
+                            World.world.addGroupFix(mapId + ";" + cellId, result.getString("groupData"), result.getInt("Timer"));
+                        }
+                    } catch (SQLException e) {
+                        throw new SQLException("Map #" + mapId, e);
+                    }
+                }
+            });
         } catch (SQLException e) {
             super.sendError(e);
-        } finally {
-            close(result);
         }
     }
 
@@ -154,15 +148,17 @@ public class GameMapData extends FunctionDAO<GameMap> {
     }
 
     public void reload() {
-        try(ResultSet result = getData("SELECT * FROM " + getTableName() + " LIMIT " + Constant.DEBUG_MAP_LIMIT)) {
-             while (result.next()) {
-                try {
-                    World.world.addMapData(mapDataFromResultSet(result));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Main.stop("SQLMapTemplate");
+        try {
+            getData("SELECT * FROM " + getTableName() + " LIMIT " + Constant.DEBUG_MAP_LIMIT, result -> {
+                while (result.next()) {
+                    try {
+                        World.world.addMapData(mapDataFromResultSet(result));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Main.stop("SQLMapTemplate");
+                    }
                 }
-             }
+            });
         } catch (SQLException e) {
             super.sendError(e);
         }

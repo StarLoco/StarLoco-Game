@@ -733,7 +733,7 @@ public class ObjectAction {
 
                     case 33://Ajout de points boutique.
                         if (player0.getFight() != null) return;
-                        player.getAccount().setPoints(player.getAccount().getPoints() + Integer.parseInt(arg));
+                        player.getAccount().modPoints(Integer.parseInt(arg));
                         player.sendTypeMessage("Shop", "Points : " + player.getAccount().getPoints());
                         break;
 

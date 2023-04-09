@@ -4,13 +4,7 @@ import org.starloco.locos.fight.Fight;
 import org.starloco.locos.fight.Fighter;
 import org.starloco.locos.fight.ia.AbstractNeedSpell;
 import org.starloco.locos.fight.ia.util.Function;
-import org.starloco.locos.fight.ia.util.newia.InvocationFighterMind;
-import org.starloco.locos.fight.ia.util.newia.action.AttackAction;
-import org.starloco.locos.fight.ia.util.newia.action.IAAction;
 import org.starloco.locos.fight.spells.Spell.SortStats;
-
-import java.util.Iterator;
-import java.util.LinkedList;
 
 /**
  * Created by Locos on 04/10/2015.

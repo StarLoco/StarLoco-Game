@@ -5,7 +5,6 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.starloco.locos.database.data.FunctionDAO;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.object.GameObject;
-import org.starloco.locos.object.ObjectTemplate;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -19,57 +18,52 @@ public class ObjectData extends FunctionDAO<GameObject> {
 
     @Override
     public void loadFully() {
-        ResultSet result = null;
         try {
-            result = getData("SELECT * FROM " + getTableName() + ";");
+            getData("SELECT * FROM " + getTableName() + ";", result -> {
+                while (result != null && result.next()) {
+                    int id = result.getInt("id");
+                    int template = result.getInt("template");
+                    int quantity = result.getInt("quantity");
+                    int position = result.getInt("position");
+                    String stats = result.getString("stats");
+                    int puit = result.getInt("puit");
 
-            while (result != null && result.next()) {
-                int id = result.getInt("id");
-                int template = result.getInt("template");
-                int quantity = result.getInt("quantity");
-                int position = result.getInt("position");
-                String stats = result.getString("stats");
-                int puit = result.getInt("puit");
-
-                if(quantity == 0) continue;
-                GameObject object = World.world.newObjet(id, template, quantity, position, stats, puit);
-                if(object.getTemplate() == null)
-                    this.delete(object);
-                else
-                    World.world.addGameObject(object);
-            }
+                    if (quantity == 0) continue;
+                    GameObject object = World.world.newObjet(id, template, quantity, position, stats, puit);
+                    if (object.getTemplate() == null)
+                        this.delete(object);
+                    else
+                        World.world.addGameObject(object);
+                }
+            });
         } catch (SQLException e) {
             super.sendError(e);
-        } finally {
-            close(result);
         }
     }
 
     @Override
     public GameObject load(int id) {
-        ResultSet result = null;
-        GameObject object = null;
         try {
-            result = getData("SELECT * FROM " + getTableName() + " WHERE `id` IN (" + id + ");");
+            getData("SELECT * FROM " + getTableName() + " WHERE `id` IN (" + id + ");", result -> {
+                while (result != null && result.next()) {
+                    int template = result.getInt("template");
+                    int quantity = result.getInt("quantity");
+                    int position = result.getInt("position");
+                    String stats = result.getString("stats");
+                    int puit = result.getInt("puit");
 
-            while (result != null && result.next()) {
-                int template = result.getInt("template");
-                int quantity = result.getInt("quantity");
-                int position = result.getInt("position");
-                String stats = result.getString("stats");
-                int puit = result.getInt("puit");
-
-                if(quantity > 0) {
-                    object = World.world.newObjet(result.getInt("id"), template, quantity, position, stats, puit);
-                    World.world.addGameObject(object);
+                    if (quantity > 0) {
+                        GameObject object = World.world.newObjet(result.getInt("id"), template, quantity, position, stats, puit);
+                        World.world.addGameObject(object);
+                        return object;
+                    }
                 }
-            }
+                return null;
+            });
         } catch (SQLException e) {
             super.sendError(e);
-        } finally {
-            close(result);
         }
-        return object;
+        return null;
     }
 
     @Override
@@ -144,23 +138,20 @@ public class ObjectData extends FunctionDAO<GameObject> {
     }
 
     public void loads(String ids) {
-        ResultSet result = null;
         try {
-            result = getData("SELECT * FROM " + getTableName() + " WHERE `id` IN (" + ids + ");");
+            getData("SELECT * FROM " + getTableName() + " WHERE `id` IN (" + ids + ");", result -> {
+                while (result != null && result.next()) {
+                    int quantity = result.getInt("quantity");
 
-            while (result != null && result.next()) {
-                int quantity = result.getInt("quantity");
-
-                if(quantity > 0) {
-                    GameObject object = World.world.newObjet(result.getInt("id"), result.getInt("template"), quantity,
-                            result.getInt("position"), result.getString("stats"), result.getInt("puit"));
-                    World.world.addGameObject(object);
+                    if (quantity > 0) {
+                        GameObject object = World.world.newObjet(result.getInt("id"), result.getInt("template"), quantity,
+                                result.getInt("position"), result.getString("stats"), result.getInt("puit"));
+                        World.world.addGameObject(object);
+                    }
                 }
-            }
+            });
         } catch (SQLException e) {
             super.sendError(e);
-        } finally {
-            close(result);
         }
     }
 }

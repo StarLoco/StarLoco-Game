@@ -7,7 +7,6 @@ import org.starloco.locos.client.Account;
 import org.starloco.locos.database.data.FunctionDAO;
 
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class GiftData extends FunctionDAO<Pair<Account, String>> {
@@ -22,19 +21,12 @@ public class GiftData extends FunctionDAO<Pair<Account, String>> {
 
     @Override
     public Pair<Account, String> load(int id) {
-        ResultSet result = null;
-        String gift = null;
         try {
-            result = getData("SELECT * FROM " + getTableName() + " WHERE id = '" + id + "';");
-            if (result.next()) {
-                gift = result.getString("objects");
-            }
+            return new Pair<>(null, getData("SELECT * FROM " + getTableName() + " WHERE id = '" + id + "';", result -> result.next() ? result.getString("objects") : null));
         } catch (SQLException e) {
             super.sendError(e);
-        } finally {
-            super.close(result);
         }
-        return new Pair<>(null, gift);
+        return new Pair<>(null, null);
     }
 
     @Override

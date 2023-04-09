@@ -30,17 +30,14 @@ public class QuestPlayerData extends FunctionDAO<QuestPlayer> {
     @Override
     public QuestPlayer load(int id) {
         Player player = World.world.getPlayer(id);
-        ResultSet result = null;
         try {
-            result = getData("SELECT * FROM " + getTableName() + " WHERE `player` = " + id + ";");
-
-            while (result.next()) {
-                player.addQuestPerso(new QuestPlayer(result.getInt("id"), result.getInt("quest"), result.getInt("finish") == 1, result.getInt("player"), result.getString("stepsValidation")));
-            }
+            getData("SELECT * FROM " + getTableName() + " WHERE `player` = " + id + ";", result -> {
+                while (result.next()) {
+                    player.addQuestPerso(new QuestPlayer(result.getInt("id"), result.getInt("quest"), result.getInt("finish") == 1, result.getInt("player"), result.getString("stepsValidation")));
+                }
+            });
         } catch (SQLException e) {
             super.sendError(e);
-        } finally {
-            close(result);
         }
         return null;
     }

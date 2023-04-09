@@ -8,7 +8,6 @@ import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.Main;
 
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class NpcQuestionData extends FunctionDAO<NpcQuestion> {
@@ -18,17 +17,15 @@ public class NpcQuestionData extends FunctionDAO<NpcQuestion> {
 
     @Override
     public void loadFully() {
-        ResultSet result = null;
         try {
-            result = getData("SELECT * FROM " + getTableName() + ";");
-            while (result.next()) {
-                World.world.addNPCQuestion(new NpcQuestion(result.getInt("ID"), result.getString("responses"), result.getString("params"), result.getString("cond"), result.getString("ifFalse")));
-            }
+            getData("SELECT * FROM " + getTableName() + ";", result -> {
+                while (result.next()) {
+                    World.world.addNPCQuestion(new NpcQuestion(result.getInt("ID"), result.getString("responses"), result.getString("params"), result.getString("cond"), result.getString("ifFalse")));
+                }
+            });
         } catch (SQLException e) {
             super.sendError(e);
             Main.stop("Can't load npc questions");
-        } finally {
-            close(result);
         }
     }
 

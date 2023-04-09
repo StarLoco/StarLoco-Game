@@ -5,7 +5,6 @@ import org.apache.commons.lang.NotImplementedException;
 import org.starloco.locos.database.data.FunctionDAO;
 import org.starloco.locos.quest.QuestStep;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class QuestStepData extends FunctionDAO<QuestStep> {
@@ -15,20 +14,17 @@ public class QuestStepData extends FunctionDAO<QuestStep> {
 
     @Override
     public void loadFully() {
-        ResultSet result = null;
         try {
-            result = getData("SELECT * FROM " + getTableName() + ";");
-            QuestStep.steps.clear();
+            getData("SELECT * FROM " + getTableName() + ";", result -> {
+                QuestStep.steps.clear();
 
-            while (result.next()) {
-                QuestStep step = new QuestStep(result.getInt("id"), result.getInt("xp"), result.getInt("kamas"), result.getString("item"), result.getString("action"));
-                QuestStep.steps.put(step.getId(), step);
-            }
-            close(result);
+                while (result.next()) {
+                    QuestStep step = new QuestStep(result.getInt("id"), result.getInt("xp"), result.getInt("kamas"), result.getString("item"), result.getString("action"));
+                    QuestStep.steps.put(step.getId(), step);
+                }
+            });
         } catch (SQLException e) {
             super.sendError(e);
-        } finally {
-            close(result);
         }
     }
 

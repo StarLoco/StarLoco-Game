@@ -7,7 +7,6 @@ import org.starloco.locos.database.data.FunctionDAO;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.Main;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class TutorialData extends FunctionDAO<Tutorial> {
@@ -17,21 +16,19 @@ public class TutorialData extends FunctionDAO<Tutorial> {
 
     @Override
     public void loadFully() {
-        ResultSet result = null;
         try {
-            result = getData("SELECT * FROM " + getTableName() + ";");
-            while (result.next()) {
-                int id = result.getInt("id");
-                String start = result.getString("start");
-                String reward = result.getString("reward1") + "$" + result.getString("reward2") + "$" + result.getString("reward3") + "$" + result.getString("reward4");
-                String end = result.getString("end");
-                World.world.addTutorial(new Tutorial(id, reward, start, end));
-            }
+            getData("SELECT * FROM " + getTableName() + ";", result -> {
+                while (result.next()) {
+                    int id = result.getInt("id");
+                    String start = result.getString("start");
+                    String reward = result.getString("reward1") + "$" + result.getString("reward2") + "$" + result.getString("reward3") + "$" + result.getString("reward4");
+                    String end = result.getString("end");
+                    World.world.addTutorial(new Tutorial(id, reward, start, end));
+                }
+            });
         } catch (SQLException e) {
             super.sendError(e);
-            Main.stop("Can't load tutorials");
-        } finally {
-            close(result);
+            Main.stop("Loading tutorials failed");
         }
     }
 

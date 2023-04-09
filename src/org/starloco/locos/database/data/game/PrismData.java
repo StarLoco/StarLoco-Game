@@ -7,7 +7,6 @@ import org.starloco.locos.entity.Prism;
 import org.starloco.locos.game.world.World;
 
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class PrismData extends FunctionDAO<Prism> {
@@ -17,18 +16,15 @@ public class PrismData extends FunctionDAO<Prism> {
 
     @Override
     public void loadFully() {
-        ResultSet result = null;
         try {
-            result = getData("SELECT * FROM " + getTableName() + ";");
-
-            while (result.next()) {
-                World.world.addPrisme(new Prism(result.getInt("id"), result.getByte("alignement"), result.getInt("level"),
-                        result.getShort("carte"), result.getInt("celda"), result.getInt("honor"), result.getInt("area")));
-            }
+            getData("SELECT * FROM " + getTableName() + ";", result -> {
+                while (result.next()) {
+                    World.world.addPrisme(new Prism(result.getInt("id"), result.getByte("alignement"), result.getInt("level"),
+                            result.getShort("carte"), result.getInt("celda"), result.getInt("honor"), result.getInt("area")));
+                }
+            });
         } catch (SQLException e) {
             super.sendError(e);
-        } finally {
-            close(result);
         }
     }
 

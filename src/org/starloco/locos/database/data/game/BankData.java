@@ -7,7 +7,6 @@ import org.starloco.locos.database.data.FunctionDAO;
 import org.starloco.locos.game.world.World;
 
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class BankData extends FunctionDAO<Account> {
@@ -23,18 +22,16 @@ public class BankData extends FunctionDAO<Account> {
     @Override
     public Account load(int id) {
         Account account = World.world.ensureAccountLoaded(id);
-        ResultSet result = null;
         try {
-            result = getData("SELECT * FROM " + getTableName() + " WHERE id = '" + id + "';");
-            if (result.next()) {
-                account.parseBank(result.getInt("kamas"), result.getString("items"));
-            } else {
-                account.parseBank(-1, null);
-            }
+            getData("SELECT * FROM " + getTableName() + " WHERE id = '" + id + "';", result -> {
+                if (result.next()) {
+                    account.parseBank(result.getInt("kamas"), result.getString("items"));
+                } else {
+                    account.parseBank(-1, null);
+                }
+            });
         } catch (SQLException e) {
             super.sendError(e);
-        } finally {
-            super.close(result);
         }
         return account;
     }

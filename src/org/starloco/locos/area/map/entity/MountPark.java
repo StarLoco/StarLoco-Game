@@ -1,6 +1,5 @@
 package org.starloco.locos.area.map.entity;
 
-import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.common.Formulas;
 import org.starloco.locos.entity.mount.Mount;
 import org.starloco.locos.game.world.World;

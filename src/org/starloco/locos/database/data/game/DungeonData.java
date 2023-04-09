@@ -7,7 +7,6 @@ import org.starloco.locos.game.world.World.Couple;
 import org.starloco.locos.kernel.Main;
 import org.starloco.locos.other.Dopeul;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class DungeonData extends FunctionDAO<Object> {
@@ -17,17 +16,15 @@ public class DungeonData extends FunctionDAO<Object> {
 
     @Override
     public void loadFully() {
-        ResultSet result = null;
         try {
-            result = getData("SELECT * FROM " + getTableName() + ";");
-            while (result.next()) {
-                Dopeul.getDonjons().put(result.getInt("map"), new Couple<>(result.getInt("npc"), result.getInt("key")));
-            }
+            getData("SELECT * FROM " + getTableName() + ";", result -> {
+                while (result.next()) {
+                    Dopeul.getDonjons().put(result.getInt("map"), new Couple<>(result.getInt("npc"), result.getInt("key")));
+                }
+            });
         } catch (SQLException e) {
             super.sendError(e);
-            Main.stop("unknown");
-        } finally {
-            close(result);
+            Main.stop("Loading dungeons failed");
         }
     }
 

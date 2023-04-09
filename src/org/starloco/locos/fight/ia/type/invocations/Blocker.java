@@ -3,7 +3,6 @@ package org.starloco.locos.fight.ia.type.invocations;
 import org.starloco.locos.fight.Fight;
 import org.starloco.locos.fight.Fighter;
 import org.starloco.locos.fight.ia.AbstractIA;
-import org.starloco.locos.fight.ia.AbstractNeedSpell;
 import org.starloco.locos.fight.ia.util.Function;
 import org.starloco.locos.fight.spells.Spell.SortStats;
 
