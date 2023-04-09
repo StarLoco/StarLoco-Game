@@ -803,12 +803,12 @@ public class Formulas {
 
     public static int getLoosEnergy(int lvl, boolean isAgression,
                                     boolean isPerco) {
-
-        int returned = 5 * lvl;
+        // TODO: add grade
+        int returned = 10 * lvl;
         if (isAgression)
             returned *= (7 / 4);
         if (isPerco)
-            returned *= (3 / 2);
+            returned += 3000;
         return returned;
     }
 
