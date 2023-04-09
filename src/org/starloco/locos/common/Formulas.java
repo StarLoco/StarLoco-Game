@@ -801,8 +801,7 @@ public class Formulas {
         return total;
     }
 
-    public static int getLoosEnergy(int lvl, boolean isAgression,
-                                    boolean isPerco) {
+    public static int getLoosEnergy(int lvl, boolean isAgression, boolean isPerco) {
         // TODO: add grade
         int returned = 10 * lvl;
         if (isAgression)

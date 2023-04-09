@@ -24,7 +24,7 @@ local mapInfos = {
     -- -17/-61
     [9597] = {groupsCells={166,357}, npcPos={205,1}, down={9601,18}, right={9598,408}, dialog=3187},
     -- -16/-61
-    [9598] = {groupsCells={223,226}, npcPos={205,1}, down={9602,305}, right={9594,44}, dialog=3187},
+    [9598] = {groupsCells={253,226}, npcPos={139,1}, down={9602,305}, right={9594,44}, dialog=3187},
 
     -- -19/-60
     [9599] = {groupsCells={313,310}, npcPos={205,1}, down={9603,419}, right={9600,44}, dialog=3193},
@@ -96,7 +96,6 @@ end
 local function respawnBoss()
     -- Pick the next map where we want the boss to spawn
     local respawnMapId = mapIds[math.random(#mapIds)]
-    respawnMapId = 9590 -- DEBUG REMOVE ME
 
     -- Add the boss group
     local actorId = World:map(respawnMapId):spawnGroupDef({-1, bossGroup})
