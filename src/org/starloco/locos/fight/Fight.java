@@ -1497,7 +1497,7 @@ public class Fight {
                                                     if (player.isOnline()) {
                                                         player.teleport(player.getSavePosition());
                                                     } else {
-                                                        player.setNeededEndFightAction(new Action(1001, player.getSavePosition().toString(","), ""));
+                                                        player.setNeededEndFightAction(this, new Action(1001, player.getSavePosition().toString(","), ""));
                                                     }
                                                 }
                                                 player.setPdv(1);
@@ -1609,7 +1609,7 @@ public class Fight {
                                             }
                                         } else {
                                             if (getType() != Constant.FIGHT_TYPE_PVT)
-                                                player.setNeededEndFightAction(new Action(1001, player.getSavePosition().toString(","), ""));
+                                                player.setNeededEndFightAction(this, new Action(1001, player.getSavePosition().toString(","), ""));
 //                                            else if (!player.getCurMap().hasEndFightAction(0))
 //                                                player.setNeededEndFightAction(new Action(1001, player.getSavePosition().toString(","), ""));
                                         }
@@ -2069,7 +2069,7 @@ public class Fight {
 
         SocketManager.GAME_SEND_GTM_PACKET_TO_FIGHT(this, 7);
         SocketManager.GAME_SEND_GTR_PACKET_TO_FIGHT(this, 7, current.getId());
-        // Timer d'une seconde � la fin du tour
+        // Timer d'une seconde a la fin du tour
         this.startTurn();
     }
 
@@ -4263,14 +4263,14 @@ public class Fight {
                             player.teleportFaction(this.getAlignementOfTraquer(this.getTeam1().values(), player));
                     } else {
                         if (player.getCurMap() != null && player.getCurMap().getSubArea() != null && (player.getCurMap().getSubArea().getId() == 319 || player.getCurMap().getSubArea().getId() == 210)) {
-                            player.setNeededEndFightAction(new Action(1001, "9558,224", ""));
+                            player.setNeededEndFightAction(this, new Action(1001, "9558,224", ""));
                             player.teleportLaby((short) 9558, 224);
                             TimerWaiter.addNext(() -> {
                                 Minotoror.sendPacketMap(player); // Retarde le paquet sinon les portes sont ferm�s. Le paquet de GameInformation doit faire chier ce p�d�
                                 player.setPdv(1);
                             }, 3500);
                         } else {
-                            player.setNeededEndFightAction(new Action(1001, player.getSavePosition().toString(","), ""));
+                            player.setNeededEndFightAction(this, new Action(1001, player.getSavePosition().toString(","), ""));
                             player.setPdv(1);
                         }
                     }
