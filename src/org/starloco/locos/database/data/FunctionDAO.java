@@ -76,17 +76,21 @@ public abstract class FunctionDAO<T> implements DAO<T> {
     }
 
     protected void getData(String query, ResultSetConsumer consumer) throws SQLException {
-        try (Connection conn = dataSource.getConnection()) {
-            try (Statement stat = conn.createStatement()) {
-                consumer.apply(stat.executeQuery(query));
+        synchronized (locker){
+            try (Connection conn = dataSource.getConnection()) {
+                try (Statement stat = conn.createStatement()) {
+                    consumer.apply(stat.executeQuery(query));
+                }
             }
         }
     }
 
     protected <R> R getData(String query, ResultSetFunction<R> consumer) throws SQLException {
-        try(Connection conn = dataSource.getConnection()) {
-            try(Statement stat = conn.createStatement()) {
-                return consumer.apply(stat.executeQuery(query));
+        synchronized (locker){
+            try(Connection conn = dataSource.getConnection()) {
+                try(Statement stat = conn.createStatement()) {
+                    return consumer.apply(stat.executeQuery(query));
+                }
             }
         }
     }

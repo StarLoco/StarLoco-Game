@@ -218,6 +218,9 @@ function Item:consumeTxtStat(stat, val) end
 ---@class World
 local World = {}
 
+---@return {day:number, month:number,year:number,hour:number,min:number,sec:number}
+function World:time() end
+
 ---@param id number
 ---@return SubArea
 function World:subArea(id) end

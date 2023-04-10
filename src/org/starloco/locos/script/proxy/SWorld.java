@@ -1,5 +1,7 @@
 package org.starloco.locos.script.proxy;
 
+import org.classdump.luna.Table;
+import org.classdump.luna.impl.DefaultTable;
 import org.classdump.luna.impl.DefaultUserdata;
 import org.classdump.luna.impl.ImmutableTable;
 import org.classdump.luna.lib.ArgumentIterator;
@@ -8,6 +10,7 @@ import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.script.types.MetaTables;
 
+import java.time.ZonedDateTime;
 import java.util.Optional;
 
 public class SWorld extends DefaultUserdata<World> {
@@ -15,6 +18,21 @@ public class SWorld extends DefaultUserdata<World> {
 
     public SWorld(World userValue) {
         super(META_TABLE, userValue);
+    }
+
+    @SuppressWarnings("unused")
+    private static Table time(World world) {
+        ZonedDateTime zdt = ZonedDateTime.now();
+        DefaultTable out = new DefaultTable();
+
+        out.rawset("day", zdt.getDayOfMonth());
+        out.rawset("month", zdt.getMonthValue());
+        out.rawset("year", zdt.getYear());
+        out.rawset("hour", zdt.getHour());
+        out.rawset("min", zdt.getMinute());
+        out.rawset("sec", zdt.getSecond());
+
+        return out;
     }
 
     @SuppressWarnings("unused")

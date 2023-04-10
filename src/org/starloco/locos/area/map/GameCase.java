@@ -791,7 +791,7 @@ public class GameCase {
                     this.getObject().setInteractive(false);
                     this.getObject().disable();
                     SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(player.getCurMap(), this);
-                    int qua = Formulas.getRandomValue(1, 5);//On a entre 1 et 10 eaux
+                    int qua = Formulas.getRandomValue(1, 5);
                     GameObject obj = World.world.getObjTemplate(537).createNewItem(qua, false);
                     if (player.addItem(obj, true, false))
                         World.world.addGameObject(obj);
@@ -825,11 +825,11 @@ public class GameCase {
                     this.getObject().setInteractive(false);
                     this.getObject().disable();
                     SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(player.getCurMap(), this);
-                    int qua = Formulas.getRandomValue(1, 5);//On a entre 1 et 10 eaux
-                    GameObject obj = World.world.getObjTemplate(6857).createNewItem(qua, false);
+                    int qua = Formulas.getRandomValue(1, 10);
+                    GameObject obj = World.world.getObjTemplate(311).createNewItem(qua, false);
                     if (player.addItem(obj, true, false))
                         World.world.addGameObject(obj);
-                    player.send("Im021;" + qua + "~6857");
+                    player.send("Im021;" + qua + "~311");
                     SocketManager.GAME_SEND_IQ_PACKET(player, player.getId(), qua);
                 }, this.getObject().getUseDuration());
                 break;
@@ -1077,7 +1077,7 @@ public class GameCase {
                 this.object.setInteractive(false);
                 this.object.disable();
                 SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(perso.getCurMap(), this);
-                int qua = Formulas.getRandomValue(1, 5);//On a entre 1 et 5 patates
+                int qua = Formulas.getRandomValue(1, 5);
                 GameObject obj = World.world.getObjTemplate(537).createNewItem(qua, false);
                 if (perso.addItem(obj, true, false))
                     World.world.addGameObject(obj);

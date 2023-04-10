@@ -210,7 +210,6 @@ public class NpcTemplate {
 
         Object barterOutcome = recursiveGet(scriptVal,"barterOutcome");
         if(barterOutcome == null) return null;
-        logger.info("BARTEROUTCOME: {}", barterOutcome);
 
 
         DefaultTable offer = new DefaultTable();
