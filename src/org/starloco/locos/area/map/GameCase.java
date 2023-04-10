@@ -829,7 +829,7 @@ public class GameCase {
                     GameObject obj = World.world.getObjTemplate(311).createNewItem(qua, false);
                     if (player.addItem(obj, true, false))
                         World.world.addGameObject(obj);
-                    player.send("Im021;" + qua + "~6857");
+                    player.send("Im021;" + qua + "~311");
                     SocketManager.GAME_SEND_IQ_PACKET(player, player.getId(), qua);
                 }, this.getObject().getUseDuration());
                 break;
