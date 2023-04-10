@@ -31,7 +31,7 @@ public class FighterCase {
     }
 
     public GameCase getFighterCell() {
-        if(fighter.isHide() && !discovered) {
+        if(fighter.isHidden() && !discovered) {
             byte pm = (byte) (fighter.getPm());
             final List<GameCase> cells = Function.getInstance().getCellsAvailableAround(fighter, pm == 1, pm);
             if(!cells.isEmpty()) {

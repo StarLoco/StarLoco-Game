@@ -1684,7 +1684,7 @@ public class SpellEffect implements Cloneable {
 				}
 			}
 		} else if (turns <= 0) {
-			if (caster.isHide())
+			if (caster.isHidden())
 				caster.unHide(spell);
 			for (Fighter target : targets) {
 
@@ -1739,7 +1739,7 @@ public class SpellEffect implements Cloneable {
 	private void applyEffect_92(ArrayList<Fighter> targets, Fight fight,
 								boolean isCaC)//vole terre
 	{
-		if (caster.isHide())
+		if (caster.isHidden())
 			caster.unHide(spell);
 		if (isCaC) {
 			for (Fighter target : targets) {
@@ -1832,7 +1832,7 @@ public class SpellEffect implements Cloneable {
 	private void applyEffect_93(ArrayList<Fighter> targets, Fight fight,
 								boolean isCaC)//vole air
 	{
-		if (caster.isHide())
+		if (caster.isHidden())
 			caster.unHide(spell);
 		if (isCaC) {
 			for (Fighter target : targets) {
@@ -1925,7 +1925,7 @@ public class SpellEffect implements Cloneable {
 
 	private void applyEffect_94(ArrayList<Fighter> targets, Fight fight,
 								boolean isCaC) {
-		if (caster.isHide())
+		if (caster.isHidden())
 			caster.unHide(spell);
 		if (isCaC)//CaC feu
 		{
@@ -2018,7 +2018,7 @@ public class SpellEffect implements Cloneable {
 
 	private void applyEffect_95(ArrayList<Fighter> targets, Fight fight,
 								boolean isCaC) {
-		if (caster.isHide())
+		if (caster.isHidden())
 			caster.unHide(spell);
 		if (isCaC)//CaC Eau
 		{
@@ -2117,7 +2117,7 @@ public class SpellEffect implements Cloneable {
 	{
 		if (isCaC)//CaC Eau
 		{
-			if (caster.isHide())
+			if (caster.isHidden())
 				caster.unHide(spell);
 			for (Fighter target : targets) {
 				if (caster.isMob() && (caster.getTeam2() == target.getTeam2())
@@ -2171,7 +2171,7 @@ public class SpellEffect implements Cloneable {
 				}
 			}
 		} else if (turns <= 0) {
-			if (caster.isHide())
+			if (caster.isHidden())
 				caster.unHide(spell);
 			for (Fighter target : targets) {
 				if (spell != 946 && caster.isMob() && (caster.getTeam2() == target.getTeam2()) && !caster.isInvocation())
@@ -2244,7 +2244,7 @@ public class SpellEffect implements Cloneable {
 	{
 		if (isCaC)//CaC Terre
 		{
-			if (caster.isHide())
+			if (caster.isHidden())
 				caster.unHide(spell);
 			for (Fighter target : targets) {
 				if (caster.isMob()) {
@@ -2300,7 +2300,7 @@ public class SpellEffect implements Cloneable {
 				}
 			}
 		} else if (turns <= 0) {
-			if (caster.isHide())
+			if (caster.isHidden())
 				caster.unHide(spell);
 			for (Fighter target : targets) {
 				if (spell != 946 &&caster.isMob() && (caster.getTeam2() == target.getTeam2()) && !caster.isInvocation())
@@ -2386,7 +2386,7 @@ public class SpellEffect implements Cloneable {
 	{
 		if (isCaC)//CaC Air
 		{
-			if (caster.isHide())
+			if (caster.isHidden())
 				caster.unHide(spell);
 			for (Fighter target : targets) {
 				if (spell != 946 && caster.isMob() && (caster.getTeam2() == target.getTeam2()) && !caster.isInvocation())
@@ -2442,7 +2442,7 @@ public class SpellEffect implements Cloneable {
 				}
 			}
 		} else if (turns <= 0) {
-			if (caster.isHide())
+			if (caster.isHidden())
 				caster.unHide(spell);
 			for (Fighter target : targets) {
 				if (spell != 946 &&caster.isMob() && (caster.getTeam2() == target.getTeam2()) && !caster.isInvocation())
@@ -2516,7 +2516,7 @@ public class SpellEffect implements Cloneable {
 	private void applyEffect_99(ArrayList<Fighter> targets, Fight fight,
 								boolean isCaC)//dmg feu
 	{
-		if (caster.isHide())
+		if (caster.isHidden())
 			caster.unHide(spell);
 
 		if (isCaC)//CaC Feu
@@ -2645,7 +2645,7 @@ public class SpellEffect implements Cloneable {
 
 	private void applyEffect_100(ArrayList<Fighter> targets, Fight fight,
 								 boolean isCaC) {
-		if (caster.isHide())
+		if (caster.isHidden())
 			caster.unHide(spell);
 		if (fight.getType() == 7)
 			return;
@@ -3179,7 +3179,7 @@ public class SpellEffect implements Cloneable {
 
 	private void applyEffect_132(ArrayList<Fighter> targets, Fight fight) {
 		for (Fighter target : targets) {
-			if (target.isHide())
+			if (target.isHidden())
 				target.unHide(spell);
 			target.debuff(this);
 			SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 132, String.valueOf(caster.getId()), String.valueOf(target.getId()));
@@ -3361,7 +3361,7 @@ public class SpellEffect implements Cloneable {
 		}
 
 		for (Fighter target : targets) {
-			if(target.getIsHolding() != null || target.getHoldedBy() != null || target.isHide())
+			if(target.getIsHolding() != null || target.getHoldedBy() != null || target.isHidden())
 				continue;
 			target.addBuff(effectID, 0, turns, true, spell, args, caster, false, true);
 			SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, effectID, caster.getId() + "", target.getId() + "," + (turns - 1));
@@ -3798,7 +3798,7 @@ public class SpellEffect implements Cloneable {
 	private void applyEffect_202(Fight fight, ArrayList<Fighter> targets) {
 		if (spell == 113 || spell == 64) {
 			for (Fighter target : targets) {
-				if (target.isHide() && target != caster) {
+				if (target.isHidden() && target != caster) {
 					target.unHide(spell);
 				}
 			}
@@ -4049,7 +4049,7 @@ public class SpellEffect implements Cloneable {
 	}
 
 	private void applyEffect_400(Fight fight) {
-		if (!cell.isWalkable(true) && cell.getFirstFighter() != null && !cell.getFirstFighter().isHide())
+		if (!cell.isWalkable(true) && cell.getFirstFighter() != null && !cell.getFirstFighter().isHidden())
 			return;
 
 		for (Trap trap : fight.getTraps()) {

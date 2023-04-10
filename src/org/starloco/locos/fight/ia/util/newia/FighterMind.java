@@ -45,11 +45,11 @@ public abstract class FighterMind {
     }
 
     public Collection<Fighter> getEnemies(boolean withHide) {
-        return ia.getFight().getTeam(ia.getFighter().getTeam() + 1 == 1 ? 2 : 1).values().stream().filter(f -> !f.isDead() && (withHide || !f.isHide())).collect(Collectors.toSet());
+        return ia.getFight().getTeam(ia.getFighter().getTeam() + 1 == 1 ? 2 : 1).values().stream().filter(f -> !f.isDead() && (withHide || !f.isHidden())).collect(Collectors.toSet());
     }
 
     public Collection<Fighter> getFriends() {
-        return ia.getFight().getTeam(ia.getFighter().getTeam() + 1).values().stream().filter(f -> !f.isDead() && !f.isHide()).collect(Collectors.toSet());
+        return ia.getFight().getTeam(ia.getFighter().getTeam() + 1).values().stream().filter(f -> !f.isDead() && !f.isHidden()).collect(Collectors.toSet());
     }
 
     public Collection<Fighter> getInvocations() {

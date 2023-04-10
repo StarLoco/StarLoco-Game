@@ -2340,7 +2340,7 @@ public class Fight {
         ArrayList<Fighter> all = new ArrayList<>();
         all.addAll(this.getTeam0().values());
         all.addAll(this.getTeam1().values());
-        all.stream().filter(Fighter::isHide).forEach(f -> SocketManager.GAME_SEND_GA_PACKET(p, 150, f.getId() + "", f.getId() + ",4"));
+        all.stream().filter(Fighter::isHidden).forEach(f -> SocketManager.GAME_SEND_GA_PACKET(p, 150, f.getId() + "", f.getId() + ",4"));
         if (p.getGroup() == null)
             SocketManager.GAME_SEND_Im_PACKET_TO_FIGHT(this, 7, "036;" + p.getName());
         if ((getType() == Constant.FIGHT_TYPE_PVM) && (getAllChallenges().size() > 0) || getType() == Constant.FIGHT_TYPE_DOPEUL && getAllChallenges().size() > 0) {
@@ -2589,7 +2589,7 @@ public class Fight {
                 }
 
                 // Si le joueur est invisible
-                if (caster.isHide()) caster.unHide(-1);
+                if (caster.isHidden()) caster.unHide(-1);
                 ArrayList<SpellEffect> effects = isCC ? arme.getCritEffects() : arme.getEffects();
                 ArrayList<Fighter> targets = PathFinding.getCiblesByZoneByWeapon(this, arme.getTemplate().getType(), getMap().getCase(cellID), caster.getCell().getId());
 
@@ -2692,7 +2692,7 @@ public class Fight {
 
                 if (isCC)
                     SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(this, 7, 301, fighter.getId() + "", sort); // CC !
-                if (fighter.isHide()) // Si le joueur est invi, on montre la case
+                if (fighter.isHidden()) // Si le joueur est invi, on montre la case
                 {
                     if (spell.getSpellID() == 0)// Si le coup est Coup de Poing alors on refait apparaitre le personnage
                         fighter.unHide(cell);
@@ -2764,7 +2764,7 @@ public class Fight {
 
             if (isCC)
                 SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(this, 7, 301, fighter.getId() + "", sort); // CC !
-            if (fighter.isHide()) // Si le joueur est invi, on montre la case
+            if (fighter.isHidden()) // Si le joueur est invi, on montre la case
             {
                 if (spell.getSpellID() == 0)// Si le coup est Coup de Poing alors on refait apparaitre le personnage
                     fighter.unHide(cell);
@@ -3049,7 +3049,7 @@ public class Fight {
 
         if(!fighter.haveState(Constant.ETAT_ENRACINE)) {
             for (Fighter target : targets) {
-                if (target != null && !target.haveState(Constant.ETAT_ENRACINE) && !target.haveState(Constant.ETAT_PORTE) && !fighter.isHide() && !target.isHide()) {
+                if (target != null && !target.haveState(Constant.ETAT_ENRACINE) && !target.haveState(Constant.ETAT_PORTE)) {
                     int esquive = Formulas.getTacleChance(fighter, target);
                     int rand = Formulas.getRandomValue(0, 99);
 
@@ -3091,7 +3091,7 @@ public class Fight {
             SocketManager.GAME_SEND_GAS_PACKET_TO_FIGHT(this, 7, current.getId());
 
         // Si le joueur n'est pas invisible
-        if (!current.isHide()) {
+        if (!current.isHidden()) {
             SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(this, 7, GA.id, "1", current.getId() + "", "a" + World.world.getCryptManager().cellID_To_Code(fighter.getCell().getId()) + newPath);
         } else {
             if (current.getPlayer() != null) {
@@ -4237,7 +4237,7 @@ public class Fight {
             int loose = Formulas.getLoosEnergy(player.getLevel(), getType() == 1, getType() == 5);
             int energy = player.getEnergy() - loose;
 
-            player.setEnergy((energy < 0 ? 0 : energy));
+            player.setEnergy(Math.max(energy, 0));
 
             if (player.isOnline())
                 SocketManager.GAME_SEND_Im_PACKET(player, "034;" + loose);

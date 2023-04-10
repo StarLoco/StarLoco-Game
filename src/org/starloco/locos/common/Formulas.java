@@ -1347,7 +1347,7 @@ public class Formulas {
             GameCase cell = map.getCase(cellId);
             if(cell != null) {
                 Fighter fighter = cell.getFirstFighter();
-                if (!cell.isLoS() || (fighter != null && !fighter.isHide()))
+                if (!cell.isLoS() || (fighter != null && !fighter.isHidden()))
                     return false;
             }
         }

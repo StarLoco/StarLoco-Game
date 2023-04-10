@@ -698,7 +698,7 @@ public class SocketManager {
                 continue;
             }
             packet.append("0;").append(f.getPdv()).append(";").append(f.getPa()).append(";").append(f.getPm()).append(";");
-            packet.append((f.isHide() ? "-1" : f.getCell().getId())).append(";");//On envoie pas la cell d'un invisible :p
+            packet.append((f.isHidden() ? "-1" : f.getCell().getId())).append(";");//On envoie pas la cell d'un invisible :p
             packet.append(";");//??
             packet.append(f.getPdvMax());
         }
