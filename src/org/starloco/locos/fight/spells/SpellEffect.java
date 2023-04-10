@@ -4255,7 +4255,7 @@ public class SpellEffect implements Cloneable {
 	private void applyEffect_780(Fight fight) {
 		Fighter target = null, targetPlayer = null;
 
-		for (Fighter fighter : fight.getDeadList().values()) {
+		for (Fighter fighter : fight.getDeadList()) {
 			if (!fighter.hasLeft() && fighter.getTeam() == caster.getTeam()) {
 				if(fighter.getPlayer() != null)
 					targetPlayer = fighter;

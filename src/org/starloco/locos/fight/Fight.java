@@ -68,7 +68,7 @@ public class Fight {
     private int curFighterUsedPa, curFighterUsedPm;
     private final Map<Integer, Fighter> team0 = new HashMap<>();
     private final Map<Integer, Fighter> team1 = new HashMap<>();
-    private final Map<Integer, Fighter> deadList = new HashMap<>();
+    private final List<Fighter> deadList = new LinkedList<>();
     private final Map<Integer, Player> viewer = new HashMap<>();
     private ArrayList<GameCase> start0 = new ArrayList<>();
     private ArrayList<GameCase> start1 = new ArrayList<>();
@@ -847,12 +847,12 @@ public class Fight {
         return team1;
     }
 
-    public Map<Integer, Fighter> getDeadList() {
+    public List<Fighter> getDeadList() {
         return deadList;
     }
 
     public boolean removeDead(Fighter target) {
-        return deadList.remove(target.getId(), target);
+        return deadList.remove(target);
     }
 
     Map<Integer, Player> getViewer() {
@@ -3199,8 +3199,9 @@ public class Fight {
             }
             //endregion
 
-            if (!target.hasLeft())
-                this.getDeadList().put(target.getId(), target);
+            if (!target.hasLeft()){
+                deadList.add(target);
+            }
             target.setIsDead(true);
             target.getCell().getFighters().clear();
 
