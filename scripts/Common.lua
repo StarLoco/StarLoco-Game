@@ -7,7 +7,7 @@ function hex(n)
 end
 
 ---@class ItemStack
----@field itemID:number
+---@field itemID:number (0 for kamas)
 ---@field quantity:number
 ItemStack = {}
 
