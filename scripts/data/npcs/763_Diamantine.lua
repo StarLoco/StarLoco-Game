@@ -31,4 +31,5 @@ local hasAllItem = p:getItem(8077, 10) and p:getItem(8064, 10) and p:getItem(807
         end
     end
 end
+
 RegisterNPCDef(npc)

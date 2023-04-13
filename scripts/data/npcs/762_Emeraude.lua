@@ -32,4 +32,5 @@ function npc:onTalk(p, answer)
 		p:ask(4074, {})
 	end
 end
+
 RegisterNPCDef(npc)

@@ -5,7 +5,7 @@ npc.gender = 1
 npc.barters = {
     {to={itemID=807, quantity= 1}, from= {
         {itemID=757, quantity= 80},
-        {itemID=369, quantity= 30},
+        {itemID=369, quantity= 30}
     }}
 }
 
