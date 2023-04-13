@@ -1,7 +1,5 @@
 local npc = Npc(106, 9047)
 
-npc.colors = {0, 0, 0}
-
 npc.barters = {
     {to={itemID=800, quantity= 1}, from= {
         {itemID=393, quantity= 75},
@@ -19,7 +17,7 @@ npc.barters = {
 ---@param p Player
 ---@param answer number
 function npc:onTalk(p, answer)
-    if answer == 0 then p:ask(357, {294, 293})
+    if answer == 0 then p:ask(357, {293, 294})
     elseif answer == 293 then p:ask(359)
     elseif answer == 294 then p:ask(358)
     end

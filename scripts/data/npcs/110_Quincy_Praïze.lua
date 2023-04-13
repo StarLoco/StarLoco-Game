@@ -12,7 +12,7 @@ npc.barters = {
 ---@param p Player
 ---@param answer number
 function npc:onTalk(p, answer)
-    if answer == 0 then p:ask(367, {301, 300})
+    if answer == 0 then p:ask(367, {300, 301})
     elseif answer == 300 then p:ask(368)
     elseif answer == 301 then p:ask(369)
     end

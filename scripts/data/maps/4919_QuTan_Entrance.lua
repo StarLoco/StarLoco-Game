@@ -14,7 +14,7 @@ local map = MapDef(
 map.positions = "e7fjfxfLfOf2gegs|ctcucvcIcWcXdadn"
 map.capabilities = 98
 map.npcs = {
-    [1284] = {179, 3},
+    [1284] = {179, 3}
 }
 
 map.allowedMobGrades = {
@@ -28,7 +28,7 @@ map.allowedMobGrades = {
     {178, 1},
     {178, 2},
     {178, 4},
-    {876, 4},
+    {876, 4}
 
 }
 
@@ -36,6 +36,7 @@ map.allowedMobGrades = {
 
 map.onMovementEnd = {
     [457] = moveEndTeleport(4915, 35),
-    [218] = moveEndTeleport(4921, 274),
+    [218] = moveEndTeleport(4921, 274)
 }
+
 RegisterMapDef(map)

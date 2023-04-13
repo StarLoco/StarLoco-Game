@@ -20,4 +20,5 @@ function npc:onTalk(p, answer)
 		p:endDialog()
     end
 end
+
 RegisterNPCDef(npc)

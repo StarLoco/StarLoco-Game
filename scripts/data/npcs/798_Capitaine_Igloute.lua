@@ -18,4 +18,5 @@ function npc:onTalk(p, answer)
 		end
 	end
 end
+
 RegisterNPCDef(npc)
