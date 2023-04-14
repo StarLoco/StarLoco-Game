@@ -73,8 +73,8 @@ public class SPlayer extends DefaultUserdata<Player> {
     }
 
     @SuppressWarnings("unused")
-    private static boolean isDead(Player p) {
-        return p.isDead() == 1;
+    private static boolean isGhost(Player p) {
+        return p.isGhost();
     }
 
     @SuppressWarnings("unused")

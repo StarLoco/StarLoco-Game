@@ -60,7 +60,7 @@ function Player:breed() end
 function Player:gender() end
 
 ---@return boolean
-function Player:isDead() end
+function Player:isGhost() end
 
 ---@param question number
 ---@param answers table<number>
