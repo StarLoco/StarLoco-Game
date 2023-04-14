@@ -14,8 +14,7 @@ map.positions = "cBcOc5dgdtdvdZea|cvcXdnfqfUgggIg-"
 map.capabilities = 0
 
 local function tryEntering(_, _, p)
-    JLogF("DEBUG {}", p:isDead())
-    if p:isDead() then
+    if p:isGhost() then
         p:teleport(5699, 255)
     else
         -- TODO: send error (in chat)
