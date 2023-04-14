@@ -12,14 +12,14 @@ npc.sales = {
 
 npc.barters = {
     {to={itemID=466, quantity= 1}, from= {
-        {itemID=369, quantity= 25},
+        {itemID=369, quantity= 25}
     }}
 }
 
 ---@param p Player
 ---@param answer number
 function npc:onTalk(p, answer)
-    if answer == 0 then p:ask(285, {228, 227})
+    if answer == 0 then p:ask(285, {227, 228})
     elseif answer == 227 then p:ask(286)
     elseif answer == 228 then p:ask(287)
     end

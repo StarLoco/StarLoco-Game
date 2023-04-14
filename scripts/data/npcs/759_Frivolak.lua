@@ -19,4 +19,5 @@ local hasAllBroches = p:getItem(7935) and p:getItem(7936) and p:getItem(7937) an
 		p:endDialog()
     end
 end
+
 RegisterNPCDef(npc)

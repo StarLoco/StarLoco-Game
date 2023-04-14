@@ -2,7 +2,7 @@ local npc = Npc(983, 1073)
 
 local routes = {
     [11862] = {11866, 344},
-    [11866] = {11862, 253},
+    [11866] = {11862, 253}
 }
 
 function npc:onTalk(p, answer)

@@ -6,4 +6,5 @@ npc.colors = {16479068, 16479068, 16479068}
 function npc:onTalk(p, answer)
 	p:ask(3145, {})
 end
+
 RegisterNPCDef(npc)
