@@ -40,7 +40,7 @@ public class AttackFighterMind extends FighterMind {
             this.fightersCases.addLast(cas);
         }
 
-        this.fightersCases.sort(Comparator.comparingInt(t0 -> t0 != null && t0.getShortestPath() != null ? t0.getShortestPath().size() + (t0.getFighter().isHide() ? t0.getFighter().getPm() : 0) : 999));
+        this.fightersCases.sort(Comparator.comparingInt(t0 -> t0 != null && t0.getShortestPath() != null ? t0.getShortestPath().size() + (t0.getFighter().isHidden() ? t0.getFighter().getPm() : 0) : 999));
         this.init();
     }
 

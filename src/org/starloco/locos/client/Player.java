@@ -4896,8 +4896,8 @@ public class Player implements Scripted<SPlayer> {
         this.lastFight = fight;
     }
 
-    public void setNeededEndFightAction(Action endFightAction) {
-        this.lastFight = null;
+    public void setNeededEndFightAction(Fight f, Action endFightAction) {
+        this.lastFight = f;
         this.endFightAction = endFightAction;
     }
 

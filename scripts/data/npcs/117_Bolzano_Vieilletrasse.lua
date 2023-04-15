@@ -5,7 +5,7 @@ npc.barters = {
         {itemID=382, quantity= 40},
         {itemID=365, quantity= 60},
         {itemID=395, quantity= 55},
-        {itemID=438, quantity= 15},
+        {itemID=438, quantity= 15}
     }}
 }
 

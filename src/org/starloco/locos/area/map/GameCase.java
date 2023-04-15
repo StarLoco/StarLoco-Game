@@ -90,7 +90,7 @@ public class GameCase {
             return this.loS;
         boolean hide = true;
         for (Fighter fighter : this.fighters)
-            if (!fighter.isHide())
+            if (!fighter.isHidden())
                 hide = false;
         return this.loS && hide;
     }

@@ -2,10 +2,10 @@ local npc = Npc(156, 9060)
 
 npc.barters = {
     {to={itemID=999, quantity= 1}, from= {
-        {itemID=997, quantity= 10},
+        {itemID=997, quantity= 10}
     }},
     {to={itemID=1000, quantity= 1}, from= {
-        {itemID=1023, quantity= 1},
+        {itemID=1023, quantity= 1}
     }}	
 }
 

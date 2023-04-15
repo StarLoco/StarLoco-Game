@@ -1150,7 +1150,7 @@ public class Function {
         Fighter curF = null;
         for (Fighter f : fight.getFighters(3))
         {
-            if (f.isDead() || (f.isInvocation() && !fighter.isInvocation()) || f.isHide())
+            if (f.isDead() || (f.isInvocation() && !fighter.isInvocation()) || f.isHidden())
                 continue;
             if (f == fighter)
                 continue;
@@ -1175,7 +1175,7 @@ public class Function {
         Fighter curF = null;
         for (Fighter f : fight.getFighters(3))
         {
-            if (f.isDead() || (!invocation && f.isInvocation()) || f.isHide())
+            if (f.isDead() || (!invocation && f.isInvocation()) || f.isHidden())
                 continue;
             if (f.getTeam2() != fighter.getTeam2())//Si c'est un ennemis
             {
@@ -1198,7 +1198,7 @@ public class Function {
         Map<Integer, Fighter> ennemy = new HashMap<Integer, Fighter>();
         for (Fighter f : fight.getFighters(3))
         {
-            if (f.isDead() || f.isHide())
+            if (f.isDead() || f.isHidden())
                 continue;
             if (f == fighter)
                 continue;
@@ -1845,7 +1845,7 @@ public class Function {
                 if(i == 0 && ((f.isInvocation() && !fighter.isInvocation()) ||  f.isStatic()))
                     continue;
                 // If we want another fighter (limited by the spell)
-                if (f.isDead() || (fighters != null && fighters.contains(f)) || f.isHide())
+                if (f.isDead() || (fighters != null && fighters.contains(f)) || f.isHidden())
                     continue;
                 if (f.getTeam2() != fighter.getTeam2()) { // If it's an ennemy
                     int distance = PathFinding.getDistanceBetween(fight.getMap(), fighter.getCell().getId(), f.getCell().getId());

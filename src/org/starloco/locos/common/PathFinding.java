@@ -87,7 +87,7 @@ public class PathFinding {
             if(cell != null) {
                 Fighter f = cell.getFirstFighter();
                 if (f != null) {
-                    if (f.getFight() != fight || f.isHide())
+                    if (f.getFight() != fight || f.isHidden())
                         continue;
                     if (f.getTeam() != fight.getFighterByGameOrder().getTeam())
                         enemy.add(f);

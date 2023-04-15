@@ -29,7 +29,7 @@ public class IA17 extends AbstractNeedSpell  {
             Fighter target = Function.getInstance().getEnnemyWithDistance(this.fight, this.fighter, 0, 2, null);
 
             if(target != null)
-                if(target.isHide())
+                if(target.isHidden())
                     target = null;
 
             if(this.fighter.getCurPa(this.fight) > 0) {

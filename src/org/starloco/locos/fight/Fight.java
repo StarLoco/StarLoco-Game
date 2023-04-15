@@ -68,7 +68,7 @@ public class Fight {
     private int curFighterUsedPa, curFighterUsedPm;
     private final Map<Integer, Fighter> team0 = new HashMap<>();
     private final Map<Integer, Fighter> team1 = new HashMap<>();
-    private final Map<Integer, Fighter> deadList = new HashMap<>();
+    private final List<Fighter> deadList = new LinkedList<>();
     private final Map<Integer, Player> viewer = new HashMap<>();
     private ArrayList<GameCase> start0 = new ArrayList<>();
     private ArrayList<GameCase> start1 = new ArrayList<>();
@@ -847,12 +847,12 @@ public class Fight {
         return team1;
     }
 
-    public Map<Integer, Fighter> getDeadList() {
+    public List<Fighter> getDeadList() {
         return deadList;
     }
 
     public boolean removeDead(Fighter target) {
-        return deadList.remove(target.getId(), target);
+        return deadList.remove(target);
     }
 
     Map<Integer, Player> getViewer() {
@@ -1497,7 +1497,7 @@ public class Fight {
                                                     if (player.isOnline()) {
                                                         player.teleport(player.getSavePosition());
                                                     } else {
-                                                        player.setNeededEndFightAction(new Action(1001, player.getSavePosition().toString(","), ""));
+                                                        player.setNeededEndFightAction(this, new Action(1001, player.getSavePosition().toString(","), ""));
                                                     }
                                                 }
                                                 player.setPdv(1);
@@ -1609,7 +1609,7 @@ public class Fight {
                                             }
                                         } else {
                                             if (getType() != Constant.FIGHT_TYPE_PVT)
-                                                player.setNeededEndFightAction(new Action(1001, player.getSavePosition().toString(","), ""));
+                                                player.setNeededEndFightAction(this, new Action(1001, player.getSavePosition().toString(","), ""));
 //                                            else if (!player.getCurMap().hasEndFightAction(0))
 //                                                player.setNeededEndFightAction(new Action(1001, player.getSavePosition().toString(","), ""));
                                         }
@@ -2069,7 +2069,7 @@ public class Fight {
 
         SocketManager.GAME_SEND_GTM_PACKET_TO_FIGHT(this, 7);
         SocketManager.GAME_SEND_GTR_PACKET_TO_FIGHT(this, 7, current.getId());
-        // Timer d'une seconde � la fin du tour
+        // Timer d'une seconde a la fin du tour
         this.startTurn();
     }
 
@@ -2340,7 +2340,7 @@ public class Fight {
         ArrayList<Fighter> all = new ArrayList<>();
         all.addAll(this.getTeam0().values());
         all.addAll(this.getTeam1().values());
-        all.stream().filter(Fighter::isHide).forEach(f -> SocketManager.GAME_SEND_GA_PACKET(p, 150, f.getId() + "", f.getId() + ",4"));
+        all.stream().filter(Fighter::isHidden).forEach(f -> SocketManager.GAME_SEND_GA_PACKET(p, 150, f.getId() + "", f.getId() + ",4"));
         if (p.getGroup() == null)
             SocketManager.GAME_SEND_Im_PACKET_TO_FIGHT(this, 7, "036;" + p.getName());
         if ((getType() == Constant.FIGHT_TYPE_PVM) && (getAllChallenges().size() > 0) || getType() == Constant.FIGHT_TYPE_DOPEUL && getAllChallenges().size() > 0) {
@@ -2589,7 +2589,7 @@ public class Fight {
                 }
 
                 // Si le joueur est invisible
-                if (caster.isHide()) caster.unHide(-1);
+                if (caster.isHidden()) caster.unHide(-1);
                 ArrayList<SpellEffect> effects = isCC ? arme.getCritEffects() : arme.getEffects();
                 ArrayList<Fighter> targets = PathFinding.getCiblesByZoneByWeapon(this, arme.getTemplate().getType(), getMap().getCase(cellID), caster.getCell().getId());
 
@@ -2692,7 +2692,7 @@ public class Fight {
 
                 if (isCC)
                     SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(this, 7, 301, fighter.getId() + "", sort); // CC !
-                if (fighter.isHide()) // Si le joueur est invi, on montre la case
+                if (fighter.isHidden()) // Si le joueur est invi, on montre la case
                 {
                     if (spell.getSpellID() == 0)// Si le coup est Coup de Poing alors on refait apparaitre le personnage
                         fighter.unHide(cell);
@@ -2764,7 +2764,7 @@ public class Fight {
 
             if (isCC)
                 SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(this, 7, 301, fighter.getId() + "", sort); // CC !
-            if (fighter.isHide()) // Si le joueur est invi, on montre la case
+            if (fighter.isHidden()) // Si le joueur est invi, on montre la case
             {
                 if (spell.getSpellID() == 0)// Si le coup est Coup de Poing alors on refait apparaitre le personnage
                     fighter.unHide(cell);
@@ -3049,7 +3049,7 @@ public class Fight {
 
         if(!fighter.haveState(Constant.ETAT_ENRACINE)) {
             for (Fighter target : targets) {
-                if (target != null && !target.haveState(Constant.ETAT_ENRACINE) && !target.haveState(Constant.ETAT_PORTE) && !fighter.isHide() && !target.isHide()) {
+                if (target != null && !target.haveState(Constant.ETAT_ENRACINE) && !target.haveState(Constant.ETAT_PORTE)) {
                     int esquive = Formulas.getTacleChance(fighter, target);
                     int rand = Formulas.getRandomValue(0, 99);
 
@@ -3091,7 +3091,7 @@ public class Fight {
             SocketManager.GAME_SEND_GAS_PACKET_TO_FIGHT(this, 7, current.getId());
 
         // Si le joueur n'est pas invisible
-        if (!current.isHide()) {
+        if (!current.isHidden()) {
             SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(this, 7, GA.id, "1", current.getId() + "", "a" + World.world.getCryptManager().cellID_To_Code(fighter.getCell().getId()) + newPath);
         } else {
             if (current.getPlayer() != null) {
@@ -3199,8 +3199,9 @@ public class Fight {
             }
             //endregion
 
-            if (!target.hasLeft())
-                this.getDeadList().put(target.getId(), target);
+            if (!target.hasLeft()){
+                deadList.add(target);
+            }
             target.setIsDead(true);
             target.getCell().getFighters().clear();
 
@@ -4237,7 +4238,7 @@ public class Fight {
             int loose = Formulas.getLoosEnergy(player.getLevel(), getType() == 1, getType() == 5);
             int energy = player.getEnergy() - loose;
 
-            player.setEnergy((energy < 0 ? 0 : energy));
+            player.setEnergy(Math.max(energy, 0));
 
             if (player.isOnline())
                 SocketManager.GAME_SEND_Im_PACKET(player, "034;" + loose);
@@ -4263,14 +4264,14 @@ public class Fight {
                             player.teleportFaction(this.getAlignementOfTraquer(this.getTeam1().values(), player));
                     } else {
                         if (player.getCurMap() != null && player.getCurMap().getSubArea() != null && (player.getCurMap().getSubArea().getId() == 319 || player.getCurMap().getSubArea().getId() == 210)) {
-                            player.setNeededEndFightAction(new Action(1001, "9558,224", ""));
+                            player.setNeededEndFightAction(this, new Action(1001, "9558,224", ""));
                             player.teleportLaby((short) 9558, 224);
                             TimerWaiter.addNext(() -> {
                                 Minotoror.sendPacketMap(player); // Retarde le paquet sinon les portes sont ferm�s. Le paquet de GameInformation doit faire chier ce p�d�
                                 player.setPdv(1);
                             }, 3500);
                         } else {
-                            player.setNeededEndFightAction(new Action(1001, player.getSavePosition().toString(","), ""));
+                            player.setNeededEndFightAction(this, new Action(1001, player.getSavePosition().toString(","), ""));
                             player.setPdv(1);
                         }
                     }

@@ -73,6 +73,11 @@ public class SPlayer extends DefaultUserdata<Player> {
     }
 
     @SuppressWarnings("unused")
+    private static boolean isGhost(Player p) {
+        return p.isGhost();
+    }
+
+    @SuppressWarnings("unused")
     private static void sendAction(Player p, ArgumentIterator args) {
         int actionID = args.nextInt();
         String actionIDStr = "";

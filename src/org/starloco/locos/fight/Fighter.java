@@ -883,7 +883,7 @@ public class Fighter implements Comparable<Fighter>, Scripted<Object> {
         SocketManager.GAME_SEND_GIC_PACKET_TO_FIGHT(this.fight, 7, this);
     }
 
-    public boolean isHide() {
+    public boolean isHidden() {
         return hasBuff(150);
     }
 

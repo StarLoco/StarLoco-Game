@@ -6,7 +6,7 @@ npc.sales = {
 
 npc.barters = {
     {to={itemID=579, quantity= 1}, from= {
-        {itemID=367, quantity= 1},
+        {itemID=367, quantity= 1}
     }}
 }
 
@@ -19,6 +19,12 @@ function npc:onTalk(p, answer)
     elseif answer == 636 then p:ask(693)
     elseif answer == 82 then p:ask(86)
     elseif answer == 326 then p:ask(408, {327, 328})
+    elseif answer == 327 then
+        if p:tryLearnJob(Shoemaker) then
+            p:ask(335)
+        else
+            p:ask(336)
+        end
     elseif answer == 328 then p:ask(409)
     elseif answer == 377 then p:ask(450, {378})
     elseif answer == 378 then p:ask(451)
