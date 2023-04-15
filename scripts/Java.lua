@@ -62,6 +62,10 @@ function Player:gender() end
 ---@return boolean
 function Player:isGhost() end
 
+---@param xp number
+---@return boolean hasLeveledUp
+function Player:addXP(xp) end
+
 ---@param question number
 ---@param answers table<number>
 ---@param param string

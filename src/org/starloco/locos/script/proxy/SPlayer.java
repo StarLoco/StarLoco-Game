@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class SPlayer extends DefaultUserdata<Player> {
-    private static final ImmutableTable META_TABLE= MetaTables.MetaTable(MetaTables.ReflectIndexTable(SPlayer.class));
+    private static final ImmutableTable META_TABLE = MetaTables.MetaTable(MetaTables.ReflectIndexTable(SPlayer.class));
 
     public SPlayer(Player userValue) {
         super(META_TABLE, userValue);
@@ -73,6 +73,13 @@ public class SPlayer extends DefaultUserdata<Player> {
     }
 
     @SuppressWarnings("unused")
+    private static boolean addXP(Player p, ArgumentIterator args) {
+        Number xp = args.nextNumber();
+
+        return p.addXp(xp.longValue());
+    }
+
+    @SuppressWarnings("unused")
     private static boolean isGhost(Player p) {
         return p.isGhost();
     }
@@ -95,15 +102,6 @@ public class SPlayer extends DefaultUserdata<Player> {
         int msgId = args.nextInt();
 
         SocketManager.GAME_SEND_Im_PACKET(p, type+""+msgId);
-    }
-
-    @SuppressWarnings("unused")
-    private static void compassTo(Player p, ArgumentIterator args) {
-        int mapId = args.nextInt();
-        GameMap map = World.world.getMap(mapId);
-
-        if (p.getFight() != null) return;
-        SocketManager.GAME_SEND_FLAG_PACKET(p, map);
     }
     //endregion
 
@@ -235,6 +233,15 @@ public class SPlayer extends DefaultUserdata<Player> {
         int mapID = args.nextInt();
         int cellID = args.nextInt();
         p.teleport(mapID, cellID);
+    }
+
+    @SuppressWarnings("unused")
+    private static void compassTo(Player p, ArgumentIterator args) {
+        int mapId = args.nextInt();
+        GameMap map = World.world.getMap(mapId);
+
+        if (p.getFight() != null) return;
+        SocketManager.GAME_SEND_FLAG_PACKET(p, map);
     }
     //endregion
 
