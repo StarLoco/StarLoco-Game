@@ -5174,8 +5174,6 @@ public class GameClient {
                     this.player.setGuildMember(GM);
                     this.player.setInvitation(-1);
                     p.setInvitation(-1);
-                    if (G.getId() == 1)
-                        this.player.modifAlignement(3);
                     //Packet
                     SocketManager.GAME_SEND_gJ_PACKET(p, "Ka" + this.player.getName());
                     SocketManager.GAME_SEND_gS_PACKET(this.player, GM);
