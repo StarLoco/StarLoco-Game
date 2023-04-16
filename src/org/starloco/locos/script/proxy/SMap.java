@@ -6,9 +6,12 @@ import org.classdump.luna.impl.DefaultUserdata;
 import org.classdump.luna.impl.ImmutableTable;
 import org.classdump.luna.lib.ArgumentIterator;
 import org.starloco.locos.area.map.GameMap;
+import org.starloco.locos.client.Player;
+import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.entity.monster.MobGroupDef;
 import org.starloco.locos.entity.monster.MonsterGrade;
 import org.starloco.locos.entity.monster.MonsterGroup;
+import org.starloco.locos.entity.npc.Npc;
 import org.starloco.locos.script.ScriptVM;
 import org.starloco.locos.script.types.MetaTables;
 
@@ -63,5 +66,15 @@ public class SMap extends DefaultUserdata<GameMap> {
         MobGroupDef def = MobGroupDef.Mapper.get().from(args.nextTable());
 
         return m.spawnMobGroup(def, true);
+    }
+
+    @SuppressWarnings("unused")
+    private static void updateNpcForPlayer(GameMap m, ArgumentIterator args) {
+        int entId = args.nextInt();
+        Player p = args.nextUserdata("SPlayer", SPlayer.class).getUserValue(); // Check this
+        Npc npc = m.getNpc(entId);
+        if(npc == null) return;
+
+        SocketManager.GAME_SEND_ALTER_GM_PACKET(p, npc);
     }
 }

@@ -1548,6 +1548,11 @@ public class SocketManager {
         }
     }
 
+    public static void GAME_SEND_ALTER_GM_PACKET(Player perso, Npc npc) {
+        String packet = "GM|" + npc.encodeGM(true, perso);
+        perso.send(packet);
+    }
+
     public static void GAME_SEND_ALTER_GM_PACKET(Player perso) {
         String packet = "GM|~" + perso.parseToGM();
         perso.send(packet);
