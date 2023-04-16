@@ -534,7 +534,7 @@ public class ObjectAction {
                         id0 = object0.getTemplate().getId();
 
                         int resist = object0.getResistance(object0.encodeStats());
-                        int resistMax = object0.getResistanceMax(object0.getTemplate().getStrTemplate());
+                        int resistMax = object0.getResistanceMax();
                         if (map0.getMountPark() == null)
                             return;
                         MountPark MP = map0.getMountPark();
@@ -798,105 +798,6 @@ public class ObjectAction {
                             player.sendMessage(player.getLang().trans("objet.objectaction.mountcameleon.none"));
                             return;
                         }
-                        break;
-                    case 36://Coffre
-                        if (player0.getFight() != null || player0.getLevel() == 1) return;
-                        int tour = 0;
-                        List<ObjectTemplate> objects = new ArrayList<>();
-                        int nbrMaxItem = 0;
-                        for (String i : arg.split(";")) {
-                            tour ++;
-                            switch (tour){
-                                case 1:
-                                    List<ObjectTemplate> templates = new ArrayList<>();
-                                    final int maxLvl = player.getLevel() > 150 ? 150 : player.getLevel();
-                                    final int minLvl = player.getLevel() > 150 ? 120 : (player.getLevel()-30 <= 0) ? 1 : player.getLevel()-30;
-
-                                    for (int j = 0; j < Integer.parseInt(i); j++){
-                                        do {
-                                            templates.clear();
-                                            World.world.getObjTemplates().stream().filter(t -> t.isAnEquipment(false, Arrays.asList(Constant.ITEM_TYPE_FAMILIER, Constant.ITEM_TYPE_CERTIF_MONTURE)) && t.getLevel() == Formulas.getRandomValue(minLvl, maxLvl)).forEach(templates::add);
-                                        } while (templates.size() == 0);
-                                        objects.add(templates.get(Formulas.getRandomValue(0, templates.size()-1)));
-                                    }
-                                    break;
-                                case 2:
-                                    String[] size = i.split("-");
-                                    player.addKamas(Formulas.getRandomValue(Integer.parseInt(size[0]), Integer.parseInt(size[1])));
-                                    break;
-                                case 3:
-                                    nbrMaxItem = Integer.parseInt(i);
-                                    break;
-                            }
-                        }
-
-                        for (ObjectTemplate template : objects) {
-                            if (nbrMaxItem > 0){
-                                obj = template.createNewItem(1, true);
-                                nbrMaxItem--;
-                            } else {
-                                obj = template.createNewItem(1, false);
-                            }
-                            if (player.addItem(obj, true, false))
-                                World.world.addGameObject(obj);
-                            SocketManager.GAME_SEND_Im_PACKET(player, "021;1~" + template.getId());
-                        }
-                        SocketManager.GAME_SEND_Ow_PACKET(player);
-                        SocketManager.GAME_SEND_STATS_PACKET(player);
-                        break;
-                    case 37: // Coffre divers
-                        if (player0.getFight() != null) return;
-                        ObjectTemplate template = null;
-                        List<ObjectTemplate> templates = new ArrayList<>();
-                        boolean max = false;
-                        switch (Integer.parseInt(arg)){
-                            case 2: //Sort
-                                World.world.getObjTemplates().stream().filter(t -> t.getType() == ITEM_TYPE_PARCHEMIN_SORT).forEach(templates::add);
-                                template = templates.get(Formulas.random.nextInt(templates.size()));
-                                break;
-                            case 3: //Maitrise
-                                World.world.getObjTemplates().stream().filter(t -> t.getType() == ITEM_TYPE_MAITRISE).forEach(templates::add);
-                                template = templates.get(Formulas.random.nextInt(templates.size()));
-                                break;
-                            case 4: //Obji
-                                World.world.getObjTemplates().stream().filter(t -> t.getType() == ITEM_TYPE_OBJET_VIVANT).forEach(templates::add);
-                                template = templates.get(Formulas.random.nextInt(templates.size()));
-                                break;
-                            case 5: //Fami
-                                World.world.getObjTemplates().stream().filter(t -> t.getType() == ITEM_TYPE_FAMILIER).forEach(templates::add);
-                                template = templates.get(Formulas.random.nextInt(templates.size()));
-                                max = true;
-                                break;
-                            case 6:
-                                int[] item = new int[3];
-                                item[0] = 7493; item[1] = 7494; item[2] = 7495;
-                                template = World.world.getObjTemplate(item[Formulas.getRandomValue(0, 2)]);
-                                break;
-                        }
-                        obj = template.createNewItem(1, max);
-                        if (player.addItem(obj, true, false))
-                            World.world.addGameObject(obj);
-                        SocketManager.GAME_SEND_Im_PACKET(player, "021;1~" + template.getId());
-                        break;
-                    case 38: // Coffre dragondinde
-                        if (player0.getFight() != null) return;
-                        templates = new ArrayList<>();
-                        final List<Integer> acceptedMount = Arrays.asList(7808,7810,7811,7812,7813,7814,7815,7816,7817,7818,7819,7820,7821,7822);
-                        World.world.getObjTemplates().stream().filter(t -> t.getType() == ITEM_TYPE_CERTIF_MONTURE && acceptedMount.contains(t.getId()) ).forEach(templates::add);
-                        template = templates.get(Formulas.random.nextInt(templates.size()));
-
-                        obj = template.createNewItem(1, false);
-                        Mount mount = new Mount(Constant.getMountColorByParchoTemplate(template.getId()), player.getId(), false);
-                        obj.clearStats();
-                        obj.getStats().addOneStat(995, (mount.getId()));
-                        obj.getTxtStat().put(996, player.getName());
-                        obj.getTxtStat().put(997, mount.getName());
-                        mount.setCastrated();
-                        mount.setToMax();
-
-                        if (player.addItem(obj, true, false))
-                            World.world.addGameObject(obj);
-                        SocketManager.GAME_SEND_Im_PACKET(player, "021;1~" + template.getId());
                         break;
                     case 39: // Changer de couleur
                         player.send("bC");

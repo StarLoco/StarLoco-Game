@@ -181,7 +181,7 @@ public class CommandPlayer {
             if(info.length == 2) {
                 if (object == null || object.getTemplate() == null || !object.getTemplate().getStrTemplate().isEmpty())
                     continue;
-                if (object.getTemplate().isAnEquipment(true, null))
+                if (object.getTemplate().isAnEquipment())
                     continue;
                 switch (object.getTemplate().getType()) {
                     case Constant.ITEM_TYPE_OBJET_VIVANT:
@@ -254,7 +254,7 @@ public class CommandPlayer {
                         follower.getGameClient().clearAllPanels(null);
                         for(GameObject object : new ArrayList<>(follower.getItems().values())) {
                             if(object != null) {
-                                if (object.getPosition() != -1 || object.getTemplate().isAnEquipment(true, null))
+                                if (object.getPosition() != -1 || object.getTemplate().isAnEquipment())
                                     continue;
                                 switch (object.getTemplate().getType()) {
                                     case Constant.ITEM_TYPE_OBJET_VIVANT: case Constant.ITEM_TYPE_PRISME:

@@ -7,6 +7,7 @@ import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.database.DatabaseManager;
 import org.starloco.locos.database.data.login.ObjectData;
 import org.starloco.locos.database.data.login.PetData;
+import org.starloco.locos.effects.Effect;
 import org.starloco.locos.entity.pet.PetEntry;
 import org.starloco.locos.fight.spells.SpellEffect;
 import org.starloco.locos.game.world.World;
@@ -15,35 +16,38 @@ import org.starloco.locos.object.entity.SoulStone;
 import org.starloco.locos.other.Dopeul;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ObjectTemplate {
 
     private int id;
-    private String strTemplate;
+    private final List<Effect> effects;
+
     private String name;
     private int type;
     private int level;
     private int pod;
     private int price;
-    private int panoId;
-    private String conditions;
+    private final int panoId;
+    private final String conditions;
     private int PACost, POmin, POmax, tauxCC, tauxEC,
             bonusCC;
     private boolean isTwoHanded;
     private long sold;
     private int avgPrice;
-    private int points, newPrice;
+    private final int points;
+    private final int newPrice;
     private ArrayList<ObjectAction> onUseActions;
 
     public String toString() {
-        return id + "";
+        return Integer.toString(id);
     }
 
     public ObjectTemplate(int id, String strTemplate, String name, int type,
                           int level, int pod, int price, int panoId, String conditions,
                           String armesInfos, int sold, int avgPrice, int points, int newPrice) {
         this.id = id;
-        this.strTemplate = strTemplate;
+        this.effects = Effect.parseEffects(",", "#", strTemplate);
         this.name = name;
         this.type = type;
         this.level = level;
@@ -76,37 +80,10 @@ public class ObjectTemplate {
         }
     }
 
-    public void setInfos(String strTemplate, String name, int type, int level, int pod, int price, int panoId, String conditions, String armesInfos, int sold, int avgPrice, int points, int newPrice) {
-        this.strTemplate = strTemplate;
-        this.name = name;
-        this.type = type;
-        this.level = level;
-        this.pod = pod;
-        this.price = price;
-        this.panoId = panoId;
-        this.conditions = conditions;
-        this.PACost = -1;
-        this.POmin = 1;
-        this.POmax = 1;
-        this.tauxCC = 100;
-        this.tauxEC = 2;
-        this.bonusCC = 0;
-        this.sold = sold;
-        this.avgPrice = avgPrice;
-        this.points = points;
-        this.newPrice = newPrice;
-        try {
-            String[] infos = armesInfos.split(";");
-            PACost = Integer.parseInt(infos[0]);
-            POmin = Integer.parseInt(infos[1]);
-            POmax = Integer.parseInt(infos[2]);
-            tauxCC = Integer.parseInt(infos[3]);
-            tauxEC = Integer.parseInt(infos[4]);
-            bonusCC = Integer.parseInt(infos[5]);
-            isTwoHanded = infos[6].equals("1");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public String encodeEffects() {
+        return effects.stream().map(
+            e -> String.join("#", e.toHexVals())
+        ).collect(Collectors.joining(","));
     }
 
     public int getId() {
@@ -115,14 +92,6 @@ public class ObjectTemplate {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public String getStrTemplate() {
-        return strTemplate;
-    }
-
-    public void setStrTemplate(String strTemplate) {
-        this.strTemplate = strTemplate;
     }
 
     public String getName() {
@@ -169,72 +138,36 @@ public class ObjectTemplate {
         return panoId;
     }
 
-    public void setPanoId(int panoId) {
-        this.panoId = panoId;
-    }
 
     public String getConditions() {
         return conditions;
-    }
-
-    public void setConditions(String conditions) {
-        this.conditions = conditions;
     }
 
     public int getPACost() {
         return PACost;
     }
 
-    public void setPACost(int pACost) {
-        PACost = pACost;
-    }
-
     public int getPOmin() {
         return POmin;
     }
-
-    public void setPOmin(int pOmin) {
-        POmin = pOmin;
-    }
-
     public int getPOmax() {
         return POmax;
-    }
-
-    public void setPOmax(int pOmax) {
-        POmax = pOmax;
     }
 
     public int getTauxCC() {
         return tauxCC;
     }
 
-    public void setTauxCC(int tauxCC) {
-        this.tauxCC = tauxCC;
-    }
-
     public int getTauxEC() {
         return tauxEC;
-    }
-
-    public void setTauxEC(int tauxEC) {
-        this.tauxEC = tauxEC;
     }
 
     public int getBonusCC() {
         return bonusCC;
     }
 
-    public void setBonusCC(int bonusCC) {
-        this.bonusCC = bonusCC;
-    }
-
     public boolean isTwoHanded() {
         return isTwoHanded;
-    }
-
-    public void setTwoHanded(boolean isTwoHanded) {
-        this.isTwoHanded = isTwoHanded;
     }
 
     public int getAvgPrice() {
@@ -596,8 +529,8 @@ public class ObjectTemplate {
         return Effets;
     }
 
-    public String parseItemTemplateStats() {
-        return getId() + ";" + getStrTemplate() + (this.newPrice > 0 ? ";" + this.newPrice : "");
+    public String encodeForVendorList() {
+        return getId() + ";" + encodeEffects() + (this.newPrice > 0 ? ";" + this.newPrice : "");
     }
 
     public void applyAction(Player player, Player target, int objectId, short cellId, int quantity) {
@@ -625,14 +558,8 @@ public class ObjectTemplate {
         sold += amount;
         avgPrice = (int) ((getAvgPrice() * oldSold + price) / getSold());
     }
-    private final static List<Integer> bannedObjects = Arrays.asList(493,494,495,496,922,7098,9972,454, 577, 596, 492, 491, 493, 494, 495, 496, 498, 499, 500, 577, 579, 911, 922, 1501, 1520, 1539, 1560, 1561, 1562, 1563, 1564, 1565, 2154, 2155, 2156, 2170, 2376, 6663, 6713, 6839, 6840, 7098, 7493, 7495, 7650, 7913, 7920, 8539, 8540, 8854, 9031, 9202, 9396, 9627, 9961, 9544, 9545, 9546, 9547, 9548, 10125, 10126, 10127, 10133);
 
-    public boolean isAnEquipment(boolean ethereal, List<Integer> bannedTypes) {
-        if ((!ethereal && this.getStrTemplate().contains("32c#")) || this.getStrTemplate().isEmpty() || (this.conditions != null && this.conditions.contains("BI")))
-            return false;
-        if(bannedTypes != null && bannedTypes.contains(this.getType()))
-            return false;
-
+    public boolean isAnEquipment() {
         switch (this.getType()) {
             case Constant.ITEM_TYPE_AMULETTE:
             case Constant.ITEM_TYPE_ANNEAU:
@@ -654,15 +581,12 @@ public class ObjectTemplate {
             case Constant.ITEM_TYPE_FAUX:
             case Constant.ITEM_TYPE_FAMILIER:
             case Constant.ITEM_TYPE_BOUCLIER:
-                break;
+                return true;
             case Constant.ITEM_TYPE_CERTIF_MONTURE:
-                if(getId() == 7806 || getId() == 7807 || getId() == 7809 || getId() == 7864 || getId() == 7865)
-                    return false;
-                break;
+                return getId() != 7806 && getId() != 7807 && getId() != 7809 && getId() != 7864 && getId() != 7865;
             default:
                 return false;
         }
-        return !bannedObjects.contains(this.getId());
     }
 
     public boolean isFilledSoulStone() {
@@ -674,5 +598,13 @@ public class ObjectTemplate {
         default:
             return false;
         }
+    }
+
+    public List<Object> getEffects() {
+        return Collections.unmodifiableList(this.effects);
+    }
+
+    public String getStrTemplate() {
+        return encodeEffects();
     }
 }

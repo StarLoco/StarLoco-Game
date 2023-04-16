@@ -6,6 +6,7 @@ import org.starloco.locos.common.Formulas;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.database.DatabaseManager;
 import org.starloco.locos.database.data.login.ObjectData;
+import org.starloco.locos.effects.Effect;
 import org.starloco.locos.entity.mount.Mount;
 import org.starloco.locos.entity.pet.PetEntry;
 import org.starloco.locos.fight.spells.SpellEffect;
@@ -464,9 +465,9 @@ public class GameObject {
                 }
             } else if (entry.getKey() == Constant.STATS_RESIST
                     && getTemplate().getType() == 93) {
-                stats.append(Integer.toHexString(entry.getKey())).append("#").append(Integer.toHexString(getResistanceMax(getTemplate().getStrTemplate()))).append("#").append(entry.getValue()).append("#").append(Integer.toHexString(getResistanceMax(getTemplate().getStrTemplate())));
+                stats.append(Integer.toHexString(entry.getKey())).append("#").append(Integer.toHexString(getResistanceMax())).append("#").append(entry.getValue()).append("#").append(Integer.toHexString(getResistanceMax()));
             } else if (entry.getKey() == Constant.STATS_RESIST) {
-                stats.append(Integer.toHexString(entry.getKey())).append("#").append(Integer.toHexString(getResistanceMax(getTemplate().getStrTemplate()))).append("#").append(entry.getValue()).append("#").append(Integer.toHexString(getResistanceMax(getTemplate().getStrTemplate())));
+                stats.append(Integer.toHexString(entry.getKey())).append("#").append(Integer.toHexString(getResistanceMax())).append("#").append(entry.getValue()).append("#").append(Integer.toHexString(getResistanceMax()));
             } else {
                 stats.append(Integer.toHexString(entry.getKey())).append("#0#0#0#").append(entry.getValue());
             }
@@ -832,10 +833,10 @@ public class GameObject {
         return Resistance;
     }
 
-    public int getResistanceMax(String statsTemplate) {
+    public int getResistanceMax() {
         int ResistanceMax = 0;
 
-        String[] splitted = statsTemplate.split(",");
+        String[] splitted = this.template.getStrTemplate().split(",");
         for (String s : splitted) {
             String[] stats = s.split("#");
             if (Integer.parseInt(stats[0], 16) == Constant.STATS_RESIST) {

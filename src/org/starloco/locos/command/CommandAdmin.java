@@ -1742,7 +1742,7 @@ public class CommandAdmin extends AdminUser {
                 return;
             }
             if (t.getType() == Constant.ITEM_TYPE_OBJET_ELEVAGE
-                    && (t.getStrTemplate().isEmpty() || t.getStrTemplate().equalsIgnoreCase(""))) {
+                    && t.getEffects().isEmpty()) {
                 this.sendMessage("Impossible de creer l'item d'elevage. Le StrTemplate ("
                         + tID + ") est vide.");
                 return;
@@ -2763,28 +2763,6 @@ public class CommandAdmin extends AdminUser {
             String mess = "Vous venez de donner " + count
                     + " points boutique e " + perso.getName() + ".";
             this.sendMessage(mess);
-            return;
-        } else if (command.equalsIgnoreCase("ITEMTYPE")) {
-            String type = "";
-            try {
-                type = infos[1];
-            } catch (Exception e) {
-                // ok
-            }
-            String data = "";
-            int count = 0;
-            for (ObjectTemplate obj : World.world.getObjTemplates()) {
-                if (type.contains(String.valueOf(obj.getType()) + ",") && obj.getLevel() >= 2 && obj.getLevel() <= 50 && obj.isAnEquipment(false, Arrays.asList(Constant.ITEM_TYPE_DOFUS, Constant.ITEM_TYPE_FAMILIER))) {
-                    /*GameObject addObj = obj.createNewItem(1, true);
-                    if (this.getPlayer().addObjet(addObj, true))//Si le joueur n'avait pas d'item similaire
-                        World.world.addGameObject(addObj);*/
-                    data += "," + obj.getId();
-                    count++;
-                }
-            }
-            this.sendSuccessMessage(data);
-            this.sendMessage("Vous avez tous les objets de type "
-                    + type + " dans votre inventaire." + count);
             return;
         } else if (command.equalsIgnoreCase("FULLMORPH")) {
             this.getPlayer().setFullMorph(Integer.parseInt(infos[1]), false, false);
