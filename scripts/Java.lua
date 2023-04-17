@@ -106,10 +106,10 @@ function Player:gearAt(pos) end
 
 ---@param template number
 ---@param quantity number defaults to 1
+---@param position number defaults to NotEquipped
 ---@param isPerfect boolean defaults to false
 ---@param display boolean defaults to true
----@return void
-function Player:addItem(template, quantity, isPerfect, display) end
+function Player:addItem(template, quantity, position, isPerfect, display) end
 
 ---@param template number
 ---@param unitPrice number

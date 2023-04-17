@@ -1,3 +1,4 @@
+NotEquipped = -1
 NecklaceSlot = 0
 WeaponSlot = 1
 Ring1Slot = 2
@@ -14,3 +15,10 @@ Dofus4Slot = 12
 Dofus5Slot = 13
 Dofus6Slot = 14
 ShieldSlot = 15
+MountSlot = 16
+MutationSlot = 20
+RolePlayBuffSlot = 21
+CurseSlot = 22
+BlessingSlot = 23
+FollowerSlot = 24
+CandySlot = 25

@@ -18,6 +18,7 @@ import org.starloco.locos.game.world.World;
 import org.starloco.locos.job.JobStat;
 import org.starloco.locos.kernel.Constant;
 import org.starloco.locos.object.GameObject;
+import org.starloco.locos.object.ObjectTemplate;
 import org.starloco.locos.quest.Quest;
 import org.starloco.locos.quest.QuestObjective;
 import org.starloco.locos.quest.QuestPlayer;
@@ -297,10 +298,15 @@ public class SPlayer extends DefaultUserdata<Player> {
     private static void addItem(Player p, ArgumentIterator args) {
         int itemID = args.nextInt();
         int quantity = args.nextOptionalInt(1);
+        int pos = args.nextOptionalInt(Constant.ITEM_POS_NO_EQUIPED);
         boolean isPerfect = args.nextOptionalBoolean(false);
         boolean display = args.nextOptionalBoolean(true);
 
-        p.addItem(itemID, quantity, isPerfect, display);
+        ObjectTemplate tmpl = World.world.getObjTemplate(itemID);
+        GameObject item = tmpl.createNewItem(quantity, isPerfect);
+        item.setPosition(pos);
+
+        p.addItem(item, true, display);
     }
 
     @SuppressWarnings("unused")
