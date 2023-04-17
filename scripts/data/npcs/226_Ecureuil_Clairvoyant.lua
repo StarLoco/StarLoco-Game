@@ -32,6 +32,7 @@ function npc:onTalk(p, answer)
         p:ask(1380, responses)
     elseif hasBook and answer == 1038 then
         local responseSet = {}
+        -- Use a set to make sure we don't show duplicated responses
         for k, v in pairs(itemResponses) do
             if p:getItem(k) then
                 responseSet[v] = true
