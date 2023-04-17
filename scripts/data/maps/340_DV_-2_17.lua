@@ -63,7 +63,7 @@ map.allowedMobGrades = {
     {207, 2},
     {207, 3},
     {207, 4},
-    {207, 5},
+    {207, 5}
 }
 
 local function tryEntering(_, _, p)
@@ -83,5 +83,4 @@ map.onMovementEnd = {
 	[227] = tryEntering
 }
 
---TODO: ADD MOBS
 RegisterMapDef(map)
