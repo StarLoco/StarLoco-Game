@@ -1168,7 +1168,7 @@ public class World implements Scripted<SWorld> {
         MountPark.put(mp.getMap(), mp);
     }
 
-    public Map<Integer, MountPark> getMountPark() {
+    public Map<Integer, MountPark> getMountParks() {
         return MountPark;
     }
 
