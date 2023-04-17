@@ -28,4 +28,6 @@ map.onMovementEnd = {
     [247] = moveEndTeleport(7395, 245),
 }
 
+map.zaapCell = 311
+
 RegisterMapDef(map)

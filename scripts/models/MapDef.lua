@@ -17,6 +17,7 @@
 ---@field mobGroupsSize number
 ---@field staticGroups MobGroupDef[]
 ---@field allowedMobGrades table<number,number> K: MobTemplateID, V: Grade
+---@field zaapCell number Only set for maps with a zaap. Value is cellId
 ---@field onMovementEnd table<number, function(md:MapDef, m:Map, p:Player)>
 ---@field onFightInit table<number, function(md:MapDef, m:Map,team1:Fighter[], team2:Fighter[])> K: fight type, V: Handler function
 ---@field onFightStart table<number, function(md:MapDef, m:Map,team1:Fighter[], team2:Fighter[])> K: fight type, V: Handler function
@@ -63,6 +64,7 @@ setmetatable(MapDef, {
         self.onFightInit = {}
         self.onFightStart = {}
         self.onFightEnd = {}
+        self.zaapCell = nil
 
         MAPS[id] = self
         return self

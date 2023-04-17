@@ -13,6 +13,7 @@ import org.starloco.locos.script.ScriptMapper;
 import org.starloco.locos.script.ScriptVM;
 import org.starloco.locos.util.Pair;
 
+import javax.swing.text.html.Option;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -20,8 +21,9 @@ import static org.starloco.locos.script.ScriptVM.*;
 
 public class ScriptMapData extends MapData {
     private final Table scriptVal;
+    public final Integer zaapCell;
 
-    private ScriptMapData(Table scriptVal, int id, String date, String key, String cellsData, int width, int height, int x, int y, int subAreaID, int capabilities, int mobGroupsMaxCount, List<MonsterGrade> mobPossibles, String placesStr, int mobGroupsMaxSize) {
+    private ScriptMapData(Table scriptVal, int id, String date, String key, String cellsData, int width, int height, int x, int y, int subAreaID, int capabilities, int mobGroupsMaxCount, List<MonsterGrade> mobPossibles, String placesStr, int mobGroupsMaxSize, Integer zaapCell) {
         super(id,
             date,
             key,
@@ -43,6 +45,7 @@ public class ScriptMapData extends MapData {
             mobPossibles,
             placesStr);
         this.scriptVal = scriptVal;
+        this.zaapCell = zaapCell;
     }
 
     public static ScriptMapData build(Table val) {
@@ -53,6 +56,8 @@ public class ScriptMapData extends MapData {
                     .orElse(null)
             )
             .filter(Objects::nonNull).collect(Collectors.toList());
+
+        Integer zaapCell = Optional.ofNullable(val.rawget("zaapCell")).map(o -> (Long)o).map(Long::intValue).orElse(null);
 
         return new ScriptMapData(
             val,
@@ -67,7 +72,8 @@ public class ScriptMapData extends MapData {
             rawInt(val, "subAreaId"),
             rawInt(val, "capabilities"),
             rawInt(val, "mobGroupsCount"),
-            allowedMonsters, val.rawget("positions").toString(), rawInt(val, "mobGroupsSize")
+            allowedMonsters, val.rawget("positions").toString(), rawInt(val, "mobGroupsSize"),
+            zaapCell
         );
     }
 
