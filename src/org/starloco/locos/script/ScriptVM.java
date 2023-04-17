@@ -71,7 +71,12 @@ public class ScriptVM {
                 .filter(Files::isRegularFile)
                 .filter(p -> p.toString().endsWith(".lua")).iterator();
             while(it.hasNext()) {
-                this.runFile(it.next());
+                Path p = it.next();
+                try {
+                    this.runFile(p);
+                }catch(Exception e) {
+                    ScriptVM.logger.error("cannot load file: "+p, e);
+                }
             }
         } catch(Exception e){
             ScriptVM.logger.error("cannot load directory", e);
@@ -89,6 +94,17 @@ public class ScriptVM {
         synchronized (_vmLock) {
             try {
                 return this.executor.call(this.state, val, args);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+    public Object[] run(String code) {
+        synchronized (_vmLock) {
+            try {
+                LuaFunction<?,?,?,?,?> fn = loader.loadTextChunk(new Variable(env), "command", code); // May need to UTF-8 decode
+
+                return this.executor.call(this.state, fn);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

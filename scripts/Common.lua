@@ -6,6 +6,24 @@ function hex(n)
     return string.format("%x", n)
 end
 
+table.contains = function(t, value)
+    for _, v in ipairs(t) do
+        if v == value then
+            return true
+        end
+    end
+    return false
+end
+
+table.shuffled = function(t)
+    local out = {}
+    for i, v in ipairs(t) do
+        local pos = math.random(1, #out+1)
+        table.insert(out, pos, v)
+    end
+    return out
+end
+
 ---@class ItemStack
 ---@field itemID:number (0 for kamas)
 ---@field quantity:number

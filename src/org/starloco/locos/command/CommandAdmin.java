@@ -48,6 +48,7 @@ import org.starloco.locos.util.TimerWaiter;
 
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 public class CommandAdmin extends AdminUser {
 
@@ -112,39 +113,33 @@ public class CommandAdmin extends AdminUser {
             }
             return;
         }
-        else if (command.equalsIgnoreCase("STARTBOUFBOWL"))
-		{
-			if(this.getPlayer().getCurMap().getId() != 9862)
-				return;
-			
-			Player init1 = null;
-			Player init2 = null;
-			try
-			{
-				init1 = World.world.getPlayerByName(infos[1]);
-				init2 = World.world.getPlayerByName(infos[2]);
-			}
-			catch (Exception e)
-			{
-				// ok
-			}
-			if (init1 == null || init2 == null)
-			{
-				sendMessage("Le nom du personnage n'est pas bon.");
-				return;
-			}
-			if(init1.getCurMap().getId() != 9862 || init2.getCurMap().getId() != 9862)
-			{
-				sendMessage("un perso n'est pas sur la map. (9862)");
-				return;
-			}
-			SocketManager.GAME_SEND_MAP_START_DUEL_TO_MAP(this.getPlayer().getCurMap(), init2.getId(), init1.getId());
-			Fight fight = null;
-			fight = this.getPlayer().getCurMap().newFightbouf(init1, init2, Constant.FIGHT_TYPE_CHALLENGE);
-			init1.setFight(fight);
-			init2.setFight(fight);	
-			return;
-		} else if (command.equalsIgnoreCase("ONLINE")) {
+        else if (command.equalsIgnoreCase("STARTBOUFBOWL")) {
+            if(this.getPlayer().getCurMap().getId() != 9862)
+                return;
+
+            Player init1 = null;
+            Player init2 = null;
+            try {
+                init1 = World.world.getPlayerByName(infos[1]);
+                init2 = World.world.getPlayerByName(infos[2]);
+            } catch (Exception e) {
+                // ok
+            }
+            if (init1 == null || init2 == null) {
+                sendMessage("Le nom du personnage n'est pas bon.");
+                return;
+            }
+            if(init1.getCurMap().getId() != 9862 || init2.getCurMap().getId() != 9862) {
+                sendMessage("un perso n'est pas sur la map. (9862)");
+                return;
+            }
+            SocketManager.GAME_SEND_MAP_START_DUEL_TO_MAP(this.getPlayer().getCurMap(), init2.getId(), init1.getId());
+            Fight fight = null;
+            fight = this.getPlayer().getCurMap().newFightbouf(init1, init2, Constant.FIGHT_TYPE_CHALLENGE);
+            init1.setFight(fight);
+            init2.setFight(fight);
+            return;
+        } else if (command.equalsIgnoreCase("ONLINE")) {
             Player perso = this.getPlayer();
             if (infos.length > 1) {//Si un nom de perso est specifie
                 try {
@@ -3176,6 +3171,10 @@ public class CommandAdmin extends AdminUser {
                     + area
                     + "\nsuperArea : "
                     + superArea);
+        }  else if (command.equalsIgnoreCase("DLUA")) {
+            String code = String.join(" ", Arrays.copyOfRange(infos, 1, infos.length));
+            Object[] ret = DataScriptVM.getInstance().run(code);
+            this.sendMessage(Arrays.stream(ret).map(Object::toString).collect(Collectors.joining(" ")));
         } else {
             this.sendMessage("Commande invalide !");
         }

@@ -154,3 +154,4 @@ RegisterAdminCommand("MAPSTATE", "[State] [Value (optional)]", "Enter the comman
 RegisterAdminCommand("RELOAD", "[NAME]", "Reload battle type")
 RegisterAdminCommand("RELOAD", "[type]", "Use the command to know all the types of reload.")
 RegisterAdminCommand("ENDFIGHTNULL", "", "Endfight null no win")
+RegisterAdminCommand("DLUA", "[code]", "Run code in Data script VM")

@@ -19,7 +19,7 @@ map.npcs = {
 }
 
 local function tryEntering(_, _, p)
-    if p:breed() = 4 then
+    if p:breed() == 4 then
         p:teleport(7580, 351)
     else
         --TODO: send error (in chat)
@@ -27,10 +27,10 @@ local function tryEntering(_, _, p)
 end	
 
 map.onMovementEnd = {
-    [23] = moveEndTeleport(7392,443)
-	[434] = moveEndTeleport(7409,349)
-	[455] = moveEndTeleport(7394,21)
-	[305] = moveEndTeleport(7377,390)
+    [23] = moveEndTeleport(7392,443),
+	[434] = moveEndTeleport(7409,349),
+	[455] = moveEndTeleport(7394,21),
+	[305] = moveEndTeleport(7377,390),
 	[229] = tryEntering
 }
 --TODO: ADD MOBS

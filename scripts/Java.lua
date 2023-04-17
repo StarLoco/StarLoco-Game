@@ -109,6 +109,7 @@ function Player:gearAt(pos) end
 ---@param position number defaults to NotEquipped
 ---@param isPerfect boolean defaults to false
 ---@param display boolean defaults to true
+---@return boolean worked
 function Player:addItem(template, quantity, position, isPerfect, display) end
 
 ---@param template number
@@ -126,6 +127,9 @@ function Player:map() end
 
 ---@return number
 function Player:cell() end
+
+---@return number
+function Player:orientation() end
 
 ---@return number,number map,cell
 function Player:savedPosition() end
@@ -204,6 +208,18 @@ function Player:forceFight(def) end
 ---@param mapId number
 function Player:compassTo(mapId) end
 
+--- Stores a value in current exchange action
+--- This is NOT saved in database and will be lost when the exchange action is over
+---@param key string
+---@param value any
+---@return boolean
+function Player:setCtxVal(key, value) end
+
+--- Gets a value stored via setCtxVal
+---@param key string
+---@return any
+function Player:getCtxVal(key) end
+
 --endregion
 
 ---@class MobGroupDef table<number, table<number,number[]>[]>
@@ -211,6 +227,14 @@ function Player:compassTo(mapId) end
 
 ---@class Item
 local Item = {}
+
+--- Returns the guid
+---@return number
+function Item:guid() end
+
+--- Returns the template id
+---@return number
+function Item:id() end
 
 ---@param stat number
 ---@param val string
@@ -227,6 +251,10 @@ local World = {}
 
 ---@return {day:number, month:number,year:number,hour:number,min:number,sec:number}
 function World:time() end
+
+---@param nameOrId string|number
+---@return Player
+function World:player(nameOrId) end
 
 ---@param id number
 ---@return SubArea

@@ -27,6 +27,7 @@ import org.starloco.locos.script.ScriptVM;
 import org.starloco.locos.script.types.MetaTables;
 import org.starloco.locos.util.Pair;
 
+import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 
@@ -71,6 +72,23 @@ public class SPlayer extends DefaultUserdata<Player> {
     @SuppressWarnings("unused")
     private static void openBank(Player p) {
         p.openBank();
+    }
+
+    @SuppressWarnings("unused")
+    private static Object getCtxVal(Player p, ArgumentIterator args) {
+        String key = args.nextString().toString();
+        return Optional.ofNullable(p.getExchangeAction()).map(a -> a.getContextValue(key)).orElse(null);
+    }
+
+    @SuppressWarnings("unused")
+    private static boolean setCtxVal(Player p, ArgumentIterator args) {
+        String key = args.nextString().toString();
+        Object val = args.next();
+
+        if(p.getExchangeAction() == null) return false;
+
+        p.getExchangeAction().putContextValue(key, val);
+        return true;
     }
 
     @SuppressWarnings("unused")
@@ -210,23 +228,28 @@ public class SPlayer extends DefaultUserdata<Player> {
 
     //region Geolocation (Maps)
     @SuppressWarnings("unused")
-    private static Pair<Integer,Integer> savedPosition(Player p, ArgumentIterator args) {
+    private static Pair<Integer,Integer> savedPosition(Player p) {
         return p.getSavePosition();
     }
 
     @SuppressWarnings("unused")
-    private static int mapID(Player p, ArgumentIterator args) {
+    private static int mapID(Player p) {
         return p.getCurMap().getId();
     }
 
     @SuppressWarnings("unused")
-    private static SMap map(Player p, ArgumentIterator args) {
+    private static SMap map(Player p) {
         return p.getCurMap().scripted();
     }
 
     @SuppressWarnings("unused")
-    private static int cell(Player p, ArgumentIterator args) {
+    private static int cell(Player p) {
         return p.getCurCell().getId();
+    }
+
+    @SuppressWarnings("unused")
+    private static int orientation(Player p) {
+        return p.get_orientation();
     }
 
     @SuppressWarnings("unused")
@@ -295,18 +318,23 @@ public class SPlayer extends DefaultUserdata<Player> {
 
 
     @SuppressWarnings("unused")
-    private static void addItem(Player p, ArgumentIterator args) {
+    private static boolean addItem(Player p, ArgumentIterator args) {
         int itemID = args.nextInt();
         int quantity = args.nextOptionalInt(1);
         int pos = args.nextOptionalInt(Constant.ITEM_POS_NO_EQUIPED);
         boolean isPerfect = args.nextOptionalBoolean(false);
         boolean display = args.nextOptionalBoolean(true);
 
+        boolean posAlreadyFilled = p.getEquippedObjects().stream()
+            .anyMatch(i -> i.getPosition() == pos);
+        if(posAlreadyFilled) return false;
+
         ObjectTemplate tmpl = World.world.getObjTemplate(itemID);
         GameObject item = tmpl.createNewItem(quantity, isPerfect);
         item.setPosition(pos);
 
-        p.addItem(item, true, display);
+        p.addItem(item, pos==Constant.ITEM_POS_NO_EQUIPED, display);
+        return true;
     }
 
     @SuppressWarnings("unused")

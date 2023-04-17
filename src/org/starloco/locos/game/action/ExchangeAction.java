@@ -1,5 +1,7 @@
 package org.starloco.locos.game.action;
 
+import java.util.HashMap;
+
 /**
  * Created by Locos on 25/10/2015.
  */
@@ -36,6 +38,8 @@ public class ExchangeAction<T> {
     private byte type;
     private T value;
 
+    private final HashMap<String,Object> context = new HashMap<>();
+
     public ExchangeAction(byte type, T value) {
         this.type = type;
         this.value = value;
@@ -47,5 +51,13 @@ public class ExchangeAction<T> {
 
     public T getValue() {
         return value;
+    }
+
+    public void putContextValue(String v, Object o) {
+        context.put(v, o);
+    }
+
+    public Object getContextValue(String v) {
+        return context.get(v);
     }
 }
