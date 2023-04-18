@@ -140,7 +140,7 @@ public class GameMap {
     private byte minSize, fixSize;
     private final int maxTeam = 0;
     private boolean isMute = false;
-    private MountPark mountPark;
+    private final MountPark mountPark;
     private final CellCache cellCache;
     private final List<GameCase> cases;
     private List<Fight> fights = new ArrayList<>();
@@ -156,6 +156,7 @@ public class GameMap {
         Pair<CellCache, List<GameCase>> p = World.world.getCryptManager().decompileMapData(this, data.cellsData, data.key, data.width, data.height);
         this.cellCache = p.first;
         this.cases = p.second;
+        this.mountPark = World.world.getMountParks().get(data.id);
 
         this.data.getNPCs().forEach((k, v) -> addNpc(k, v.first, v.second));
         this.data.getStaticGroups().forEach(this::addStaticGroup);
@@ -173,7 +174,7 @@ public class GameMap {
 
     public static void removeMountPark(int guildId) {
         try {
-            World.world.getMountPark().values().stream().filter(park -> park.getGuild() != null).filter(park -> park.getGuild().getId() == guildId).forEach(park -> {
+            World.world.getMountParks().values().stream().filter(park -> park.getGuild() != null).filter(park -> park.getGuild().getId() == guildId).forEach(park -> {
                 if (!park.getListOfRaising().isEmpty()) {
                     for (Integer id : new ArrayList<>(park.getListOfRaising())) {
                         if (World.world.getMountById(id) == null) {
@@ -301,58 +302,9 @@ public class GameMap {
         this.mobExtras.put(id, chances);
     }
 
-//    public void setGs(byte maxGroup, byte minSize, byte fixSize, byte maxSize) {
-//        this.maxGroup = maxGroup;
-//        this.maxSize = maxSize;
-//        this.minSize = minSize;
-//        this.fixSize = fixSize;
-//    }
-
     public List<MonsterGrade> getMobPossibles() {
         return data.mobPossibles;
     }
-
-//    public void setMobPossibles(String monsters) {
-//        if (monsters == null || monsters.equals(""))
-//            return;
-//
-//        this.mobPossibles = new ArrayList<>();
-//
-//        for (String mob : monsters.split("\\|")) {
-//            if (mob.equals(""))
-//                continue;
-//            int id1, lvl;
-//            try {
-//                id1 = Integer.parseInt(mob.split(",")[0]);
-//                lvl = Integer.parseInt(mob.split(",")[1]);
-//            } catch (NumberFormatException e) {
-//                e.printStackTrace();
-//                continue;
-//            }
-//            if (id1 == 0 || lvl == 0)
-//                continue;
-//            if (World.world.getMonstre(id1) == null)
-//                continue;
-//            if (World.world.getMonstre(id1).getGradeByLevel(lvl) == null)
-//                continue;
-//            if (Config.modeHalloween) {
-//                switch (id1) {
-//                    case 98://Tofu
-//                        if (World.world.getMonstre(794) != null)
-//                            if (World.world.getMonstre(794).getGradeByLevel(lvl) != null)
-//                                id1 = 794;
-//                        break;
-//                    case 101://Bouftou
-//                        if (World.world.getMonstre(793) != null)
-//                            if (World.world.getMonstre(793).getGradeByLevel(lvl) != null)
-//                                id1 = 793;
-//                        break;
-//                }
-//            }
-//
-//            this.mobPossibles.add(World.world.getMonstre(id1).getGradeByLevel(lvl));
-//        }
-//    }
 
     public int getMaxSize() {
         return data.mobGroupsMaxSize;
@@ -540,10 +492,6 @@ public class GameMap {
 
     public MountPark getMountPark() {
         return this.mountPark;
-    }
-
-    public void setMountPark(MountPark mountPark) {
-        this.mountPark = mountPark;
     }
 
     public int getMaxGroupNumb() {

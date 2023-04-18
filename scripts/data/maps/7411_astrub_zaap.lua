@@ -13,8 +13,7 @@ local map = MapDef(
 map.positions = "dEdTd7eiejekexey|fMfNf0f1f2gdgrgG"
 map.capabilities = 98
 map.npcs = {
-    [537]= {350, 1},
-    [180]= {450, 4},
+    [537]= {350, 1}
 }
 
 -- '1;1;1;0;0;0;0' forbiddens -> capabilities ? Or script ?
@@ -27,5 +26,7 @@ map.onMovementEnd = {
     [22] = moveEndTeleport(7410, 458),
     [247] = moveEndTeleport(7395, 245),
 }
+
+map.zaapCell = 311
 
 RegisterMapDef(map)

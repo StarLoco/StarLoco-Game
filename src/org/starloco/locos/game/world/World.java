@@ -7,6 +7,7 @@ import org.starloco.locos.area.Area;
 import org.starloco.locos.area.SubArea;
 import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.area.map.MapData;
+import org.starloco.locos.area.map.ScriptMapData;
 import org.starloco.locos.area.map.entity.*;
 import org.starloco.locos.area.map.entity.InteractiveObject.InteractiveObjectTemplate;
 import org.starloco.locos.client.Account;
@@ -44,6 +45,7 @@ import org.starloco.locos.script.DataScriptVM;
 import org.starloco.locos.script.Scripted;
 import org.starloco.locos.script.proxy.SWorld;
 import org.starloco.locos.util.TimerWaiter;
+import org.starloco.locos.database.data.game.ZaapData;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -60,11 +62,11 @@ public class World implements Scripted<SWorld> {
 
     public Logger logger = (Logger) LoggerFactory.getLogger(World.class);
 
-    private final Map<Integer, Account>    accounts    = new HashMap<>();
-    private final Map<Integer, Player>     players     = new HashMap<>();
-    private final Map<Integer, GameMap>    maps        = new ConcurrentHashMap<>();
-    private final Map<Integer, MapData>    mapsData    = new ConcurrentHashMap<>();
-    private final Map<Integer, GameObject> objects     = new ConcurrentHashMap<>();
+    private final Map<Integer, Account> accounts = new HashMap<>();
+    private final Map<Integer, Player> players = new HashMap<>();
+    private final Map<Integer, GameMap> maps = new ConcurrentHashMap<>();
+    private final Map<Integer, MapData> mapsData = new ConcurrentHashMap<>();
+    private final Map<Integer, GameObject> objects = new ConcurrentHashMap<>();
 
     private volatile ExperienceTables experiences;
 
@@ -134,7 +136,7 @@ public class World implements Scripted<SWorld> {
 
     public Account ensureAccountLoaded(int id) {
         Account account = accounts.get(id);
-        if(account == null) {
+        if (account == null) {
             ((AccountData) DatabaseManager.get(AccountData.class)).load(id);
         }
         return accounts.get(id);
@@ -192,9 +194,22 @@ public class World implements Scripted<SWorld> {
 
     public void addMapData(MapData map) {
         mapsData.put(map.id, map);
+
+        // Update zaap list
+        if (map instanceof ScriptMapData) {
+            Integer c = ((ScriptMapData) map).zaapCell;
+
+            if (c == null || c < 0) {
+                Constant.ZAAPS.remove(map.id);
+            } else {
+                Constant.ZAAPS.put(map.id, c);
+            }
+        }
+
         // Make sure the subArea knows of that map
         Optional.ofNullable(subAreas.get(map.subAreaID)).ifPresent(s -> s.addMapID(map.id));
     }
+
     public Optional<MapData> getMapData(int id) {
         return Optional.ofNullable(mapsData.get(id));
     }
@@ -219,14 +234,14 @@ public class World implements Scripted<SWorld> {
 
     public GameObject getGameObject(int id) {
         GameObject object = objects.get(id);
-        if(object == null) {
+        if (object == null) {
             object = ((ObjectData) DatabaseManager.get(ObjectData.class)).load(id);
         }
         return object;
     }
 
     public void removeGameObject(int id) {
-        if(objects.containsKey(id)) {
+        if (objects.containsKey(id)) {
             ((ObjectData) DatabaseManager.get(ObjectData.class)).delete(this.getGameObject(id));
             objects.remove(id);
         }
@@ -476,7 +491,7 @@ public class World implements Scripted<SWorld> {
 
         ((ServerData) DatabaseManager.get(ServerData.class)).update(time);
         logger.info("All data was loaded successfully at "
-        + new SimpleDateFormat("dd/MM/yyyy - HH:mm:ss", Locale.FRANCE).format(new Date()) + " in "
+                + new SimpleDateFormat("dd/MM/yyyy - HH:mm:ss", Locale.FRANCE).format(new Date()) + " in "
                 + new SimpleDateFormat("mm", Locale.FRANCE).format((System.currentTimeMillis() - time)) + " min "
                 + new SimpleDateFormat("ss", Locale.FRANCE).format((System.currentTimeMillis() - time)) + " s.");
         logger.setLevel(Level.ALL);
@@ -556,7 +571,7 @@ public class World implements Scripted<SWorld> {
                     }
                 }
                 if (mapPossible.size() <= 0) {
-                    throw new Exception(" no maps was found for the extra monster " + i.getKey() +".");
+                    throw new Exception(" no maps was found for the extra monster " + i.getKey() + ".");
                 } else {
                     GameMap randomMap;
                     if (mapPossible.size() == 1)
@@ -574,7 +589,7 @@ public class World implements Scripted<SWorld> {
                 }
 
                 mapPossible.clear();
-            } catch(Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 mapPossible.clear();
                 logger.error("An error occurred when the server try to put extra-monster caused by : " + e.getMessage());
@@ -617,7 +632,6 @@ public class World implements Scripted<SWorld> {
     public void addArea(Area area) {
         areas.put(area.getId(), area);
     }
-
 
 
     public void addSubArea(SubArea SA) {
@@ -670,10 +684,10 @@ public class World implements Scripted<SWorld> {
     }
 
     public double getConquestBonus(Player player) {
-        if(player == null) return 1;
-        if(player.getAlignment() == 0) return 1;
+        if (player == null) return 1;
+        if (player.getAlignment() == 0) return 1;
         final double factor = 1 + (getBalanceWorld(player.getAlignment()) * Math.rint((player.getGrade() / 2.5) + 1)) / 100;
-        if(factor < 1) return 1;
+        if (factor < 1) return 1;
         return factor;
     }
 
@@ -702,7 +716,7 @@ public class World implements Scripted<SWorld> {
     }
 
     public void addNpcTemplate(NpcTemplate temp) {
-        if(npcsTemplate.containsKey(temp.getId()) && temp.legacy == null) {
+        if (npcsTemplate.containsKey(temp.getId()) && temp.legacy == null) {
             Main.logger.trace("Overwriting npc template #{} with script", temp.getId());
         }
         npcsTemplate.put(temp.getId(), temp);
@@ -721,16 +735,16 @@ public class World implements Scripted<SWorld> {
                         leader = newLeader;
 
                 player.getGuild().removeMember(player);
-                if(leader != null)
+                if (leader != null)
                     leader.getGuildMember().setRank(1);
             } else {
                 player.getGuild().removeMember(player);
             }
         }
-        if(player.getWife() != 0) {
+        if (player.getWife() != 0) {
             Player wife = getPlayer(player.getWife());
 
-            if(wife != null) {
+            if (wife != null) {
                 wife.setWife(0);
             }
         }
@@ -804,9 +818,6 @@ public class World implements Scripted<SWorld> {
     }
 
 
-
-
-
     public void addIOTemplate(InteractiveObjectTemplate IOT) {
         IOTemplate.put(IOT.getId(), IOT);
     }
@@ -814,7 +825,7 @@ public class World implements Scripted<SWorld> {
     public Mount getMountById(int id) {
 
         Mount mount = Dragodindes.get(id);
-        if(mount == null) {
+        if (mount == null) {
             ((MountData) DatabaseManager.get(MountData.class)).load(id);
             mount = Dragodindes.get(id);
         }
@@ -862,7 +873,7 @@ public class World implements Scripted<SWorld> {
     }
 
     public void addFullMorph(int morphID, String name, int gfxID,
-                                    String spells, String[] args) {
+                             String spells, String[] args) {
         if (fullmorphs.get(morphID) != null)
             return;
 
@@ -892,7 +903,7 @@ public class World implements Scripted<SWorld> {
     }
 
     public int getObjectByIngredientForJob(ArrayList<Integer> list,
-                                                  Map<Integer, Integer> ingredients) {
+                                           Map<Integer, Integer> ingredients) {
         if (list == null)
             return -1;
         for (int tID : list) {
@@ -911,7 +922,6 @@ public class World implements Scripted<SWorld> {
         }
         return -1;
     }
-
 
 
     public void addItemSet(ObjectSet itemSet) {
@@ -936,11 +946,11 @@ public class World implements Scripted<SWorld> {
 
     public List<Integer> getMapIdByPosInSuperArea(int mapX, int mapY, int superArea) {
         return mapsData.values().stream()
-            .filter(Objects::nonNull)
-            .filter(map -> map.x == mapX && map.y == mapY)
-            .filter(map -> Optional.ofNullable(map.getSubArea()).map(SubArea::getArea).map(Area::getSuperArea).orElse(-1) == superArea)
-            .map(md -> md.id)
-            .collect(Collectors.toList());
+                .filter(Objects::nonNull)
+                .filter(map -> map.x == mapX && map.y == mapY)
+                .filter(map -> Optional.ofNullable(map.getSubArea()).map(SubArea::getArea).map(Area::getSuperArea).orElse(-1) == superArea)
+                .map(md -> md.id)
+                .collect(Collectors.toList());
     }
 
     public void addGuild(Guild g) {
@@ -964,7 +974,7 @@ public class World implements Scripted<SWorld> {
 
     public Guild getGuild(int i) {
         Guild guild = Guildes.get(i);
-        if(guild == null) {
+        if (guild == null) {
             ((GuildData) DatabaseManager.get(GuildData.class)).load(i);
             guild = Guildes.get(i);
         }
@@ -989,7 +999,7 @@ public class World implements Scripted<SWorld> {
 
     public int getEncloCellIdByMapId(int i) {
         GameMap map = getMap(i);
-        if(map != null && map.getMountPark() != null && map.getMountPark().getCell() > 0)
+        if (map != null && map.getMountPark() != null && map.getMountPark().getCell() > 0)
             return map.getMountPark().getCell();
         return -1;
     }
@@ -1100,7 +1110,7 @@ public class World implements Scripted<SWorld> {
     }
 
     public void priestRequest(Player boy, Player girl, Player asked) {
-        if(boy.getSexe() == 0 && girl.getSexe() == 1) {
+        if (boy.getSexe() == 0 && girl.getSexe() == 1) {
             final GameMap map = boy.getCurMap();
             if (boy.getWife() != 0) {// 0 : femme | 1 = homme
                 boy.setBlockMovement(false);
@@ -1168,7 +1178,7 @@ public class World implements Scripted<SWorld> {
         MountPark.put(mp.getMap(), mp);
     }
 
-    public Map<Integer, MountPark> getMountPark() {
+    public Map<Integer, MountPark> getMountParks() {
         return MountPark;
     }
 
@@ -1242,8 +1252,8 @@ public class World implements Scripted<SWorld> {
         int subareas = 0;
 
         for (SubArea subarea : subAreas.values()) {
-            if(player.getCurMap() != null && player.getCurMap().getSubArea() != null)
-                if(subarea.getArea().getSuperArea() != player.getCurMap().getSubArea().getArea().getSuperArea())
+            if (player.getCurMap() != null && player.getCurMap().getSubArea() != null)
+                if (subarea.getArea().getSuperArea() != player.getCurMap().getSubArea().getArea().getSuperArea())
                     continue;
             if (!subarea.getConquerable())
                 continue;
@@ -1272,7 +1282,7 @@ public class World implements Scripted<SWorld> {
         }
 
         Map<Integer, Long> factionAreaCounts = subAreaCountByFaction();
-        long bontaAndBrakCount = factionAreaCounts.getOrDefault(Constant.ALIGNEMENT_BONTARIEN,0L) + factionAreaCounts.getOrDefault(Constant.ALIGNEMENT_BRAKMARIEN, 0L);
+        long bontaAndBrakCount = factionAreaCounts.getOrDefault(Constant.ALIGNEMENT_BONTARIEN, 0L) + factionAreaCounts.getOrDefault(Constant.ALIGNEMENT_BRAKMARIEN, 0L);
         if (alignement == 1)
             str.insert(0, Area.bontarians + "|" + subareas + "|"
                     + (subareas - (bontaAndBrakCount)) + "|");
@@ -1328,10 +1338,10 @@ public class World implements Scripted<SWorld> {
     }
 
     public String getChallengeFromConditions(boolean sevEnn,
-                                                    boolean sevAll, boolean bothSex, boolean EvenEnn, boolean MoreEnn,
-                                                    boolean hasCaw, boolean hasChaf, boolean hasRoul, boolean hasArak,
-                                                    int isBoss, boolean ecartLvlPlayer, boolean hasArround,
-                                                    boolean hasIndirectDamage, boolean isSolo) {
+                                             boolean sevAll, boolean bothSex, boolean EvenEnn, boolean MoreEnn,
+                                             boolean hasCaw, boolean hasChaf, boolean hasRoul, boolean hasArak,
+                                             int isBoss, boolean ecartLvlPlayer, boolean hasArround,
+                                             boolean hasIndirectDamage, boolean isSolo) {
         StringBuilder toReturn = new StringBuilder();
         boolean isFirst = true, isGood = false;
         int cond;
@@ -1504,7 +1514,7 @@ public class World implements Scripted<SWorld> {
     }
 
     public ArrayList<String> getRandomChallenge(int nombreChal,
-                                                       String challenges) {
+                                                String challenges) {
         String MovingChals = ";1;2;8;36;37;39;40;";// Challenges de d�placements incompatibles
         boolean hasMovingChal = false;
         String TargetChals = ";3;4;10;25;31;32;34;35;38;42;";// ceux qui ciblent
@@ -1604,7 +1614,7 @@ public class World implements Scripted<SWorld> {
     }
 
     public void removeSeller(int player, int map) {
-        if(getSeller(map) != null)
+        if (getSeller(map) != null)
             Seller.get(map).remove(player);
     }
 
@@ -1776,12 +1786,14 @@ public class World implements Scripted<SWorld> {
 
         public Drop copy(int grade) {
             Drop drop = new Drop(this.objectId, null, this.ceil, this.action, this.level, this.condition);
-            if(this.percents == null) return null;
-            if(this.percents.isEmpty()) return null;
+            if (this.percents == null) return null;
+            if (this.percents.isEmpty()) return null;
             try {
                 if (this.percents.get(grade - 1) == null) return null;
                 drop.localPercent = this.percents.get(grade - 1);
-            } catch(IndexOutOfBoundsException ignored) { return null; }
+            } catch (IndexOutOfBoundsException ignored) {
+                return null;
+            }
             return drop;
         }
     }

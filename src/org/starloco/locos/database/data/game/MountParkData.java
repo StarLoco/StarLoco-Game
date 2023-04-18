@@ -20,7 +20,7 @@ public class MountParkData extends FunctionDAO<MountPark> {
             getData("SELECT * from mountpark_data", result -> {
                 while (result.next()) {
                     int map = result.getInt("mapid");
-                    MountPark park = World.world.getMountPark().get(map);
+                    MountPark park = World.world.getMountParks().get(map);
                     if (park == null) continue;
                     int owner = result.getInt("owner");
                     int guild = result.getInt("guild");

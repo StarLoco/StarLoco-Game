@@ -546,11 +546,7 @@ public class Player implements Scripted<SPlayer> {
     public static Player create(String name, int sexe, int classe, int color1, int color2, int color3, Account compte) {
         String z = "";
         if (Config.allZaap) {
-            for (Entry<Integer, Integer> i : Constant.ZAAPS.entrySet()) {
-                if (z.length() != 0)
-                    z += ",";
-                z += i.getKey();
-            }
+            z = Constant.ZAAPS.keySet().stream().map(Object::toString).collect(Collectors.joining(","));
         }
         if (classe > 12 || classe < 1)
             return null;
@@ -4182,8 +4178,13 @@ public class Player implements Scripted<SPlayer> {
         if(this.curMap.getSubArea() != null) {
             //int SubAreaID = curMap.getSubArea().getArea().getSuperArea();
             for (int i : _zaaps) {
-                if (World.world.getMap(i) == null)
+                try {
+                    if (World.world.getMap(i) == null)
+                        continue;
+                }catch(NullPointerException e) {
+                    Main.logger.error("Unknown zaap map #{}", i);
                     continue;
+                }
                 //if (World.world.getMap(i).getSubArea().getArea().getSuperArea() != SubAreaID)
                 //    continue;
                 int cost = Formulas.calculZaapCost(this, curMap, World.world.getMap(i));
