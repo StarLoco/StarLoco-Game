@@ -13,7 +13,7 @@ require("./data/FightTypes")
 require("./data/GearSlots")
 require("./data/Jobs")
 
-loadDir("./data/npcs/tested")
+loadDir("./data/npcs/")
 loadDir("./data/maps")
 
 loadDir("./data/dungeons") -- Always load last
