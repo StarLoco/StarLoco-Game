@@ -2,6 +2,8 @@ local npc = Npc(177, 9059)
 
 npc.colors = {6380875, 16777215, 11250604}
 
+---@param p Player
+---@param answer number
 function npc:onTalk(p, answer)
     if answer == 0 then p:ask(677, {605})
     elseif answer == 605 then

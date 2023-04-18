@@ -1,5 +1,6 @@
 local npc = Npc(385, 9059)
 --Ancien NPC utilisé dans les débuts du jeu quand la zone de départ était encore Tainéla, ne semble plus utilisé à l'heure actuelle
+
 ---@param p Player
 ---@param answer number
 function npc:onTalk(p, answer)

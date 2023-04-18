@@ -1,6 +1,7 @@
 local npc = Npc(800, 1535)
 
 ---@param p Player
+---@param answer number
 function npc:onTalk(p, answer)
     if p:mapID() == 6738 then 
         BrakmarRatDungeon:onTalkToGateKeeper(p, answer)

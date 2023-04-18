@@ -4,6 +4,7 @@ npc.gender = 1
 
 local questID = 185
 ---@param p Player
+---@param answer number
 function npc:onTalk(p, answer)
     if p:questAvailable(questID) and answer == 0 then
         p:ask(3718, {3258,3257})

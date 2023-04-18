@@ -4,6 +4,7 @@ npc.colors = {16055037, -1, 2403546}
 npc.accessories = {0, 0x24b3, 0, 0, 0}
 
 ---@param p Player
+---@param answer number
 function npc:onTalk(p, answer)
     if p:mapID() == 11878 then
         BlopDungeon:onTalkToGateKeeper(p, answer)
