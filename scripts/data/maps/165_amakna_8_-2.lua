@@ -11,13 +11,19 @@ local map = MapDef(
 )
 
 map.positions = "fcfFfGfUf9glgmgP|bcbdbebsbHbVbWbX"
+map.capabilities = 0
+
 map.allowedMobGrades = {
-    {63, 6},
-    {31, 5},
-    {31, 6},
-    {31, 4},
-    {63, 4},
+    {31, 1},
     {31, 2},
+    {31, 3},
+    {31, 4},
+    {31, 5},
+    {63, 1},
+    {63, 2},
+    {63, 3},
+    {63, 4},
+    {63, 5}
 }
 
 map.onMovementEnd = {
