@@ -5,6 +5,7 @@ local group1 = {
     {566, {1,2,3,4,5}},
     {566, {1,2,3,4,5}}
 }
+
 local group2 = {
     {578, {1,2,3,4,5}},
     {578, {1,2,3,4,5}},
@@ -83,10 +84,10 @@ local mapInfos = {
     [8322] = {groupCell= 292, group= group3, winDest= {8326,433}},
     [8326] = {groupCell= 386, group= group4, winDest= {8327,433}},
     [8327] = {groupCell= 324, group= group5, winDest= {8328,433}},
-	[8328] = {groupCell= 329, group= group5, winDest= {8329,433}},
-	[8329] = {groupCell= 205, group= group5, winDest= {8330,231}},
-	[8330] = {groupCell= 239, group= group5, winDest= {8331,273}},
-    [8331] = {groupCell= 237, group= group6, winDest= {8497,42}}
+	[8328] = {groupCell= 329, group= group6, winDest= {8329,433}},
+	[8329] = {groupCell= 205, group= group7, winDest= {8330,231}},
+	[8330] = {groupCell= 239, group= group8, winDest= {8331,273}},
+    [8331] = {groupCell= 237, group= group9, winDest= {8497,42}}
 }
 
 for k,v in pairs(mapInfos) do
