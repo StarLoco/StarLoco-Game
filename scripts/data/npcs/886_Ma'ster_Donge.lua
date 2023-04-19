@@ -26,6 +26,7 @@ function npc:onTalk(p, answer)
             --TODO: NEED TO ADD DIALOGID WHEN WE SPEAK TO HIM WITH QUEST ALREADY COMPLETED
             p:ask()
     elseif p:mapID() == 10359 then
+        --TODO: if we dont have the key/keychain the only response is "3359" and if we have one of them responses are 3358/3359
         IncarnamDungeon:onTalkToGateKeeper(p, answer)
     elseif p:mapID() == 10364 then
         if answer == 0 then
