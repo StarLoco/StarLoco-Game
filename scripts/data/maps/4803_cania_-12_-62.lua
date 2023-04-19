@@ -60,7 +60,7 @@ local function tryEntering(_, _, p)
     if p:isGhost() then
         p:teleport(5699, 255)
     else
-        -- TODO: send error (in chat)
+        --nothing (no chat error on offi)
     end
 end
 

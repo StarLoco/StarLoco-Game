@@ -16,6 +16,30 @@ map.npcs = {
     [1269] = {148, 1}
 }
 
+local mobGroup1 = {
+    {494, {1}}
+}
+local mobGroup2 = {
+    {494, {2}}
+}
+local mobGroup3 = {
+    {494, {3}}
+}
+local mobGroup4 = {
+    {494, {4}}
+}
+local mobGroup5 = {
+    {494, {5}}
+}
+
+map.staticGroups = {
+    {295, mobGroup1},
+    {281, mobGroup2},
+    {267, mobGroup3},
+    {253, mobGroup4},
+    {239, mobGroup5}
+}
+
 map.onMovementEnd = {
     [303] = moveEndTeleport(12223,210),
     [249] = moveEndTeleport(12224,239),
@@ -24,5 +48,5 @@ map.onMovementEnd = {
     [416] = moveEndTeleport(12228,301),
     [136] = moveEndTeleport(12229,30)
 }
---TODO: ADD POUTCHS
+
 RegisterMapDef(map)
