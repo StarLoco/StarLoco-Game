@@ -3163,6 +3163,10 @@ public class Player implements Scripted<SPlayer> {
     }
 
     public void teleport(int newMapID, int newCellID) {
+        teleport(newMapID, newCellID, false);
+    }
+
+    public void teleport(int newMapID, int newCellID, boolean forceGDM) {
         GameClient client = this.getGameClient();
         GameMap map = World.world.getMap(newMapID);
 
@@ -3171,7 +3175,7 @@ public class Player implements Scripted<SPlayer> {
         if (map.getCase(newCellID) == null)
             return;
 
-        if (client != null && newMapID == this.curMap.getId()) {
+        if (!forceGDM && client != null && newMapID == this.curMap.getId()) {
             SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(this.curMap, this.getId());
             this.curCell.removePlayer(this);
             this.curCell = curMap.getCase(newCellID);
@@ -3705,7 +3709,7 @@ public class Player implements Scripted<SPlayer> {
 
     public void warpToSavePos() {
         try {
-            this.teleport(_savePos);
+            this.teleport(this._savePos.first, this._savePos.second, true);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -4374,7 +4378,7 @@ public class Player implements Scripted<SPlayer> {
     public void Zaapi_use(String packet) {
         if (this.getExchangeAction() == null || this.getExchangeAction().getType() != ExchangeAction.IN_ZAPPI)
             return;
-        GameMap map = World.world.getMap(Short.valueOf(packet.substring(2)));
+        GameMap map = World.world.getMap(Integer.valueOf(packet.substring(2)));
 
         short cell = 100;
         if (map != null) {
@@ -4394,7 +4398,7 @@ public class Player implements Scripted<SPlayer> {
                 SocketManager.GAME_SEND_STATS_PACKET(this);
                 if ((map.getSubArea().getArea().getId() == 7 && this.getCurMap().getSubArea().getArea().getId() == 7)
                         || (map.getSubArea().getArea().getId() == 11 && this.getCurMap().getSubArea().getArea().getId() == 11)) {
-                    this.teleport(Short.valueOf(packet.substring(2)), cell);
+                    this.teleport(Integer.valueOf(packet.substring(2)), cell, false);
                 }
                 SocketManager.GAME_SEND_CLOSE_ZAAPI_PACKET(this);
                 this.setExchangeAction(null);

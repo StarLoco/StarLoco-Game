@@ -4281,7 +4281,7 @@ public class Action {
             case 1001:
                 mapId = Integer.parseInt(this.args.split(",")[0]);
                 cell = Integer.parseInt(this.args.split(",")[1]);
-                player.teleport(mapId, cell);
+                player.teleport(mapId, cell, true);
                 break;
 
             case 1002: // Add Multiple objects
