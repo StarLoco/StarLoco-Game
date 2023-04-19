@@ -18,9 +18,9 @@ function npc:onTalk(p, answer)
             return
         end
         -- Ongoing quest dialog
-        return p:ask(3720, {})
+        return p:ask(3720)
     elseif p:questFinished(questID) then
-        p:ask(3719, {})
+        p:ask(3719)
     -- elseif answer == 3257 then p:endDialog()
     else p:endDialog() end
 end
