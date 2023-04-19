@@ -12,9 +12,16 @@ local map = MapDef(
 
 map.positions = "hVitivi3i5jBjDkb|aTaXa_bdcPc7i_js"
 map.capabilities = 0
-
 map.npcs = {
 	[214] = {397, 1}
+}
+
+map.allowedMobGrades = {
+	{296, 1},
+	{296, 2},
+	{296, 3},
+	{296, 4},
+	{296, 5}
 }
 
 map.onMovementEnd = {
@@ -24,5 +31,4 @@ map.onMovementEnd = {
 	[25] = moveEndTeleport(4272,749)
 }
 
---TODO: ADD MOBS
 RegisterMapDef(map)

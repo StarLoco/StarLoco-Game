@@ -1,6 +1,7 @@
 local npc = Npc(137, 9055)
 
 ---@param p Player
+---@param answer number
 function npc:onTalk(p, answer)
     if answer == 0 then 
         p:ask(470, {394, 395, 396})

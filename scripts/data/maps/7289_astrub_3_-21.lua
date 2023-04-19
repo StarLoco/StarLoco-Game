@@ -12,10 +12,29 @@ local map = MapDef(
 
 map.positions = "cgcucvcIcJcWcXc_|fkfyfzfMfNf0f1gd"
 map.capabilities = 34
-
 map.npcs = {
 	[504] = {400, 1},
 	[554] = {295, 3}
+}
+
+map.allowedMobGrades = {
+	{273, 1},
+	{273, 4},
+	{274, 1},
+	{275, 1},
+	{275, 2},
+	{275, 4},
+	{275, 5},
+	{276, 1},
+	{276, 2},
+	{276, 3},
+	{276, 4},
+	{276, 5},
+	{277, 5},
+	{279, 1},
+	{279, 5},
+	{293, 3},
+	{293, 4}
 }
 
 local function tryEntering(_, _, p)
@@ -33,5 +52,5 @@ map.onMovementEnd = {
 	[305] = moveEndTeleport(7377,390),
 	[229] = tryEntering
 }
---TODO: ADD MOBS
+
 RegisterMapDef(map)

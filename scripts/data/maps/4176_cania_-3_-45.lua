@@ -12,7 +12,6 @@ local map = MapDef(
 
 map.positions = "dgdvdwdKf7f8gkgl|dadoeyeNe5fffift"
 map.capabilities = 0
-
 map.npcs = {
 	[196] = {169, 1}
 }

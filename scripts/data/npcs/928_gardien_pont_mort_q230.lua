@@ -7,6 +7,7 @@ local bonusPods = 500
 local coralWeight = 10
 
 ---@param p Player
+---@param answer number
 local fail = function(p)
     p:endDialog()
     p:forceFight({-1, {

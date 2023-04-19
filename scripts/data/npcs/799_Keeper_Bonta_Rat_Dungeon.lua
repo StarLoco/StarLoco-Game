@@ -1,6 +1,7 @@
 local npc = Npc(799, 1436)
 
 ---@param p Player
+---@param answer number
 function npc:onTalk(p, answer)
     if p:mapID() == 6536 then 
         BontaRatDungeon:onTalkToGateKeeper(p, answer)

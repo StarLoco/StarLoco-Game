@@ -1,6 +1,7 @@
 local npc = Npc(759, 1363)
 
 ---@param p Player
+---@param answer number
 function npc:onTalk(p, answer)
 local hasAllBroches = p:getItem(7935) and p:getItem(7936) and p:getItem(7937) and p:getItem(7938)
     if answer == 0 then 

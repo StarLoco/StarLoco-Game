@@ -4,6 +4,7 @@ npc.gender = 1
 npc.accessories = {0, 0, 0, 0x1ee7, 0}
 
 ---@param p Player
+---@param answer number
 function npc:onTalk(p, answer)
 	local hasAllItems = p:getItem(8003) and p:getItem(8004) and p:getItem(8005) and p:getItem(8006) and p:getItem(8007) and p:getItem(8008) and p:getItem(8009)
     if answer == 0 then

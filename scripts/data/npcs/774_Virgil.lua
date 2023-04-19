@@ -2,8 +2,8 @@ local npc = Npc(774, 9048)
 
 -- TODO: How to get to questions 3183, 3200 ?
 
-
 ---@param p Player
+---@param answer number
 function npc:onTalk(p, answer)
     if p:mapID() == 2985 then 
 		LordCrowDungeon:onTalkToGateKeeper(p, answer)

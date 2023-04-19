@@ -3,6 +3,7 @@ local npc = Npc(777, 30)
 npc.accessories = {0, 0x1b12, 0, 0, 0}
 
 ---@param p Player
+------@param answer number
 local dungeon = TofuDungeon
 function npc:onTalk(p, answer)
     if answer == 0 then p:ask(3162, {2780})

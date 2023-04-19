@@ -3,6 +3,8 @@ local npc = Npc(134, 9053)
 npc.gender = 1
 
 local price = 500
+---@param p Player
+---@param answer number
 function npc:onTalk(p, answer)
     if answer == 0 then
         local responses = p:kamas() >= price and {387} or {}
