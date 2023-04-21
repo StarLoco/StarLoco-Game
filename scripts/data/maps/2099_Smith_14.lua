@@ -12,5 +12,5 @@ local map = MapDef(
 
 map.positions = "dceyfifrfHfTgogA|cCcOcRc-dndxfOgs"
 map.capabilities = 47
-
+--TODO: ADD EMOTE
 RegisterMapDef(map)

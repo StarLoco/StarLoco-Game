@@ -55,7 +55,7 @@ local function tryEntering(_, _, p)
     if p:isGhost() then
         p:teleport(5700, 165)
     else
-        -- TODO: send error (in chat)
+        --nothing (no chat error on offi)
     end
 end
 
@@ -66,5 +66,5 @@ map.onMovementEnd = {
 	[22] = moveEndTeleport(5218,442),
 	[238] = tryEntering
 }
---TODO:ADD MOBS
+
 RegisterMapDef(map)
