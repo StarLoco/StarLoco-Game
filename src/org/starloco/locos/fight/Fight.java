@@ -1783,7 +1783,7 @@ public class Fight {
 
                 player.refreshLife(false);
 
-                if (!player.getCurCell().isWalkable(true))
+                if (!player.getCurCell().isWalkableFight())
                     player.teleport(player.getCurMap(), player.getCurMap().getRandomFreeCellId());
                 if (player.getAccount().isBanned())
                     player.getGameClient().kick();
@@ -4103,7 +4103,7 @@ public class Fight {
 
                 player.refreshLife(false);
 
-                if (!player.getCurCell().isWalkable(true))
+                if (!player.getCurCell().isWalkableFight())
                     player.teleport(player.getCurMap(), player.getCurMap().getRandomFreeCellId());
                 if (player.getAccount().isBanned())
                     player.getGameClient().kick();

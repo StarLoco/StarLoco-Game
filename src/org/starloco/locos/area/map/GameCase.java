@@ -26,16 +26,17 @@ import java.util.List;
 public class GameCase {
 
     private int id;
-    private boolean walkable = true, loS = true;
+    private boolean loS = true;
+    private int movement;
 
     private List<Player> players;
     private ArrayList<Fighter> fighters;
     private InteractiveObject object;
     private GameObject droppedItem;
 
-    public GameCase(GameMap map, int id, boolean walkable, boolean loS, int objId) {
+    public GameCase(GameMap map, int id, int movement, boolean loS, int objId) {
         this.id = id;
-        this.walkable = walkable;
+        this.movement = movement;
         this.loS = loS;
         if (objId != -1)
             this.object = new InteractiveObject(objId, map, this);
@@ -45,10 +46,26 @@ public class GameCase {
         return id;
     }
 
-    public boolean isWalkable(boolean useObject) {
+    private boolean _isWalkable(boolean inFight) {
+        switch (movement) {
+            case 0:
+                return false;
+            case 1:
+                // Only walkable out of fights
+                return !inFight;
+            default: // 2+
+                return true;
+        }
+    }
+
+    public boolean isWalkable(boolean useObject, boolean inFight) {
         if (this.object != null && useObject)
-            return this.walkable && this.object.isWalkable();
-        return this.walkable;
+            return this._isWalkable(inFight) && this.object.isWalkable();
+        return this._isWalkable(inFight);
+    }
+
+    public boolean isWalkableFight() {
+        return this._isWalkable(true);
     }
 
     public boolean isWalkable(boolean useObject, boolean inFight, int targetCell) {
@@ -68,7 +85,7 @@ public class GameCase {
                     case 7533:
                     case 7551:
                     case 7514:
-                        return this.walkable;
+                        return this._isWalkable(inFight);
                     case 6763:
                     case 6766:
                     case 6767:
@@ -76,9 +93,9 @@ public class GameCase {
                         return false;
                 }
             }
-            return this.walkable && this.object.isWalkable();
+            return this._isWalkable(inFight) && this.object.isWalkable();
         }
-        return this.walkable;
+        return this._isWalkable(inFight);
     }
 
     public boolean isLoS() {
@@ -959,7 +976,7 @@ public class GameCase {
                     return;
                 }
                 GameCase caseHouse = mapHouse.getCase(house.getHouseCellId());
-                if (caseHouse == null || !caseHouse.isWalkable(true)) {
+                if (caseHouse == null || !caseHouse.isWalkable(true, false)) {
                     SocketManager.GAME_SEND_MESSAGE(player, player.getLang().trans("area.map.gamecase.startaction.house.broken"));
                     return;
                 }

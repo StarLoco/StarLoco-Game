@@ -42,7 +42,7 @@ public class NpcMovable extends Npc {
 
             for (short i = 0; i <= nbr; i++) {
                 cell = PathFinding.getCaseIDFromDirrection(cell, NpcMovable.getDirByChar(dir), map);
-                if (!map.getCase(cell).isWalkable(true)) break;
+                if (!map.getCase(cell).isWalkable(true, false)) break;
                 oldCell = cell;
             }
 

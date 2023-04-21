@@ -454,7 +454,7 @@ public class CommandPlayer {
             return true;
         if (player.getFight() != null)
             return true;
-        if (player.getCurCell().isWalkable(true)) {
+        if (player.getCurCell().isWalkable(true, false)) {
             player.sendMessage(player.getLang().trans("command.commandplayer.deblo.no"));
             return true;
         }

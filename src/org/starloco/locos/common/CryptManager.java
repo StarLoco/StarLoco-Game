@@ -60,7 +60,7 @@ public class CryptManager {
             list = new ArrayList<>();
             while (a < infos.length()) {
                 GameCase cell = map.getCase((getIntByHashedValue(infos.charAt(a)) << 6) + getIntByHashedValue(infos.charAt(a + 1)));
-                if(cell != null && cell.isWalkable(false))
+                if(cell != null && cell.isWalkable(false, false))
                     list.add(cell);
                 a = a + 2;
             }
@@ -169,11 +169,11 @@ public class CryptManager {
                 for (int i = 0; i < cellData.length(); i++)
                     array[i] = (byte) getIntByHashedValue(cellData.charAt(i));
 
-                boolean walkable = true, los = true;
+                boolean los = true;
                 short groundSlope, groundLevel;
                 int io;
 
-                walkable = (((array[2] & 56 ) >> 3) != 0 && !cellData.equalsIgnoreCase("bhGaeaaaaa") && !cellData.equalsIgnoreCase("Hhaaeaaaaa"));
+                int walkable = ((array[2] & 56 ) >> 3); //  && !cellData.equalsIgnoreCase("bhGaeaaaaa") && !cellData.equalsIgnoreCase("Hhaaeaaaaa"))
                 if((array[0] & 1) == 0)
                     los = false;
                 if(los) losCells.add(cellId);

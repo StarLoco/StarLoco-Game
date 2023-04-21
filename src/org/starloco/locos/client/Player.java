@@ -4283,7 +4283,7 @@ public class Player implements Scripted<SPlayer> {
         }
 
         GameCase cell = map.getCase(World.world.getZaapCellIdByMapId(id));
-        if (cell == null || !cell.isWalkable(true)) {
+        if (cell == null || !cell.isWalkable(true, false)) {
             SocketManager.GAME_SEND_WUE_PACKET(this);
             return;
         }

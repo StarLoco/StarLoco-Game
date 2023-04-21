@@ -308,7 +308,7 @@ public class PathFinding {
         for (int a = 0; a < value; a++) {
             int nextCase = GetCaseIDFromDirrection(id, c, map, true);
 
-            if (map.getCase(nextCase) != null && map.getCase(nextCase).isWalkable(false) && map.getCase(nextCase).getFirstFighter() == null)
+            if (map.getCase(nextCase) != null && map.getCase(nextCase).isWalkableFight() && map.getCase(nextCase).getFirstFighter() == null)
                 id = nextCase;
             else
                 return -(value - a);
@@ -347,7 +347,7 @@ public class PathFinding {
         for (int a = 0; a < value; a++) {
             nextCase = GetCaseIDFromDirrection(id, dir, map, true);
 
-            if (map.getCase(nextCase) != null && map.getCase(nextCase).isWalkable(false) && map.getCase(nextCase).getFighters().isEmpty())
+            if (map.getCase(nextCase) != null && map.getCase(nextCase).isWalkableFight() && map.getCase(nextCase).getFighters().isEmpty())
                 id = nextCase;
             else
                 return -(value - a);
@@ -461,7 +461,7 @@ public class PathFinding {
                 continue;
             if(c == hd)
             {
-                if(!c.isWalkable(false) && bg != null || c.getFirstFighter() != null && bg != null)
+                if(!c.isWalkableFight() && bg != null || c.getFirstFighter() != null && bg != null)
                 {
                     // On cherche la distance entre
                     int dis = PathFinding.getDistanceBetween(map, endCell, bg.getId());
@@ -479,7 +479,7 @@ public class PathFinding {
             }
             else if(c == bg)
             {
-                if(!c.isWalkable(false) && hd != null || c.getFirstFighter() != null && hd != null)
+                if(!c.isWalkableFight() && hd != null || c.getFirstFighter() != null && hd != null)
                 {
                     // On cherche la distance entre
                     int dis = PathFinding.getDistanceBetween(map, endCell, hd.getId());
@@ -497,7 +497,7 @@ public class PathFinding {
             }
             else if(c == bd)
             {
-                if(!c.isWalkable(false) && hg != null || c.getFirstFighter() != null && hg != null)
+                if(!c.isWalkableFight() && hg != null || c.getFirstFighter() != null && hg != null)
                 {
                     // On cherche la distance entre
                     int dis = PathFinding.getDistanceBetween(map, endCell, hg.getId());
@@ -515,7 +515,7 @@ public class PathFinding {
             }
             else if(c == hg)
             {
-                if(!c.isWalkable(false) && bd != null || c.getFirstFighter() != null && bd != null)
+                if(!c.isWalkableFight() && bd != null || c.getFirstFighter() != null && bd != null)
                 {
                     // On cherche la distance entre
                     int dis = PathFinding.getDistanceBetween(map, endCell, bd.getId());
@@ -549,7 +549,7 @@ public class PathFinding {
                 continue;
             Fighter f = cell.getFirstFighter();
 
-            if (f == null && cell.isWalkable(false))
+            if (f == null && cell.isWalkableFight())
                 return cell.getId();
         }
         return 0;
@@ -565,7 +565,7 @@ public class PathFinding {
 
             if (cell != null) {
                 Fighter fighter = cell.getFirstFighter();
-                if (fighter == null && cell.isWalkable(false)) {
+                if (fighter == null && cell.isWalkableFight()) {
                     if(cellsUnavailable != null && cellsUnavailable.contains(cell.getId()))
                         continue;
                     return cell.getId();
@@ -709,7 +709,7 @@ public class PathFinding {
             if(getOpositeDirection(perso) == d) {
                 int c = PathFinding.GetCaseIDFromDirrection(startCell, d, map, true);
                 if (map.getCase(c) == null) continue;
-                if(!map.getCase(c).isWalkable(false) || map.getCase(c).getFirstFighter() != null) {
+                if(!map.getCase(c).isWalkableFight() || map.getCase(c).getFirstFighter() != null) {
                     int dis = PathFinding.getDistanceBetween(map, endCell, map.getCase(c).getId());
                     if (dis < dist && !forbidens.contains(map.getCase(c)) && F.getCell() != map.getCase(c)) {
                         // On crée la distance
@@ -951,7 +951,7 @@ public class PathFinding {
                     return true;
                 if (GetCaseIDFromDirrection(c.getId(), dir, map, true) == -1)
                     break;
-                if(!c.isWalkable(true) || c.getFirstFighter() != null)
+                if(!c.isWalkableFight() || c.getFirstFighter() != null)
                     break;
                 c = map.getCase(GetCaseIDFromDirrection(c.getId(), dir, map, true));
             }
@@ -1207,7 +1207,7 @@ public class PathFinding {
             int dis = PathFinding.getDistanceBetween(map, endCell, c);
             if (map.getCase(c) == null)
                 continue;
-            if (dis < dist && map.getCase(c).isWalkable(true)
+            if (dis < dist && map.getCase(c).isWalkableFight()
                     && map.getCase(c).getFirstFighter() == null
                     && !forbidens.contains(map.getCase(c))) {
                 dist = dis;
@@ -1343,7 +1343,7 @@ public class PathFinding {
         for (Integer cellID : CellsToConsider) {
             if (map.getCase(cellID) != null)
                 if (!map.getCase(cellID).blockLoS()
-                        || (!map.getCase(cellID).isWalkable(false) && isPeur)) {
+                        || (!map.getCase(cellID).isWalkableFight() && isPeur)) {
                     return false;
                 }
         }
@@ -1517,7 +1517,7 @@ public class PathFinding {
         while (actualCell.getId() != endCell) {
             actualCell = map.getCase(getCellArroundByDir(actualCell.getId(), direction, map));
             if (!actualCell.getFighters().isEmpty()
-                    || !actualCell.isWalkable(false))
+                    || !actualCell.isWalkableFight())
                 return oldCell;
 
             for (Trap trap : fight.getTraps()) {

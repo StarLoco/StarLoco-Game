@@ -759,7 +759,7 @@ public class Mount {
 				}
 				break;
 			}
-			if(map.getCase(cellTest).isWalkable(true) && MP.getDoor() != cellTest && !map.cellSide(cell, cellTest))
+			if(map.getCase(cellTest).isWalkable(true, false) && MP.getDoor() != cellTest && !map.cellSide(cell, cellTest))
 			{
 				cell = cellTest;
 				path += dir + World.world.getCryptManager().cellID_To_Code(cell);
@@ -895,7 +895,7 @@ public class Mount {
 				}
 				break;
 			}
-			if(map.getCase(cellTest).isWalkable(false) && MP.getDoor() != cellTest && !map.cellSide(cell, cellTest)) 
+			if(map.getCase(cellTest).isWalkable(false, false) && MP.getDoor() != cellTest && !map.cellSide(cell, cellTest))
 			{
 				cell = cellTest;
 				path += dir + World.world.getCryptManager().cellID_To_Code(cell);

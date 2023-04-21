@@ -1136,7 +1136,7 @@ public class SpellEffect implements Cloneable {
 
 	private void applyEffect_51(final Fight fight) {
 		//Si case pas libre
-		if (!cell.isWalkable(true) || cell.getFighters().size() > 0) return;
+		if (!cell.isWalkableFight() || cell.getFighters().size() > 0) return;
 		Fighter target = caster.getIsHolding();
 		if (target == null) return;
 		//if(target.isState(6))return;//Stabilisation
@@ -4049,7 +4049,7 @@ public class SpellEffect implements Cloneable {
 	}
 
 	private void applyEffect_400(Fight fight) {
-		if (!cell.isWalkable(true) && cell.getFirstFighter() != null && !cell.getFirstFighter().isHidden())
+		if (!cell.isWalkableFight() && cell.getFirstFighter() != null && !cell.getFirstFighter().isHidden())
 			return;
 
 		for (Trap trap : fight.getTraps()) {
@@ -4074,7 +4074,7 @@ public class SpellEffect implements Cloneable {
 	}
 
 	private void applyEffect_401(Fight fight) {
-		if (!cell.isWalkable(false) && cell.getFirstFighter() != null)
+		if (!cell.isWalkableFight() && cell.getFirstFighter() != null)
 			return;
 
 		String[] infos = args.split(";");
@@ -4093,7 +4093,7 @@ public class SpellEffect implements Cloneable {
 	}
 
 	private void applyEffect_402(Fight fight) {
-		if (!cell.isWalkable(true))
+		if (!cell.isWalkableFight())
 			return;
 
 		String[] infos = args.split(";");
@@ -4492,7 +4492,7 @@ public class SpellEffect implements Cloneable {
 				case 463:
 					continue;
 			}
-			if (!celll.isWalkable(false))
+			if (!celll.isWalkableFight())
 				continue;
 			Glyph g = new Glyph(fight, caster, celll, (byte) 0, TS, duration, spell);
 			fight.getGlyphs().add(g);
@@ -4527,7 +4527,7 @@ public class SpellEffect implements Cloneable {
 			celll = entry;
 			if (celll == null)
 				continue;
-			if (!celll.isWalkable(false))
+			if (!celll.isWalkableFight())
 				continue;
 			Glyph g = new Glyph(fight, caster, celll, (byte) 0, TS, duration, spell);
 			fight.getGlyphs().add(g);
@@ -4546,7 +4546,7 @@ public class SpellEffect implements Cloneable {
 		byte duration = 100;
 		SortStats TS = World.world.getSort(spellID).getStatsByLevel(level);
 
-		if (cell.isWalkable(true) && !fight.isOccuped(cell.getId())) {
+		if (cell.isWalkableFight() && !fight.isOccuped(cell.getId())) {
 			caster.getCell().getFighters().clear();
 			caster.setCell(cell);
 			caster.getCell().addFighter(caster);

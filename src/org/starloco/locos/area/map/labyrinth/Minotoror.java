@@ -559,7 +559,7 @@ public class Minotoror {
     }
 
     private static void openTimer(final GameMap map, final int cellId) {
-        if (map.getCase(cellId).isWalkable(false)) // Elle est d�j� ouverte
+        if (map.getCase(cellId).isWalkable(false, false)) // Elle est d�j� ouverte
             return;
         open(map, (short) cellId);
         TimerWaiter.addNext(() -> close(map, (short) cellId), time, TimeUnit.MINUTES);
@@ -568,15 +568,15 @@ public class Minotoror {
     private static void open(GameMap map, short cellId) {
         sendOpen(map, cellId);
         map.removeCase(cellId);
-        map.getCases().add(new GameCase(map, cellId, true, true, -1));
+        map.getCases().add(new GameCase(map, cellId, 1, true, -1));
     }
 
     private static void close(GameMap map, short cellId) {
-        if (!map.getCase(cellId).isWalkable(false)) // Elle est d�j� ferm�.
+        if (!map.getCase(cellId).isWalkable(false, false)) // Elle est d�j� ferm�.
             return;
         sendClose(map, cellId);
         map.removeCase(cellId);
-        map.getCases().add(new GameCase(map, cellId, false, false, -1));
+        map.getCases().add(new GameCase(map, cellId, 0, false, -1));
     }
 
     private static void sendOpen(GameMap map, int cellId) {
@@ -739,28 +739,28 @@ public class Minotoror {
         }
 
         if (c1 != null) {
-            if (c1.isWalkable(false))
+            if (c1.isWalkable(false, false))
                 sendOpen(perso, c1.getId());
             else
                 sendClose(perso, c1.getId());
         }
 
         if (c2 != null) {
-            if (c2.isWalkable(false))
+            if (c2.isWalkable(false, false))
                 sendOpen(perso, c2.getId());
             else
                 sendClose(perso, c2.getId());
         }
 
         if (c3 != null) {
-            if (c3.isWalkable(false))
+            if (c3.isWalkable(false, false))
                 sendOpen(perso, c3.getId());
             else
                 sendClose(perso, c3.getId());
         }
 
         if (c4 != null) {
-            if (c4.isWalkable(false))
+            if (c4.isWalkable(false, false))
                 sendOpen(perso, c4.getId());
             else
                 sendClose(perso, c4.getId());

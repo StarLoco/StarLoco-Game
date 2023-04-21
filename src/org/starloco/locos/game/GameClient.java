@@ -4022,7 +4022,7 @@ public class GameClient {
             //Si d?placement inutile
             GameCase targetCell = this.player.getCurMap().getCase(World.world.getCryptManager().cellCode_To_ID(path.substring(path.length() - 2)));
 
-            if (targetCell == null || !targetCell.isWalkable(false)) {
+            if (targetCell == null || !targetCell.isWalkable(false,false)) {
                 SocketManager.GAME_SEND_GA_PACKET(this, "", "0", "", "");
                 removeAction(GA);
                 return;

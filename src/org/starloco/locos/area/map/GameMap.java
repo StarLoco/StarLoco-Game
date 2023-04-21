@@ -1029,7 +1029,7 @@ public class GameMap {
         for (GameCase entry : cases) {
             if (entry == null)
                 continue;
-            if (!entry.isWalkable(true))
+            if (!entry.isWalkable(true, false))
                 continue;
             if (entry.getObject() != null)
                 continue;
@@ -1119,7 +1119,7 @@ public class GameMap {
             if(data.cellHasMoveEndActions(gameCase.getId()))
                 continue;
             //Si la case n'est pas marchable
-            if (!gameCase.isWalkable(true))
+            if (!gameCase.isWalkable(true, false))
                 continue;
             //Si la case est prise par un groupe de monstre
             boolean ok = true;
@@ -1161,10 +1161,10 @@ public class GameMap {
                     final GameCase cell2 = this.getCase((cell1 - 15)), cell3 = this.getCase((cell1 - 15 + 1));
                     final GameCase cell4 = this.getCase((cell1 + 15 - 1)),
                             cell5 = this.getCase((cell1 + 15));
-                    boolean case2 = (cell2 != null && (cell2.isWalkable(true) && (cell2.getPlayers().isEmpty())));
-                    boolean case3 = (cell3 != null && (cell3.isWalkable(true) && (cell3.getPlayers().isEmpty())));
-                    boolean case4 = (cell4 != null && (cell4.isWalkable(true) && (cell4.getPlayers().isEmpty())));
-                    boolean case5 = (cell5 != null && (cell5.isWalkable(true) && (cell5.getPlayers().isEmpty())));
+                    boolean case2 = (cell2 != null && (cell2.isWalkable(true, false) && (cell2.getPlayers().isEmpty())));
+                    boolean case3 = (cell3 != null && (cell3.isWalkable(true, false) && (cell3.getPlayers().isEmpty())));
+                    boolean case4 = (cell4 != null && (cell4.isWalkable(true, false) && (cell4.getPlayers().isEmpty())));
+                    boolean case5 = (cell5 != null && (cell5.isWalkable(true, false) && (cell5.getPlayers().isEmpty())));
                     ArrayList<Boolean> array = new ArrayList<>();
                     array.add(case2);
                     array.add(case3);
@@ -1280,7 +1280,7 @@ public class GameMap {
     }
 
     public boolean checkCell(int id) {
-        return this.getCase(id - 15) != null && this.getCase(id - 15).isWalkable(true);
+        return this.getCase(id - 15) != null && this.getCase(id - 15).isWalkable(true, false);
     }
 
     public String getObjects() {

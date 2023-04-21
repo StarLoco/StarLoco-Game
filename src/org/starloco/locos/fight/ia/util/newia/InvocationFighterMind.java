@@ -46,13 +46,13 @@ public class InvocationFighterMind extends FighterMind {
                 // Si invocation de corps-à-corps
                 if(spell.getMaxPO() <= 1) {
                     GameCase cell = ia.getFight().getMap().getCase(PathFinding.getAvailableCellArround(ia.getFight(), ia.getFighter().getCell().getId(), null));
-                    if (cell != null && cell.isWalkable(true) && cell.getFirstFighter() == null && ia.getFight().canCastSpell1(ia.getFighter(), spell, cell, -1)) {
+                    if (cell != null && cell.isWalkableFight() && cell.getFirstFighter() == null && ia.getFight().canCastSpell1(ia.getFighter(), spell, cell, -1)) {
                         this.highPriorityActions.addFirst(new AttackAction(ia.getFighter(), cell, spell));
                     }
                 // Sinon, sort de distance
                 } else {
                     GameCase cell = ia.getFight().getMap().getCase(PathFinding.getAvailableCellArround(ia.getFight(), cas.getFighter().getCell().getId(), null));
-                    if (cell != null && cell.getFirstFighter() == null && cell.isWalkable(true) && ia.getFight().canCastSpell1(ia.getFighter(), spell, cell, -1)) {
+                    if (cell != null && cell.getFirstFighter() == null && cell.isWalkableFight() && ia.getFight().canCastSpell1(ia.getFighter(), spell, cell, -1)) {
                         this.highPriorityActions.addLast(new AttackAction(ia.getFighter(), cell, spell));
                     }
                 }
@@ -67,7 +67,7 @@ public class InvocationFighterMind extends FighterMind {
             for (Spell.SortStats spell : cas.getSortedSpells()) {
                 GameCase cell = ia.getFight().getMap().getCase(PathFinding.getAvailableCellArround(ia.getFight(), cas.getFighter().getCell().getId(), null));
 
-                if (cell != null && cell.isWalkable(true) && cell.getFirstFighter() == null &&  ia.getFight().canLaunchSpell(ia.getFighter(), spell, cell) && Function.getInstance().moveToAttack(ia.getFight(), ia.getFighter(), cell, spell, false)) {
+                if (cell != null && cell.isWalkableFight() && cell.getFirstFighter() == null &&  ia.getFight().canLaunchSpell(ia.getFighter(), spell, cell) && Function.getInstance().moveToAttack(ia.getFight(), ia.getFighter(), cell, spell, false)) {
                     this.lowPriorityActions.addLast(new MoveAction(ia.getFighter(), spell, cell));
                     this.lowPriorityActions.addLast(new AttackAction(ia.getFighter(), cell, spell));
                 }
