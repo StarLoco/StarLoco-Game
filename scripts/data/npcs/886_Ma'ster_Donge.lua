@@ -41,15 +41,17 @@ function npc:onTalk(p, answer)
             p:ask(dungeon.questionID, responses)
         elseif answer == dungeon.keychainResponseID then
             if hasAllItems then
-                dungeon:useKeyChain(p)
-                p:teleport(dungeon.tpDest[1], dungeon.tpDest[2])
-                p:endDialog()
+                if dungeon:useKeyChain(p) then
+                    p:teleport(dungeon.tpDest[1], dungeon.tpDest[2])
+                    p:endDialog()
+                end
             elseif hasKey then
-                p:consumeItem(dungeon.keyID, 1)
-                p:teleport(dungeon.tpDest[1], dungeon.tpDest[2])
-                p:endDialog()
-            else
-                p:endDialog()
+                if p:consumeItem(dungeon.keyID, 1) then
+                    p:teleport(dungeon.tpDest[1], dungeon.tpDest[2])
+                    p:endDialog()
+                else
+                    p:endDialog()
+                end
             end
         elseif answer == dungeon.keyResponseID then
             p:teleport(10335,267)

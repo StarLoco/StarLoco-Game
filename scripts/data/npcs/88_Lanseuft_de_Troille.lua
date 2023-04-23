@@ -26,11 +26,12 @@ function npc:onTalk(p, answer)
             p:ask(246)
         end
     elseif answer == 167 and hasItem then
-            p:consumeItem(382, 1)
+        if p:consumeItem(382, 1) then
             p:teleport(310, 361)
             p:endDialog()
-    else
-        p:ask(246)
+        else
+            p:ask(246)
+        end
     end
 end
 
