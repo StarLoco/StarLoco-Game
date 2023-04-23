@@ -11,12 +11,11 @@ import org.starloco.locos.job.JobStat;
 import org.starloco.locos.kernel.Constant;
 import org.starloco.locos.object.GameObject;
 import org.starloco.locos.other.Action;
-import org.starloco.locos.quest.Quest;
-import org.starloco.locos.quest.QuestPlayer;
-import org.starloco.locos.quest.QuestObjective;
+import org.starloco.locos.quest.PlayerQuestProgress;
 
 import java.util.ArrayList;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 public class ConditionParser {
 
@@ -164,11 +163,8 @@ public class ConditionParser {
     //Avoir la qu�te en cours
     private boolean haveQa(String req, Player player) {
         int id = Integer.parseInt((req.contains("==") ? req.split("==")[1] : req.split("!=")[1]));
-        Quest q = Quest.quests.get(id);
-        if (q == null)
-            return (!req.contains("=="));
 
-        QuestPlayer qp = player.getQuestPersoByQuest(q);
+        PlayerQuestProgress qp = player.getQuestProgress(id);
         if (qp == null)
             return (!req.contains("=="));
 
@@ -176,24 +172,13 @@ public class ConditionParser {
 
     }
 
-    // �tre � l'�tape id. Elle ne doit pas �tre valid� et celle d'avant doivent l'�tre.
+    // Etre a l'etape id. Elle ne doit pas �tre valid� et celle d'avant doivent l'�tre.
     private boolean haveQEt(String req, Player player) {
         int id = Integer.parseInt((req.contains("==") ? req.split("==")[1] : req.split("!=")[1]));
-        QuestObjective qe = QuestObjective.objectives.get(id);
-        if (qe != null) {
-            Quest q = qe.getQuest();
-            if (q != null) {
-                QuestPlayer qp = player.getQuestPersoByQuest(q);
-                if (qp != null) {
-                    QuestObjective current = q.getCurrentObjective(qp);
-                    if (current == null)
-                        return false;
-                    if (current.getId() == qe.getId())
-                        return (req.contains("=="));
-                }
-            }
-        }
-        return false;
+
+        Optional<PlayerQuestProgress> oqp = player.getQuestProgressForCurrentStep(id);
+
+        return req.contains("==") && oqp.isPresent();
     }
 
     private boolean haveTiT(String req, Player player) {
@@ -262,22 +247,22 @@ public class ConditionParser {
         if (player == null)
             return false;
         int id = Integer.parseInt((req.contains("==") ? req.split("==")[1] : req.split("!=")[1]));
-        QuestPlayer qp = player.getQuestPersoByQuestId(id);
-        if (req.contains("==")) {
-            return qp != null && !qp.isFinished();
-        } else {
-            return qp == null || qp.isFinished();
-        }
+
+        PlayerQuestProgress qp = player.getQuestProgress(id);
+        if (qp == null)
+            return req.contains("==");
+
+        return qp.isFinished();
     }
 
     private boolean haveQT(String req, Player player) {
         int id = Integer.parseInt((req.contains("==") ? req.split("==")[1] : req.split("!=")[1]));
 
-        QuestPlayer quest = player.getQuestPersoByQuestId(id);
-        if (req.contains("=="))
-            return (quest != null && quest.isFinished());
-        else
-            return (quest == null || !quest.isFinished());
+        PlayerQuestProgress qp = player.getQuestProgress(id);
+        if (qp == null)
+            return !req.contains("==");
+
+        return !qp.isFinished();
     }
 
     private boolean haveNPC(String req, Player perso) {

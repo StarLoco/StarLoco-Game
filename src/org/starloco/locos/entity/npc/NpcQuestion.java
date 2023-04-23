@@ -10,9 +10,7 @@ import org.starloco.locos.kernel.Constant;
 import org.starloco.locos.object.GameObject;
 import org.starloco.locos.other.Action;
 import org.starloco.locos.other.Dopeul;
-import org.starloco.locos.quest.Quest;
-import org.starloco.locos.quest.QuestPlayer;
-import org.starloco.locos.quest.QuestObjective;
+import org.starloco.locos.quest.PlayerQuestProgress;
 
 import java.util.Map.Entry;
 
@@ -61,30 +59,30 @@ public class NpcQuestion {
                      if (answer == null)
                         continue;
 
-                    QuestPlayer questPlayer = null;
+                    PlayerQuestProgress questPlayer = null;
                     boolean ok = true;// true on prend, false on prend pas
 
                     //region for(action..)
                     for (Action action : answer.getActions()) {
                         switch (action.getId()) {
                             case 42:
-                                if (player.getCurMap().getId() == 11242) {
-                                    String[] split0 = action.getArgs().split(";");
-                                    int questId = Integer.parseInt(split0[0]), objectifId = Integer.parseInt(split0[1]);
-                                    questPlayer = player.getQuestPersoByQuestId(questId);
-
-                                    boolean check = true;
-
-                                    for(QuestObjective step : questPlayer.getQuest().getObjectives()) {
-                                        if(step.getValidationType() == answer.getId() && !questPlayer.isQuestObjectiveIsValidate(step)) {
-                                            check = false;
-                                        }
-                                    }
-
-                                    if(check) {
-                                        ok = false;
-                                    }
-                                }
+//                                if (player.getCurMap().getId() == 11242) {
+//                                    String[] split0 = action.getArgs().split(";");
+//                                    int questId = Integer.parseInt(split0[0]), objectifId = Integer.parseInt(split0[1]);
+//                                    questPlayer = player.getQuestProgress(questId);
+//
+//                                    boolean check = true;
+//
+//                                    for(QuestObjective step : questPlayer.getQuest().getObjectives()) {
+//                                        if(step.getValidationType() == answer.getId() && !questPlayer.isQuestObjectiveIsValidate(step)) {
+//                                            check = false;
+//                                        }
+//                                    }
+//
+//                                    if(check) {
+//                                        ok = false;
+//                                    }
+//                                }
                                 break;
                             case 15: // Si on donne une clef
                                 String args = action.getArgs();
@@ -110,11 +108,9 @@ public class NpcQuestion {
                                 break;
 
                             case 40: // Si on apprend une qu�te
-                                if (!player.getQuestPerso().isEmpty()) {
-                                    for (QuestPlayer QP : player.getQuestPerso().values()) {
-                                        if (QP.getQuest().getId() == Integer.parseInt(action.getArgs()))
-                                            ok = false; // S'il a la qu�te on d�gage
-                                    }
+                                int qId = Integer.parseInt(action.getArgs());
+                                if(player.getQuestProgress(qId) != null) {
+                                    ok = false;
                                 }
                                 break;
 
@@ -142,51 +138,44 @@ public class NpcQuestion {
                     }
                     //endregion
 
-                    if (!player.getQuestPerso().isEmpty() && ok) // par qu�te
-                    {
-                        for (QuestPlayer QP : player.getQuestPerso().values()) {
-                            if (QP.isFinished() || QP.getQuest() == null)
-                                continue;
-                            for (QuestObjective q : QP.getQuest().getObjectives()) {
-                                if (q == null)
-                                    continue;
-                                if (QP.isQuestObjectiveIsValidate(q))
-                                    continue;
-                                if (q.getValidationType() == answer.getId()) {
-                                    switch (q.getType()) {
-                                        case 3: // Si on doit donner des items
-                                            for (Entry<Integer, Integer> _entry : q.getItemsNeeded().entrySet()) {
-                                                if (!player.hasItemTemplate(_entry.getKey(), _entry.getValue(), false)) {
-                                                    ok = false;
-                                                }
-                                            }
-                                            break;
-                                    }
-                                }
-                            }
-                        }
-                    }
+//                    if (!player.getQuestPerso().isEmpty() && ok) // par qu�te
+//                    {
+//                        for (QuestPlayer QP : player.getQuestPerso().values()) {
+//                            if (QP.isFinished() || QP.getQuest() == null)
+//                                continue;
+//                            for (QuestObjective q : QP.getQuest().getObjectives()) {
+//                                if (q == null)
+//                                    continue;
+//                                if (QP.isQuestObjectiveIsValidate(q))
+//                                    continue;
+//                                if (q.getValidationType() == answer.getId()) {
+//                                    switch (q.getType()) {
+//                                        case 3: // Si on doit donner des items
+//                                            for (Entry<Integer, Integer> _entry : q.getItemsNeeded().entrySet()) {
+//                                                if (!player.hasItemTemplate(_entry.getKey(), _entry.getValue(), false)) {
+//                                                    ok = false;
+//                                                }
+//                                            }
+//                                            break;
+//                                    }
+//                                }
+//                            }
+//                        }
+//                    }
 
                     if (ok) {
                         String[][] s = Constant.HUNTING_QUESTS;
-                        for (int v = 0; v < s.length; v++) {
-                            if (Integer.parseInt(s[v][6]) == answer.getId()) // Si la r�ponse est une traque de monstres
-                            {
-                                for (QuestPlayer QP : player.getQuestPerso().values()) {
-                                    boolean k = true;
-                                    if (QP.getQuest().getId() == Integer.parseInt(s[v][5])) // S'il a la qu�te
-                                    {
-                                        k = false;
-                                        GameObject suiveur = player.getObjetByPos(Constant.ITEM_POS_PNJ_SUIVEUR);
-                                        if (suiveur != null) // S'il a un pnj suiveur
-                                        {
-                                            ok = suiveur.getTemplate().getId() == Integer.parseInt(s[v][4]);
-                                            break;
-                                        } else
-                                            ok = false;
-                                    }
-                                    if (k)
-                                        ok = false;
+                        for (String[] strings : s) {
+                            if (Integer.parseInt(strings[6]) != answer.getId()){ // Si la r�ponse est une traque de monstres
+                                continue;
+                            }
+                            int qId = Integer.parseInt(strings[5]);
+                            PlayerQuestProgress qp = player.getQuestProgress(qId);
+                            if (qp != null) {
+                                GameObject suiveur = player.getObjetByPos(Constant.ITEM_POS_PNJ_SUIVEUR);
+                                if (suiveur != null) {// S'il a un pnj suiveur
+                                    ok = suiveur.getTemplate().getId() == Integer.parseInt(strings[4]);
+                                    break;
                                 }
                             }
                         }
@@ -306,10 +295,8 @@ public class NpcQuestion {
                                     ok = false;
                                 break;
                             case 3355:
-                                Quest q = Quest.quests.get(198);
-                                if (q != null)
-                                    if (player.getQuestPersoByQuest(q) != null)
-                                        ok = false;
+                                if (player.getQuestProgress(198) != null)
+                                    ok = false;
                                 break;
                             case 528:
                                 if (player.hasItemTemplate(1469, 1, false))
@@ -421,27 +408,19 @@ public class NpcQuestion {
                                 break;
 
                             case 6772: // Combattre chaque dopeul
-                                if (!player.getQuestPerso().isEmpty()) {
-                                    for (QuestPlayer QP : player.getQuestPerso().values()) {
-                                        if (QP.getQuest().getId() == 470) {
-                                            ok = false;
-                                        }
-                                    }
-                                }
+                                if (player.getQuestProgress(470) == null)
+                                    ok = false;
                                 break;
 
-                            case 3627: // Donner les objets, mapid 10437
-                                if (!player.getQuestPerso().isEmpty()) {
-                                    for (QuestPlayer QP : player.getQuestPerso().values()) {
-                                        if (QP.getQuest().getId() == 232) {
-                                            ok = false;
-                                        }
-                                    }
-                                    ok = !ok;
-                                } else {
-                                    ok = false;
-                                }
-                                break;
+//                            case 3627: // Donner les objets, mapid 10437
+//                                if (!player.getQuestPerso().isEmpty()) {
+//                                    if (player.getQuestProgress(232) == null)
+//                                        ok = false;
+//                                    ok = !ok;
+//                                } else {
+//                                    ok = false;
+//                                }
+//                                break;
 
                             case 6701: // Si on a d�j� le trousseau de clef
                                 if (player.hasItemTemplate(10207, 1, false))

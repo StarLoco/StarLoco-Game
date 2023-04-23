@@ -76,8 +76,6 @@ import org.starloco.locos.object.ObjectTemplate;
 import org.starloco.locos.object.entity.Fragment;
 import org.starloco.locos.object.entity.SoulStone;
 import org.starloco.locos.other.Action;
-import org.starloco.locos.quest.Quest;
-import org.starloco.locos.quest.QuestPlayer;
 import org.starloco.locos.util.generator.NameGenerator;
 import org.starloco.locos.util.TimerWaiter;
 
@@ -3887,8 +3885,8 @@ public class GameClient {
 
                 break;
 
-            case 34://Get quest on sign.
-                gameCheckSign(packet);
+//            case 34://Get quest on sign.
+//                gameCheckSign(packet);
 
             case 300://Sort
                 gameTryCastSpell(packet);
@@ -4111,13 +4109,6 @@ public class GameClient {
                 this.player.getFight().cast(this.player.getFight().getFighterByPerso(this.player), () -> this.player.getFight().onFighterDeplace(fighter, GA), null);
             }
         }
-    }
-
-    private void gameCheckSign(String packet) {
-        Quest quest = Quest.quests.get(Integer.parseInt(packet.substring(5)));
-        QuestPlayer questPlayer = this.player.getQuestPersoByQuest(quest);
-        if (questPlayer == null)
-            quest.apply(this.player);
     }
 
     private void gameTryCastSpell(String packet) {
@@ -6841,12 +6832,12 @@ public class GameClient {
     private void parseQuestData(String packet) {
         switch (packet.charAt(1)) {
             case 'L': // Quests list
-                player.send(player.encodeQL());
+                player.send(player.encodeQuestList());
                 break;
 
             case 'S': // Quest steps
                 int id = Integer.parseInt(packet.substring(2));
-                player.send(Quest.quests.get(id).encodeQS(player));
+                player.encodeQuestStep(id);
                 break;
         }
     }

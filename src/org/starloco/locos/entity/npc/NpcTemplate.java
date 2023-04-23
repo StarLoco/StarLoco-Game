@@ -16,9 +16,6 @@ import org.starloco.locos.object.GameObject;
 import org.starloco.locos.object.ObjectTemplate;
 import org.starloco.locos.other.Action;
 import org.starloco.locos.other.Dopeul;
-import org.starloco.locos.quest.Quest;
-import org.starloco.locos.quest.QuestObjective;
-import org.starloco.locos.quest.QuestPlayer;
 import org.starloco.locos.script.DataScriptVM;
 import org.starloco.locos.script.ScriptVM;
 
@@ -40,7 +37,7 @@ public class NpcTemplate {
     public NpcTemplate(int id, int bonus, int gfxId, int scaleX, int scaleY, int sex, int color1, int color2, int color3, String accessories, int extraClip, int customArtWork, String questions,
                        String sales, String quest, String exchanges, String path, byte flags) {
         this.scriptVal = null;
-        this.legacy = new LegacyData(id, questions, sales, quest, exchanges, path);
+        this.legacy = new LegacyData(id, questions, sales, exchanges, path);
         this.id = id;
         this.gfxId = gfxId;
         this.scaleX = scaleX;
@@ -176,28 +173,12 @@ public class NpcTemplate {
         return flags;
     }
 
-    @Deprecated // Will be deleted once we fully switch to scripts
-    public void setQuest(Quest quest) {
-        if(this.legacy==null)return; // Scripted NPC
-        this.legacy.quest = quest;
-    }
-
-    @Deprecated // Will be deleted once we fully switch to scripts
-    public Quest getQuest() {
-        if(this.legacy==null)return null; // Scripted NPC
-        return this.legacy.quest;
-    }
-
     public int getExtraClip(Player p) {
         if(this.legacy==null) {
             // TODO Scripted NPC
+            // Call Lua to get extra clip
             return -1;
         }
-        Quest q = this.legacy.quest;
-        if(q==null) return -1;
-
-        QuestPlayer questPlayer = p.getQuestPersoByQuest(q);
-        if (questPlayer == null) return 4;
         return -1;
     }
 
@@ -227,16 +208,12 @@ public class NpcTemplate {
 
     public static class LegacyData {
         private final String path;
-        // Chicken and egg problem in the DB: NPC references Quest that references NPC back. So this cannot be final.
-        private Quest quest = null;
         private final Map<Integer,Integer> initQuestions = new HashMap<>();
         private final List<SaleOffer> sales = new ArrayList<>();
         private List<Couple<ArrayList<Couple<Integer, Integer>>, ArrayList<Couple<Integer, Integer>>>> exchanges;
 
-        public LegacyData(int npcID, String questions, String sales, String quest, String exchanges, String path) {
+        public LegacyData(int npcID, String questions, String sales, String exchanges, String path) {
             this.path = path;
-
-            if (!quest.equalsIgnoreCase("")) this.quest = Quest.quests.get(Integer.parseInt(quest));
 
             if (questions.split("\\|").length > 1) {
                 for (String question : questions.split("\\|")) {
@@ -383,23 +360,6 @@ public class NpcTemplate {
                 return;
             }
 
-            if (!player.getQuestPerso().isEmpty()) {
-                for (QuestPlayer questPlayer : player.getQuestPerso().values()) {
-                    if (questPlayer.isFinished() || questPlayer.getQuest() == null || questPlayer.getQuest().getNpcTemplate() == null)
-                        continue;
-                    for (QuestObjective questObjective : questPlayer.getQuest().getObjectives()) {
-                        if (questObjective == null || questPlayer.isQuestObjectiveIsValidate(questObjective) || template == null)
-                            continue;
-
-                        NpcTemplate questNpc = questObjective.getNpc();
-                        NpcTemplate curNpc = template;
-
-                        if (questNpc != null && curNpc != null && questNpc.getId() == curNpc.getId())
-                            questPlayer.getQuest().update(player, false, answerId);
-                    }
-                }
-            }
-
             if (answerId == 6604 || answerId == 6605) {
                 String stats = "", statsReplace = "";
                 if (player.hasItemTemplate(10207, 1, false))
@@ -473,41 +433,7 @@ public class NpcTemplate {
                 SocketManager.GAME_SEND_END_DIALOG_PACKET(player.getGameClient());
                 return;
             }
-            if (template.id == 870) {
-                Quest quest = Quest.quests.get(185);
-                if (quest != null) {
-                    QuestPlayer questPlayer = player.getQuestPersoByQuest(quest);
-                    if (questPlayer != null) {
-                        if (questPlayer.isFinished()) {
-                            SocketManager.GAME_SEND_END_DIALOG_PACKET(player.getGameClient());
-                            return;
-                        }
-                    }
-                }
-            } else if (template.id == 891) {
-                Quest quest = Quest.quests.get(200);
-                if (quest != null) {
-                    if (player.getQuestPersoByQuest(quest) == null) {
-                        quest.apply(player);
-                        Npc npc = player.getCurMap().getNpcByTemplateId(template.id);
-                        player.send("GM|" + npc.encodeGM(true, player));
-                    }
-                }
-            } else if (template.id == 925 && player.getCurMap().getId() == (short) 9402) {
-                Quest quest = Quest.quests.get(231);
-                if (quest != null) {
-                    QuestPlayer questPlayer = player.getQuestPersoByQuest(quest);
-                    if (questPlayer != null) {
-                        if (questPlayer.isFinished()) {
-                            question = World.world.getNPCQuestion(4127);
-                            if (question == null) {
-                                SocketManager.GAME_SEND_END_DIALOG_PACKET(player.getGameClient());
-                                return;
-                            }
-                        }
-                    }
-                }
-            } else if (template.id == 577 && player.getCurMap().getId() == (short) 7596) {
+            if (template.id == 577 && player.getCurMap().getId() == (short) 7596) {
                 if (player.hasItemTemplate(2106, 1, false))
                     question = World.world.getNPCQuestion(2407);
             } else if (template.id == 1041 && player.getCurMap().getId() == (short) 10255 && questionId == 5516) {
@@ -538,25 +464,6 @@ public class NpcTemplate {
             }
 
             SocketManager.GAME_SEND_QUESTION_PACKET(player.getGameClient(), packet);
-
-            for (QuestPlayer questPlayer :  new ArrayList<>(player.getQuestPerso().values())) {
-                boolean loc1 = false;
-                for (QuestObjective questObjective : questPlayer.getQuest().getObjectives()) {
-                    if (questObjective.getNpc() != null && questObjective.getNpc().getId() == template.getId()) {
-                        loc1 = true;
-                        break;
-                    }
-                }
-
-                Quest quest = questPlayer.getQuest();
-                if (quest == null || questPlayer.isFinished())
-                    continue;
-                NpcTemplate npcTemplate = quest.getNpcTemplate();
-                if (npcTemplate == null && !loc1)
-                    continue;
-
-                quest.update(player, false, 0);
-            }
         }
     }
 }

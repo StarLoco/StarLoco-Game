@@ -2,7 +2,6 @@ package org.starloco.locos.entity.npc;
 
 import org.starloco.locos.client.Player;
 import org.starloco.locos.other.Action;
-import org.starloco.locos.quest.Quest;
 
 import java.util.ArrayList;
 
@@ -10,7 +9,6 @@ public class NpcAnswer {
 
     private int id;
     private ArrayList<Action> actions = new ArrayList<>();
-    private Quest quest = null;
 
     public NpcAnswer(int id) {
         this.id = id;
@@ -51,13 +49,5 @@ public class NpcAnswer {
             if (action.getId() == 1) //1 = Discours NPC
                 return true;
         return false;
-    }
-
-    public Quest getQuest() {
-        return quest;
-    }
-
-    public void setQuest(Quest quest) {
-        this.quest = quest;
     }
 }

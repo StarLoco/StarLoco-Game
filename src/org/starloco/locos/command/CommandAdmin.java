@@ -41,9 +41,6 @@ import org.starloco.locos.kernel.Main;
 import org.starloco.locos.object.GameObject;
 import org.starloco.locos.object.ObjectSet;
 import org.starloco.locos.object.ObjectTemplate;
-import org.starloco.locos.quest.Quest;
-import org.starloco.locos.quest.QuestPlayer;
-import org.starloco.locos.quest.QuestObjective;
 import org.starloco.locos.util.TimerWaiter;
 
 import java.util.*;
@@ -1808,11 +1805,6 @@ public class CommandAdmin extends AdminUser {
                     DatabaseManager.get(BaseHouseData.class).loadFully();
                     DatabaseManager.get(HouseData.class).loadFully();
                     break;
-                case "QUESTS":
-                    DatabaseManager.get(QuestData.class).loadFully();
-                    DatabaseManager.get(QuestStepData.class).loadFully();
-                    DatabaseManager.get(QuestObjectiveData.class).loadFully();
-                    break;
                 case "SHOP":
                     DatabaseManager.get(ShopObjectData.class).loadFully();
                     break;
@@ -2936,14 +2928,14 @@ public class CommandAdmin extends AdminUser {
         } else if (command.equalsIgnoreCase("INCARNAM")) {
             Player perso = this.getPlayer();
             perso.teleport((short) 10292, 284);
-            this.sendMessage("Vous avez ete teleporte e Incarnam.");
+            this.sendMessage("Vous avez ete teleporte a Incarnam.");
             return;
         } else if (command.equalsIgnoreCase("ASTRUB")) {
             Player perso = this.getPlayer();
             perso.teleport((short) 7411, 311);
-            this.sendMessage("Vous avez ete teleporte e Astrub.");
+            this.sendMessage("Vous avez ete teleporte a Astrub.");
             return;
-        } else if (command.equalsIgnoreCase("DELQUEST")) {
+        } /* else if (command.equalsIgnoreCase("DELQUEST")) {
             int id = -1;
             String perso = "";
             try {
@@ -2963,12 +2955,12 @@ public class CommandAdmin extends AdminUser {
                 this.sendMessage("La quete ou le joueur est introuvable.");
                 return;
             }
-            QuestPlayer qp = p.getQuestPersoByQuest(q);
+            QuestPlayer qp = p.getQuestProgress(q);
             if (qp == null) {
                 this.sendMessage("Le personnage n'a pas la quete.");
                 return;
             }
-            p.delQuestPerso(qp.getId());
+            p.delQuestProgress(qp.getId());
             if (qp.removeQuestPlayer()) {
                 ((PlayerData) DatabaseManager.get(PlayerData.class)).update(p);
                 this.sendMessage("La quete a ete supprime sur le personnage " + perso + ".");
@@ -2995,13 +2987,13 @@ public class CommandAdmin extends AdminUser {
                 this.sendMessage("La quete ou le joueur est introuvable.");
                 return;
             }
-            QuestPlayer qp = p.getQuestPersoByQuest(q);
+            QuestPlayer qp = p.getQuestProgress(q);
             if (qp != null) {
                 this.sendMessage("Le personnage a deje la quete.");
                 return;
             }
             q.apply(p);
-            qp = p.getQuestPersoByQuest(q);
+            qp = p.getQuestProgress(q);
             if (qp == null) {
                 this.sendMessage("Une erreur est survenue.");
                 return;
@@ -3029,7 +3021,7 @@ public class CommandAdmin extends AdminUser {
                 this.sendMessage("La quete ou le joueur est introuvable.");
                 return;
             }
-            QuestPlayer qp = p.getQuestPersoByQuest(q);
+            QuestPlayer qp = p.getQuestProgress(q);
             if (qp == null) {
                 this.sendMessage("Le personnage n'a pas la quete.");
                 return;
@@ -3061,7 +3053,7 @@ public class CommandAdmin extends AdminUser {
                 this.sendMessage("La quete ou le joueur est introuvable.");
                 return;
             }
-            QuestPlayer qp = p.getQuestPersoByQuest(q);
+            QuestPlayer qp = p.getQuestProgress(q);
             if (qp == null) {
                 this.sendMessage("Le personnage n'a pas la quete.");
                 return;
@@ -3112,7 +3104,7 @@ public class CommandAdmin extends AdminUser {
             }
             this.sendMessage("Vous avez reeu tous les items necessaire e la quete.");
             return;
-        } else if (command.equalsIgnoreCase("SHOWFIGHTPOS")) {
+        } /**/ else if (command.equalsIgnoreCase("SHOWFIGHTPOS")) {
             String mess = "Liste des StartCell [teamID][cellID]:";
             this.sendMessage(mess);
             String places = this.getPlayer().getCurMap().getPlaces();

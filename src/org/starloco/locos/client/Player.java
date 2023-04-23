@@ -15,6 +15,7 @@ import org.starloco.locos.command.administration.Group;
 import org.starloco.locos.common.Formulas;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.database.DatabaseManager;
+import org.starloco.locos.database.data.DAO;
 import org.starloco.locos.database.data.game.BankData;
 import org.starloco.locos.database.data.game.CollectorData;
 import org.starloco.locos.database.data.game.ExperienceTables;
@@ -22,6 +23,7 @@ import org.starloco.locos.database.data.game.GuildMemberData;
 import org.starloco.locos.database.data.login.AccountData;
 import org.starloco.locos.database.data.login.ObjectData;
 import org.starloco.locos.database.data.login.PlayerData;
+import org.starloco.locos.database.data.login.PlayerQuestProgressData;
 import org.starloco.locos.dynamic.Start;
 import org.starloco.locos.entity.Collector;
 import org.starloco.locos.entity.Prism;
@@ -56,8 +58,7 @@ import org.starloco.locos.object.ObjectTemplate;
 import org.starloco.locos.other.Action;
 import org.starloco.locos.other.Dopeul;
 import org.starloco.locos.guild.Guild;
-import org.starloco.locos.quest.Quest;
-import org.starloco.locos.quest.QuestPlayer;
+import org.starloco.locos.quest.PlayerQuestProgress;
 import org.starloco.locos.script.Scripted;
 import org.starloco.locos.script.proxy.SPlayer;
 import org.starloco.locos.util.Pair;
@@ -222,7 +223,7 @@ public class Player implements Scripted<SPlayer> {
     private int groupId;
     private boolean isInvisible = false;
 
-    private Map<Integer, QuestPlayer> questList = new HashMap<>();
+    private final Map<Integer, PlayerQuestProgress> questsProgression = new HashMap<>();
     private boolean changeName;
     public boolean afterFight = false;
 
@@ -5821,43 +5822,39 @@ public class Player implements Scripted<SPlayer> {
         return false;
     }
 
-    public void addQuestPerso(QuestPlayer qPerso) {
-        questList.put(qPerso.getId(), qPerso);
+    public void addQuestProgression(PlayerQuestProgress qProgress) {
+        questsProgression.put(qProgress.questId, qProgress);
     }
 
-    public void delQuestPerso(int key) {
-        this.questList.remove(key);
+    public void delQuestProgress(int questId) {
+        this.questsProgression.remove(questId);
     }
 
-    public Map<Integer, QuestPlayer> getQuestPerso() {
-        return questList;
+    public PlayerQuestProgress getQuestProgress(int questId) {
+        return this.questsProgression.get(questId);
     }
 
-    public QuestPlayer getQuestPersoByQuest(Quest quest) {
-        for (QuestPlayer questPlayer : this.questList.values())
-            if (questPlayer != null && questPlayer.getQuest().getId() == quest.getId())
-                return questPlayer;
-        return null;
+    public Optional<PlayerQuestProgress> getQuestProgressForCurrentStep(int stepId) {
+        return this.questsProgression.values().stream().filter(qp -> qp.getCurrentStep() == stepId).findFirst();
     }
 
-    public QuestPlayer getQuestPersoByQuestId(int id) {
-        for (QuestPlayer qPerso : questList.values())
-            if (qPerso.getQuest().getId() == id)
-                return qPerso;
-        return null;
+    public void encodeQuestStep(int id) {
+        // TODO
     }
 
-    public String encodeQL() {
-        int nb = 0;
-        final StringBuilder packet = new StringBuilder("QL+");
-        for (QuestPlayer qPerso : questList.values()) {
-            packet.append(qPerso.getQuest().getId()).append(";");
-            packet.append(qPerso.isFinished() ? 1 : 0);
-            if (nb < questList.size() - 1)
-                packet.append("|");
-            nb++;
-        }
-        return packet.toString();
+    public String encodeQuestList() {
+        return "QL+" + this.questsProgression.values().stream().
+            map(qp -> String.join(";",
+                String.valueOf(qp.questId), qp.isFinished()?"1":"0"
+            )).collect(Collectors.joining("|"));
+    }
+
+    public void saveQuestProgress() {
+        PlayerQuestProgressData dao = Objects.requireNonNull(DatabaseManager.get(PlayerQuestProgressData.class));
+
+        this.questsProgression.forEach((k, v) -> {
+            dao.update(v);
+        });
     }
 
     public House getInHouse() {

@@ -1,0 +1,14 @@
+GenericObjectiveType = 0
+TalkWithObjectiveType = 1
+ShowItemObjectiveType = 2
+BringItemObjectiveType = 3
+DiscoverMapObjectiveType = 4
+DiscoverAreaObjectiveType = 5
+KillMonsterSingleFightObjectiveType = 6
+KillMonsterObjectiveType = 7 -- Unused ? (Only used by objective 3650)
+UseObjectObjectiveType = 8
+TalkAgainToObjectiveType = 9
+EscortObjectiveType = 10
+WinDuelObjectiveType = 11
+BringSoulsObjectiveType = 12
+EliminateObjectiveType = 13

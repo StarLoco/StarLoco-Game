@@ -14,6 +14,7 @@ require("./data/Dungeons")
 Npc = {}
 Npc.__index = Npc
 
+---@type table<number, Npc>
 NPCS = {}
 setmetatable(Npc, {
     __call = function (cls, id, gfxID)

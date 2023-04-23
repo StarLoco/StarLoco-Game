@@ -225,17 +225,11 @@ public class PlayerData extends FunctionDAO<Player> {
                 ((GuildMemberData) DatabaseManager.get(GuildMemberData.class)).update(entity);
             if (entity.getMount() != null)
                 ((MountData) DatabaseManager.get(MountData.class)).update(entity.getMount());
+            entity.saveQuestProgress();
         } catch (Exception e) {
             super.sendError(e);
         } finally {
             close(p);
-        }
-
-        try {
-            if (entity.getQuestPerso() != null && !entity.getQuestPerso().isEmpty())
-                entity.getQuestPerso().values().stream().filter(Objects::nonNull).forEach(QP -> ((QuestPlayerData) DatabaseManager.get(QuestPlayerData.class)).update(QP));
-        } catch(Exception e) {
-            e.printStackTrace();
         }
     }
 

@@ -79,7 +79,6 @@ public class DatabaseManager {
         this.daos.add(new ObvijevanData(this.login));
         //this.daos.add(new PubData(this.login));
         this.daos.add(new PetData(this.login));
-        this.daos.add(new QuestPlayerData(this.login));
         this.daos.add(new ShopObjectData(this.login));
         //endregion
 
@@ -123,9 +122,6 @@ public class DatabaseManager {
         this.daos.add(new NpcData(this.game));
         this.daos.add(new ObjectActionData(this.game));
         this.daos.add(new PetTemplateData(this.game));
-        this.daos.add(new QuestData(this.game));
-        this.daos.add(new QuestObjectiveData(this.game));
-        this.daos.add(new QuestStepData(this.game));
         this.daos.add(new RuneData(this.game));
         this.daos.add(new ScriptedCellData(this.game));
         this.daos.add(new SubAreaData(this.game));
@@ -134,6 +130,7 @@ public class DatabaseManager {
         this.daos.add(new ZaapData(this.game));
         this.daos.add(new ZaapiData(this.game));
         this.daos.add(new HeroicMobsGroupsData(this.game));
+        this.daos.add(new PlayerQuestProgressData(this.game));
         //endregion
     }
 
@@ -187,12 +184,12 @@ public class DatabaseManager {
      * @param c the entity class of the dao
      * @return dao class of the entity
      */
-    public static DAO<?> get(Class<?> c) {
+    public static <D extends DAO<T>,T> D get(Class<D> c) {
         for(DAO<?> dao : instance.daos) {
             if(dao.getReferencedClass().equals(c))
-                return dao;
+                return (D) dao;
         }
-        return get(BaseData.class); // escape warning, this could not happen
+        return null;
     }
 
     public static DatabaseManager getInstance() {

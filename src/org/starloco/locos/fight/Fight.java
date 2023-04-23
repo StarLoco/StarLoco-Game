@@ -52,8 +52,6 @@ import org.starloco.locos.object.GameObject;
 import org.starloco.locos.object.ObjectTemplate;
 import org.starloco.locos.object.entity.SoulStone;
 import org.starloco.locos.other.Action;
-import org.starloco.locos.quest.Quest;
-import org.starloco.locos.quest.QuestPlayer;
 import org.starloco.locos.util.TimerWaiter;
 
 public class Fight {
@@ -4498,27 +4496,7 @@ public class Fight {
                     Player player = fighter.getPlayer();
                     if (player == null) continue;
 
-                    if (!player.getQuestPerso().isEmpty()) {
-                        for (Fighter ennemy : loosers) {
-                            if (ennemy.getMob() == null) continue;
-                            if (ennemy.getMob().getTemplate() == null) continue;
-
-                            for (QuestPlayer questP : player.getQuestPerso().values()) {
-                                if (questP == null) continue;
-                                Quest quest = questP.getQuest();
-                                if (quest == null) continue;
-                                quest.getObjectives().stream().filter(qEtape -> !questP.isQuestObjectiveIsValidate(qEtape) && (qEtape.getType() == 0 || qEtape.getType() == 6)).filter(qEtape -> qEtape.getMonsterId() == ennemy.getMob().getTemplate().getId()).forEach(qEtape -> {
-                                    try {
-                                        player.getQuestPersoByQuest(qEtape.getQuest()).getMonsterKill().put(ennemy.getMob().getTemplate().getId(), (short) 1);
-                                        qEtape.getQuest().update(player, false, 2);
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                        player.sendMessage(player.getLang().trans("fight.fight.quest.report.admin") + e.getMessage());
-                                    }
-                                });
-                            }
-                        }
-                    }
+                    // TODO: DIABU CALL LUA FOR QUEST UPDATE
                 }
             }
             //endregion
