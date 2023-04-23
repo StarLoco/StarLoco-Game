@@ -26,6 +26,7 @@ import java.util.List;
 public class GameCase {
 
     private int id;
+    private final boolean active;
     private boolean loS = true;
     private int movement;
 
@@ -34,7 +35,8 @@ public class GameCase {
     private InteractiveObject object;
     private GameObject droppedItem;
 
-    public GameCase(GameMap map, int id, int movement, boolean loS, int objId) {
+    public GameCase(GameMap map, boolean active, int id, int movement, boolean loS, int objId) {
+        this.active = active;
         this.id = id;
         this.movement = movement;
         this.loS = loS;
@@ -47,6 +49,7 @@ public class GameCase {
     }
 
     private boolean _isWalkable(boolean inFight) {
+        if(!active) return false;
         switch (movement) {
             case 0:
                 return false;

@@ -203,12 +203,12 @@ public class InteractiveDoor {
         gameMap.removeCase(cell);
 
         if(active) {
-            temporaryCell = new GameCase(gameMap, cell, 1, true, -1);
+            temporaryCell = new GameCase(gameMap, true, cell, 1, true, -1);
             // FIXME? temporaryCell.setOnCellStop(gameCase.getOnCellStop());
             gameMap.getCases().add(temporaryCell);
             packet += ";aaGaaaaaaa801;1";
         } else {
-            temporaryCell = new GameCase(gameMap, cell, 0, false, -1);
+            temporaryCell = new GameCase(gameMap, true, cell, 0, false, -1);
             // FIXME? temporaryCell.setOnCellStop(gameCase.getOnCellStop());
             gameMap.getCases().add(temporaryCell);
             packet += ";aaaaaaaaaa801;1";
