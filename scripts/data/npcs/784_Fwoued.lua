@@ -51,7 +51,7 @@ function npc:onTalk(p, answer)
             p:teleport(9397, 90)
             p:endDialog()
         end
-        elseif table.contains(labyrinthMapsIDs, p:mapID()) then
+    elseif table.contains(labyrinthMapsIDs, p:mapID()) then
         if answer == 0 then
             p:ask(3220, {2853, 2852})
         elseif answer == 2853 then
