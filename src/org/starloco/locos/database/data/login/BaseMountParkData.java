@@ -35,12 +35,12 @@ public class BaseMountParkData extends FunctionDAO<MountPark> {
 	@Override
 	public MountPark load(int id) {
 		try {
-			getData("SELECT * FROM " + getTableName() + " WHERE `mapid` = " + id +" ;", result -> {
-				if (result.next()) {
-					MountPark MP = new MountPark(result.getInt("mapid"), result.getInt("cellid"), result.getInt("size"), result.getInt("priceBase"), result.getInt("cellMount"), result.getInt("cellporte"), result.getString("cellEnclos"), result.getInt("sizeObj"));
-					World.world.addMountPark(MP);
-					((MountParkData) DatabaseManager.get(MountParkData.class)).exist(MP);
-				}
+			return getData("SELECT * FROM " + getTableName() + " WHERE `mapid` = " + id +" ;", result -> {
+				if (!result.next()) return null;
+				MountPark MP = new MountPark(result.getInt("mapid"), result.getInt("cellid"), result.getInt("size"), result.getInt("priceBase"), result.getInt("cellMount"), result.getInt("cellporte"), result.getString("cellEnclos"), result.getInt("sizeObj"));
+				World.world.addMountPark(MP);
+				((MountParkData) DatabaseManager.get(MountParkData.class)).exist(MP);
+				return MP;
 			});
 		} catch (SQLException e) {
 			super.sendError(e);
