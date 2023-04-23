@@ -3,9 +3,9 @@ local npc = Npc(784, 50)
 npc.colors = {3248109, 16724531, 16773874}
 npc.accessories = {0, 8285, 8281, 0, 0}
 
+local dungeon = DragonPigDungeon
 ---@param p Player
 ---@param answer number
-local dungeon = DragonPigDungeon
 function npc:onTalk(p, answer)
     local hasAllItems = p:getItem(7511) and p:getItem(8320)
     local hasAllItems2 = p:getItem(8320) and dungeon:hasKeyChain(p)
