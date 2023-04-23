@@ -44,7 +44,7 @@ public class ObjectData extends FunctionDAO<GameObject> {
     @Override
     public GameObject load(int id) {
         try {
-            getData("SELECT * FROM " + getTableName() + " WHERE `id` IN (" + id + ");", result -> {
+            return getData("SELECT * FROM " + getTableName() + " WHERE `id` IN (" + id + ");", result -> {
                 while (result != null && result.next()) {
                     int template = result.getInt("template");
                     int quantity = result.getInt("quantity");
