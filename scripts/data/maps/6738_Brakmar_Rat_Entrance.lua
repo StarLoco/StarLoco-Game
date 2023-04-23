@@ -44,4 +44,8 @@ map.allowedMobGrades = {
     {449, 5}
 }
 
+map.onMovementEnd = {
+    [462] = moveEndTeleport(6736, 31)
+}
+
 RegisterMapDef(map)
