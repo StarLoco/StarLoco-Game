@@ -54,17 +54,17 @@ public class Guild {
     }
 
     public void addMember(int id, int r, byte pXp, long x, int ri, String lastCo) {
-        Player player = World.world.getPlayer(id);
-        if (player == null) return;
-        GuildMember guildMember = new GuildMember(player, this, r, x, pXp, ri, lastCo);
+        GuildMember guildMember = new GuildMember(id, this, r, x, pXp, ri, lastCo);
         this.members.put(id, guildMember);
-        player.setGuildMember(guildMember);
+        if(guildMember.getPlayer() != null) {
+            guildMember.getPlayer().setGuildMember(guildMember);
+        }
     }
 
     public GuildMember addNewMember(Player player) {
-        GuildMember guildMember = new GuildMember(player, this, 0, 0, (byte) 0, 0, player.getAccount().getLastConnectionDate());
+        GuildMember guildMember = new GuildMember(player.getId(), this, 0, 0, (byte) 0, 0, player.getAccount().getLastConnectionDate());
         this.members.put(player.getId(), guildMember);
-        player.setGuildMember(guildMember);
+        guildMember.getPlayer().setGuildMember(guildMember);
         return guildMember;
     }
 
