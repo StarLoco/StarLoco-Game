@@ -3,24 +3,29 @@ local npc = Npc(784, 50)
 npc.colors = {3248109, 16724531, 16773874}
 npc.accessories = {0, 8285, 8281, 0, 0}
 
-
 ---@param p Player
 ---@param answer number
+local dungeon = DragonPigDungeon
 function npc:onTalk(p, answer)
     local hasAllItems = p:getItem(7511) and p:getItem(8320)
+    local hasAllItems2 = p:getItem(8320) and dungeon:hasKeyChain(p)
+    local hasAllItems3 = p:getItem(8320) and p:getItem(7511) and dungeon:hasKeyChain(p)
     local labyrinthMapsIDs = {9371, 9372, 9373, 9374, 9375, 9376, 9377, 9378, 9379, 9380, 9381, 9382, 9383, 9384, 9385, 9386, 9387, 9388, 9389, 9390, 9391, 9392, 9393, 9394}
     if p:mapID() == 9397 then
-        --TODO ADD KEYCHAIN
         if answer == 0 then
-            if p:getItem(7511) then
-                p:ask(3216, {2847, 2849})
+            -- Check if p has item / keychain
+            local responses = {}
+            if p:getItem(dungeon.keyID, 1) or dungeon:hasKeyChain(p) then
+                table.insert(responses,dungeon.keychainResponseID)
+                table.insert(responses,dungeon.keyResponseID)
             else
-                p:ask(2849)
+                table.insert(responses,dungeon.keyResponseID)
             end
-        elseif answer == 2847 then
+            p:ask(dungeon.questionID, responses)
+        elseif answer == dungeon.keychainResponseID then
             p:teleport(9396, 387)
             p:endDialog()
-        elseif answer == 2849 then
+        elseif answer == dungeon.keyResponseID then
             p:ask(3217, {2850})
         elseif answer == 2850 then
             p:ask(3218, {2851})
@@ -70,15 +75,24 @@ function npc:onTalk(p, answer)
             p:ask(3228)
         end
     elseif p:mapID() == 9395 then
-        --TODO ADD KEYCHAIN
         if answer == 0 then
-            if hasAllItems then
+            if hasAllItems or hasAllItems2 or hasAllItems3 then
                 p:ask(3223, {2856})
             else
                 p:ask(3223)
             end
         elseif answer == 2856 then
-            if hasAllItems then
+            if hasAllItems3 then
+                p:consumeItem(8320, 1)
+                dungeon:useKeyChain(p)
+                p:teleport(8541, 336)
+                p:endDialog()
+            elseif hasAllItems2 then
+                p:consumeItem(8320, 1)
+                dungeon:useKeyChain(p)
+                p:teleport(8541, 336)
+                p:endDialog()
+            elseif hasAllItems then
                 p:consumeItem(7511, 1)
                 p:consumeItem(8320, 1)
                 p:teleport(8541, 336)
