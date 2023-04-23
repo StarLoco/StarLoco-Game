@@ -11,6 +11,22 @@ function npc:onTalk(p, answer)
     local hasAllItems2 = p:getItem(8320) and dungeon:hasKeyChain(p)
     local hasAllItems3 = p:getItem(8320) and p:getItem(7511) and dungeon:hasKeyChain(p)
     local labyrinthMapsIDs = {9371, 9372, 9373, 9374, 9375, 9376, 9377, 9378, 9379, 9380, 9381, 9382, 9383, 9384, 9385, 9386, 9387, 9388, 9389, 9390, 9391, 9392, 9393, 9394}
+    local blablaDialog
+    if answer == 2850 then
+        blablaDialog = p:ask(3218, {2851})
+    elseif answer == 2851 then
+        blablaDialog = p:ask(3219, {2857})
+    elseif answer == 2857 then
+        blablaDialog = p:ask(3224, {2858})
+    elseif answer == 2858 then
+        blablaDialog = p:ask(3225, {2859})
+    elseif answer == 2859 then
+        blablaDialog = p:ask(3226, {2860})
+    elseif answer == 2860 then
+        blablaDialog = p:ask(3227, {2861})
+    elseif answer == 2861 then
+        blablaDialog = p:ask(3228)
+    end
     if p:mapID() == 9397 then
         if answer == 0 then
             -- Check if p has item / keychain
@@ -27,20 +43,8 @@ function npc:onTalk(p, answer)
             p:endDialog()
         elseif answer == dungeon.keyResponseID then
             p:ask(3217, {2850})
-        elseif answer == 2850 then
-            p:ask(3218, {2851})
-        elseif answer == 2851 then
-            p:ask(3219, {2857})
-        elseif answer == 2857 then
-            p:ask(3224, {2858})
-        elseif answer == 2858 then
-            p:ask(3225, {2859})
-        elseif answer == 2859 then
-            p:ask(3226, {2860})
-        elseif answer == 2860 then
-            p:ask(3227, {2861})
-        elseif answer == 2861 then
-            p:ask(3228)
+        elseif answer == blablaDialog then
+            blablaDialog(p,answer)
         end
     elseif p:mapID() == 9396 then
         if answer == 0 then
@@ -59,20 +63,8 @@ function npc:onTalk(p, answer)
             p:endDialog()
         elseif answer == 2852 then
             p:ask(3217, {2850})
-        elseif answer == 2850 then
-            p:ask(3218, {2851})
-        elseif answer == 2851 then
-            p:ask(3219, {2857})
-        elseif answer == 2857 then
-            p:ask(3224, {2858})
-        elseif answer == 2858 then
-            p:ask(3225, {2859})
-        elseif answer == 2859 then
-            p:ask(3226, {2860})
-        elseif answer == 2860 then
-            p:ask(3227, {2861})
-        elseif answer == 2861 then
-            p:ask(3228)
+        elseif answer == blablaDialog then
+            blablaDialog(p,answer)
         end
     elseif p:mapID() == 9395 then
         if answer == 0 then
