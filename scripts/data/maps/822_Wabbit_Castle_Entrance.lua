@@ -14,10 +14,7 @@ local map = MapDef(
 map.positions = "bQbTb4b5b7b8chck|fbfqfFfUgogCgDgR"
 map.capabilities = 47
 
-
 -- '1;1;1;0;0;0;0' forbiddens -> capabilities ? Or script ?
-
-
 
 local function tryEntering(_, _, p)
     if p:getItem(961) and p:getItem(962) and p:getItem(963) then
