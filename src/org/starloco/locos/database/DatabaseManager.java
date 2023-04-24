@@ -131,7 +131,6 @@ public class DatabaseManager {
         this.daos.add(new SubAreaData(this.game));
         this.daos.add(new SpellData(this.game));
         this.daos.add(new TutorialData(this.game));
-        this.daos.add(new ZaapData(this.game));
         this.daos.add(new ZaapiData(this.game));
         this.daos.add(new HeroicMobsGroupsData(this.game));
         //endregion
