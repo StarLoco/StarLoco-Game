@@ -124,7 +124,7 @@ local onTalkMaps = {
     [9989] = talkMapFinalRoom,
     [9395] = talkMapDungeonEntrance,
     [9396] = talkMapSlabsRoom,
-    [9397] = talkMapMazeEntrance,
+    [9397] = talkMapMazeEntrance
 }
 
 for i = 9371, 9394 do
@@ -136,6 +136,7 @@ function npc:onTalk(p, answer)
     if onTalkMaps[p:mapID()] then
         onTalkMaps[p:mapID()](p, answer)
     end
+
 end
 
 RegisterNPCDef(npc)

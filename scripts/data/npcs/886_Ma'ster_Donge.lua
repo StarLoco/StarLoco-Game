@@ -4,13 +4,64 @@ npc.colors = {5767327, 61976, 16713222}
 npc.accessories = {0, 6481, 2386, 0, 0}
 npc.customArtwork = 9086
 
-local dungeon = IncarnamDungeon
+local dungeonKeyId = 8545
+local enterDungeonDest = {10360, 364}
+
+---@param p Player
+---@param answer number
+local function talkMapDungeonEntrance(p, answer)
+    local showKeyResponse = 3358
+    local hasDungeonKeys = p:getItem(dungeonKeyId) or hasKeyChainFor(p, dungeonKeyId)
+
+    if answer == 0 then
+        local responses = {}
+        if hasDungeonKeys then
+            table.insert(responses, showKeyResponse)
+        end
+        table.insert(responses, 3359)
+        p:ask(3828, responses)
+    elseif answer == showKeyResponse then
+        if hasDungeonKeys then
+            if not useKeyChainFor(p, dungeonKeyId) and not p:consumeItem(dungeonKeyId, 1) then
+                -- Should not happen (cheat?)
+                p:endDialog()
+                return
+            end
+            p:teleport(enterDungeonDest[1], enterDungeonDest[2])
+            p:endDialog()
+        else
+            p:endDialog()
+        end
+    elseif answer == 3359 then
+        p:teleport(10335,267)
+        p:endDialog()
+    end
+end
+
+local function talkMapDungeonExit(p, answer)
+    if answer == 0 then
+        p:ask(3829, {3360, 3361})
+    elseif answer == 3360 then
+        p:teleport(10335, 267)
+        p:endDialog()
+    elseif answer == 3361 then
+        p:teleport(10354, 297)
+        p:endDialog()
+    end
+end
+
+local onTalkMaps = {
+    [10359] = talkMapDungeonEntrance,
+    [10364] = talkMapDungeonExit
+}
+
 local questID = 198
 ---@param p Player
 ---@param answer number
 function npc:onTalk(p, answer)
-    local hasAllItems = dungeon.keyID and dungeon:hasKeyChain(p)
-    local hasKey = dungeon.keyID
+    if onTalkMaps[p:mapID()] then
+        onTalkMaps[p:mapID()](p, answer)
+    end
     if p:mapID() == 10352 then
         if p:questAvailable(questID) and answer == 0 then
             p:ask(3823, {3354, 3353})
@@ -23,49 +74,11 @@ function npc:onTalk(p, answer)
             p:endDialog()
         elseif p:questOngoing(questID) then
             --TODO: ADD WHAT HAPPENS IF WE HAVE COMPLETED THE OBJECTIVE
-           return p:ask(3847)
+            return p:ask(3847)
         end
-        elseif p:questFinished(questID) then
-            --TODO: NEED TO ADD DIALOGID WHEN WE SPEAK TO HIM WITH QUEST ALREADY COMPLETED
-            p:ask()
-    elseif p:mapID() == 10359 then
-        if answer == 0 then
-            -- Check if p has item / keychain
-            local responses = {}
-            if p:getItem(dungeon.keyID, 1) or dungeon:hasKeyChain(p) then
-                table.insert(responses,dungeon.keychainResponseID)
-                table.insert(responses,dungeon.keyResponseID)
-            else
-                table.insert(responses,dungeon.keyResponseID)
-            end
-            p:ask(dungeon.questionID, responses)
-        elseif answer == dungeon.keychainResponseID then
-            if hasAllItems then
-                if dungeon:useKeyChain(p) then
-                    p:teleport(dungeon.tpDest[1], dungeon.tpDest[2])
-                    p:endDialog()
-                end
-            elseif hasKey then
-                if p:consumeItem(dungeon.keyID, 1) then
-                    p:teleport(dungeon.tpDest[1], dungeon.tpDest[2])
-                    p:endDialog()
-                else
-                    p:endDialog()
-                end
-            end
-        elseif answer == dungeon.keyResponseID then
-            p:teleport(10335,267)
-        end
-    elseif p:mapID() == 10364 then
-        if answer == 0 then
-            p:ask(3829, {3360, 3361})
-    elseif answer == 3360 then
-            p:teleport(10335, 267)
-            p:endDialog()
-    elseif answer == 3361 then
-            p:teleport(10354, 297)
-            p:endDialog()
-        end
+    elseif p:questFinished(questID) then
+        --TODO: NEED TO ADD DIALOGID WHEN WE SPEAK TO HIM WITH QUEST ALREADY COMPLETED
+        p:ask()
     end
 end
 
