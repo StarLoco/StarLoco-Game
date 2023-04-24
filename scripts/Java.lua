@@ -134,6 +134,10 @@ function Player:orientation() end
 ---@return number,number map,cell
 function Player:savedPosition() end
 
+---@param mapId number
+---@param cellId number
+function Player:setSavedPosition(mapId, cellId) end
+
 ---@param emote number
 ---@return boolean
 function Player:hasEmote(emote) end

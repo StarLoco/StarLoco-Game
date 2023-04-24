@@ -169,6 +169,8 @@ public class CryptManager {
                 for (int i = 0; i < cellData.length(); i++)
                     array[i] = (byte) getIntByHashedValue(cellData.charAt(i));
 
+                boolean active = (array[0] >> 5) != 0;
+
                 boolean los = true;
                 short groundSlope, groundLevel;
                 int io;
@@ -187,7 +189,7 @@ public class CryptManager {
                 boolean layerObject2Interactive = ((array[7] & 2) >> 1) != 0;
                 int obj = (layerObject2Interactive?layerObject2:-1);
 
-                cells.add(new GameCase(map, cellId, walkable, los, obj));
+                cells.add(new GameCase(map, active, cellId, walkable, los, obj));
 
             }
             CellCacheImpl cache = new CellCacheImpl(losCells, w, h);

@@ -5,6 +5,7 @@ import org.joda.time.LocalDate;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.database.DatabaseManager;
 import org.starloco.locos.database.data.game.GuildMemberData;
+import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.Constant;
 
 import java.util.Map;
@@ -15,7 +16,7 @@ import java.util.TreeMap;
  **/
 public class GuildMember {
 
-    private final Player player;
+    private final int playerId;
     private final Guild guild;
     private int rank = 0;
     private byte xpGive = 0;
@@ -24,8 +25,8 @@ public class GuildMember {
     private String lastCo;
     private final Map<Integer, Boolean> haveRights = new TreeMap<>();
 
-    GuildMember(Player player, Guild guild, int rank, long xpGave, byte xpGive, int rights, String lastCo) {
-        this.player = player;
+    GuildMember(int playerId, Guild guild, int rank, long xpGave, byte xpGive, int rights, String lastCo) {
+        this.playerId = playerId;
         this.guild = guild;
         this.rank = rank;
         this.xpGave = xpGave;
@@ -36,27 +37,27 @@ public class GuildMember {
     }
 
     public Player getPlayer() {
-        return player;
+        return World.world.getPlayer(playerId);
     }
 
     public int getPlayerId() {
-        return player.getId();
+        return playerId;
     }
 
     public String getName() {
-        return player.getName();
+        return getPlayer().getName();
     }
 
     public int getAlign() {
-        return player.getAlignment();
+        return getPlayer().getAlignment();
     }
 
     public int getGfx() {
-        return player.getGfxId();
+        return getPlayer().getGfxId();
     }
 
     public int getLvl() {
-        return player.getLevel();
+        return getPlayer().getLevel();
     }
 
     public Guild getGuild() {

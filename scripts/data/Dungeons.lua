@@ -27,23 +27,33 @@ setmetatable(Dungeon, {
         return self
     end,
 })
+---@param player Player
+---@param keyID number
+---@return boolean
+function hasKeyChainFor(player, keyID)
+    local item = player:getItem(keychainTemplateID, 1)
+    if not item then return false end
+    -- Keys are stored as hex value in keychain
+    return item:hasTxtStat(keychainStatID, hex(keyID))
+end
+
+function useKeyChainFor(player, keyID)
+    local item = player:getItem(keychainTemplateID, 1)
+    if not item then return false end
+    -- Keys are stored as hex value in keychain
+    return item:consumeTxtStat(player, keychainStatID, hex(keyID))
+end
 
 ---@param player Player
 ---@return boolean
 function Dungeon:hasKeyChain(player)
-    local item = player:getItem(keychainTemplateID, 1)
-    if not item then return false end
-    -- Keys are stored as hex value in keychain
-    return item:hasTxtStat(keychainStatID, hex(self.keyID))
+    return hasKeyChainFor(player, self.keyID)
 end
 
 ---@param player Player
 ---@return boolean
 function Dungeon:useKeyChain(player)
-    local item = player:getItem(keychainTemplateID, 1)
-    if not item then return false end
-    -- Keys are stored as hex value in keychain
-    return item:consumeTxtStat(player, keychainStatID, hex(self.keyID))
+    return useKeyChainFor(player, self.keyID)
 end
 
 ---@param player Player
@@ -98,4 +108,3 @@ KitsouneDungeon = Dungeon(7311, 2941, 6604, 2577, {8502, 388})
 FungusDungeon = Dungeon(9247, 5471, 6622, 4580, {11931, 436})
 IlyzaelleDungeon = Dungeon(11474, 5503, 7707, 4621, {11971, 32})
 QuTanDungeon = Dungeon(11475, 5503, 7709, 7708, {11965, 366})
-DragonPigDungeon = Dungeon(7511, 3216, 2847, 2849, {9396, 387})

@@ -411,12 +411,6 @@ public class World implements Scripted<SWorld> {
         DatabaseManager.get(AnimationData.class).loadFully();
         logger.debug("The animations were loaded successfully.");
 
-//        DatabaseManager.get(AccountData.class).loadFully();
-//        logger.debug("The accounts were loaded successfully.");
-
-        // DatabaseManager.get(PlayerData.class).loadFully();
-        // logger.debug("The players were loaded successfully.");
-
         DatabaseManager.get(GuildMemberData.class).loadFully();
         logger.debug("The guilds and guild members were loaded successfully.");
 
