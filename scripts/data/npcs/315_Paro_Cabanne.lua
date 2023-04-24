@@ -9,10 +9,9 @@ npc.sales = {
 	{item=951}
 }
 
-
+local price = 50
 ---@param p Player
 ---@param answer number
-local price = 50
 function npc:onTalk(p, answer)
     if answer == 0 then p:ask(1245, {1178, 1177})
 	elseif answer == 1178 then p:ask(1543)

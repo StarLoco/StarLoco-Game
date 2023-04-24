@@ -68,10 +68,11 @@ map.allowedMobGrades = {
 
 local function tryEntering(_, _, p)
     if p:getItem(818) then
-		p:consumeItem(818, 1)
-        p:teleport(1506, 109)
-    else
-        -- TODO: send error (in chat)
+        if p:consumeItem(818, 1) then
+            p:teleport(1506, 109)
+        else
+            -- TODO: send error (in chat)
+        end
     end
 end
 

@@ -22,14 +22,14 @@ function npc:onTalk(p, answer)
         elseif answer == 3031 then p:ask(3421)
         elseif answer == 3032 then
             if hasAllItems then
-                p:consumeItem(8476, 1)
-                p:consumeItem(8477,1)
-                p:teleport(10141, 448)
-                p:endDialog()
-            else
-                p:endDialog()
+                if p:consumeItem(8476, 1) and p:consumeItem(8477,1) then
+                    p:teleport(10141, 448)
+                    p:endDialog()
+                else
+                    p:endDialog()
+                end
             end
-            end
+        end
     elseif p:mapID() == 10150 then
         if answer == 0 then
             p:ask(3422, {3033})

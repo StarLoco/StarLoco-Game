@@ -2,9 +2,9 @@ local npc = Npc(797, 1001)
 
 npc.gender = 1
 
+local dungeon = TreechnidDungeon
 ---@param p Player
 ---@param answer number
-local dungeon = TreechnidDungeon
 function npc:onTalk(p, answer)
     if answer == 0 then p:ask(3174, {2796})
     elseif answer == 2796 then

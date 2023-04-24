@@ -21,14 +21,13 @@ local hasAllItem = p:getItem(8077, 10) and p:getItem(8064, 10) and p:getItem(807
         p:ask(3149, {2770})
     elseif answer == 2770 then
         if hasAllItem then
-            p:consumeItem(8077, 10)
-            p:consumeItem(8064, 10)
-            p:consumeItem(8075, 10)
-            p:consumeItem(8076, 10)
-			p:setSpellLevel(364, 1)
-            p:endDialog()
-        else
-            p:ask(3148, {})
+            if
+            p:consumeItem(8077, 10) and p:consumeItem(8064, 10) and p:consumeItem(8075, 10) and p:consumeItem(8076, 10) then
+                p:setSpellLevel(364, 1)
+                p:endDialog()
+            else
+                p:ask(3148, {})
+            end
         end
     end
 end

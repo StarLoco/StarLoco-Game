@@ -7,7 +7,6 @@ local bonusPods = 500
 local coralWeight = 10
 
 ---@param p Player
----@param answer number
 local fail = function(p)
     p:endDialog()
     p:forceFight({-1, {
@@ -17,6 +16,7 @@ end
 
 local questID = 230
 ---@param p Player
+---@param answer number
 function npc:onTalk(p, answer)
     if answer == 0 then
         if p:questFinished(questID) then  p:ask(4122, {3616})
