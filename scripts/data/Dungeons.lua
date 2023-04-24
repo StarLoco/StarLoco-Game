@@ -27,23 +27,33 @@ setmetatable(Dungeon, {
         return self
     end,
 })
+---@param player Player
+---@param keyID number
+---@return boolean
+function hasKeyChainFor(player, keyID)
+    local item = player:getItem(keychainTemplateID, 1)
+    if not item then return false end
+    -- Keys are stored as hex value in keychain
+    return item:hasTxtStat(keychainStatID, hex(keyID))
+end
+
+function useKeyChainFor(player, keyID)
+    local item = player:getItem(keychainTemplateID, 1)
+    if not item then return false end
+    -- Keys are stored as hex value in keychain
+    return item:consumeTxtStat(player, keychainStatID, hex(keyID))
+end
 
 ---@param player Player
 ---@return boolean
 function Dungeon:hasKeyChain(player)
-    local item = player:getItem(keychainTemplateID, 1)
-    if not item then return false end
-    -- Keys are stored as hex value in keychain
-    return item:hasTxtStat(keychainStatID, hex(self.keyID))
+    return hasKeyChainFor(player, self.keyID)
 end
 
 ---@param player Player
 ---@return boolean
 function Dungeon:useKeyChain(player)
-    local item = player:getItem(keychainTemplateID, 1)
-    if not item then return false end
-    -- Keys are stored as hex value in keychain
-    return item:consumeTxtStat(player, keychainStatID, hex(self.keyID))
+    return useKeyChainFor(player, self.keyID)
 end
 
 ---@param player Player

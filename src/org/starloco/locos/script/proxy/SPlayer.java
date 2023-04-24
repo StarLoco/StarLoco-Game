@@ -233,6 +233,14 @@ public class SPlayer extends DefaultUserdata<Player> {
     }
 
     @SuppressWarnings("unused")
+    private static void setSavedPosition(Player p, ArgumentIterator args) {
+        int mapId = args.nextInt();
+        int cellId = args.nextInt();
+
+        p.setSavePos(mapId, cellId);
+    }
+
+    @SuppressWarnings("unused")
     private static int mapID(Player p) {
         return p.getCurMap().getId();
     }
