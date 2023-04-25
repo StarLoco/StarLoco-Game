@@ -45,7 +45,6 @@ import org.starloco.locos.script.DataScriptVM;
 import org.starloco.locos.script.Scripted;
 import org.starloco.locos.script.proxy.SWorld;
 import org.starloco.locos.util.TimerWaiter;
-import org.starloco.locos.database.data.game.ZaapData;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -440,9 +439,6 @@ public class World implements Scripted<SWorld> {
         logger.debug("The statics trunks were loaded successfully.");
         DatabaseManager.get(TrunkData.class).loadFully();
         logger.debug("The dynamics trunks were loaded successfully.");
-
-        DatabaseManager.get(ZaapData.class).loadFully();
-        logger.debug("The zaaps were loaded successfully.");
 
         DatabaseManager.get(ZaapiData.class).loadFully();
         logger.debug("The zappys were loaded successfully.");
