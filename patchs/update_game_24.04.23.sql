@@ -438,7 +438,7 @@ CREATE TABLE IF NOT EXISTS `quest_step` (
   `description` text,
   `xp` int DEFAULT NULL,
   `kamas` int DEFAULT NULL,
-  `items` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
+  `item` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
   `action` text CHARACTER SET latin1 COLLATE latin1_swedish_ci COMMENT 'actionID|args;actionID|args',
   `asitem` int NOT NULL DEFAULT '0'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -447,7 +447,7 @@ CREATE TABLE IF NOT EXISTS `quest_step` (
 -- Déchargement des données de la table `quest_step`
 --
 
-INSERT INTO `quest_step` (`id`, `name`, `description`, `xp`, `kamas`, `items`, `action`, `asitem`) VALUES
+INSERT INTO `quest_step` (`id`, `name`, `description`, `xp`, `kamas`, `item`, `action`, `asitem`) VALUES
 (1053, 'Vaincre le monstre', 'Pour continuer votre quête, vous devez commencer par aller dans la {arrow,700,870,0,1::salle suivante} et lancer un combat contre {monster,2781::le monstre}.', 5, 0, '10801', NULL, 0),
 (4, 'Mais quel herbier !', 'Pour ses recherches, Trapchet a besoin d\'étudier la répartition géographique des fleurs aux alentours d\'Astrub.', 6500, 500, '0', NULL, 0),
 (761, '32 dents en or !', 'Vous devez apporter un dentier en or pour Mak. Vous pourrez en trouver sur des Chafers d\'élite, mais le forgeron de Brâkmar peut sans doute vous en fournir un aussi.', 28000, 0, '0', NULL, 0),
