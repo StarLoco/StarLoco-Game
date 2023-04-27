@@ -317,8 +317,8 @@ public class World implements Scripted<SWorld> {
         DatabaseManager.get(ServerData.class).loadFully();
         logger.debug("The reset of the logged players were done successfully.");
 
-        DatabaseManager.get(PubData.class).loadFully();
-        logger.debug("The pubs were loaded successfully.");
+        DatabaseManager.get(AdData.class).loadFully();
+        logger.debug("The ads were loaded successfully.");
 
         DatabaseManager.get(FullMorphData.class).loadFully();
         logger.debug("The incarnations were loaded successfully.");

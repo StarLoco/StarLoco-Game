@@ -5,6 +5,7 @@ QUEST_STEPS = {}
 ---@class Quest
 ---@field id number
 ---@field steps QuestStep[]
+---@field CanBeStartedBy fun(p:Player):boolean defaults to function returning true
 ---@field isRepeatable boolean defaults to false
 Quest = {}
 Quest.__index = Quest
@@ -14,14 +15,37 @@ setmetatable(Quest, {
         local self = setmetatable({}, Quest)
         self.id = id
         self.steps = steps
-
+        self.minLevel = 0
+        self.CanBeStartedBy = function(p) return true  end
         self.isRepeatable = false
-
 
         QUESTS[id] = self
         return self
     end,
 })
+
+---@param minLevel number
+---@param questFinished number
+---@param reqBreed number[]|nil
+---@return fun(p:Player):boolean
+function questRequirements(minLevel, questFinished, reqBreed)
+    ---@param p Player
+    return function(p)
+        if p:level() < minLevel then
+            return false
+        end
+
+        if questFinished ~= 0 and not p:questFinished(questFinished) then
+            return false
+        end
+
+        if reqBreed and not table.contains(reqBreed, p:breed()) then
+            return false
+        end
+
+        return true
+    end
+end
 
 ---@class QuestStep
 ---@field id number
@@ -49,6 +73,22 @@ function QuestStep:ObjectivesForPlayer(p)
         return self.objectives(p)
     end
     return self.objectives
+end
+
+---@param exp number
+---@param kamas number
+function QuestBasicReward(exp, kamas)
+    if exp <0 then
+        error("quest reward cannot remove exp")
+    end
+    if kamas <0 then
+        error("quest reward cannot remove kamas")
+    end
+    ---@param p Player
+    return function(p)
+        p:addXP(exp)
+        p:modKamas(kamas)
+    end
 end
 
 ---@class QuestObjective

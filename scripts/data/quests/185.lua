@@ -1,10 +1,10 @@
 local npcId = 870
 
-local s350 = QuestStep(350, 3718) -- TODO: Check dialog
-s350.objectives = {
+local qs350 = QuestStep(350, 3718) -- TODO: Check dialog
+qs350.objectives = {
     BringItemObjective(758, npcId, 311, 4)
 }
+qs350.rewardFn = QuestBasicReward(75, 25)
 
-
-local quest = Quest(185, {s350})
+local q185 = Quest(185, {qs350})
 

@@ -66,6 +66,7 @@ public class DatabaseManager {
         this.daos.add(new AccountData(this.login));
         this.daos.add(new EventData(this.login));
         this.daos.add(new PlayerData(this.login));
+        this.daos.add(new AdData(this.login));
         this.daos.add(new ServerData(this.login));
         this.daos.add(new BanIpData(this.login));
         this.daos.add(new BaseAreaData(this.login));
@@ -77,7 +78,6 @@ public class DatabaseManager {
         this.daos.add(new BaseMountParkData(this.login));
         this.daos.add(new ObjectData(this.login));
         this.daos.add(new ObvijevanData(this.login));
-        //this.daos.add(new PubData(this.login));
         this.daos.add(new PetData(this.login));
         this.daos.add(new ShopObjectData(this.login));
         //endregion
