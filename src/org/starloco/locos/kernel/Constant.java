@@ -566,10 +566,10 @@ public class Constant {
                 pos = 284;
                 break;
             case Constant.CLASS_SACRIEUR:
-                pos = 243;
+                pos = 258;
                 break;
             case Constant.CLASS_PANDAWA:
-                pos = 236;
+                pos = 250;
                 break;
         }
         return pos;
