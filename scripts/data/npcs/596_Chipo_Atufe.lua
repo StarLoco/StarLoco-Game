@@ -6,9 +6,9 @@ npc.sales = {
     {item=497}
 }
 
+local jobId = Miner
 ---@param p Player
 ---@param answer number
-local jobId = Miner
 function npc:onTalk(p, answer)
     if answer == 0 then p:ask(2399, {2027, 2028})
     elseif answer == 2027 then p:ask(2400)

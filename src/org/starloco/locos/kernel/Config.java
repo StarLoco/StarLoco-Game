@@ -170,7 +170,7 @@ public class Config {
                 .append(Params.GAME_PORT).append(" 5555\n")
                 .append(Params.GAME_SERVER_ID).append(" 601\n")
                 .append(Params.GAME_SERVER_KEY).append(" eratz\n")
-                .append(Params.VERSION).append(" 1.37.10\n")
+                .append(Params.VERSION).append(" 1.39.9e\n")
                 .append(Params.RATE_XP).append(" 1\n")
                 .append(Params.RATE_DROP).append(" 1\n")
                 .append(Params.RATE_HONOR).append(" 1\n")

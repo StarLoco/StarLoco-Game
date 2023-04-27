@@ -44,20 +44,20 @@ public class ObjectData extends FunctionDAO<GameObject> {
     @Override
     public GameObject load(int id) {
         try {
-            getData("SELECT * FROM " + getTableName() + " WHERE `id` IN (" + id + ");", result -> {
-                while (result != null && result.next()) {
-                    int template = result.getInt("template");
-                    int quantity = result.getInt("quantity");
-                    int position = result.getInt("position");
-                    String stats = result.getString("stats");
-                    int puit = result.getInt("puit");
+            return getData("SELECT * FROM " + getTableName() + " WHERE `id` IN (" + id + ");", result -> {
+                if(!result.next()) return null;
+                int template = result.getInt("template");
+                int quantity = result.getInt("quantity");
+                int position = result.getInt("position");
+                String stats = result.getString("stats");
+                int puit = result.getInt("puit");
 
-                    if (quantity > 0) {
-                        GameObject object = World.world.newObjet(result.getInt("id"), template, quantity, position, stats, puit);
-                        World.world.addGameObject(object);
-                        return object;
-                    }
+                if (quantity > 0) {
+                    GameObject object = World.world.newObjet(result.getInt("id"), template, quantity, position, stats, puit);
+                    World.world.addGameObject(object);
+                    return object;
                 }
+
                 return null;
             });
         } catch (SQLException e) {

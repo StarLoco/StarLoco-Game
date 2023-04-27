@@ -27,23 +27,33 @@ setmetatable(Dungeon, {
         return self
     end,
 })
+---@param player Player
+---@param keyID number
+---@return boolean
+function hasKeyChainFor(player, keyID)
+    local item = player:getItem(keychainTemplateID, 1)
+    if not item then return false end
+    -- Keys are stored as hex value in keychain
+    return item:hasTxtStat(keychainStatID, hex(keyID))
+end
+
+function useKeyChainFor(player, keyID)
+    local item = player:getItem(keychainTemplateID, 1)
+    if not item then return false end
+    -- Keys are stored as hex value in keychain
+    return item:consumeTxtStat(player, keychainStatID, hex(keyID))
+end
 
 ---@param player Player
 ---@return boolean
 function Dungeon:hasKeyChain(player)
-    local item = player:getItem(keychainTemplateID, 1)
-    if not item then return false end
-    -- Keys are stored as hex value in keychain
-    return item:hasTxtStat(keychainStatID, hex(self.keyID))
+    return hasKeyChainFor(player, self.keyID)
 end
 
 ---@param player Player
 ---@return boolean
 function Dungeon:useKeyChain(player)
-    local item = player:getItem(keychainTemplateID, 1)
-    if not item then return false end
-    -- Keys are stored as hex value in keychain
-    return item:consumeTxtStat(player, keychainStatID, hex(self.keyID))
+    return useKeyChainFor(player, self.keyID)
 end
 
 ---@param player Player
@@ -91,7 +101,7 @@ SoftOakDungeon = Dungeon(8436, 3276, 6602, 2930, {8714, 112})
 SandyDungeon = Dungeon(8437, 3289, 6602, 2944, {10156, 247})
 BrakmarRatDungeon = Dungeon(8438, 3294, 6618, 2950, {10194, 450})
 BontaRatDungeon = Dungeon(8439, 3292, 6619, 2947, {10200, 50})
-IncarnamDungeon = Dungeon(8545, 3828, 3358, 3359, {1360, 364})
+IncarnamDungeon = Dungeon(8545, 3828, 3358, 3359, {10360, 364})
 BlopDungeon = Dungeon(9248, 5402, 6623, 4531, {11881, 120})
 RainbowBlopDungeon = Dungeon(9254, 5410, 6624, 4544, {11892, 436})
 KitsouneDungeon = Dungeon(7311, 2941, 6604, 2577, {8502, 388})

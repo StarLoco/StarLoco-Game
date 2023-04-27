@@ -536,34 +536,34 @@ public class Constant {
         int pos = 314;
         switch (classID) {
             case Constant.CLASS_FECA:
-                pos = 323;
+                pos = 337;
                 break;
             case Constant.CLASS_OSAMODAS:
-                pos = 372;
+                pos = 386;
                 break;
             case Constant.CLASS_ENUTROF:
-                pos = 271;
+                pos = 300;
                 break;
             case Constant.CLASS_SRAM:
                 pos = 263;
                 break;
             case Constant.CLASS_XELOR:
-                pos = 300;
+                pos = 315;
                 break;
             case Constant.CLASS_ECAFLIP:
-                pos = 296;
+                pos = 311;
                 break;
             case Constant.CLASS_ENIRIPSA:
                 pos = 299;
                 break;
             case Constant.CLASS_IOP:
-                pos = 280;
+                pos = 309;
                 break;
             case Constant.CLASS_CRA:
-                pos = 284;
+                pos = 299;
                 break;
             case Constant.CLASS_SADIDA:
-                pos = 254;
+                pos = 284;
                 break;
             case Constant.CLASS_SACRIEUR:
                 pos = 243;

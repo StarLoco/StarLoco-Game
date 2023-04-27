@@ -2,6 +2,7 @@ package org.starloco.locos.database.data.login;
 
 import com.mysql.jdbc.Statement;
 import com.zaxxer.hikari.HikariDataSource;
+import org.apache.commons.lang.NotImplementedException;
 import org.starloco.locos.client.Account;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.database.DatabaseManager;
@@ -12,6 +13,8 @@ import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.Config;
 import org.starloco.locos.kernel.Constant;
 import org.starloco.locos.kernel.Main;
+
+import javax.xml.crypto.Data;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -27,34 +30,7 @@ public class PlayerData extends FunctionDAO<Player> {
 
     @Override
     public void loadFully() {
-        try {
-            getData("SELECT * FROM " + getTableName() + " WHERE server = " + Config.gameServerId + ";", result ->{
-                while (result.next()) {
-                    Player player = new Player(result.getInt("id"), result.getString("name"), result.getInt("groupe"),
-                        result.getInt("sexe"), result.getInt("class"), result.getInt("color1"), result.getInt("color2"),
-                        result.getInt("color3"), result.getLong("kamas"), result.getInt("spellboost"),
-                        result.getInt("capital"), result.getInt("energy"), result.getInt("level"), result.getLong("xp"),
-                        result.getInt("size"), result.getInt("gfx"), result.getByte("alignement"), result.getInt("account"),
-                        this.getStats(result), result.getByte("seeFriend"), result.getByte("seeAlign"), result.getByte("seeSeller"),
-                        result.getString("canaux"), result.getShort("map"), result.getInt("cell"), result.getString("objets"),
-                        result.getString("storeObjets"), result.getInt("pdvper"), result.getString("spells"), result.getString("savepos"),
-                        result.getString("jobs"), result.getInt("mountxpgive"), result.getInt("mount"), result.getInt("honor"),
-                        result.getInt("deshonor"), result.getInt("alvl"), result.getString("zaaps"), result.getByte("title"),
-                        result.getInt("wife"), result.getString("morphMode"), result.getString("allTitle"), result.getString("emotes"),
-                        result.getLong("prison"), false, result.getString("parcho"), result.getLong("timeDeblo"),
-                        result.getBoolean("noall"), result.getString("deadInformation"), result.getByte("deathCount"),
-                        result.getLong("totalKills"));
-
-                    player.VerifAndChangeItemPlace();
-                    World.world.addPlayer(player);
-                    if (player.isShowSeller())
-                        World.world.addSeller(player);
-                }
-            });
-        } catch (SQLException e) {
-            super.sendError(e);
-            Main.stop("Can't load players");
-        }
+        throw new NotImplementedException("cannot load all players at once");
     }
 
     private Player buildFromResultSet(ResultSet result) throws SQLException {
@@ -84,7 +60,13 @@ public class PlayerData extends FunctionDAO<Player> {
                 player.setLastFightForEndFightAction(oldPlayer.getLastFight());
 
             player.VerifAndChangeItemPlace();
+
+            // Find player's guild
+            World.world.getGuilds().values().stream().map(g -> g.getMember(id)).findFirst().ifPresent(player::setGuildMember);
+
+            // Add to world
             World.world.addPlayer(player);
+
             return player;
         } catch (SQLException e) {
             super.sendError(e);
@@ -281,11 +263,11 @@ public class PlayerData extends FunctionDAO<Player> {
                     if(p != null)
                         player.setLastFightForEndFightAction(p.getLastFight());
                     player.VerifAndChangeItemPlace();
+
+                    // Find player's guild
+                    World.world.getGuilds().values().stream().map(g -> g.getMember(player.getId())).filter(Objects::nonNull).findFirst().ifPresent(player::setGuildMember);
+
                     World.world.addPlayer(player);
-                    //TODO: Need to finihs database system
-                /*int guild = DatabaseManager.getDynamics().getGuildMemberData().isPersoInGuild(result.getInt("id"));
-                if (guild >= 0)
-                    player.setGuildMember(World.world.getGuild(guild).getMember(result.getInt("id")));*/
                 }
             });
         } catch (SQLException e) {
