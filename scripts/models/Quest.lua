@@ -3,7 +3,7 @@ QUESTS = {}
 QUEST_STEPS = {}
 
 ExtraClipSimpleQuest = 4
-ExtraClipAccountQuest= 6
+ExtraClipAccountQuest = 6
 ExtraClipRepeatableQuest = 7
 
 ---@class Quest
@@ -15,7 +15,7 @@ Quest = {}
 Quest.__index = Quest
 
 setmetatable(Quest, {
-    __call = function (_, id, steps)
+    __call = function(_, id, steps)
         local self = setmetatable({}, Quest)
         self.id = id
         self.steps = steps
@@ -33,6 +33,11 @@ function Quest:availableTo(p)
     return p:questAvailable(self.id)
 end
 
+---@param p Player
+function Quest:startFor(p)
+    if not self:availableTo(p) then return false end
+    return p:startQuest(self.id, self.steps[1].id)
+end
 
 ---@param minLevel number
 ---@param questFinished number
@@ -70,7 +75,7 @@ QuestStep = {}
 QuestStep.__index = QuestStep
 
 setmetatable(QuestStep, {
-    __call = function (_, id, questionId)
+    __call = function(_, id, questionId)
         local self = setmetatable({}, QuestStep)
         self.id = id
         self.questionId = questionId
@@ -92,10 +97,10 @@ end
 ---@param exp number
 ---@param kamas number
 function QuestBasicReward(exp, kamas)
-    if exp <0 then
+    if exp < 0 then
         error("quest reward cannot remove exp")
     end
-    if kamas <0 then
+    if kamas < 0 then
         error("quest reward cannot remove kamas")
     end
     ---@param p Player
@@ -118,7 +123,7 @@ GenericQuestObjective = {}
 GenericQuestObjective.__index = GenericQuestObjective
 
 setmetatable(GenericQuestObjective, {
-    __call = function (_, id, params)
+    __call = function(_, id, params)
         local self = setmetatable({}, GenericQuestObjective)
         self.id = id
         self.type = GenericObjectiveType
@@ -134,7 +139,7 @@ TalkWithQuestObjective = {}
 TalkWithQuestObjective.__index = TalkWithQuestObjective
 
 setmetatable(TalkWithQuestObjective, {
-    __call = function (_, id, npcId)
+    __call = function(_, id, npcId)
         local self = setmetatable({}, TalkWithQuestObjective)
         self.id = id
         self.type = TalkWithObjectiveType
@@ -152,7 +157,7 @@ ShowItemObjective = {}
 ShowItemObjective.__index = ShowItemObjective
 
 setmetatable(ShowItemObjective, {
-    __call = function (_, id, npcId, itemId, quantity)
+    __call = function(_, id, npcId, itemId, quantity)
         local self = setmetatable({}, ShowItemObjective)
         self.id = id
         self.type = ShowItemObjectiveType
@@ -172,7 +177,7 @@ BringItemObjective = {}
 BringItemObjective.__index = BringItemObjective
 
 setmetatable(BringItemObjective, {
-    __call = function (_, id, npcId, itemId, quantity)
+    __call = function(_, id, npcId, itemId, quantity)
         local self = setmetatable({}, BringItemObjective)
         self.id = id
         self.type = BringItemObjectiveType
@@ -190,7 +195,7 @@ DiscoverMapObjective = {}
 DiscoverMapObjective.__index = DiscoverMapObjective
 
 setmetatable(DiscoverMapObjective, {
-    __call = function (_, id, mapId)
+    __call = function(_, id, mapId)
         local self = setmetatable({}, DiscoverMapObjective)
         self.id = id
         self.type = DiscoverMapObjectiveType
@@ -206,7 +211,7 @@ DiscoverAreaObjective = {}
 DiscoverAreaObjective.__index = DiscoverAreaObjective
 
 setmetatable(DiscoverAreaObjective, {
-    __call = function (_, id, areaId)
+    __call = function(_, id, areaId)
         local self = setmetatable({}, DiscoverAreaObjective)
         self.id = id
         self.type = DiscoverAreaObjectiveType
@@ -223,7 +228,7 @@ KillMonsterSingleFightObjective = {}
 KillMonsterSingleFightObjective.__index = KillMonsterSingleFightObjective
 
 setmetatable(KillMonsterSingleFightObjective, {
-    __call = function (_, id, monsterId, amount)
+    __call = function(_, id, monsterId, amount)
         local self = setmetatable({}, KillMonsterSingleFightObjective)
         self.id = id
         self.type = KillMonsterSingleFightObjectiveType
@@ -240,7 +245,7 @@ KillMonsterObjective = {}
 KillMonsterObjective.__index = KillMonsterObjective
 
 setmetatable(KillMonsterObjective, {
-    __call = function (_, id, monsterId)
+    __call = function(_, id, monsterId)
         local self = setmetatable({}, KillMonsterObjective)
         self.id = id
         self.type = KillMonsterObjectiveType
@@ -256,7 +261,7 @@ UseObjectObjective = {}
 UseObjectObjective.__index = UseObjectObjective
 
 setmetatable(UseObjectObjective, {
-    __call = function (_, id, objectId)
+    __call = function(_, id, objectId)
         local self = setmetatable({}, UseObjectObjective)
         self.id = id
         self.type = UseObjectObjectiveType
@@ -272,7 +277,7 @@ TalkAgainToObjective = {}
 TalkAgainToObjective.__index = TalkAgainToObjective
 
 setmetatable(TalkAgainToObjective, {
-    __call = function (_, id, npcId)
+    __call = function(_, id, npcId)
         local self = setmetatable({}, TalkAgainToObjective)
         self.id = id
         self.type = TalkAgainToObjectiveType
@@ -289,7 +294,7 @@ EscortObjective = {}
 EscortObjective.__index = EscortObjective
 
 setmetatable(EscortObjective, {
-    __call = function (_, id, npcId, mapId)
+    __call = function(_, id, npcId, mapId)
         local self = setmetatable({}, EscortObjective)
         self.id = id
         self.type = EscortObjectiveType
@@ -306,7 +311,7 @@ WinDuelObjective = {}
 WinDuelObjective.__index = WinDuelObjective
 
 setmetatable(WinDuelObjective, {
-    __call = function (_, id)
+    __call = function(_, id)
         local self = setmetatable({}, WinDuelObjective)
         self.id = id
         self.type = WinDuelObjectiveType
@@ -322,7 +327,7 @@ BringSoulsObjective = {}
 BringSoulsObjective.__index = BringSoulsObjective
 
 setmetatable(BringSoulsObjective, {
-    __call = function (_, id, npcId, monsterId, amount)
+    __call = function(_, id, npcId, monsterId, amount)
         local self = setmetatable({}, BringSoulsObjective)
         self.id = id
         self.type = BringSoulsObjectiveType
@@ -340,7 +345,7 @@ EliminateObjective = {}
 EliminateObjective.__index = EliminateObjective
 
 setmetatable(EliminateObjective, {
-    __call = function (_, id, unk)
+    __call = function(_, id, unk)
         local self = setmetatable({}, EliminateObjective)
         self.id = id
         self.type = EliminateObjectiveType

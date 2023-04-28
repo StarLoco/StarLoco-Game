@@ -115,13 +115,13 @@ end
 ---- Used to show the ! on top of the NPC
 ---@param player Player
 function Npc:extraClip(player)
-    local clip = nil
-    for qID in ipairs(self.quests) do
+    local clip = -1
+    for _, qID in ipairs(self.quests) do
         (function()
             ---@type Quest
             local quest = QUESTS[qID]
             if not quest then
-                JlogF("unknown quest #{} for npc #{}", qID, self.id)
+                JLogF("unknown quest #{} for npc #{}", qID, self.id)
                 return
             end
 
@@ -134,10 +134,11 @@ function Npc:extraClip(player)
             if quest.isAccountBound then eClip = ExtraClipAccountQuest end
             clip = eClip
         end)()
-        if clip then
+        if clip ~= -1 then
             return clip
         end
     end
+    return clip
 end
 
 ---- Called by the Map class, allows some NPC to be shown only when player have a specific quest

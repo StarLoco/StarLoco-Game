@@ -38,7 +38,7 @@ public class PlayerQuestProgressData extends FunctionDAO<PlayerQuestProgress> {
                 while (result.next()) {
                     int qId = result.getInt("quest_id");
                     int sId = result.getInt("current_step");
-                    Set<Integer> completedObjectives = Arrays.stream(result.getString("completed_objectives").split("\\|")).map(Integer::parseInt).collect(Collectors.toSet());
+                    Set<Integer> completedObjectives = Arrays.stream(result.getString("completed_objectives").split("\\|")).filter(s->s.length()!=0).map(Integer::parseInt).collect(Collectors.toSet());
                     boolean finished = result.getBoolean("finished");
 
                     // new PlayerQuestProgress(result.getInt("id"), result.getInt("quest"), result.getInt("finish") == 1, result.getInt("player"), result.getString("stepsValidation"))

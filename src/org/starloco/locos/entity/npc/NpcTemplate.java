@@ -1,5 +1,6 @@
 package org.starloco.locos.entity.npc;
 
+import org.classdump.luna.Conversions;
 import org.classdump.luna.Table;
 import org.classdump.luna.impl.DefaultTable;
 import org.starloco.locos.area.map.GameMap;
@@ -16,6 +17,7 @@ import org.starloco.locos.object.GameObject;
 import org.starloco.locos.object.ObjectTemplate;
 import org.starloco.locos.other.Action;
 import org.starloco.locos.other.Dopeul;
+import org.starloco.locos.script.Convert;
 import org.starloco.locos.script.DataScriptVM;
 import org.starloco.locos.script.ScriptVM;
 
@@ -173,13 +175,19 @@ public class NpcTemplate {
         return flags;
     }
 
-    public int getExtraClip(Player p) {
-        if(this.legacy==null) {
-            // TODO Scripted NPC
-            // Call Lua to get extra clip
+    public int getExtraClip(Player player) {
+        if(this.legacy!=null) {
             return -1;
         }
-        return -1;
+
+        Object extraClip = recursiveGet(scriptVal,"extraClip");
+        if(extraClip == null) return -1;
+
+        Object[] ret = DataScriptVM.getInstance().call(extraClip, scriptVal, player.scripted());
+        if(ret == null || ret.length == 0 || ret[0] == null) return -1;
+        if(ret.length > 1) throw new RuntimeException(String.format("unexpected count(%d) in extraClip", ret.length));
+
+        return Conversions.integerValueOf(ret[0]).intValue();
     }
 
     public Couple<Integer,Integer> barterOutcome(Player player, List<Couple<Integer,Integer>> objects) {
@@ -201,7 +209,7 @@ public class NpcTemplate {
 
         Object[] ret = DataScriptVM.getInstance().call(barterOutcome, scriptVal, player.scripted(), offer);
         if(ret == null || ret.length == 0 || ret[0] == null) return null;
-        if(ret.length > 1) throw new RuntimeException(String.format("unexpected count(%d) in legacy barterOutcome", ret.length));
+        if(ret.length > 1) throw new RuntimeException(String.format("unexpected count(%d) in barterOutcome", ret.length));
 
         return ScriptVM.ItemStackFromLua((Table) ret[0]);
     }

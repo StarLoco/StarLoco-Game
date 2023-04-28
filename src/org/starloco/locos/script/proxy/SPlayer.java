@@ -172,6 +172,7 @@ public class SPlayer extends DefaultUserdata<Player> {
 
         p.addQuestProgression(new PlayerQuestProgress(p.getId(), id, sId));
 
+        SocketManager.GAME_SEND_Im_PACKET(p, "054;" + id);
         p.saveQuestProgress();
         return true;
     }

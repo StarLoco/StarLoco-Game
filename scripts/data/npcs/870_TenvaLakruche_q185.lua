@@ -3,13 +3,18 @@ local npc = Npc(870, 9044)
 npc.gender = 1
 
 local questID = 185
+
+npc.quests = {questID}
+
 ---@param p Player
 ---@param answer number
 function npc:onTalk(p, answer)
-    if p:questAvailable(questID) and answer == 0 then
+    local quest = QUESTS[questID]
+    if quest:availableTo(p) and answer == 0 then
         p:ask(3718, {3258, 3257})
     elseif answer == 3258 then
-        p:startQuest(questID)
+        quest:startFor(p)
+        p:map():updateNpcForPlayer(self.id, p)
         p:endDialog()
     elseif p:questOngoing(questID) then
         -- If we have the required items, complete objective

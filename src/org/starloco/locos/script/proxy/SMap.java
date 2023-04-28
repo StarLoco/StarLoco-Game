@@ -72,7 +72,7 @@ public class SMap extends DefaultUserdata<GameMap> {
     private static void updateNpcForPlayer(GameMap m, ArgumentIterator args) {
         int entId = args.nextInt();
         Player p = args.nextUserdata("SPlayer", SPlayer.class).getUserValue(); // Check this
-        Npc npc = m.getNpc(entId);
+        Npc npc = m.getNpcByTemplateId(entId);
         if(npc == null) return;
 
         SocketManager.GAME_SEND_ALTER_GM_PACKET(p, npc);
