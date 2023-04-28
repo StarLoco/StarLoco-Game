@@ -34,7 +34,7 @@ public class NpcTemplate {
 
     public final LegacyData legacy;
 
-    public NpcTemplate(int id, int bonus, int gfxId, int scaleX, int scaleY, int sex, int color1, int color2, int color3, String accessories, int extraClip, int customArtWork, String questions,
+    public NpcTemplate(int id, int bonus, int gfxId, int scaleX, int scaleY, int sex, int color1, int color2, int color3, String accessories, int customArtWork, String questions,
                        String sales, String quest, String exchanges, String path, byte flags) {
         this.scriptVal = null;
         this.legacy = new LegacyData(id, questions, sales, exchanges, path);

@@ -11,6 +11,7 @@ require("./data/Dungeons")
 ---@field customArtwork number
 ---@field sales SaleOffer[] optional
 ---@field barters {to:ItemStack, from:ItemStack[]}[] optional
+---@field quests number[] quest IDs
 Npc = {}
 Npc.__index = Npc
 
@@ -30,6 +31,7 @@ setmetatable(Npc, {
         self.flags = 0
         self.sales = {}
         self.barters = {}
+        self.quests = {}
 
         NPCS[id] = self
         return self
@@ -111,10 +113,32 @@ function Npc:barterOutcome(player, offer)
 end
 
 ---- Used to show the ! on top of the NPC
---function Npc:hasQuestAvailable(jPlayer)
---    -- TODO
---    return false
---end
+---@param player Player
+function Npc:extraClip(player)
+    local clip = nil
+    for qID in ipairs(self.quests) do
+        (function()
+            ---@type Quest
+            local quest = QUESTS[qID]
+            if not quest then
+                JlogF("unknown quest #{} for npc #{}", qID, self.id)
+                return
+            end
+
+            if not quest:availableTo(player) then
+                return
+            end
+
+            local eClip = ExtraClipSimpleQuest
+            if quest.isRepeatable then eClip = ExtraClipRepeatableQuest end
+            if quest.isAccountBound then eClip = ExtraClipAccountQuest end
+            clip = eClip
+        end)()
+        if clip then
+            return clip
+        end
+    end
+end
 
 ---- Called by the Map class, allows some NPC to be shown only when player have a specific quest
 --function Npc:isVisible(jPlayer, jMap)

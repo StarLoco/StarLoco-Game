@@ -2,11 +2,15 @@
 QUESTS = {}
 QUEST_STEPS = {}
 
+ExtraClipSimpleQuest = 4
+ExtraClipAccountQuest= 6
+ExtraClipRepeatableQuest = 7
+
 ---@class Quest
 ---@field id number
 ---@field steps QuestStep[]
----@field CanBeStartedBy fun(p:Player):boolean defaults to function returning true
 ---@field isRepeatable boolean defaults to false
+---@field isAccountBound boolean defaults to false -- Not supported for now
 Quest = {}
 Quest.__index = Quest
 
@@ -16,21 +20,31 @@ setmetatable(Quest, {
         self.id = id
         self.steps = steps
         self.minLevel = 0
-        self.CanBeStartedBy = function(p) return true  end
         self.isRepeatable = false
+        self.isAccountBound = false
 
         QUESTS[id] = self
         return self
     end,
 })
 
+---@param p Player
+function Quest:availableTo(p)
+    return p:questAvailable(self.id)
+end
+
+
 ---@param minLevel number
 ---@param questFinished number
 ---@param reqBreed number[]|nil
----@return fun(p:Player):boolean
+---@return fun(q:Quest, p:Player):boolean
 function questRequirements(minLevel, questFinished, reqBreed)
+    ---@param q Quest
     ---@param p Player
-    return function(p)
+    return function(q, p)
+        if not p:questAvailable(q.id) then
+            return false
+        end
         if p:level() < minLevel then
             return false
         end
