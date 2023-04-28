@@ -1,5 +1,6 @@
 package org.starloco.locos.client;
 
+import org.classdump.luna.Table;
 import org.starloco.locos.area.SubArea;
 import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.area.map.GameMap;
@@ -15,7 +16,6 @@ import org.starloco.locos.command.administration.Group;
 import org.starloco.locos.common.Formulas;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.database.DatabaseManager;
-import org.starloco.locos.database.data.DAO;
 import org.starloco.locos.database.data.game.BankData;
 import org.starloco.locos.database.data.game.CollectorData;
 import org.starloco.locos.database.data.game.ExperienceTables;
@@ -59,6 +59,8 @@ import org.starloco.locos.other.Action;
 import org.starloco.locos.other.Dopeul;
 import org.starloco.locos.guild.Guild;
 import org.starloco.locos.quest.PlayerQuestProgress;
+import org.starloco.locos.quest.QuestInfo;
+import org.starloco.locos.script.DataScriptVM;
 import org.starloco.locos.script.Scripted;
 import org.starloco.locos.script.proxy.SPlayer;
 import org.starloco.locos.util.Pair;
@@ -5838,8 +5840,33 @@ public class Player implements Scripted<SPlayer> {
         return this.questsProgression.values().stream().filter(qp -> qp.getCurrentStep() == stepId).findFirst();
     }
 
-    public void encodeQuestStep(int id) {
-        // TODO
+    public void sendQuestStatus(int id) {
+        PlayerQuestProgress pqp = this.questsProgression.get(id);
+
+        StringJoiner sj = new StringJoiner("|");
+        sj.add( "QS"+id);
+
+        if(pqp == null) {
+            throw new NullPointerException("sendQuestStatus called for non current quest");
+        }
+
+        // Call lua to get quest info
+        QuestInfo qi = DataScriptVM.getInstance().questInfo(this, id, pqp.getCurrentStep());
+        if(qi == null) {
+            throw new NullPointerException("sendQuestStatus called for unknown quest");
+        }
+
+        sj.add(String.valueOf(pqp.getCurrentStep()));
+        sj.add(qi.objectives.stream().map(oId -> {
+            String completedStr = pqp.hasCompletedObjective(oId)?"1":"0";
+            return oId+","+completedStr;
+        }).collect(Collectors.joining(";")));
+        sj.add(Objects.toString(qi.previous, ""));
+        sj.add(Objects.toString(qi.next, ""));
+        sj.add(Objects.toString(qi.question, ""));
+        sj.add("");
+
+        send(sj.toString());
     }
 
     public String encodeQuestList() {

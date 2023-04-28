@@ -6837,7 +6837,7 @@ public class GameClient {
 
             case 'S': // Quest steps
                 int id = Integer.parseInt(packet.substring(2));
-                player.encodeQuestStep(id);
+                player.sendQuestStatus(id);
                 break;
         }
     }

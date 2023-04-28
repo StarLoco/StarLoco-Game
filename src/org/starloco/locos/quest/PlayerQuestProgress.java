@@ -1,5 +1,7 @@
 package org.starloco.locos.quest;
 
+import org.starloco.locos.script.DataScriptVM;
+
 import java.util.HashSet;
 import java.util.Set;
 

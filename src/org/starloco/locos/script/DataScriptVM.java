@@ -1,6 +1,7 @@
 package org.starloco.locos.script;
 
 import org.classdump.luna.ByteString;
+import org.classdump.luna.Conversions;
 import org.classdump.luna.Table;
 import org.classdump.luna.exec.CallException;
 import org.classdump.luna.exec.CallPausedException;
@@ -10,11 +11,13 @@ import org.classdump.luna.runtime.*;
 import org.starloco.locos.area.map.ScriptMapData;
 import org.classdump.luna.lib.AbstractLibFunction;
 import org.classdump.luna.lib.ArgumentIterator;
+import org.starloco.locos.client.Player;
 import org.starloco.locos.command.administration.Command;
 import org.starloco.locos.command.administration.Group;
 import org.starloco.locos.database.data.game.ExperienceTables;
 import org.starloco.locos.entity.npc.NpcTemplate;
 import org.starloco.locos.game.world.World;
+import org.starloco.locos.quest.QuestInfo;
 
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -57,6 +60,19 @@ public final class DataScriptVM extends ScriptVM {
 
     public static DataScriptVM getInstance()  {
         return instance;
+    }
+
+    public QuestInfo questInfo(Player player, int id, int currentStep) {
+        Object[] ret = callGlobal("playerQuestStatus", player.scripted(), id, currentStep);
+        if(ret == null || ret.length == 0 || !(ret[0] instanceof Table)) return null;
+        Table t = (Table)ret[0];
+
+        return new QuestInfo(
+            intsFromLuaTable((Table)(t.rawget("objectives"))),
+            rawInteger(t, "previous"),
+            rawInteger(t, "next"),
+            rawInteger(t, "question")
+        );
     }
 
     static class RegisterNpcTemplate extends AbstractFunction1<Table> {

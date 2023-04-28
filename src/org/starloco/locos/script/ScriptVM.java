@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.game.world.World.Couple;
+import org.starloco.locos.script.proxy.SPlayer;
 import org.starloco.locos.util.Pair;
 
 import java.io.IOException;
@@ -122,6 +123,12 @@ public class ScriptVM {
         return recursiveGet((Table) mtIndex, key);
     }
 
+    public Object[] callGlobal(String name, Object... args) {
+        Object o = this.env.rawget(name);
+        if(!(o instanceof LuaFunction)) throw new IllegalArgumentException(String.format("%s is not a function", name));
+        return call(o, args);
+    }
+
 
     static class LogF extends AbstractLibFunction {
         @Override
@@ -157,6 +164,12 @@ public class ScriptVM {
 
     public static int rawInt(Table v, Object key) {
         return ((Long)v.rawget(key)).intValue();
+    }
+
+    public static Integer rawInteger(Table v, Object key) {
+        Long l = ((Long)v.rawget(key));
+        if(l==null) return null;
+        return l.intValue();
     }
     public static int rawInt(Table v, long key) {
         return ((Long)v.rawget(key)).intValue();
