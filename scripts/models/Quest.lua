@@ -28,6 +28,16 @@ setmetatable(Quest, {
     end,
 })
 
+---@param sId number
+---@return number,QuestStep
+function Quest:step(sId)
+    for i, s in ipairs(self.steps) do
+        if s.id == sId then
+            return i, s
+        end
+    end
+end
+
 ---@param p Player
 function Quest:availableTo(p)
     return p:questAvailable(self.id)
@@ -37,6 +47,42 @@ end
 function Quest:startFor(p)
     if not self:availableTo(p) then return false end
     return p:startQuest(self.id, self.steps[1].id)
+end
+
+---@param p Player
+---@param oId number
+function Quest:completeObjective(p, oId)
+    local stepIdx, step = self:step(p:currentStep(self.id))
+    if not step then
+        error("player doesn't have the quest")
+    end
+
+    if not p:completeObjective(self.id, oId) then
+        return false
+    end
+
+    local completed = p:completedObjectives(self.id)
+
+    -- Let's see if the player is done with the current step
+    for _, o in ipairs(step:ObjectivesForPlayer(p)) do
+        if not table.contains(completed, o.id) then
+            -- Hasn't completed o
+            JLogF("player has not completed objective {}", o.id)
+            return
+        end
+    end
+
+    -- All objectives are completed, reward + next step
+    local nextStep = stepIdx < #(self.steps) and self.steps[stepIdx + 1] or nil
+
+    step.rewardFn(p)
+    if not nextStep then
+        -- Quest finished
+        p:completeQuest(self.id, self.isRepeatable)
+        return
+    end
+    -- Go to next step
+    p:setCurrentStep(self.id, nextStep.id)
 end
 
 ---@param minLevel number
@@ -380,14 +426,16 @@ function playerQuestStatus(player, questId, stepId)
     -- Get objectives Ids
     local objectives = {}
 
-    for _, o in ipairs(step:ObjectivesForPlayer(player)) do
-        table.insert(objectives, o.id)
+    if step then
+        for _, o in ipairs(step:ObjectivesForPlayer(player)) do
+            table.insert(objectives, o.id)
+        end
     end
 
     return {
-        objectives= objectives,
-        question= step.questionId,
-        previous= stepIdx>1 and quest.steps[stepIdx-1].id or nil,
-        next= stepIdx<#(quest.steps) and quest.steps[stepIdx+1].id or nil,
+        objectives = objectives,
+        question = step.questionId,
+        previous = stepIdx > 1 and quest.steps[stepIdx - 1].id or nil,
+        next = stepIdx < #(quest.steps) and quest.steps[stepIdx + 1].id or nil,
     }
 end

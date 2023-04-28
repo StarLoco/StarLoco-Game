@@ -1,6 +1,9 @@
 package org.starloco.locos.script.proxy;
 
 import org.classdump.luna.ByteString;
+import org.classdump.luna.Table;
+import org.classdump.luna.TableFactory;
+import org.classdump.luna.impl.DefaultTable;
 import org.classdump.luna.impl.DefaultUserdata;
 import org.classdump.luna.impl.ImmutableTable;
 import org.classdump.luna.lib.ArgumentIterator;
@@ -24,8 +27,11 @@ import org.starloco.locos.script.ScriptVM;
 import org.starloco.locos.script.types.MetaTables;
 import org.starloco.locos.util.Pair;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class SPlayer extends DefaultUserdata<Player> {
     private static final ImmutableTable META_TABLE = MetaTables.MetaTable(MetaTables.ReflectIndexTable(SPlayer.class));
@@ -185,6 +191,15 @@ public class SPlayer extends DefaultUserdata<Player> {
         if(qp.isFinished()) return 0;
 
         return qp.getCurrentStep();
+    }
+    @SuppressWarnings("unused")
+    private static Table completedObjectives(Player p, ArgumentIterator args) {
+        int qID = args.nextInt();
+
+        PlayerQuestProgress qp = p.getQuestProgress(qID);
+        if(qp.isFinished()) return null;
+
+        return ScriptVM.listOf(qp.getCompletedObjectives().stream());
     }
 
     @SuppressWarnings("unused")
