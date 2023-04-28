@@ -50,14 +50,14 @@ function Quest:startFor(p)
 end
 
 ---@param p Player
----@param oId number
-function Quest:completeObjective(p, oId)
+---@param id number
+function Quest:completeObjective(p, id)
     local stepIdx, step = self:step(p:currentStep(self.id))
     if not step then
         error("player doesn't have the quest")
     end
 
-    if not p:completeObjective(self.id, oId) then
+    if not p:completeObjective(self.id, id) then
         return false
     end
 
