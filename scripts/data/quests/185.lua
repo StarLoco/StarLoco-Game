@@ -1,6 +1,6 @@
 local npcId = 870
 
-local qs350 = QuestStep(350, 3718) -- TODO: Check dialog
+local qs350 = QuestStep(350, 3718)
 qs350.objectives = {
     BringItemObjective(758, npcId, 311, 4)
 }
