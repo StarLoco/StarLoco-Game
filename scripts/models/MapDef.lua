@@ -66,6 +66,10 @@ setmetatable(MapDef, {
         self.onFightEnd = {}
         self.zaapCell = nil
 
+        if MAPS[id] then
+            error(string.format("map #%d already registered", self.id))
+        end
+
         MAPS[id] = self
         return self
     end,
