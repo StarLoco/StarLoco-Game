@@ -64,14 +64,14 @@ local mapInfos = {
     [9771] = {groupCell= 270, group= group4, winDest= {9772,394}},
     [9772] = {groupCell= 179, group= group5, winDest= {9773,289}},
     [9773] = {groupCell= 240, group= group6, winDest= {9774,276}},
-    [9774] = {groupCell= 215, group= group7, winDest= {7453,201}}
+    [9774] = {groupCell= 215, group= group7, winDest= {9786,276}}
 }
 
 for k,v in pairs(mapInfos) do
     ---@type MapDef
     local map = MAPS[k]
     if map then
-        map.onFightEnd[PVMFightType] = fightEndTeleportWinnerPlayers(v.winDest[1], v.winDest[2])
+        map.onFightEnd[PVMFightType] = fightEndTeleportWinnerPlayer(v.winDest[1], v.winDest[2])
         map.staticGroups = {
             {v.groupCell, v.group}
         }

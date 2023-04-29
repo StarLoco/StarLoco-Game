@@ -1,4 +1,5 @@
 ---@param p Player
+<<<<<<< HEAD
 ---@param type number
 ---@param winners Fighter[]
 ---@param losers Fighter[]
@@ -45,4 +46,11 @@ Handlers.players.onQuestStatusRequest = function(player, questId, stepId)
         previous = stepIdx > 1 and quest.steps[stepIdx - 1].id or nil,
         next = stepIdx < #(quest.steps) and quest.steps[stepIdx + 1].id or nil,
     }
+=======
+---@param isWinner boolean
+---@param winners Fighter[]
+---@param losers Fighter[]
+Handlers.players.onFightEnd = function(p, isWinner, winners, losers)
+
+>>>>>>> master
 end

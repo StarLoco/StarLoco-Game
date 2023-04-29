@@ -5,6 +5,7 @@ import org.classdump.luna.impl.DefaultTable;
 import org.classdump.luna.runtime.LuaFunction;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.quest.QuestInfo;
+import org.starloco.locos.script.proxy.SPlayer;
 
 public class EventHandlers extends DefaultTable {
     private final DataScriptVM vm;
@@ -22,8 +23,8 @@ public class EventHandlers extends DefaultTable {
         return (LuaFunction<?,?,?,?,?>)mbFn;
     }
 
-    public void onFightEnd(Player player, int type, Table winners, Table losers) {
-        vm.call(getHandler(players, "onFightEnd"), player.scripted(), type, winners, losers);
+    public void onFightEnd(Player player, int type, boolean isWinner, Table winners, Table losers) {
+        vm.call(getHandler(players, "onFightEnd"), player.scripted(), isWinner, type, winners, losers);
     }
 
     public QuestInfo questInfo(Player player, int id, int currentStep) {

@@ -1,7 +1,7 @@
 local npc = Npc(109, 9042)
 
 npc.gender = 1
-npc.colors = {16312467,-1,-1}
+npc.colors = {16312467, -1, -1}
 
 npc.barters = {
     {to={itemID=808, quantity= 1},from= {

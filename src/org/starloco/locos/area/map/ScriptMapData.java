@@ -15,6 +15,7 @@ import org.starloco.locos.script.proxy.SSubArea;
 import org.starloco.locos.util.Pair;
 
 import javax.swing.text.html.Option;
+import javax.xml.crypto.Data;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -148,13 +149,16 @@ public class ScriptMapData extends MapData {
 
     @Override
     public void onFightEnd(Fight f, Player p, List<Fighter> winTeam, List<Fighter> looseTeam) {
+        boolean isWinner = winTeam.stream().map(Fighter::getPlayer).filter(Objects::nonNull).anyMatch(fp -> fp.getId() == p.getId());
+
         Table winners = ScriptVM.scriptedValsTable(winTeam);
         Table losers = ScriptVM.scriptedValsTable(looseTeam);
 
+        DataScriptVM vm = DataScriptVM.getInstance();
         onFightFunctionByType(f.getType(), "onFightEnd").ifPresent(fn -> {
-            DataScriptVM.getInstance().call(fn, scriptVal, p.getCurMap().scripted(), winners, losers);
+            vm.call(fn, p.scripted(), isWinner, winners, losers);
         });
-        DataScriptVM.getInstance().handlers.onFightEnd(p, f.getType(), winners, losers);
+        vm.handlers.onFightEnd(p, f.getType(), isWinner, winners, losers);
     }
 
     @Override

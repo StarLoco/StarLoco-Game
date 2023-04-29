@@ -106,7 +106,11 @@ local mapInfos = {
     {mapId = 8549, groupCell = 283, group = group10, winDest = {9989, 422}}
 }
 
-local function endFight8545(_, _, winners, losers)
+---@param p Player
+---@param isWinner boolean
+---@param winners Fighter[]
+---@param losers Fighter[]
+local function endFight8545(p, isWinner, winners, losers)
     -- Count how many mob 123 were killed
     local count = 0
     for _, mob in ipairs(losers) do
@@ -124,13 +128,13 @@ local function endFight8545(_, _, winners, losers)
         dest = mapInfos[7].winDest
     end
 
-    teleportPlayers(winners, dest[1], dest[2])
+    p:teleport(dest[1], dest[2])
 end
 
 for _, v in ipairs(mapInfos) do
     local map = MAPS[v.mapId]
     if map then
-        local endFight = fightEndTeleportWinnerPlayers(v.winDest[1], v.winDest[2])
+        local endFight = fightEndTeleportWinnerPlayer(v.winDest[1], v.winDest[2])
 
         if v.mapId == 8545 then
             endFight = endFight8545

@@ -1055,12 +1055,18 @@ public class SpellEffect implements Cloneable {
 			return;
 		switch (spell) {
 			case 438://Transpo
+					if(target.haveState(Constant.ETAT_ENRACINE)) {
+						return;
+					}
 				//si les 2 joueurs ne sont pas dans la meme team, on ignore
 				if (target.getTeam() != caster.getTeam())
 					return;
 				break;
 
 			case 445://Coop
+				if(target.haveState(Constant.ETAT_ENRACINE)) {
+					return;
+				}
 				//si les 2 joueurs sont dans la meme team, on ignore
 				if (target.getTeam() == caster.getTeam())
 					return;

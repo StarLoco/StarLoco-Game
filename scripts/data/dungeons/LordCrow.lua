@@ -133,26 +133,34 @@ local function onFightStart(md, _, team1, team2)
     respawnBoss()
 end
 
+<<<<<<< HEAD
 ---@param md MapDef
 ---@param map Map
 ---@param winners Fighter[]
 ---@param losers Fighter[]
 local function onFightEnd(md, map, winners, losers)
+=======
+---@param p Player
+---@param isWinner boolean
+---@param winners Fighter[]
+---@param losers Fighter[]
+local function onFightEnd(p, isWinner, winners, losers)
+>>>>>>> master
     -- Get info for current map
-    local info = mapInfos[md.id]
+    local info = mapInfos[p:mapID()]
     if not info then return end -- Should not happen
 
     -- Check if it contained one of the mob
     for _, mob in ipairs(losers) do
         -- mob.grade only exists on MobGrade
         if mob.grade and mob:id() == downMobId then
-            teleportPlayers(winners, info.down[1], info.down[2])
+            p:teleport(info.down[1], info.down[2])
             return
         elseif mob.grade and mob:id() == rightMobId then
-            teleportPlayers(winners, info.right[1], info.right[2])
+            p:teleport(info.right[1], info.right[2])
             return
         elseif mob.grade and mob:id() == bossMobId then
-            teleportPlayers(winners, 9604, 50)
+            p:teleport(9604, 50)
         end
     end
 end

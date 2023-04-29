@@ -9,11 +9,8 @@ function npc:onTalk(p, answer)
     local hasAllItems = p:getItem(8476) and p:getItem(8477)
     if p:mapID() == 9638 then
         if answer == 0 then
-            if hasAllItems then
-                p:ask(3415, {3032, 3026})
-            else
-                p:ask(3415, {3026})
-            end
+            local responses = hasAllItems and {3032, 3026} or {3026}
+            p:ask(3415, responses)
         elseif answer == 3026 then p:ask(3416, {3027})
         elseif answer == 3027 then p:ask(3417, {3028})
         elseif answer == 3028 then p:ask(3418, {3029})

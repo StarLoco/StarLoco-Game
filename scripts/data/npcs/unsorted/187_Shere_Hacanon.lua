@@ -1,5 +1,7 @@
 local npc = Npc(187, 9049)
 
+npc.colors = {14120487, 15909900, -1}
+
 ---@param p Player
 ---@param answer number
 function npc:onTalk(p, answer)

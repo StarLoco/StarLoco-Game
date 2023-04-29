@@ -14,11 +14,7 @@ local function talkMapDungeonEntrance(p, answer)
     local hasDungeonKeys = p:getItem(dungeonKeyId) or hasKeyChainFor(p, dungeonKeyId)
 
     if answer == 0 then
-        local responses = {}
-        if hasDungeonKeys then
-            table.insert(responses, showKeyResponse)
-        end
-        table.insert(responses, 3359)
+        local responses = hasDungeonKeys and {showKeyResponse, 3359} or {3359}
         p:ask(3828, responses)
     elseif answer == showKeyResponse then
         if hasDungeonKeys then
