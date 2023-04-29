@@ -201,10 +201,6 @@ function Player:questOngoing(quest) end
 function Player:ongoingQuests() end
 
 ---@param quest number
----@return boolean
-function Player:startQuest(quest) end
-
----@param quest number
 ---@return number
 function Player:currentStep(quest) end
 

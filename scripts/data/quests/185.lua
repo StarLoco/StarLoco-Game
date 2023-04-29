@@ -7,4 +7,4 @@ qs350.objectives = {
 qs350.rewardFn = QuestBasicReward(75, 25)
 
 local q185 = Quest(185, {qs350})
-
+q185.isAccountBound = true

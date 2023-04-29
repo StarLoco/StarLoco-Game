@@ -168,14 +168,16 @@ public class SPlayer extends DefaultUserdata<Player> {
     }
 
     @SuppressWarnings("unused")
-    private static boolean startQuest(Player p, ArgumentIterator args) {
+    private static boolean _startQuest(Player p, ArgumentIterator args) {
         int id = args.nextInt();
         int sId = args.nextInt();
         boolean isAccountQuest = args.nextOptionalBoolean(false);
 
         if (p.getQuestProgress(id) != null) return false;
 
-        p.addQuestProgression(new QuestProgress(p.getAccID(), p.getId(), id, sId));
+        int progressOwnerId = isAccountQuest? QuestProgress.NO_PLAYER_ID: p.getId();
+
+        p.addQuestProgression(new QuestProgress(p.getAccID(), progressOwnerId, id, sId));
 
         SocketManager.GAME_SEND_Im_PACKET(p, "054;" + id);
         p.saveQuestProgress();

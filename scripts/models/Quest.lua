@@ -11,7 +11,7 @@ ExtraClipRepeatableQuest = 7
 ---@field id number
 ---@field steps QuestStep[]
 ---@field isRepeatable boolean defaults to false
----@field isAccountBound boolean defaults to false -- Not supported for now
+---@field isAccountBound boolean defaults to false
 Quest = {}
 Quest.__index = Quest
 
@@ -47,7 +47,7 @@ end
 ---@param p Player
 function Quest:startFor(p)
     if not self:availableTo(p) then return false end
-    return p:startQuest(self.id, self.steps[1].id)
+    return p:_startQuest(self.id, self.steps[1].id, self.isAccountBound)
 end
 
 ---@param p Player
