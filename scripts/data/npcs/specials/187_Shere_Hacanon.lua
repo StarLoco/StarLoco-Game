@@ -1,4 +1,3 @@
-local npc = Npc(187, 9049)
 
 ---@param p Player
 ---@param answer number
