@@ -3,7 +3,7 @@
 ---@param type number
 ---@param isWinner boolean
 ---@param losers Fighter[]
-local function tryCompleteKillObjectives(p, type, isWinner, losers)
+local function tryCompleteKillQuestObjectives(p, type, isWinner, losers)
     if not isWinner then return end
     if type ~= PVMFightType then return end
 
@@ -22,7 +22,8 @@ end
 ---@param winners Fighter[]
 ---@param losers Fighter[]
 Handlers.players.onFightEnd = function(p, type, isWinner, winners, losers)
-    tryCompleteKillObjectives(p, type, isWinner, losers)
+    tryCompleteKillQuestObjectives(p, type, isWinner, losers)
+
 end
 
 ---@param player Player
@@ -59,7 +60,7 @@ Handlers.players.onQuestStatusRequest = function(player, questId, stepId)
     return {
         objectives = objectives,
         question = step and step.questionId or nil,
-        previous = stepIdx > 1 and quest.steps[stepIdx - 1].id or nil,
+        previous = stepIdx and stepIdx > 1 and quest.steps[stepIdx - 1].id or nil,
         next = stepIdx < #(quest.steps) and quest.steps[stepIdx + 1].id or nil,
     }
 end

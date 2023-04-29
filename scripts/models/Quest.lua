@@ -63,22 +63,17 @@ function Quest:completeObjectives(p, ids)
     if not step then
         error("player doesn't have the quest")
     end
-
     for _, id in ipairs(ids) do
         if not p:_completeObjective(self.id, id) then
-            return false
+            return
         end
     end
 
-    local completed = p:completedObjectives(self.id)
-
     -- Let's see if the player is done with the current step
-    for _, o in ipairs(step:ObjectivesForPlayer(p)) do
-        if not table.contains(completed, o.id) then
-            -- Hasn't completed o
-            JLogF("player has not completed objective {}", o.id)
-            return
-        end
+    local uncompletedObjectives = self:uncompletedObjectives(p)
+    if #uncompletedObjectives ~= 0 then
+        JLogF("PLAYER NOT DONE WITH OBJECTIVE {}", uncompletedObjectives[1])
+        return
     end
 
     -- All objectives are completed, reward + next step
@@ -95,22 +90,29 @@ function Quest:completeObjectives(p, ids)
 end
 
 ---@param p Player
----@param losers Fighter[]
----@return boolean true if should complete objective
-function Quest:onEndFightCheck(p, losers)
-    local _, step = self.step(p:currentStep(self.id))
-    if not step then return end
+---@return QuestObjective[]
+function Quest:uncompletedObjectives(p)
+    local _, step = self:step(p:currentStep(self.id))
+    if not step then return {} end
 
     local completedObjectives = p:completedObjectives(self.id)
 
+    local uncompleted = {}
+    for _, obj in ipairs(step:ObjectivesForPlayer(p)) do
+        if not table.contains(completedObjectives, obj.id) then
+            table.insert(uncompleted, obj)
+        end
+    end
+    return uncompleted
+end
+
+---@param p Player
+---@param losers Fighter[]
+---@return boolean true if should complete objective
+function Quest:onEndFightCheck(p, losers)
     local justCompleted = {}
 
-    for _, obj in ipairs(step:ObjectivesForPlayer(p)) do
-        if table.contains(completedObjectives, obj.id) then
-            -- Already completed
-            return
-        end
-
+    for _, obj in ipairs(self:uncompletedObjectives(p)) do
         if obj.onEndFightCheck and obj:onEndFightCheck(losers) then
             table.insert(justCompleted, obj.id)
         end
