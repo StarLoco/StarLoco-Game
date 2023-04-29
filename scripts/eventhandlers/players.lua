@@ -1,11 +1,11 @@
 ---@param p Player
+---@param type number
 ---@param winners Fighter[]
 ---@param losers Fighter[]
-Handlers.players.onFightEnd = function(p, winners, losers)
-    local isWinner = table.ifind(winners, function(e)
-        print(type(e))
-    end)
+Handlers.players.onFightEnd = function(p, type, winners, losers)
+    local isWinner = table.contains(winners, p)
 
+    JLogF("ONFIGHTEND {} IS WINNER {}", p:name(), isWinner)
 end
 
 ---@param player Player

@@ -148,11 +148,13 @@ public class ScriptMapData extends MapData {
 
     @Override
     public void onFightEnd(Fight f, Player p, List<Fighter> winTeam, List<Fighter> looseTeam) {
+        Table winners = ScriptVM.scriptedValsTable(winTeam);
+        Table losers = ScriptVM.scriptedValsTable(looseTeam);
+
         onFightFunctionByType(f.getType(), "onFightEnd").ifPresent(fn -> {
-            Table winners = ScriptVM.scriptedValsTable(winTeam);
-            Table losers = ScriptVM.scriptedValsTable(looseTeam);
             DataScriptVM.getInstance().call(fn, scriptVal, p.getCurMap().scripted(), winners, losers);
         });
+        DataScriptVM.getInstance().handlers.onFightEnd(p, f.getType(), winners, losers);
     }
 
     @Override
