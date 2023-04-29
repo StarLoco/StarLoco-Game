@@ -9,26 +9,10 @@ local function tryCompleteKillObjectives(p, type, isWinner, losers)
 
 
     for _, qId in ipairs(p:ongoingQuests()) do
-        local justCompleted = {}
-
-        (function()
-            local step = QUEST_STEPS[p:currentStep(qId)]
-            if not step then return end
-
-            local completedObjectives = p:completedObjectives(qId)
-
-            for _, obj in ipairs(step:ObjectivesForPlayer(p)) do
-                if table.contains(completedObjectives, obj.id) then
-                    -- Already completed
-                    return
-                end
-
-                if obj.onEndFight and obj.onEndFightCheck() then
-                    table.insert(justCompleted, obj.id)
-                end
-            end
-        end)()
-
+        local quest = QUESTS[qId]
+        if quest then
+            quest:onEndFightCheck(p, losers)
+        end
     end
 end
 
