@@ -1337,32 +1337,23 @@ public class CommandAdmin extends AdminUser {
             this.sendMessage(data);
             return;
         } else if (command.equalsIgnoreCase("DELINVENTORY")) {
-            Player perso = null;
             infos = msg.split(" ", 3);
-            try {
-                perso = World.world.getPlayerByName(infos[1]);
-            } catch (Exception e) {
-                // ok
-            }
+            Player perso = World.world.getPlayerByName(infos[1]);
 
             if (perso == null) {
                 this.sendMessage("Le nom du personnage est incorrect.");
                 return;
             }
-            int i = 0;
-            ArrayList<GameObject> list = new ArrayList<GameObject>();
 
-            list.addAll(perso.getItems().values());
-            for (GameObject obj : list) {
+            long count =perso.getItems().values().stream().peek(obj -> {
                 int guid = obj.getGuid();
                 SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(perso, guid);
                 perso.deleteItem(guid);
-                i++;
-            }
+            }).count();
 
             this.sendMessage("Vous venez de supprimer "
-                    + i + " objets au joueur " + perso.getName() + ".");
-            return;
+                    + count + " objets au joueur " + perso.getName() + ".");
+            SocketManager.GAME_SEND_STATS_PACKET(perso);
         } else if (command.equalsIgnoreCase("RMOBS")) {
             this.getPlayer().getCurMap().refreshSpawns();
             String mess = "Les spawns de monstres sur la map ont etes rafraichit.";
