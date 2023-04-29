@@ -73,6 +73,7 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Player implements Scripted<SPlayer> {
     private final SPlayer scriptVal;
@@ -5840,6 +5841,11 @@ public class Player implements Scripted<SPlayer> {
         return this.questsProgression.values().stream().filter(qp -> qp.getCurrentStep() == stepId).findFirst();
     }
 
+
+    public Stream<PlayerQuestProgress> getQuestProgressions() {
+        return questsProgression.values().stream();
+    }
+
     public void sendQuestStatus(int id) {
         PlayerQuestProgress pqp = this.questsProgression.get(id);
 
@@ -5949,111 +5955,110 @@ public class Player implements Scripted<SPlayer> {
         }
     }
 
-	public void setFullMorphbouf(int team) {
+    public void setFullMorphbouf(int team) {
 
-		if (this.isOnMount()) this.toogleOnMount();
-		if (_morphMode)
-			unsetFullMorph();
-		if (this.isGhost)
-		{
-			SocketManager.send(this, "Im1185");
-			return;
-		}
+        if (this.isOnMount()) this.toogleOnMount();
+        if (_morphMode)
+            unsetFullMorph();
+        if (this.isGhost) {
+            SocketManager.send(this, "Im1185");
+            return;
+        }
 
-		_saveSpellPts = _spellPts;
-		_saveSorts.putAll(_sorts);
-		_saveSortsPlaces.putAll(_sortsPlaces);
-
-
-		_morphMode = true;
-		_sorts.clear();
-		_sortsPlaces.clear();
-		_spellPts = 0;
-		this.Savecolors = this.color1 + "," + this.color2 + "," + this.color3;
+        _saveSpellPts = _spellPts;
+        _saveSorts.putAll(_sorts);
+        _saveSortsPlaces.putAll(_sortsPlaces);
 
 
-		if(team == 0)//rouge
-		{
-			this.color1 = 16713479;
-			this.color2 = 16777215;
-			this.color3 = 16718620;
-		}else//bleu
-		{
-			this.color1 = 360441;
-			this.color2 = 94461;
-			this.color3 = 486135;
-		}
-		if (this.fight == null)
-			SocketManager.GAME_SEND_ALTER_GM_PACKET(this.getCurMap(), this);
-		parseSpellsFullMorph("143;5;b,689;5;c,151;5;d,50;5;e,449;1;f");
-		if (this.fight == null) {
-			//SocketManager.GAME_SEND_ALTER_GM_PACKET(this.getCurMap(), this);
-			//SocketManager.GAME_SEND_ASK(this.getGameClient(), this);
-			SocketManager.GAME_SEND_SPELL_LIST(this);
-		}
+        _morphMode = true;
+        _sorts.clear();
+        _sortsPlaces.clear();
+        _spellPts = 0;
+        this.Savecolors = this.color1 + "," + this.color2 + "," + this.color3;
 
-		this.Savestats = this.maxPdv + "," + this.pa + ","
-		+ this.pm + ","  + this.vitalite + "," + this.sagesse + ","
-		+ this.terre + "," + this.feu + "," + this.eau + "," + this.air
-		+ "," + this.initiative;
-			this.maxPdv = 1000;
-			this.setPdv(this.getMaxPdv());
-			this.pa = 6;
-			this.pm = 4;
-			this.vitalite = 1000;
-			this.sagesse = 100;
-			this.terre = 0;
-			this.feu = 0;
-			this.eau = 0;
-			this.air = 0;
-			this.initiative = Formulas.getRandomValue(1, 100);
-			this.useStats = true;
-			this.donjon = false;
-			this.useCac = false;
-			if (this.fight == null)
-				SocketManager.GAME_SEND_STATS_PACKET(this);
-	}
 
-	public void unsetFullMorphbouf() {
-		if (!_morphMode)
-			return;
+        if(team == 0)//rouge
+        {
+            this.color1 = 16713479;
+            this.color2 = 16777215;
+            this.color3 = 16718620;
+        }else//bleu
+        {
+            this.color1 = 360441;
+            this.color2 = 94461;
+            this.color3 = 486135;
+        }
+        if (this.fight == null)
+            SocketManager.GAME_SEND_ALTER_GM_PACKET(this.getCurMap(), this);
+        parseSpellsFullMorph("143;5;b,689;5;c,151;5;d,50;5;e,449;1;f");
+        if (this.fight == null) {
+            //SocketManager.GAME_SEND_ALTER_GM_PACKET(this.getCurMap(), this);
+            //SocketManager.GAME_SEND_ASK(this.getGameClient(), this);
+            SocketManager.GAME_SEND_SPELL_LIST(this);
+        }
 
-		int morphID = this.getClasse() * 10 + this.getSexe();
-		setGfxId(morphID);
+        this.Savestats = this.maxPdv + "," + this.pa + ","
+                + this.pm + ","  + this.vitalite + "," + this.sagesse + ","
+                + this.terre + "," + this.feu + "," + this.eau + "," + this.air
+                + "," + this.initiative;
+        this.maxPdv = 1000;
+        this.setPdv(this.getMaxPdv());
+        this.pa = 6;
+        this.pm = 4;
+        this.vitalite = 1000;
+        this.sagesse = 100;
+        this.terre = 0;
+        this.feu = 0;
+        this.eau = 0;
+        this.air = 0;
+        this.initiative = Formulas.getRandomValue(1, 100);
+        this.useStats = true;
+        this.donjon = false;
+        this.useCac = false;
+        if (this.fight == null)
+            SocketManager.GAME_SEND_STATS_PACKET(this);
+    }
 
-		useStats = false;
-		donjon = false;
-		_morphMode = false;
-		this.useCac = true;
-		_sorts.clear();
-		_sortsPlaces.clear();
-		_spellPts = _saveSpellPts;
-		_sorts.putAll(_saveSorts);
-		_sortsPlaces.putAll(_saveSortsPlaces);
-		String[] stats = this.Savestats.split(",");
+    public void unsetFullMorphbouf() {
+        if (!_morphMode)
+            return;
 
-		this.maxPdv = Integer.parseInt(stats[0]);
-		this.pa = Integer.parseInt(stats[1]);
-		this.pm = Integer.parseInt(stats[2]);
-		this.vitalite = Integer.parseInt(stats[3]);
-		this.sagesse = Integer.parseInt(stats[4]);
-		this.terre = Integer.parseInt(stats[5]);
-		this.feu = Integer.parseInt(stats[6]);
-		this.eau = Integer.parseInt(stats[7]);
-		this.air = Integer.parseInt(stats[8]);
-		this.initiative = Integer.parseInt(stats[9]);
+        int morphID = this.getClasse() * 10 + this.getSexe();
+        setGfxId(morphID);
 
-		String[] color = this.Savecolors.split(",");
+        useStats = false;
+        donjon = false;
+        _morphMode = false;
+        this.useCac = true;
+        _sorts.clear();
+        _sortsPlaces.clear();
+        _spellPts = _saveSpellPts;
+        _sorts.putAll(_saveSorts);
+        _sortsPlaces.putAll(_saveSortsPlaces);
+        String[] stats = this.Savestats.split(",");
 
-		this.color1 = Integer.parseInt(color[0]);
-		this.color2 = Integer.parseInt(color[1]);
-		this.color3 = Integer.parseInt(color[2]);
+        this.maxPdv = Integer.parseInt(stats[0]);
+        this.pa = Integer.parseInt(stats[1]);
+        this.pm = Integer.parseInt(stats[2]);
+        this.vitalite = Integer.parseInt(stats[3]);
+        this.sagesse = Integer.parseInt(stats[4]);
+        this.terre = Integer.parseInt(stats[5]);
+        this.feu = Integer.parseInt(stats[6]);
+        this.eau = Integer.parseInt(stats[7]);
+        this.air = Integer.parseInt(stats[8]);
+        this.initiative = Integer.parseInt(stats[9]);
 
-		parseSpells(encodeSpellsToDB(), true);
-		SocketManager.GAME_SEND_SPELL_LIST(this);
-		SocketManager.GAME_SEND_STATS_PACKET(this);
-		SocketManager.GAME_SEND_ALTER_GM_PACKET(this.curMap, this);
-	}
+        String[] color = this.Savecolors.split(",");
+
+        this.color1 = Integer.parseInt(color[0]);
+        this.color2 = Integer.parseInt(color[1]);
+        this.color3 = Integer.parseInt(color[2]);
+
+        parseSpells(encodeSpellsToDB(), true);
+        SocketManager.GAME_SEND_SPELL_LIST(this);
+        SocketManager.GAME_SEND_STATS_PACKET(this);
+        SocketManager.GAME_SEND_ALTER_GM_PACKET(this.curMap, this);
+    }
 
 
     public LangEnum getLang() {

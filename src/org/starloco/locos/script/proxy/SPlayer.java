@@ -163,6 +163,11 @@ public class SPlayer extends DefaultUserdata<Player> {
     }
 
     @SuppressWarnings("unused")
+    private static Table ongoingQuests(Player p) {
+        return ScriptVM.listOf(p.getQuestProgressions().map(PlayerQuestProgress::getQuestId));
+    }
+
+    @SuppressWarnings("unused")
     private static boolean startQuest(Player p, ArgumentIterator args) {
         int id = args.nextInt();
         int sId = args.nextInt();
@@ -196,7 +201,7 @@ public class SPlayer extends DefaultUserdata<Player> {
     }
 
     @SuppressWarnings("unused")
-    private static boolean completeObjective(Player p, ArgumentIterator args) {
+    private static boolean _completeObjective(Player p, ArgumentIterator args) {
         int qID = args.nextInt();
         int oID = args.nextInt();
 
@@ -212,7 +217,8 @@ public class SPlayer extends DefaultUserdata<Player> {
         return true;
     }
 
-    private static boolean setCurrentStep(Player p, ArgumentIterator args) {
+    @SuppressWarnings("unused")
+    private static boolean _setCurrentStep(Player p, ArgumentIterator args) {
         int qID = args.nextInt();
         int sID = args.nextInt();
 
@@ -226,7 +232,8 @@ public class SPlayer extends DefaultUserdata<Player> {
         return true;
     }
 
-    private static boolean completeQuest(Player p, ArgumentIterator args) {
+    @SuppressWarnings("unused")
+    private static boolean _completeQuest(Player p, ArgumentIterator args) {
         int qID = args.nextInt();
         boolean remove = args.nextOptionalBoolean(false);
 

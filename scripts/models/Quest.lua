@@ -1,5 +1,6 @@
 ---@type table<number, Quest>
 QUESTS = {}
+---@type table<number, QuestStep>
 QUEST_STEPS = {}
 
 ExtraClipSimpleQuest = 4
@@ -52,13 +53,21 @@ end
 ---@param p Player
 ---@param id number
 function Quest:completeObjective(p, id)
+    self:completeObjectives(p, {id})
+end
+
+---@param p Player
+---@param ids number[]
+function Quest:completeObjectives(p, ids)
     local stepIdx, step = self:step(p:currentStep(self.id))
     if not step then
         error("player doesn't have the quest")
     end
 
-    if not p:completeObjective(self.id, id) then
-        return false
+    for _, id in ipairs(ids) do
+        if not p:_completeObjective(self.id, id) then
+            return false
+        end
     end
 
     local completed = p:completedObjectives(self.id)
@@ -78,11 +87,37 @@ function Quest:completeObjective(p, id)
     step.rewardFn(p)
     if not nextStep then
         -- Quest finished
-        p:completeQuest(self.id, self.isRepeatable)
+        p:_completeQuest(self.id, self.isRepeatable)
         return
     end
     -- Go to next step
-    p:setCurrentStep(self.id, nextStep.id)
+    p:_setCurrentStep(self.id, nextStep.id)
+end
+
+---@param p Player
+---@param losers Fighter[]
+---@return boolean true if should complete objective
+function Quest:onEndFightCheck(p, losers)
+    local _, step = self.step(p:currentStep(self.id))
+    if not step then return end
+
+    local completedObjectives = p:completedObjectives(self.id)
+
+    local justCompleted = {}
+
+    for _, obj in ipairs(step:ObjectivesForPlayer(p)) do
+        if table.contains(completedObjectives, obj.id) then
+            -- Already completed
+            return
+        end
+
+        if obj.onEndFightCheck and obj:onEndFightCheck(losers) then
+            table.insert(justCompleted, obj.id)
+        end
+    end
+
+    if #justCompleted == 0 then return end
+    self:completeObjectives(p, justCompleted)
 end
 
 ---@param minLevel number
@@ -284,6 +319,12 @@ setmetatable(KillMonsterSingleFightObjective, {
         return self
     end,
 })
+
+---@param losers Fighter[]
+---@return boolean true if should complete objective
+function KillMonsterSingleFightObjective:onEndFightCheck(losers)
+    return countFightersForMobId(losers, self.monsterId) >= self.amount
+end
 
 ---@class KillMonsterObjective:QuestObjective
 ---@field monsterId number

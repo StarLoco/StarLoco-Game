@@ -24,7 +24,7 @@ public class EventHandlers extends DefaultTable {
     }
 
     public void onFightEnd(Player player, int type, boolean isWinner, Table winners, Table losers) {
-        vm.call(getHandler(players, "onFightEnd"), player.scripted(), isWinner, type, winners, losers);
+        vm.call(getHandler(players, "onFightEnd"), player.scripted(), type, isWinner, winners, losers);
     }
 
     public QuestInfo questInfo(Player player, int id, int currentStep) {

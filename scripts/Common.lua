@@ -59,3 +59,16 @@ function teleportPlayers(players, mapId, cellId)
         end
     end
 end
+
+---@param fighters Fighter[]
+---@param id number
+---@return number
+function countFightersForMobId(fighters, id)
+    local count = 0
+    for _, mob in ipairs(fighters) do
+        if mob.grade and mob:id() == id then
+            count = count + 1
+        end
+    end
+    return count
+end

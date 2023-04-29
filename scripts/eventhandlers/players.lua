@@ -1,10 +1,44 @@
+
+---@param p Player
+---@param type number
+---@param isWinner boolean
+---@param losers Fighter[]
+local function tryCompleteKillObjectives(p, type, isWinner, losers)
+    if not isWinner then return end
+    if type ~= PVMFightType then return end
+
+
+    for _, qId in ipairs(p:ongoingQuests()) do
+        local justCompleted = {}
+
+        (function()
+            local step = QUEST_STEPS[p:currentStep(qId)]
+            if not step then return end
+
+            local completedObjectives = p:completedObjectives(qId)
+
+            for _, obj in ipairs(step:ObjectivesForPlayer(p)) do
+                if table.contains(completedObjectives, obj.id) then
+                    -- Already completed
+                    return
+                end
+
+                if obj.onEndFight and obj.onEndFightCheck() then
+                    table.insert(justCompleted, obj.id)
+                end
+            end
+        end)()
+
+    end
+end
+
 ---@param p Player
 ---@param type number
 ---@param isWinner boolean
 ---@param winners Fighter[]
 ---@param losers Fighter[]
 Handlers.players.onFightEnd = function(p, type, isWinner, winners, losers)
-    JLogF("ONFIGHTEND {} IS WINNER {}", p:name(), isWinner)
+    tryCompleteKillObjectives(p, type, isWinner, losers)
 end
 
 ---@param player Player

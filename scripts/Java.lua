@@ -197,6 +197,9 @@ function Player:questFinished(quest) end
 ---@return boolean
 function Player:questOngoing(quest) end
 
+---@return number[]
+function Player:ongoingQuests() end
+
 ---@param quest number
 ---@return boolean
 function Player:startQuest(quest) end
@@ -208,19 +211,6 @@ function Player:currentStep(quest) end
 ---@param quest number
 ---@return number[]
 function Player:completedObjectives(quest) end
-
----@param quest number
----@return boolean
-function Player:completeObjective(quest, objective) end
-
----@param quest number
----@return boolean
-function Player:completeQuest(quest) end
-
----@param quest number
----@param step number
----@return boolean
-function Player:setCurrentStep(quest, step) end
 
 ---@param def MobGroupDef {cellId, {mobID,grade}[]}
 function Player:forceFight(def) end

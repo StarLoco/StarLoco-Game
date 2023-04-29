@@ -56,4 +56,8 @@ public class PlayerQuestProgress {
         this.currentStep = 0;
         this.finished = true;
     }
+
+    public int getQuestId() {
+        return this.questId;
+    }
 }
