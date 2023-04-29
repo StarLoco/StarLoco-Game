@@ -1,5 +1,5 @@
 local npc = Npc(341, 1205)
--- --TODO: Lié à la quête Alignement Brâkmar #26 > Premier NPC à parler
+--TODO: Lié à la quête Alignement Brâkmar #26 > Premier NPC à parler
 
 ---@param p Player
 ---@param answer number

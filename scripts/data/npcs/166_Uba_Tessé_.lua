@@ -1,5 +1,6 @@
 local npc = Npc(166, 9039)
 
+--TODO: check la suite de "quête" que donne l'item
 npc.sales = {
     {item=1468},
     {item=1463},

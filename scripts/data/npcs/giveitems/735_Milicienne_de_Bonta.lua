@@ -10,10 +10,10 @@ function npc:onTalk(p, answer)
     if answer == 0 then p:ask(3030, {2673})
     elseif answer == 2673 then
         if p:getItem(7940) then
-            p:ask(3031, {})
+            p:ask(3031)
         else
             p:addItem(7940)
-            p:ask(3031, {})
+            p:ask(3031)
         end
     end
 end
