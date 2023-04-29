@@ -6,6 +6,7 @@ import org.classdump.luna.impl.DefaultUserdata;
 import org.classdump.luna.impl.ImmutableTable;
 import org.classdump.luna.lib.ArgumentIterator;
 import org.starloco.locos.area.map.GameMap;
+import org.starloco.locos.area.map.ScriptMapData;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.entity.monster.MobGroupDef;
@@ -25,6 +26,12 @@ public class SMap extends DefaultUserdata<GameMap> {
     @SuppressWarnings("unused")
     private static int id(GameMap m) {
         return m.getId();
+    }
+
+    private static Table def(GameMap m) {
+        if(!(m.data instanceof ScriptMapData)) return null;
+        ScriptMapData smd = (ScriptMapData)m.data;
+        return smd.scripted();
     }
 
     @SuppressWarnings("unused")

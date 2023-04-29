@@ -19,4 +19,7 @@ loadDir("./data/npcs")
 loadDir("./data/maps")
 loadDir("./data/quests")
 
-loadDir("./data/dungeons") -- Always load last
+loadDir("./data/dungeons")
+
+-- Load event handlers
+loadDir("./eventhandlers")

@@ -24,6 +24,17 @@ table.shuffled = function(t)
     return out
 end
 
+---@param t table
+---@param fn fun(e:any):boolean
+---@return boolean
+table.ifind = function(t, fn)
+    for _, v in ipairs(t) do
+        if fn(v) then
+            return v
+        end
+    end
+end
+
 ---@class ItemStack
 ---@field itemID:number (0 for kamas)
 ---@field quantity:number

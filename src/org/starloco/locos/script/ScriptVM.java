@@ -59,7 +59,6 @@ public class ScriptVM {
         this.env.rawset("JLogF", new LogF());
         this.env.rawset("loadDir", new LoadDir());
         this.env.rawset("World", World.world.scripted());
-        this.loadData();
     }
 
     protected void loadData() throws CallException, LoaderException, IOException, CallPausedException, InterruptedException{
@@ -122,13 +121,6 @@ public class ScriptVM {
 
         return recursiveGet((Table) mtIndex, key);
     }
-
-    public Object[] callGlobal(String name, Object... args) {
-        Object o = this.env.rawget(name);
-        if(!(o instanceof LuaFunction)) throw new IllegalArgumentException(String.format("%s is not a function", name));
-        return call(o, args);
-    }
-
 
     static class LogF extends AbstractLibFunction {
         @Override

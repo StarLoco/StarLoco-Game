@@ -11,6 +11,7 @@ import org.starloco.locos.game.world.World;
 import org.starloco.locos.script.DataScriptVM;
 import org.starloco.locos.script.ScriptMapper;
 import org.starloco.locos.script.ScriptVM;
+import org.starloco.locos.script.proxy.SSubArea;
 import org.starloco.locos.util.Pair;
 
 import javax.swing.text.html.Option;
@@ -157,5 +158,9 @@ public class ScriptMapData extends MapData {
     @Override
     public boolean hasFightEndForType(int type) {
         return onFightFunctionByType(type, "onFightEnd").isPresent();
+    }
+
+    public Table scripted() {
+        return scriptVal;
     }
 }

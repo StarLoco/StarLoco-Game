@@ -5851,7 +5851,7 @@ public class Player implements Scripted<SPlayer> {
         }
 
         // Call lua to get quest info
-        QuestInfo qi = DataScriptVM.getInstance().questInfo(this, id, pqp.getCurrentStep());
+        QuestInfo qi = DataScriptVM.getInstance().handlers.questInfo(this, id, pqp.getCurrentStep());
         if(qi == null) {
             throw new NullPointerException("sendQuestStatus called for unknown quest");
         }

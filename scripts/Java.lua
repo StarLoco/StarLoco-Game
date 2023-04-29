@@ -291,6 +291,9 @@ local Map = {}
 ---@return number
 function Map:id() end
 
+---@return MapDef
+function Map:def() end
+
 ---@return SubArea
 function Map:subArea() end
 

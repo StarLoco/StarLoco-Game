@@ -134,10 +134,10 @@ local function onFightStart(md, _, team1, team2)
 end
 
 ---@param md MapDef
----@param _ Map
+---@param map Map
 ---@param winners Fighter[]
 ---@param losers Fighter[]
-local function onFightEnd(md, _, winners, losers)
+local function onFightEnd(md, map, winners, losers)
     -- Get info for current map
     local info = mapInfos[md.id]
     if not info then return end -- Should not happen
