@@ -88,9 +88,12 @@ public class SPlayer extends DefaultUserdata<Player> {
 
     @SuppressWarnings("unused")
     private static boolean addXP(Player p, ArgumentIterator args) {
-        Number xp = args.nextNumber();
+        long xp = args.nextInteger();
+        boolean show = args.nextOptionalBoolean(true);
 
-        return p.addXp(xp.longValue());
+        if(show)SocketManager.GAME_SEND_Im_PACKET(p, "08;" + xp);
+        p.addXp(xp);
+        return true;
     }
 
     @SuppressWarnings("unused")
