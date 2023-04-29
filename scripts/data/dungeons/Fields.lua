@@ -71,7 +71,7 @@ for k,v in pairs(mapInfos) do
     ---@type MapDef
     local map = MAPS[k]
     if map then
-        map.onFightEnd[PVMFightType] = fightEndTeleportWinnerPlayers(v.winDest[1], v.winDest[2])
+        map.onFightEnd[PVMFightType] = fightEndTeleportWinnerPlayer(v.winDest[1], v.winDest[2])
         map.staticGroups = {
             {v.groupCell, v.group}
         }

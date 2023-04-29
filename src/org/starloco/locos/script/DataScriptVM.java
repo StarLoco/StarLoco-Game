@@ -22,6 +22,7 @@ import java.util.Collections;
 
 public final class DataScriptVM extends ScriptVM {
     private static DataScriptVM instance;
+    public final EventHandlers handlers = new EventHandlers(this);
 
     private DataScriptVM() throws LoaderException, IOException, CallException, CallPausedException, InterruptedException {
         super("Data");
@@ -47,12 +48,14 @@ public final class DataScriptVM extends ScriptVM {
         this.env.rawset("RegisterAdminGroup", new RegisterAdminGroup());
         this.env.rawset("RegisterExpTables", new RegisterExpTables());
         this.env.rawset("RegisterMapDef", new RegisterMapTemplate());
+        this.env.rawset("Handlers", handlers);
     }
 
     public static synchronized void init() throws LoaderException, IOException, CallException, CallPausedException, InterruptedException {
         if(instance != null) return;
 
         instance = new DataScriptVM();
+        instance.loadData();
     }
 
     public static DataScriptVM getInstance()  {

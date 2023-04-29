@@ -58,7 +58,6 @@ public class ScriptVM {
         this.env.rawset("JLogF", new LogF());
         this.env.rawset("loadDir", new LoadDir());
         this.env.rawset("World", World.world.scripted());
-        this.loadData();
     }
 
     protected void loadData() throws CallException, LoaderException, IOException, CallPausedException, InterruptedException{

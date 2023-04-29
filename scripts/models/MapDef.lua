@@ -89,8 +89,9 @@ function moveEndTeleport(mapId, cellId)
     end
 end
 
-function fightEndTeleportWinnerPlayers(mapId, cellId)
-    return function(md, m, winners, losers)
-        teleportPlayers(winners, mapId, cellId)
+function fightEndTeleportWinnerPlayer(mapId, cellId)
+    return function(p, isWinner, _, _)
+        if not isWinner then return end
+        p:teleport(mapId, cellId)
     end
 end
