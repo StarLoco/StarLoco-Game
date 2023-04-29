@@ -11,7 +11,7 @@ import org.starloco.locos.job.JobStat;
 import org.starloco.locos.kernel.Constant;
 import org.starloco.locos.object.GameObject;
 import org.starloco.locos.other.Action;
-import org.starloco.locos.quest.PlayerQuestProgress;
+import org.starloco.locos.quest.QuestProgress;
 
 import java.util.ArrayList;
 import java.util.Map.Entry;
@@ -164,7 +164,7 @@ public class ConditionParser {
     private boolean haveQa(String req, Player player) {
         int id = Integer.parseInt((req.contains("==") ? req.split("==")[1] : req.split("!=")[1]));
 
-        PlayerQuestProgress qp = player.getQuestProgress(id);
+        QuestProgress qp = player.getQuestProgress(id);
         if (qp == null)
             return (!req.contains("=="));
 
@@ -176,7 +176,7 @@ public class ConditionParser {
     private boolean haveQEt(String req, Player player) {
         int id = Integer.parseInt((req.contains("==") ? req.split("==")[1] : req.split("!=")[1]));
 
-        Optional<PlayerQuestProgress> oqp = player.getQuestProgressForCurrentStep(id);
+        Optional<QuestProgress> oqp = player.getQuestProgressForCurrentStep(id);
 
         return req.contains("==") && oqp.isPresent();
     }
@@ -248,7 +248,7 @@ public class ConditionParser {
             return false;
         int id = Integer.parseInt((req.contains("==") ? req.split("==")[1] : req.split("!=")[1]));
 
-        PlayerQuestProgress qp = player.getQuestProgress(id);
+        QuestProgress qp = player.getQuestProgress(id);
         if (qp == null)
             return req.contains("==");
 
@@ -258,7 +258,7 @@ public class ConditionParser {
     private boolean haveQT(String req, Player player) {
         int id = Integer.parseInt((req.contains("==") ? req.split("==")[1] : req.split("!=")[1]));
 
-        PlayerQuestProgress qp = player.getQuestProgress(id);
+        QuestProgress qp = player.getQuestProgress(id);
         if (qp == null)
             return !req.contains("==");
 

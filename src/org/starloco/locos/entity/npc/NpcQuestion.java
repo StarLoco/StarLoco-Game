@@ -10,7 +10,7 @@ import org.starloco.locos.kernel.Constant;
 import org.starloco.locos.object.GameObject;
 import org.starloco.locos.other.Action;
 import org.starloco.locos.other.Dopeul;
-import org.starloco.locos.quest.PlayerQuestProgress;
+import org.starloco.locos.quest.QuestProgress;
 
 import java.util.Map.Entry;
 
@@ -59,7 +59,7 @@ public class NpcQuestion {
                      if (answer == null)
                         continue;
 
-                    PlayerQuestProgress questPlayer = null;
+                    QuestProgress questPlayer = null;
                     boolean ok = true;// true on prend, false on prend pas
 
                     //region for(action..)
@@ -170,7 +170,7 @@ public class NpcQuestion {
                                 continue;
                             }
                             int qId = Integer.parseInt(strings[5]);
-                            PlayerQuestProgress qp = player.getQuestProgress(qId);
+                            QuestProgress qp = player.getQuestProgress(qId);
                             if (qp != null) {
                                 GameObject suiveur = player.getObjetByPos(Constant.ITEM_POS_PNJ_SUIVEUR);
                                 if (suiveur != null) {// S'il a un pnj suiveur

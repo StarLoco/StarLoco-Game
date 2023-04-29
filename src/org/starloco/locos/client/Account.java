@@ -1,7 +1,10 @@
 package org.starloco.locos.client;
 
+import com.google.gson.internal.LinkedHashTreeMap;
+import org.starloco.locos.database.data.game.AccountQuestProgressData;
 import org.starloco.locos.kernel.Config;
 import org.starloco.locos.kernel.Constant;
+import org.starloco.locos.quest.QuestProgress;
 import org.starloco.locos.util.Pair;
 import org.starloco.locos.command.administration.Group;
 import org.starloco.locos.common.SocketManager;
@@ -45,6 +48,7 @@ public class Account {
     private List<Integer> friends = new ArrayList<>();
     private List<Integer> enemys = new ArrayList<>();
     private Map<Integer, List<BigStoreListing>> hdvsItems;
+    private final Map<Integer, QuestProgress> questsProgression = new HashMap<>();
 
     public Account(int guid, String name, String pseudo,
                    String answer, boolean banned,
@@ -532,5 +536,17 @@ public class Account {
         } else {
             ((GiftData) DatabaseManager.get(GiftData.class)).update(new Pair<>(this, gifts + ";" + gift));
         }
+    }
+
+    public void addQuestProgression(QuestProgress qProgress) {
+        questsProgression.put(qProgress.questId, qProgress);
+    }
+
+    public void saveQuestProgress() {
+        AccountQuestProgressData dao = Objects.requireNonNull(DatabaseManager.get(AccountQuestProgressData.class));
+
+        this.questsProgression.forEach((k, v) -> {
+            dao.update(v);
+        });
     }
 }

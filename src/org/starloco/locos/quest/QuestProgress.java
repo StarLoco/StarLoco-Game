@@ -1,26 +1,24 @@
 package org.starloco.locos.quest;
 
-import org.starloco.locos.script.DataScriptVM;
-
 import java.util.HashSet;
 import java.util.Set;
 
-public class PlayerQuestProgress {
-    public final int playerId;
+public class QuestProgress {
+    public final int entityId;
     public final int questId;
     private boolean finished;
     private int currentStep;
     private final Set<Integer> completedObjectives;
 
-    public PlayerQuestProgress(int playerId, int questId, int sId) {
-        this.playerId = playerId;
+    public QuestProgress(int entityId, int questId, int sId) {
+        this.entityId = entityId;
         this.questId = questId;
         this.currentStep = sId;
         this.completedObjectives = new HashSet<>();
     }
 
-    public PlayerQuestProgress(int playerId, int questId, int sId, Set<Integer> completedObjectives, boolean finished) {
-        this.playerId = playerId;
+    public QuestProgress(int playerId, int questId, int sId, Set<Integer> completedObjectives, boolean finished) {
+        this.entityId = playerId;
         this.questId = questId;
         this.currentStep = sId;
         this.completedObjectives = completedObjectives;

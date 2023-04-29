@@ -11,7 +11,7 @@ import org.starloco.locos.guild.GuildMember;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-public class GuildMemberData extends FunctionDAO<Player> {
+public class tGuildMemberData extends FunctionDAO<Player> {
     public GuildMemberData(HikariDataSource dataSource) {
         super(dataSource, "guild_members");
     }

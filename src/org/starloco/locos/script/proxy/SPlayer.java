@@ -18,7 +18,7 @@ import org.starloco.locos.job.JobStat;
 import org.starloco.locos.kernel.Constant;
 import org.starloco.locos.object.GameObject;
 import org.starloco.locos.object.ObjectTemplate;
-import org.starloco.locos.quest.PlayerQuestProgress;
+import org.starloco.locos.quest.QuestProgress;
 import org.starloco.locos.script.ScriptVM;
 import org.starloco.locos.script.types.MetaTables;
 import org.starloco.locos.util.Pair;
@@ -154,7 +154,7 @@ public class SPlayer extends DefaultUserdata<Player> {
 
     @SuppressWarnings("unused")
     private static boolean questFinished(Player p, ArgumentIterator args) {
-        return Optional.ofNullable(p.getQuestProgress(args.nextInt())).map(PlayerQuestProgress::isFinished).orElse(false);
+        return Optional.ofNullable(p.getQuestProgress(args.nextInt())).map(QuestProgress::isFinished).orElse(false);
     }
 
     @SuppressWarnings("unused")
@@ -164,7 +164,7 @@ public class SPlayer extends DefaultUserdata<Player> {
 
     @SuppressWarnings("unused")
     private static Table ongoingQuests(Player p) {
-        return ScriptVM.listOf(p.getQuestProgressions().map(PlayerQuestProgress::getQuestId));
+        return ScriptVM.listOf(p.getQuestProgressions().map(QuestProgress::getQuestId));
     }
 
     @SuppressWarnings("unused")
@@ -174,7 +174,7 @@ public class SPlayer extends DefaultUserdata<Player> {
 
         if (p.getQuestProgress(id) != null) return false;
 
-        p.addQuestProgression(new PlayerQuestProgress(p.getId(), id, sId));
+        p.addQuestProgression(new QuestProgress(p.getId(), id, sId));
 
         SocketManager.GAME_SEND_Im_PACKET(p, "054;" + id);
         p.saveQuestProgress();
@@ -185,7 +185,7 @@ public class SPlayer extends DefaultUserdata<Player> {
     private static int currentStep(Player p, ArgumentIterator args) {
         int qID = args.nextInt();
 
-        PlayerQuestProgress qp = p.getQuestProgress(qID);
+        QuestProgress qp = p.getQuestProgress(qID);
         if(qp.isFinished()) return 0;
 
         return qp.getCurrentStep();
@@ -194,7 +194,7 @@ public class SPlayer extends DefaultUserdata<Player> {
     private static Table completedObjectives(Player p, ArgumentIterator args) {
         int qID = args.nextInt();
 
-        PlayerQuestProgress qp = p.getQuestProgress(qID);
+        QuestProgress qp = p.getQuestProgress(qID);
         if(qp.isFinished()) return null;
 
         return ScriptVM.listOf(qp.getCompletedObjectives().stream());
@@ -205,7 +205,7 @@ public class SPlayer extends DefaultUserdata<Player> {
         int qID = args.nextInt();
         int oID = args.nextInt();
 
-        PlayerQuestProgress qp = p.getQuestProgress(qID);
+        QuestProgress qp = p.getQuestProgress(qID);
         if(qp.isFinished()) return false;
 
         if(qp.hasCompletedObjective(oID)) return false;
@@ -222,7 +222,7 @@ public class SPlayer extends DefaultUserdata<Player> {
         int qID = args.nextInt();
         int sID = args.nextInt();
 
-        PlayerQuestProgress qp = p.getQuestProgress(qID);
+        QuestProgress qp = p.getQuestProgress(qID);
         if(qp.isFinished()) return false;
         if(qp.getCurrentStep() == sID) return false;
 
@@ -237,7 +237,7 @@ public class SPlayer extends DefaultUserdata<Player> {
         int qID = args.nextInt();
         boolean remove = args.nextOptionalBoolean(false);
 
-        PlayerQuestProgress qp = p.getQuestProgress(qID);
+        QuestProgress qp = p.getQuestProgress(qID);
         if(qp.isFinished()) return false;
 
         SocketManager.GAME_SEND_Im_PACKET(p, "056;" + qID);

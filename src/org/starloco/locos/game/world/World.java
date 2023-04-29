@@ -167,7 +167,6 @@ public class World implements Scripted<SWorld> {
 
     public void addPlayer(Player player) {
         players.put(player.getId(), player);
-        ((PlayerQuestProgressData) DatabaseManager.get(PlayerQuestProgressData.class)).load(player.getId());
     }
 
     public Player getPlayerByName(String name) {
@@ -1708,6 +1707,10 @@ public class World implements Scripted<SWorld> {
     @Override
     public SWorld scripted() {
         return scriptVal;
+    }
+
+    public Account getAccount(int id) {
+        return accounts.get(id);
     }
 
 

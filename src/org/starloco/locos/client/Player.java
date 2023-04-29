@@ -1,6 +1,5 @@
 package org.starloco.locos.client;
 
-import org.classdump.luna.Table;
 import org.starloco.locos.area.SubArea;
 import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.area.map.GameMap;
@@ -16,14 +15,10 @@ import org.starloco.locos.command.administration.Group;
 import org.starloco.locos.common.Formulas;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.database.DatabaseManager;
-import org.starloco.locos.database.data.game.BankData;
-import org.starloco.locos.database.data.game.CollectorData;
-import org.starloco.locos.database.data.game.ExperienceTables;
-import org.starloco.locos.database.data.game.GuildMemberData;
+import org.starloco.locos.database.data.game.*;
 import org.starloco.locos.database.data.login.AccountData;
 import org.starloco.locos.database.data.login.ObjectData;
 import org.starloco.locos.database.data.login.PlayerData;
-import org.starloco.locos.database.data.login.PlayerQuestProgressData;
 import org.starloco.locos.dynamic.Start;
 import org.starloco.locos.entity.Collector;
 import org.starloco.locos.entity.Prism;
@@ -58,7 +53,7 @@ import org.starloco.locos.object.ObjectTemplate;
 import org.starloco.locos.other.Action;
 import org.starloco.locos.other.Dopeul;
 import org.starloco.locos.guild.Guild;
-import org.starloco.locos.quest.PlayerQuestProgress;
+import org.starloco.locos.quest.QuestProgress;
 import org.starloco.locos.quest.QuestInfo;
 import org.starloco.locos.script.DataScriptVM;
 import org.starloco.locos.script.Scripted;
@@ -226,7 +221,7 @@ public class Player implements Scripted<SPlayer> {
     private int groupId;
     private boolean isInvisible = false;
 
-    private final Map<Integer, PlayerQuestProgress> questsProgression = new HashMap<>();
+    private final Map<Integer, QuestProgress> questsProgression = new HashMap<>();
     private boolean changeName;
     public boolean afterFight = false;
 
@@ -5825,7 +5820,7 @@ public class Player implements Scripted<SPlayer> {
         return false;
     }
 
-    public void addQuestProgression(PlayerQuestProgress qProgress) {
+    public void addQuestProgression(QuestProgress qProgress) {
         questsProgression.put(qProgress.questId, qProgress);
     }
 
@@ -5833,21 +5828,21 @@ public class Player implements Scripted<SPlayer> {
         this.questsProgression.remove(questId);
     }
 
-    public PlayerQuestProgress getQuestProgress(int questId) {
+    public QuestProgress getQuestProgress(int questId) {
         return this.questsProgression.get(questId);
     }
 
-    public Optional<PlayerQuestProgress> getQuestProgressForCurrentStep(int stepId) {
+    public Optional<QuestProgress> getQuestProgressForCurrentStep(int stepId) {
         return this.questsProgression.values().stream().filter(qp -> qp.getCurrentStep() == stepId).findFirst();
     }
 
 
-    public Stream<PlayerQuestProgress> getQuestProgressions() {
+    public Stream<QuestProgress> getQuestProgressions() {
         return questsProgression.values().stream();
     }
 
     public void sendQuestStatus(int id) {
-        PlayerQuestProgress pqp = this.questsProgression.get(id);
+        QuestProgress pqp = this.questsProgression.get(id);
 
         StringJoiner sj = new StringJoiner("|");
         sj.add( "QS"+id);
@@ -5883,6 +5878,7 @@ public class Player implements Scripted<SPlayer> {
     }
 
     public void saveQuestProgress() {
+        getAccount().saveQuestProgress();
         PlayerQuestProgressData dao = Objects.requireNonNull(DatabaseManager.get(PlayerQuestProgressData.class));
 
         this.questsProgression.forEach((k, v) -> {
