@@ -129,8 +129,7 @@ public class DatabaseManager {
         this.daos.add(new TutorialData(this.game));
         this.daos.add(new ZaapiData(this.game));
         this.daos.add(new HeroicMobsGroupsData(this.game));
-        this.daos.add(new AccountQuestProgressData(this.game));
-        this.daos.add(new PlayerQuestProgressData(this.game));
+        this.daos.add(new QuestProgressData(this.game));
         //endregion
     }
 

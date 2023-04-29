@@ -171,10 +171,11 @@ public class SPlayer extends DefaultUserdata<Player> {
     private static boolean startQuest(Player p, ArgumentIterator args) {
         int id = args.nextInt();
         int sId = args.nextInt();
+        boolean isAccountQuest = args.nextOptionalBoolean(false);
 
         if (p.getQuestProgress(id) != null) return false;
 
-        p.addQuestProgression(new QuestProgress(p.getId(), id, sId));
+        p.addQuestProgression(new QuestProgress(p.getAccID(), p.getId(), id, sId));
 
         SocketManager.GAME_SEND_Im_PACKET(p, "054;" + id);
         p.saveQuestProgress();
@@ -242,7 +243,7 @@ public class SPlayer extends DefaultUserdata<Player> {
 
         SocketManager.GAME_SEND_Im_PACKET(p, "056;" + qID);
         if(remove) {
-            p.delQuestProgress(qID);
+            p.delQuestProgress(qp);
         }else {
             qp.markFinished();
         }

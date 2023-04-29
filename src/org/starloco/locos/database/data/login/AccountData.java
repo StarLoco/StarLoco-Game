@@ -5,8 +5,8 @@ import org.apache.commons.lang.NotImplementedException;
 import org.starloco.locos.client.Account;
 import org.starloco.locos.database.DatabaseManager;
 import org.starloco.locos.database.data.FunctionDAO;
-import org.starloco.locos.database.data.game.AccountQuestProgressData;
 import org.starloco.locos.database.data.game.BankData;
+import org.starloco.locos.database.data.game.QuestProgressData;
 import org.starloco.locos.game.world.World;
 
 import java.sql.PreparedStatement;
@@ -34,7 +34,7 @@ public class AccountData extends FunctionDAO<Account> {
 
                 // Load account specific data
                 DatabaseManager.get(BankData.class).load(acc.getId());
-                DatabaseManager.get(AccountQuestProgressData.class).load(acc.getId());
+                DatabaseManager.get(QuestProgressData.class).load(acc.getId());
 
                 // Ensure players are loaded too
                 DatabaseManager.get(PlayerData.class).loadByAccountId(acc.getId());

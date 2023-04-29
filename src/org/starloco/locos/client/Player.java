@@ -220,8 +220,6 @@ public class Player implements Scripted<SPlayer> {
     public Start start;
     private int groupId;
     private boolean isInvisible = false;
-
-    private final Map<Integer, QuestProgress> questsProgression = new HashMap<>();
     private boolean changeName;
     public boolean afterFight = false;
 
@@ -5821,38 +5819,38 @@ public class Player implements Scripted<SPlayer> {
     }
 
     public void addQuestProgression(QuestProgress qProgress) {
-        questsProgression.put(qProgress.questId, qProgress);
+        getAccount().addQuestProgression(qProgress);
     }
 
-    public void delQuestProgress(int questId) {
-        this.questsProgression.remove(questId);
+    public void delQuestProgress(QuestProgress qProgress) {
+        getAccount().delQuestProgress(qProgress);
     }
 
     public QuestProgress getQuestProgress(int questId) {
-        return this.questsProgression.get(questId);
+        return getAccount().getQuestProgress(this.id, questId);
     }
 
     public Optional<QuestProgress> getQuestProgressForCurrentStep(int stepId) {
-        return this.questsProgression.values().stream().filter(qp -> qp.getCurrentStep() == stepId).findFirst();
+        return getAccount().getQuestProgressions(this.id).filter(qp -> qp.getCurrentStep() == stepId).findFirst();
     }
 
 
     public Stream<QuestProgress> getQuestProgressions() {
-        return questsProgression.values().stream();
+        return getAccount().getQuestProgressions(this.id);
     }
 
-    public void sendQuestStatus(int id) {
-        QuestProgress pqp = this.questsProgression.get(id);
+    public void sendQuestStatus(int questId) {
+        QuestProgress pqp = getAccount().getQuestProgress(this.id, questId);
 
         StringJoiner sj = new StringJoiner("|");
-        sj.add( "QS"+id);
+        sj.add( "QS"+questId);
 
         if(pqp == null) {
             throw new NullPointerException("sendQuestStatus called for non current quest");
         }
 
         // Call lua to get quest info
-        QuestInfo qi = DataScriptVM.getInstance().handlers.questInfo(this, id, pqp.getCurrentStep());
+        QuestInfo qi = DataScriptVM.getInstance().handlers.questInfo(this, questId, pqp.getCurrentStep());
         if(qi == null) {
             throw new NullPointerException("sendQuestStatus called for unknown quest");
         }
@@ -5871,7 +5869,7 @@ public class Player implements Scripted<SPlayer> {
     }
 
     public String encodeQuestList() {
-        return "QL+" + this.questsProgression.values().stream().
+        return "QL+" + getAccount().getQuestProgressions(this.id).
             map(qp -> String.join(";",
                 String.valueOf(qp.questId), qp.isFinished()?"1":"0"
             )).collect(Collectors.joining("|"));
@@ -5879,11 +5877,6 @@ public class Player implements Scripted<SPlayer> {
 
     public void saveQuestProgress() {
         getAccount().saveQuestProgress();
-        PlayerQuestProgressData dao = Objects.requireNonNull(DatabaseManager.get(PlayerQuestProgressData.class));
-
-        this.questsProgression.forEach((k, v) -> {
-            dao.update(v);
-        });
     }
 
     public House getInHouse() {
