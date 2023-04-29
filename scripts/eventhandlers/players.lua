@@ -1,10 +1,9 @@
 ---@param p Player
 ---@param type number
+---@param isWinner boolean
 ---@param winners Fighter[]
 ---@param losers Fighter[]
-Handlers.players.onFightEnd = function(p, type, winners, losers)
-    local isWinner = table.contains(winners, p)
-
+Handlers.players.onFightEnd = function(p, type, isWinner, winners, losers)
     JLogF("ONFIGHTEND {} IS WINNER {}", p:name(), isWinner)
 end
 

@@ -133,19 +133,11 @@ local function onFightStart(md, _, team1, team2)
     respawnBoss()
 end
 
-<<<<<<< HEAD
----@param md MapDef
----@param map Map
----@param winners Fighter[]
----@param losers Fighter[]
-local function onFightEnd(md, map, winners, losers)
-=======
 ---@param p Player
 ---@param isWinner boolean
 ---@param winners Fighter[]
 ---@param losers Fighter[]
 local function onFightEnd(p, isWinner, winners, losers)
->>>>>>> master
     -- Get info for current map
     local info = mapInfos[p:mapID()]
     if not info then return end -- Should not happen
