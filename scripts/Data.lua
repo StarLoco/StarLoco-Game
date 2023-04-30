@@ -1,12 +1,12 @@
 -- Init script for static data VM
 
 -- Load constant data
-require("./data/AdminCommands")
-require("./data/AdminGroups")
-require("./data/Experience")
-require("./data/FightTypes")
-require("./data/GearSlots")
-require("./data/Jobs")
+requireReload("./data/AdminCommands")
+requireReload("./data/AdminGroups")
+requireReload("./data/Experience")
+requireReload("./data/FightTypes")
+requireReload("./data/GearSlots")
+requireReload("./data/Jobs")
 
 -- Define classes
 requireReload("./models/NPC")
