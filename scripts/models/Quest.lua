@@ -63,7 +63,7 @@ end
 ---@param id number
 ---@return boolean
 function Quest:hasCompletedObjective(p, id)
-    return table.contains(p:completedObjectives(self.id), id)
+    return table.contains(p:_completedObjectives(self.id), id)
 end
 
 ---@param p Player
@@ -81,7 +81,7 @@ end
 ---@param p Player
 ---@param ids number[]
 function Quest:completeObjectives(p, ids)
-    local stepIdx, step = self:step(p:currentStep(self.id))
+    local stepIdx, step = self:step(p:_currentStep(self.id))
     if not step then
         error("player doesn't have the quest")
     end
@@ -114,10 +114,10 @@ end
 ---@param p Player
 ---@return QuestObjective[]
 function Quest:uncompletedObjectives(p)
-    local _, step = self:step(p:currentStep(self.id))
+    local _, step = self:step(p:_currentStep(self.id))
     if not step then return {} end
 
-    local completedObjectives = p:completedObjectives(self.id)
+    local completedObjectives = p:_completedObjectives(self.id)
 
     local uncompleted = {}
     for _, obj in ipairs(step:ObjectivesForPlayer(p)) do
@@ -152,7 +152,7 @@ function questSequentialObjectives(questId, objs)
     ---@param p Player
     return function(p)
         local objectives = {}
-        local completed = p:completedObjectives(questId)
+        local completed = p:_completedObjectives(questId)
 
         for _, obj in ipairs(objs) do
             table.insert(objectives, obj)

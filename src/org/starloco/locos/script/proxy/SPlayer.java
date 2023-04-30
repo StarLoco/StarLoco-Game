@@ -188,7 +188,7 @@ public class SPlayer extends DefaultUserdata<Player> {
     }
 
     @SuppressWarnings("unused")
-    private static int currentStep(Player p, ArgumentIterator args) {
+    private static int _currentStep(Player p, ArgumentIterator args) {
         int qID = args.nextInt();
 
         QuestProgress qp = p.getQuestProgress(qID);
@@ -197,7 +197,7 @@ public class SPlayer extends DefaultUserdata<Player> {
         return qp.getCurrentStep();
     }
     @SuppressWarnings("unused")
-    private static Table completedObjectives(Player p, ArgumentIterator args) {
+    private static Table _completedObjectives(Player p, ArgumentIterator args) {
         int qID = args.nextInt();
 
         QuestProgress qp = p.getQuestProgress(qID);

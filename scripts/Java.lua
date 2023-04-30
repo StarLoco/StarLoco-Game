@@ -185,14 +185,6 @@ function Player:setSpellLevel(spell, level, modPoints) end
 ---@return boolean true if player's faction has the expected value after the call
 function Player:setFaction(faction, replace) end
 
----@param quest number
----@return number
-function Player:currentStep(quest) end
-
----@param quest number
----@return number[]
-function Player:completedObjectives(quest) end
-
 ---@param def MobGroupDef {cellId, {mobID,grade}[]}
 function Player:forceFight(def) end
 
