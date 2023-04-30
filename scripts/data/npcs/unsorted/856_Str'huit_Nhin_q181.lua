@@ -1,5 +1,4 @@
 local npc = Npc(856, 30)
-
 local questID = 181
 
 npc.colors = {16711680, 2949120, 1245184}

@@ -1,5 +1,4 @@
 local npc = Npc(858, 31)
-
 local questID = 181
 local recipeID = 8528
 
