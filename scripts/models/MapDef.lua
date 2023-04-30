@@ -36,6 +36,7 @@
 -- canCollectTax (0x100)
 -- canSetPrism (0x200)
 
+---@type table<number, MapDef>
 MAPS = {}
 
 MapDef = {}

@@ -9,12 +9,11 @@ require("./data/GearSlots")
 require("./data/Jobs")
 
 -- Define classes
-require("./models/NPC")
-require("./models/MapDef")
-require("./models/Quest")
+requireReload("./models/NPC")
+requireReload("./models/MapDef")
+requireReload("./models/Quest")
 
 -- Load instances
-
 loadDir("./data/npcs")
 loadDir("./data/maps")
 loadDir("./data/quests")

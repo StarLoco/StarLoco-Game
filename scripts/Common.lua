@@ -35,6 +35,12 @@ table.ifind = function(t, fn)
     end
 end
 
+
+function requireReload(path)
+    package.loaded[path] = nil
+    require(path)
+end
+
 ---@class ItemStack
 ---@field itemID:number (0 for kamas)
 ---@field quantity:number
