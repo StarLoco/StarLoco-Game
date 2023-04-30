@@ -15,7 +15,7 @@ local hasAllBroches = p:getItem(7935) and p:getItem(7936) and p:getItem(7937) an
     elseif answer == 2763 then
 		p:ask(3140, {2764})
     elseif answer == 2764 then
-		p:ask(3141, {})
+		p:ask(3141)
 	else
 		p:endDialog()
     end

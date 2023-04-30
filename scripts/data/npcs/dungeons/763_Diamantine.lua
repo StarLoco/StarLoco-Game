@@ -11,11 +11,11 @@ local hasAllItem = p:getItem(8077, 10) and p:getItem(8064, 10) and p:getItem(807
         p:ask(3147, {2768})
     elseif answer == 2768 then 
 	    if p:spellLevel(364) > 0 then
-            p:ask(3148, {})
+            p:ask(3148)
         elseif hasAllItem then
             p:ask(3148, {2769})
         else
-            p:ask(3148, {})
+            p:ask(3148)
         end
     elseif answer == 2769 then
         p:ask(3149, {2770})
@@ -26,7 +26,7 @@ local hasAllItem = p:getItem(8077, 10) and p:getItem(8064, 10) and p:getItem(807
                 p:setSpellLevel(364, 1)
                 p:endDialog()
             else
-                p:ask(3148, {})
+                p:ask(3148)
             end
         end
     end

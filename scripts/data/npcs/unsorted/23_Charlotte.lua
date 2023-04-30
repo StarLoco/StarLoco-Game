@@ -10,7 +10,7 @@ npc.sales = {
 ---@param p Player
 ---@param answer number
 function npc:onTalk(p, answer)
-    if answer == 0 then p:ask(87, {})
+    if answer == 0 then p:ask(87)
     end
 end
 

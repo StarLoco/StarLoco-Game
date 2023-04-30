@@ -17,7 +17,7 @@ function npc:onTalk(p, answer)
     local hasItem = p:getItem(382)
     if answer == 0 then p:ask(243, {566, 195, 196})
     elseif answer == 566 then p:ask(663)
-    elseif answer == 195 then p:ask(244, {})
+    elseif answer == 195 then p:ask(244)
     elseif answer == 196 then p:ask(245, {197})
     elseif answer == 197 then
         if hasItem then
