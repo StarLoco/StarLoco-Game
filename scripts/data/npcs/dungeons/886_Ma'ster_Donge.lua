@@ -1,4 +1,5 @@
 local npc = Npc(886, 90)
+local questID = 198
 
 npc.colors = {5767327, 61976, 16713222}
 npc.accessories = {0, 6481, 2386, 0, 0}
@@ -51,7 +52,6 @@ local onTalkMaps = {
     [10364] = talkMapDungeonExit
 }
 
-local questID = 198
 ---@param p Player
 ---@param answer number
 function npc:onTalk(p, answer)

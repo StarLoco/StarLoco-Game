@@ -1,8 +1,7 @@
 local npc = Npc(870, 9044)
+local questID = 185
 
 npc.gender = 1
-
-local questID = 185
 
 npc.quests = {questID}
 

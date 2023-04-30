@@ -1,4 +1,5 @@
 local npc = Npc(928, 30)
+local questID = 230
 
 npc.colors = {15787994, 9594674, 16773874}
 npc.accessories = {0, 0x228d, 0, 0, 0}
@@ -14,7 +15,6 @@ local fail = function(p)
     }}})
 end
 
-local questID = 230
 ---@param p Player
 ---@param answer number
 function npc:onTalk(p, answer)
