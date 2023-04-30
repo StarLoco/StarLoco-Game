@@ -8,7 +8,7 @@ local function tryCompleteKillQuestObjectives(p, type, isWinner, losers)
     if type ~= PVMFightType then return end
 
 
-    for _, qId in ipairs(p:ongoingQuests()) do
+    for _, qId in ipairs(p:_ongoingQuests()) do
         local quest = QUESTS[qId]
         if quest then
             quest:onEndFightCheck(p, losers)

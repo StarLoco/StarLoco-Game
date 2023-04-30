@@ -61,8 +61,15 @@ end
 
 ---@param p Player
 ---@param id number
+---@return boolean
 function Quest:hasCompletedObjective(p, id)
     return table.contains(p:completedObjectives(self.id), id)
+end
+
+---@param p Player
+---@return boolean
+function Quest:finishedBy(p)
+    return p:_questFinished(self.id)
 end
 
 ---@param p Player
@@ -175,7 +182,7 @@ function questRequirements(minLevel, questFinished, reqBreed)
             return false
         end
 
-        if questFinished ~= 0 and not p:questFinished(questFinished) then
+        if questFinished ~= 0 and not p:_questFinished(questFinished) then
             return false
         end
 

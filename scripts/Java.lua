@@ -186,13 +186,6 @@ function Player:setSpellLevel(spell, level, modPoints) end
 function Player:setFaction(faction, replace) end
 
 ---@param quest number
----@return boolean
-function Player:questFinished(quest) end
-
----@return number[]
-function Player:ongoingQuests() end
-
----@param quest number
 ---@return number
 function Player:currentStep(quest) end
 

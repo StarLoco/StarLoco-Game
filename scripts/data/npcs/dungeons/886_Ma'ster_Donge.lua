@@ -73,7 +73,7 @@ function npc:onTalk(p, answer)
             --TODO: ADD WHAT HAPPENS IF WE HAVE COMPLETED THE OBJECTIVE
             return p:ask(3847)
         end
-    elseif p:questFinished(questID) then
+    elseif quest:finishedBy(p) then
         --TODO: NEED TO ADD DIALOGID WHEN WE SPEAK TO HIM WITH QUEST ALREADY COMPLETED
         p:ask()
     end

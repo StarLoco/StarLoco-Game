@@ -42,7 +42,7 @@ function npc:onTalk(p, answer)
         return
     end
 
-    if p:questFinished(questId) then
+    if quest:finishedBy(p) then
         p:ask(3713)
         return
     end

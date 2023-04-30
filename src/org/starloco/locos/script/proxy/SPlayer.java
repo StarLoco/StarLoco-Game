@@ -156,7 +156,7 @@ public class SPlayer extends DefaultUserdata<Player> {
     }
 
     @SuppressWarnings("unused")
-    private static boolean questFinished(Player p, ArgumentIterator args) {
+    private static boolean _questFinished(Player p, ArgumentIterator args) {
         return Optional.ofNullable(p.getQuestProgress(args.nextInt())).map(QuestProgress::isFinished).orElse(false);
     }
 
@@ -166,7 +166,7 @@ public class SPlayer extends DefaultUserdata<Player> {
     }
 
     @SuppressWarnings("unused")
-    private static Table ongoingQuests(Player p) {
+    private static Table _ongoingQuests(Player p) {
         return ScriptVM.listOf(p.getQuestProgressions().map(QuestProgress::getQuestId));
     }
 

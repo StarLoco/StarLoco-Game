@@ -47,7 +47,7 @@ function npc:onTalk(p, answer)
         return
     end
 
-    if p:questFinished(recipeQuestID) then
+    if recipeQuest:finishedBy(p) then
         if answer == 0 then
             p:ask(3660, {3228; 3227})
         elseif answer == 3227 then
