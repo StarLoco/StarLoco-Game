@@ -49,7 +49,7 @@ end
 function Quest:startFor(p, npcId)
     if not self:availableTo(p) then return false end
     if p:_startQuest(self.id, self.steps[1].id, self.isAccountBound) then
-        p:map():updateNpcForPlayer(npcId, p)
+        p:map():updateNpcExtraForPlayer(npcId, p)
     end
     return true
 end

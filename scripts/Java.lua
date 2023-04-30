@@ -299,10 +299,10 @@ function Map:mobGroups() end
 ---@return number actorId
 function Map:spawnGroupDef(def) end
 
---- updateNpcForPlayer sends a GM|~ packet to the player
+--- updateNpcExtraForPlayer sends a GX packet to the player
 ---@param npcDefId number
 ---@param player Player
-function Map:updateNpcForPlayer(npcDefId,player) end
+function Map:updateNpcExtraForPlayer(npcDefId, player) end
 
 -- SubArea
 ---@class SubArea
