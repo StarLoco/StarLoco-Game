@@ -137,6 +137,29 @@ function Quest:onEndFightCheck(p, losers)
     self:completeObjectives(p, justCompleted)
 end
 
+---Helper function that allow objectives to appear only once the previous objective is completed
+---@param questId number
+---@param objs QuestObjective[]
+---@return fun(p:Player):QuestObjective[]
+function questSequentialObjectives(questId, objs)
+    ---@param p Player
+    return function(p)
+        local objectives = {}
+        local completed = p:completedObjectives(questId)
+
+        for _, obj in ipairs(objs) do
+            table.insert(objectives, obj)
+
+            if not table.contains(completed, obj.id) then
+                -- This is the first uncompleted objective, return the list now
+                return objectives
+            end
+        end
+
+        return objectives
+    end
+end
+
 ---@param minLevel number
 ---@param questFinished number
 ---@param reqBreed number[]|nil
