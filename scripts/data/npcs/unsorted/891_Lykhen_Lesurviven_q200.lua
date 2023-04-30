@@ -43,7 +43,7 @@ function npc:onTalk(p, answer)
     end
 
     if p:questFinished(questID) then
-        p:ask(3719)
+        p:ask(3855)
         return
     end
     p:endDialog()
