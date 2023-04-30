@@ -17,7 +17,6 @@ import org.starloco.locos.object.GameObject;
 import org.starloco.locos.object.ObjectTemplate;
 import org.starloco.locos.other.Action;
 import org.starloco.locos.other.Dopeul;
-import org.starloco.locos.script.Convert;
 import org.starloco.locos.script.DataScriptVM;
 import org.starloco.locos.script.ScriptVM;
 
