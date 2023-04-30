@@ -57,7 +57,7 @@ end
 ---@param p Player
 ---@param id number
 function Quest:hasCompletedObjective(p, id)
-    return table.
+    return table.contains(p:completedObjectives(self.id), id)
 end
 
 ---@param p Player
