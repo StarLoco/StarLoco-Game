@@ -56,6 +56,12 @@ end
 
 ---@param p Player
 ---@param id number
+function Quest:hasCompletedObjective(p, id)
+    return table.
+end
+
+---@param p Player
+---@param id number
 function Quest:completeObjective(p, id)
     self:completeObjectives(p, {id})
 end
