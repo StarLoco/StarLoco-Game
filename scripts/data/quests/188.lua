@@ -1,5 +1,3 @@
-local npcId = 876
-
 local qs358 = QuestStep(358, 3771)
 qs358.objectives = {
     KillMonsterSingleFightObjective(778, 999, 1)
