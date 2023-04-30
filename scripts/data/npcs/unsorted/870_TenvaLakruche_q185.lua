@@ -23,8 +23,9 @@ function npc:onTalk(p, answer)
 
     if p:questOngoing(questID) then
         -- If we have the required items, complete objective
-        if p:consumeItem(311, 4) and quest:completeObjective(p, 758) then
-            p:endDialog()
+        if p:consumeItem(311, 4) then
+            quest:completeObjective(p, 758)
+            p:ask(3719)
             return
         end
         -- Ongoing quest dialog
