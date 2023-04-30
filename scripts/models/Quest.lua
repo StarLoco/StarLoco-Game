@@ -41,7 +41,12 @@ end
 
 ---@param p Player
 function Quest:availableTo(p)
-    return p:questAvailable(self.id)
+    return p:_questAvailable(self.id)
+end
+
+---@param p Player
+function Quest:ongoingFor(p)
+    return p:_questOngoing(self.id)
 end
 
 ---@param p Player
@@ -140,7 +145,7 @@ function questRequirements(minLevel, questFinished, reqBreed)
     ---@param q Quest
     ---@param p Player
     return function(q, p)
-        if not p:questAvailable(q.id) then
+        if not p:_questAvailable(q.id) then
             return false
         end
         if p:level() < minLevel then

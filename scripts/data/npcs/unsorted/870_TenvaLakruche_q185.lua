@@ -20,7 +20,7 @@ function npc:onTalk(p, answer)
         return
     end
 
-    if p:questOngoing(questID) then
+    if quest:ongoingFor(p) then
         -- If we have the required items, complete objective
         if p:consumeItem(311, 4) then
             quest:completeObjective(p, 758)

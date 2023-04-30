@@ -69,7 +69,7 @@ function npc:onTalk(p, answer)
         elseif answer == 3356 then
             quest:startFor(p, self.id)
             p:endDialog()
-        elseif p:questOngoing(questID) then
+        elseif quest:ongoingFor(p) then
             --TODO: ADD WHAT HAPPENS IF WE HAVE COMPLETED THE OBJECTIVE
             return p:ask(3847)
         end

@@ -185,18 +185,9 @@ function Player:setSpellLevel(spell, level, modPoints) end
 ---@return boolean true if player's faction has the expected value after the call
 function Player:setFaction(faction, replace) end
 
---region Quests
----@param quest number
----@return boolean
-function Player:questAvailable(quest) end
-
 ---@param quest number
 ---@return boolean
 function Player:questFinished(quest) end
-
----@param quest number
----@return boolean
-function Player:questOngoing(quest) end
 
 ---@return number[]
 function Player:ongoingQuests() end

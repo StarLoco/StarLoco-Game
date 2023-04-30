@@ -27,7 +27,7 @@ function npc:onTalk(p, answer)
         return
     end
 
-    if p:questOngoing(questId) then
+    if quest:ongoingFor(p) then
         if answer == 0 then
             p:ask(3707, {3250, 3249})
         elseif answer == 3249 then

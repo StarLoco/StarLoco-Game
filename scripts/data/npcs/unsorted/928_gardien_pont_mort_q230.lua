@@ -21,7 +21,7 @@ function npc:onTalk(p, answer)
     local quest = QUESTS[questID]
     if answer == 0 then
         if p:questFinished(questID) then  p:ask(4122, {3616})
-        elseif p:questOngoing(questID) then p:ask(4115, {3594, 3592, 3593, 3591})
+        elseif quest:ongoingFor(p) then p:ask(4115, {3594, 3592, 3593, 3591})
         else p:ask(4114, {3589, 3590}) end
     elseif answer == 3590 then
         p:endDialog()

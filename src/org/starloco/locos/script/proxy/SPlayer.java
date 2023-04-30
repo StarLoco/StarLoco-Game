@@ -151,7 +151,7 @@ public class SPlayer extends DefaultUserdata<Player> {
     //region Quests
 
     @SuppressWarnings("unused")
-    private static boolean questAvailable(Player p, ArgumentIterator args) {
+    private static boolean _questAvailable(Player p, ArgumentIterator args) {
         return p.getQuestProgress(args.nextInt()) == null;
     }
 
@@ -161,7 +161,7 @@ public class SPlayer extends DefaultUserdata<Player> {
     }
 
     @SuppressWarnings("unused")
-    private static boolean questOngoing(Player p, ArgumentIterator args) {
+    private static boolean _questOngoing(Player p, ArgumentIterator args) {
         return Optional.ofNullable(p.getQuestProgress(args.nextInt())).map(s -> !s.isFinished()).orElse(false);
     }
 
