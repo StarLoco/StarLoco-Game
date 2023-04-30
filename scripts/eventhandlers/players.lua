@@ -4,6 +4,7 @@
 ---@param isWinner boolean
 ---@param losers Fighter[]
 local function tryCompleteKillQuestObjectives(p, type, isWinner, losers)
+    print("BLEH DEBUG")
     if not isWinner then return end
     if type ~= PVMFightType then return end
 

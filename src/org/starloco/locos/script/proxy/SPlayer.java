@@ -148,7 +148,7 @@ public class SPlayer extends DefaultUserdata<Player> {
     }
     //endregion
 
-    //region Quests
+    //region Quests (Private)
 
     @SuppressWarnings("unused")
     private static boolean _questAvailable(Player p, ArgumentIterator args) {
