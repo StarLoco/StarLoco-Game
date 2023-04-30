@@ -5840,39 +5840,53 @@ public class Player implements Scripted<SPlayer> {
     }
 
     public void sendQuestStatus(int questId) {
-        QuestProgress pqp = getAccount().getQuestProgress(this.id, questId);
+        QuestProgress qp = getAccount().getQuestProgress(this.id, questId);
 
-        StringJoiner sj = new StringJoiner("|");
-        sj.add( "QS"+questId);
-
-        if(pqp == null) {
+        if(qp == null) {
             throw new NullPointerException("sendQuestStatus called for non current quest");
         }
 
         // Call lua to get quest info
-        QuestInfo qi = DataScriptVM.getInstance().handlers.questInfo(this, questId, pqp.getCurrentStep());
+        QuestInfo qi = DataScriptVM.getInstance().handlers.questInfo(this, questId, qp.getCurrentStep());
         if(qi == null) {
             throw new NullPointerException("sendQuestStatus called for unknown quest");
         }
 
-        sj.add(String.valueOf(pqp.getCurrentStep()));
+        StringJoiner sj = new StringJoiner("|");
+        sj.add("QS"+String.join(";",
+            Objects.toString(questId),
+            qi.isAccountBound?"1":"0",
+            qi.isRepeatable?"1":"0"
+        ));
+
+
+        sj.add(String.valueOf(qp.getCurrentStep()));
         sj.add(qi.objectives.stream().map(oId -> {
-            String completedStr = pqp.hasCompletedObjective(oId)?"1":"0";
+            String completedStr = qp.hasCompletedObjective(oId)?"1":"0";
             return oId+","+completedStr;
         }).collect(Collectors.joining(";")));
         sj.add(Objects.toString(qi.previous, ""));
         sj.add(Objects.toString(qi.next, ""));
-        sj.add(Objects.toString(qi.question, ""));
-        sj.add("");
+        if (qi.question != null) {
+            sj.add(Objects.toString(qi.question));
+        }
 
         send(sj.toString());
     }
 
     public String encodeQuestList() {
         return "QL+" + getAccount().getQuestProgressions(this.id).
-            map(qp -> String.join(";",
-                String.valueOf(qp.questId), qp.isFinished()?"1":"0"
-            )).collect(Collectors.joining("|"));
+            map(qp -> {
+                QuestInfo qi = DataScriptVM.getInstance().handlers.questInfo(this, qp.questId, qp.getCurrentStep());
+
+                return String.join(";",
+                    String.valueOf(qp.questId),
+                    qp.isFinished()?"1":"0",
+                    "", // List sort order. AccountBound/Repeatable quests tend to appear last (higher weight)
+                    qi.isAccountBound?"1":"0",
+                    qi.isRepeatable?"1":"0"
+                );
+            }).collect(Collectors.joining("|"));
     }
 
     public void saveQuestProgress() {

@@ -1,6 +1,7 @@
 package org.starloco.locos.command;
 
 import org.starloco.locos.entity.npc.NpcMovable;
+import org.starloco.locos.quest.QuestProgress;
 import org.starloco.locos.script.DataScriptVM;
 import org.starloco.locos.util.Pair;
 import org.starloco.locos.area.map.GameCase;
@@ -2935,7 +2936,7 @@ public class CommandAdmin extends AdminUser {
             perso.teleport((short) 7411, 311);
             this.sendMessage("Vous avez ete teleporte a Astrub.");
             return;
-        } /* else if (command.equalsIgnoreCase("DELQUEST")) {
+        } else if (command.equalsIgnoreCase("DELQUEST")) {
             int id = -1;
             String perso = "";
             try {
@@ -2950,24 +2951,20 @@ public class CommandAdmin extends AdminUser {
                 return;
             }
             Player p = World.world.getPlayerByName(perso);
-            Quest q = Quest.quests.get(id);
-            if (p == null || q == null) {
-                this.sendMessage("La quete ou le joueur est introuvable.");
+            if (p == null) {
+                this.sendMessage("Le joueur est introuvable.");
                 return;
             }
-            QuestPlayer qp = p.getQuestProgress(q);
+
+            QuestProgress qp = p.getQuestProgress(id);
             if (qp == null) {
                 this.sendMessage("Le personnage n'a pas la quete.");
                 return;
             }
-            p.delQuestProgress(qp.getId());
-            if (qp.removeQuestPlayer()) {
-                ((PlayerData) DatabaseManager.get(PlayerData.class)).update(p);
-                this.sendMessage("La quete a ete supprime sur le personnage " + perso + ".");
-            } else
-                this.sendMessage("Un probleme est survenu.");
+            p.delQuestProgress(qp);
+            this.sendMessage("La quete a ete supprime sur le personnage " + perso + ".");
             return;
-        } else if (command.equalsIgnoreCase("ADDQUEST")) {
+        } /* else if (command.equalsIgnoreCase("ADDQUEST")) {
             int id = -1;
             String perso = "";
             try {

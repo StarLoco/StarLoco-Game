@@ -45,9 +45,13 @@ function Quest:availableTo(p)
 end
 
 ---@param p Player
-function Quest:startFor(p)
+---@param npcId number
+function Quest:startFor(p, npcId)
     if not self:availableTo(p) then return false end
-    return p:_startQuest(self.id, self.steps[1].id, self.isAccountBound)
+    if p:_startQuest(self.id, self.steps[1].id, self.isAccountBound) then
+        p:map():updateNpcForPlayer(npcId, p)
+    end
+    return true
 end
 
 ---@param p Player
@@ -188,8 +192,8 @@ function QuestBasicReward(exp, kamas)
     end
     ---@param p Player
     return function(p)
-        p:addXP(exp)
-        p:modKamas(kamas)
+        if exp > 0 then p:addXP(exp) end
+        if kamas > 0 then p:modKamas(kamas) end
     end
 end
 

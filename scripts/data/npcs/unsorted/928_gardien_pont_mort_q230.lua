@@ -26,7 +26,7 @@ function npc:onTalk(p, answer)
     elseif answer == 3590 then
         p:endDialog()
     elseif answer == 3589 then
-        quest:startFor(p)
+        quest:startFor(p, self.id)
         p:ask(4115, {3594, 3592, 3593, 3591})
     elseif answer == 3594 or answer == 3592 or answer == 3593 or answer == 3591 then
         p:ask(4116, {3595, 3596, 3597})

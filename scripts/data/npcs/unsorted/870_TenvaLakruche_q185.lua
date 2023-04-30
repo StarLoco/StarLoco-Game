@@ -13,8 +13,7 @@ function npc:onTalk(p, answer)
     if quest:availableTo(p) and answer == 0 then
         p:ask(3718, {3258, 3257})
     elseif answer == 3258 then
-        quest:startFor(p)
-        p:map():updateNpcForPlayer(self.id, p)
+        quest:startFor(p, self.id)
         p:endDialog()
     elseif p:questOngoing(questID) then
         -- If we have the required items, complete objective

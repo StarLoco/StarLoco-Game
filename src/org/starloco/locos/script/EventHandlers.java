@@ -36,7 +36,9 @@ public class EventHandlers extends DefaultTable {
                 ScriptVM.intsFromLuaTable((Table)(t.rawget("objectives"))),
                 ScriptVM.rawInteger(t, "previous"),
                 ScriptVM.rawInteger(t, "next"),
-                ScriptVM.rawInteger(t, "question")
+                ScriptVM.rawInteger(t, "question"),
+                (boolean) t.rawget("isAccount"),
+                (boolean) t.rawget("isRepeatable")
         );
     }
 }

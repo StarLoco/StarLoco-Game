@@ -61,6 +61,8 @@ Handlers.players.onQuestStatusRequest = function(player, questId, stepId)
         objectives = objectives,
         question = step and step.questionId or nil,
         previous = stepIdx and stepIdx > 1 and quest.steps[stepIdx - 1].id or nil,
-        next = stepIdx < #(quest.steps) and quest.steps[stepIdx + 1].id or nil,
+        next = stepIdx and stepIdx < #(quest.steps) and quest.steps[stepIdx + 1].id or nil,
+        isAccount = quest.isAccountBound,
+        isRepeatable = quest.isRepeatable
     }
 end
