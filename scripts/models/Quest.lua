@@ -147,11 +147,11 @@ end
 ---@param questId number
 ---@param objs QuestObjective[]
 ---@return fun(p:Player):QuestObjective[]
-function questSequentialObjectives(questId, objs)
+function Quest:SequentialObjectives(objs)
     ---@param p Player
     return function(p)
         local objectives = {}
-        local completed = p:_completedObjectives(questId)
+        local completed = p:_completedObjectives(self.id)
 
         for _, obj in ipairs(objs) do
             table.insert(objectives, obj)
