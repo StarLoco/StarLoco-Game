@@ -23,8 +23,10 @@ function npc:onTalk(p, answer)
 
     if recipeQuest:ongoingFor(p) then
         if answer == 0 then
-            if not p:getItem(recipeID) and recipeQuest:hasCompletedObjective(p, 745) then
-                p:addItem(recipeID)
+            if recipeQuest:hasCompletedObjective(p, 745) then
+                if not p:getItem(recipeID) then
+                    p:addItem(recipeID)
+                end
                 p:ask(3653)
                 return
             end
@@ -40,7 +42,7 @@ function npc:onTalk(p, answer)
             if not p:getItem(recipeID) then
                 p:addItem(recipeID)
             end
-            p:ask(3653)
+            p:endDialog()
         elseif answer == 3653 then
             p:compassTo(10286)
         end

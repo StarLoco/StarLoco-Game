@@ -7,6 +7,7 @@ import org.starloco.locos.database.data.FunctionDAO;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.quest.QuestProgress;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -55,7 +56,7 @@ public class QuestProgressData extends FunctionDAO<QuestProgress> {
 
     @Override
     public void delete(QuestProgress entity) {
-        try(PreparedStatement p = getPreparedStatement("DELETE FROM " + getTableName() + " WHERE `account_id` = ? AND `player_id` = ? AND `quest_id` = ?;")){
+        try(Connection c = getConnection(); PreparedStatement p = c.prepareStatement("DELETE FROM " + getTableName() + " WHERE `account_id` = ? AND `player_id` = ? AND `quest_id` = ?;")){
             p.setInt(1, entity.accountId);
             p.setInt(2, entity.playerId);
             p.setInt(3, entity.questId);
@@ -68,7 +69,9 @@ public class QuestProgressData extends FunctionDAO<QuestProgress> {
     private void replace(QuestProgress entity) {
         if(entity == null) return;
 
-        try(PreparedStatement p = getPreparedStatement("REPLACE INTO " + getTableName() + " (`account_id`, `player_id`, `quest_id`, `current_step`, `completed_objectives`, `finished`) VALUES (?, ?, ?, ?, ?, ?);")) {
+        try(Connection c = getConnection();
+            PreparedStatement p = c.prepareStatement("REPLACE INTO " + getTableName() + " (`account_id`, `player_id`, `quest_id`, `current_step`, `completed_objectives`, `finished`) VALUES (?, ?, ?, ?, ?, ?);")
+        ) {
             p.setInt(1, entity.accountId);
             p.setInt(2, entity.playerId);
             p.setInt(3, entity.questId);

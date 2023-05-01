@@ -12,10 +12,16 @@ npc.customArtwork = 9095
 function npc:onTalk(p, answer)
     local quest = QUESTS[questID]
 
-    if quest:ongoingFor(p) then
-        if answer == 0 and p:consumeItem(recipeID, 1) then
-            p:ask(3659)
-            quest:completeObjective(p, 744)
+    if quest:ongoingFor(p) and quest:hasCompletedObjective(p, 745) then
+        if answer == 0 then
+            if not quest:hasCompletedObjective(p, 744) then
+                if p:consumeItem(recipeID, 1) then
+                    quest:completeObjective(p, 744)
+                end
+                p:ask(3659)
+                return
+            end
+            p:ask(3658)
         end
         return
     end

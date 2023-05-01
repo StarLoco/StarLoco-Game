@@ -6,3 +6,4 @@ qs344.objectives = {
 qs344.rewardFn = QuestBasicReward(150, 0)
 
 local q182 = Quest(182, {qs344})
+q182.availableTo = questRequirements(0, 181, nil)

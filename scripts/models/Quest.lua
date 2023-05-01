@@ -20,7 +20,6 @@ setmetatable(Quest, {
         local self = setmetatable({}, Quest)
         self.id = id
         self.steps = steps
-        self.minLevel = 0
         self.isRepeatable = false
         self.isAccountBound = false
 
