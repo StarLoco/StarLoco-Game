@@ -4177,7 +4177,7 @@ public class Player implements Scripted<SPlayer> {
         str.append(map);
 
         if(this.curMap.getSubArea() != null) {
-            //int SubAreaID = curMap.getSubArea().getArea().getSuperArea();
+            int superAreaID = curMap.getSubArea().getArea().getSuperArea();
             for (int i : _zaaps) {
                 try {
                     if (World.world.getMap(i) == null)
@@ -4186,8 +4186,8 @@ public class Player implements Scripted<SPlayer> {
                     Main.logger.error("Unknown zaap map #{}", i);
                     continue;
                 }
-                //if (World.world.getMap(i).getSubArea().getArea().getSuperArea() != SubAreaID)
-                //    continue;
+                if (World.world.getMap(i).getSubArea().getArea().getSuperArea() != superAreaID)
+                    continue;
                 int cost = Formulas.calculZaapCost(this, curMap, World.world.getMap(i));
                 if (i == curMap.getId())
                     cost = 0;
