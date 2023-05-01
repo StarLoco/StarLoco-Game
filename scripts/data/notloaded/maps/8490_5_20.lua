@@ -12,10 +12,11 @@ local map = MapDef(
 
 map.positions = "dVd9eleze5fhfvfJ|d-eneCeNeRe2fffu"
 map.capabilities = 738
+map.mobGroupsCount = 3
+map.mobGroupsSize = 8
 map.npcs = {
 	[672] = {299, 3},
 }
-
 -- '0;0;0;0;0;0;0' forbiddens -> capabilities ? Or script ?
 
 map.onMovementEnd = {

@@ -11,7 +11,30 @@ local map = MapDef(
 )
 
 map.positions = "bSb6cicwcKcYdado|eZfcfrfGfVf-gngC"
-
+map.mobGroupsCount = 3
+map.mobGroupsSize = 6
+map.allowedMobGrades = {
+	{1075, 1},
+	{1075, 2},
+	{1075, 3},
+	{1075, 4},
+	{1075, 5},
+	{1041, 1},
+	{1041, 2},
+	{1041, 3},
+	{1041, 4},
+	{1041, 5},
+	{1076, 1},
+	{1076, 2},
+	{1076, 3},
+	{1076, 4},
+	{1076, 5},
+	{1077, 1},
+	{1077, 2},
+	{1077, 3},
+	{1077, 4},
+	{1077, 5},
+}
 -- '0;0;0;0;0;0;0' forbiddens -> capabilities ? Or script ?
 
 map.onMovementEnd = {
