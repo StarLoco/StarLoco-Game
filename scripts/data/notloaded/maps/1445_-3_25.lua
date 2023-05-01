@@ -1,0 +1,43 @@
+local map = MapDef(
+	1445,
+	"0706131721",
+	"6A5B3362575A4F432E273222362D43646E3225326266602E456549265D66697D336C4C6E445A6556657E2125323573754E20227B6F457A232D20444729576A5946443437617C5B437A62443C59366B636F5A3541704E7B717A602C7D7B392459296977365A2F6F516C7A5C4C544D2132485B625354506A364643732532622A44214974664C4C3F553C38733728586E5D6449566E47285C336641795F3A4C633E634D6E265B274E7765632F40662A57714A5B2F5E5771512E614D4F347146207D693B37647C23687A66612E2532624134775D433A6C44696942542937537943482C7D6C79675C69417B75506B42",
+	"bhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaaHhaaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaaHhaaej5iaaHhaaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaaHhaaej5iaaHhaaeaaaaaHhaaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaA7bhGaeaaaaabhGaeaaaaaHhaaej5iaaHhaaeaaagQHhaaeaaagKHhaaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaaHhaaej5iaaHhaaeaaaYbHhamem4ahZGhaaeaaaX9Hhaaej6aaabhGaeaaaaabhGaeaaaaabhGaeaaaaaHhaaej5ipDHhGaebNahUHhaaeaaaaaGhaaeaaaX_GhaaeaaaX_bhGaeaaaaabhGaeaaaaabhGaeaaaaaHhaaej5iaaHhqaeqgenWHhGmeaaaaaHhqaeqgaaaHhGmeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaaHhaaej5iaaHhaaeaaadAHhGaeaaaaaHhGaeaaaaaHhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaaGhaaeaaaX_HhGmemZGaaHhGaeaaaaaHhGmeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaaHhGmeaaaaaHhGaebNaaaHhqaeqgaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaaHhqaeqgaaaHhGmeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaaHhGmeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeHlaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaabhGaeaaaaa",
+	9,
+	10,
+	-3,
+	25,
+	315
+)
+
+map.positions = "bJbQbRbYbZb7cccd|bybGbHbPbXb5b6cl"
+map.capabilities = 32
+map.mobGroupsCount = 3
+map.mobGroupsSize = 8
+map.allowedMobGrades = {
+	{76, 1},
+	{76, 2},
+	{76, 3},
+	{76, 4},
+	{76, 5},
+	{87, 1},
+	{87, 2},
+	{87, 3},
+	{87, 4},
+	{87, 5},
+	{90, 1},
+	{90, 2},
+	{90, 3},
+	{90, 4},
+	{90, 5},
+}
+-- '0;0;0;0;0;0;0' forbiddens -> capabilities ? Or script ?
+
+map.onMovementEnd = {
+	[96] = moveEndTeleport(1447, 345),
+	[98] = moveEndTeleport(1449, 297),
+	[123] = moveEndTeleport(1448, 206),
+	[130] = moveEndTeleport(1407, 268),
+}
+
+RegisterMapDef(map)

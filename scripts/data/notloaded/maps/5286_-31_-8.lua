@@ -1,0 +1,82 @@
+local map = MapDef(
+	5286,
+	"0902251616",
+	"4C6267464B2A38305B415C5877596549596A4C785164302764765F253262456E4D253235253235657254455F7D63775C7E2F6F7365556735267C29572E5F79304130724C414B2F4E62487C554F564A557456495B553953234A5D26584D4B574B71733B415E482A5E374A565A38316627415F3D25323553303F5C5C5D313242303F5764695E3D6649442D36264B36486E383655572D663159625E3D5E56472E253262",
+	"HhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaGhaaeaaaaaHhaaeaaapCGhaaeaaaaaHhqaeaaaaaHhGaeaaaaaHhqaeqgaaaHhGaeaaapBHhGaeaaaaaHhGaeaaaaaHhGaeaaaeBHhGaeaaapCHhGaeaaaaaHhGaeaaaaaHhaaeaaaaaGhaaeaaapCGhaaeaaaeBGhaaeaaaaaGhaaeaaaaaHhqaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhaaeaaaaaGhaaeaaaeBGhaaeaaaaaHhaaeaaaaaGhaaeaaaesHhqaeaaceCHhqaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhaaeaaaexHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhaaeaaaaaGhaaeaaaeqGhaaeaaaaaHhGaeaaapCHhqaeaaaaaHhqaeaaaaaHhGaeaaaaaHhGaeaaaeAHhGaeaaaaaHhGaeaaaeBHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhaaeaaaaaHhaaeaaapCGhaaeaaaaaHhGaeaaaaaHhGaeaaaaaHhqaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhaaeaaaexHhGaeaaaaaHhGaeaaaeBHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhaaeaaaaaHhaaeaaaaaHhGaeaaaaaHhGaeaaapBHhaaeaaaexHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhaaeaaaaaHhaaeaaaeCHhGaeaaaaaGhaaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhaaeaaaeBHhaaeaaaexHhaaeaaaeuHhGaeaaapCHhGaeaaaeBHhGaeaaaaaHhGaeaaaaaHhGaeaaaeBHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhaaeaaaaaHhGaeaaapCHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaeBHhGaeaaapCHhGaeaaaaaHhGaeaaaaaHhGaeaaaeBHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhaaeaaaewHhGaeaaaaaHhaaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaeBHhGaeaaaaaHhGaeaaaaaGhaaeaaab-HhGaeaaaaaHhGaeaaaaaGhaaeaaab-HhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhaaeaaaaaHhGaeaaaaaHhaaeaaaexHhGaeaaaaaHhGaeaaaaaHhGaeaaaeBHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaapCHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaeBHhaaeaaapBHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaGhaaeaaab-HhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaeBHhGaeaaaaaHhaaeaaab9HhGaeaaaaaHhaaeaaaaaHhGaeaaaeBHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaapCHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhaaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaGhaaeaaab-HhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaapBHhGaeaaaaaHhaaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaapCHhGaeaaaeBHhGaeaaaaaHhGaeaaapCHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhaaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaeBHhGaeaaapBHhGaeaaaeAHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhaaeaaab9HhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhaaeaaaaaHhqaeqgaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaeBHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhaaeaaaaaHhGaeaaaaaHhGaeaaaeAHhGaeaaaaaHhGaeaaaaaGhaaeaaab-HhGaeaaaaaHhGaeaaaaaHhGaeaaaaaGhaaeaaab-HhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhaaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaapCHhGaeaaaaaHhGaeaaaaaHhGaeaaapCHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhqaeqgaaaHhaaeaaaaaHhGaeaaaaaHhGaeaaaaaHhaaeaaaewHhGaeaaaaaHhGaeaaaeBHhGaeaaaaaHhGaeaaaaaHhaaeaaab9HhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhaaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaapCHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhaaeaaaeBHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaapBHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaGhaaeaaab-HhGaeaaapBHhGaeaaaaaHhaaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaapCHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaapCHhGaeaaaaaHhGaeaaaaaHhaaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhaaeaaab9HhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaapBHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhaaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaapBHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhaaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaapBHhGaeaaaaaHhGaeaaaaaHhGaeaaapBHhqaeaaaaaHhGaeaaaaaHhaaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhqaeaaaeBHhqaeaaaaaHhGaeaaaaaHhaaeaaapCHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhqaeaaaaaHhqaeaaceCHhqaeaaaaaHhaaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhaaeaaaexHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaeBHhGaeaaaaaHhGaeaaaaaHhqaeaaaaaHhqaeaaceCHhGaeaaaaaHhaaeaaaeBHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaeBHhGaeaaapCHhGaeaaaaaHhaaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaeHHhGaeaaaaaHhqaeqgaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaa",
+	15,
+	17,
+	-31,
+	-8,
+	62
+)
+
+map.positions = "d6d7ejftfEfTfWf8|bdbTbWbXb-cmcBdi"
+map.mobGroupsCount = 3
+map.mobGroupsSize = 8
+map.allowedMobGrades = {
+	{303, 1},
+	{303, 2},
+	{303, 3},
+	{303, 4},
+	{303, 5},
+	{355, 1},
+	{355, 2},
+	{355, 3},
+	{355, 4},
+	{355, 5},
+	{306, 1},
+	{306, 2},
+	{306, 3},
+	{306, 4},
+	{306, 5},
+	{308, 1},
+	{308, 2},
+	{308, 3},
+	{308, 4},
+	{308, 5},
+	{346, 1},
+	{346, 2},
+	{346, 3},
+	{346, 4},
+	{346, 5},
+	{350, 1},
+	{350, 2},
+	{350, 3},
+	{350, 4},
+	{350, 5},
+	{360, 1},
+	{360, 2},
+	{360, 3},
+	{360, 4},
+	{360, 5},
+	{348, 1},
+	{348, 2},
+	{348, 3},
+	{348, 4},
+	{348, 5},
+	{575, 1},
+	{575, 2},
+	{575, 3},
+	{575, 4},
+	{575, 5},
+	{356, 1},
+	{356, 2},
+	{356, 3},
+	{356, 4},
+	{356, 5},
+	{351, 1},
+	{351, 2},
+	{351, 3},
+	{351, 4},
+	{351, 5},
+}
+-- '0;0;0;0;0;0;0' forbiddens -> capabilities ? Or script ?
+
+map.onMovementEnd = {
+	[21] = moveEndTeleport(5285, 442),
+	[247] = moveEndTeleport(5298, 216),
+	[289] = moveEndTeleport(5288, 262),
+	[456] = moveEndTeleport(5290, 35),
+}
+
+RegisterMapDef(map)
