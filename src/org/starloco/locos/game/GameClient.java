@@ -220,7 +220,7 @@ public class GameClient {
                 parseSpellPacket(packet);
                 break;
             case 'T':
-                parseFoireTroll(packet);
+                parseTutorialsPacket(packet);
                 break;
             case 'W':
                 parseWaypointPacket(packet);
@@ -2753,11 +2753,11 @@ public class GameClient {
                     Mount mount = World.world.getMountById(object.getStats().getEffect(995));
 
                     if(mount == null){
-                    	/*int color = Constant.getMountColorByParchoTemplate(object.getTemplate().getId());
+                        /*int color = Constant.getMountColorByParchoTemplate(object.getTemplate().getId());
 						if (color < 1)
 							return;
 						mount = new Mount(color, this.player.getId(), false);*/
-                    	return;
+                        return;
                     }
                     mount.setOwner(this.player.getId());
                     this.player.removeItem(id);
@@ -2860,7 +2860,8 @@ public class GameClient {
             GameMap map = this.player.getCurMap();
             MountPark park = this.player.getCurMap().getMountPark();
             if(park == null) return;
-            try { id = Integer.parseInt(packet.substring(3));	} catch (Exception ignored) {}
+            try { id = Integer.parseInt(packet.substring(3));
+            } catch (Exception ignored) {}
 
             switch (packet.charAt(2)) {
                 case 'g':// Enclos -> Etable
@@ -5362,16 +5363,14 @@ public class GameClient {
                         });
                     }
                     break;*/
-                	if (player.getFight() == null && !player.isAway() && !player.isInPrison())
-    				{
-    					if (collector.getDefenseFight().size() >= World.world.getMap(collector.getMap()).getMaxTeam())
-    						return;//Plus de place
-    					collector.addDefenseFight(player);
-    				}
-    				break;
-                	
-                	
-                	
+                    if (player.getFight() == null && !player.isAway() && !player.isInPrison()) {
+                        if (collector.getDefenseFight().size() >= World.world.getMap(collector.getMap()).getMaxTeam())
+                            return;//Plus de place
+                        collector.addDefenseFight(player);
+                    }
+                    break;
+
+
                 case 'V'://Leave
                     /*if(fail = collector.delDefenseFight(this.player)) {
                         World.world.getGuild(collector.getGuildId()).getPlayers().stream().filter(player -> player != null && player.isOnline()).forEach(player -> {
@@ -5379,24 +5378,22 @@ public class GameClient {
                         });
                     }
                     break;*/
-                	collector.delDefenseFight(player);
-    				break;
+                    collector.delDefenseFight(player);
+                    break;
             }
         }
         /*if (!fail) {
             SocketManager.GAME_SEND_BN(this.player);
         }*/
-        for (Player z : World.world.getGuild(collector.getGuildId()).getPlayers())
-		{
-			if (z == null)
-				continue;
-			if (z.isOnline())
-			{
-				SocketManager.GAME_SEND_gITM_PACKET(z, Collector.parseToGuild(collector.getGuildId()));
-				Collector.parseAttaque(z, collector.getGuildId());
-				Collector.parseDefense(z, collector.getGuildId());
-			}
-		}
+        for (Player z : World.world.getGuild(collector.getGuildId()).getPlayers()) {
+            if (z == null)
+                continue;
+            if (z.isOnline()) {
+                SocketManager.GAME_SEND_gITM_PACKET(z, Collector.parseToGuild(collector.getGuildId()));
+                Collector.parseAttaque(z, collector.getGuildId());
+                Collector.parseDefense(z, collector.getGuildId());
+            }
+        }
     }
 
     private void leavePanelGuildCreate() {
@@ -6664,7 +6661,7 @@ public class GameClient {
         }
         if((System.currentTimeMillis() - this.player.getGuild().getDate()) <= 3600000L /**2419200000L**/) {//FIXME Ankalike: 2 semaines, en commentaire = 2 mois officiel
             SocketManager.GAME_SEND_MESSAGE(this.player, this.player.getLang().trans("game.gameclient.buy.mountpark.wait"));
-        	//this.player.send("Im1103");
+            //this.player.send("Im1103");
             return;
         }
         byte enclosMax = (byte) Math.floor(this.player.getGuild().getLvl() / 10);
@@ -6990,7 +6987,7 @@ public class GameClient {
     /**
      * Other *
      */
-    private void parseFoireTroll(String packet) {
+    private void parseTutorialsPacket(String packet) {
         if(this.player.getExchangeAction() == null || this.player.getExchangeAction().getType() != ExchangeAction.IN_TUTORIAL)
             return;
         String[] param = packet.split("\\|");
@@ -6998,13 +6995,14 @@ public class GameClient {
         this.player.setExchangeAction(null);
         switch (packet.charAt(1)) {
             case 'V':
-                if (packet.charAt(2) != '0' && packet.charAt(2) != '4')
+                if (packet.charAt(2) != '0' && packet.charAt(2) != '4') {
                     try {
                         int index = Integer.parseInt(packet.charAt(2) + "") - 1;
                         tutorial.getReward().get(index).apply(this.player, null, -1, (short) -1, null);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
+                }
                 try {
                     Action end = tutorial.getEnd();
                     if (end != null && this.player != null)
