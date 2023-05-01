@@ -8,6 +8,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
+import org.classdump.luna.Table;
 import org.starloco.locos.area.SubArea;
 import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.area.map.GameMap;
@@ -52,6 +53,8 @@ import org.starloco.locos.object.GameObject;
 import org.starloco.locos.object.ObjectTemplate;
 import org.starloco.locos.object.entity.SoulStone;
 import org.starloco.locos.other.Action;
+import org.starloco.locos.script.DataScriptVM;
+import org.starloco.locos.script.ScriptVM;
 import org.starloco.locos.util.TimerWaiter;
 
 public class Fight {
@@ -3903,6 +3906,8 @@ public class Fight {
                         } else if (this.mapOld.data.hasFightEndForType(this.type)) {
                             player.setLastFightForEndFightAction(this);
                         }
+
+                        earlyEndfightEvent(player);
                     }
                 }
 
@@ -4124,6 +4129,16 @@ public class Fight {
             }
         }
 
+    }
+
+    // This is a temporary hack function to trigger script's end fight event.
+    private void earlyEndfightEvent(Player p) {
+        boolean isWinner = winners.stream().map(Fighter::getPlayer).filter(Objects::nonNull).anyMatch(fp -> fp.getId() == p.getId());
+
+        Table winners = ScriptVM.scriptedValsTable(this.winners);
+        Table losers = ScriptVM.scriptedValsTable(this.losers);
+
+        DataScriptVM.getInstance().handlers.onFightEnd(p, type, isWinner, winners, losers);
     }
 
     void onPlayerWin(Fighter fighter, List<Fighter> looseTeam) {

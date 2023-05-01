@@ -158,7 +158,6 @@ public class ScriptMapData extends MapData {
         onFightFunctionByType(f.getType(), "onFightEnd").ifPresent(fn -> {
             vm.call(fn, p.scripted(), isWinner, winners, losers);
         });
-        vm.handlers.onFightEnd(p, f.getType(), isWinner, winners, losers);
     }
 
     @Override

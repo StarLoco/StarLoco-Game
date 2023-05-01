@@ -27,6 +27,7 @@ function npc:onTalk(p, answer)
                 if not p:getItem(recipeID) then
                     p:addItem(recipeID)
                 end
+                p:compassTo(10286)
                 p:ask(3653)
                 return
             end
@@ -43,8 +44,6 @@ function npc:onTalk(p, answer)
                 p:addItem(recipeID)
             end
             p:endDialog()
-        elseif answer == 3653 then
-            p:compassTo(10286)
         end
         return
     end
