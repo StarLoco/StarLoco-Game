@@ -6,6 +6,7 @@ import org.starloco.locos.client.Account;
 import org.starloco.locos.database.DatabaseManager;
 import org.starloco.locos.database.data.FunctionDAO;
 import org.starloco.locos.database.data.game.BankData;
+import org.starloco.locos.database.data.game.QuestProgressData;
 import org.starloco.locos.game.world.World;
 
 import java.sql.PreparedStatement;
@@ -30,10 +31,13 @@ public class AccountData extends FunctionDAO<Account> {
                 if(!result.next()) return null;
                 Account acc = new Account(result.getInt("guid"), result.getString("account").toLowerCase(), result.getString("pseudo"), result.getString("reponse"), (result.getInt("banned") == 1), result.getString("lastIP"), result.getString("lastConnectionDate"), result.getString("friends"), result.getString("enemy"), result.getInt("points"), result.getLong("subscribe"), result.getLong("muteTime"), result.getString("mutePseudo"), result.getString("lastVoteIP"), result.getString("heurevote"));
                 World.world.addAccount(acc);
-                ((BankData) DatabaseManager.get(BankData.class)).load(acc.getId());
+
+                // Load account specific data
+                DatabaseManager.get(BankData.class).load(acc.getId());
+                DatabaseManager.get(QuestProgressData.class).load(acc.getId());
 
                 // Ensure players are loaded too
-                ((PlayerData) DatabaseManager.get(PlayerData.class)).loadByAccountId(acc.getId());
+                DatabaseManager.get(PlayerData.class).loadByAccountId(acc.getId());
 
                 return acc;
             });

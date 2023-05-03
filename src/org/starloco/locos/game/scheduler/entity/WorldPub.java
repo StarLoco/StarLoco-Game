@@ -10,7 +10,7 @@ import java.util.ArrayList;
 public class WorldPub extends Updatable<Void> {
 
     public final static WorldPub instance = new WorldPub(600000);
-    public final static ArrayList<String> pubs = new ArrayList<>();
+    public final static ArrayList<String> ads = new ArrayList<>();
 
     private int last;
 
@@ -20,15 +20,15 @@ public class WorldPub extends Updatable<Void> {
 
     @Override
     public void update() {
-        if(!WorldPub.pubs.isEmpty()) {
+        if(!WorldPub.ads.isEmpty()) {
             if (this.verify()) {
                 int pub;
                 do {
-                    pub = Formulas.getRandomValue(0, pubs.size() - 1);
+                    pub = Formulas.getRandomValue(0, ads.size() - 1);
                 } while (pub == last);
 
                 last = pub;
-                SocketManager.GAME_SEND_MESSAGE_TO_ALL("(Message Auto) : " + pubs.get(pub), "046380");
+                SocketManager.GAME_SEND_MESSAGE_TO_ALL("(Message Auto) : " + ads.get(pub), "046380");
                 TimerWaiter.update();
             }
         }

@@ -1,4 +1,5 @@
 local npc = Npc(928, 30)
+local questID = 230
 
 npc.colors = {15787994, 9594674, 16773874}
 npc.accessories = {0, 0x228d, 0, 0, 0}
@@ -14,18 +15,18 @@ local fail = function(p)
     }}})
 end
 
-local questID = 230
 ---@param p Player
 ---@param answer number
 function npc:onTalk(p, answer)
+    local quest = QUESTS[questID]
     if answer == 0 then
-        if p:questFinished(questID) then  p:ask(4122, {3616})
-        elseif p:questOngoing(questID) then p:ask(4115, {3594, 3592, 3593, 3591})
+        if quest:finishedBy(p) then  p:ask(4122, {3616})
+        elseif quest:ongoingFor(p) then p:ask(4115, {3594, 3592, 3593, 3591})
         else p:ask(4114, {3589, 3590}) end
     elseif answer == 3590 then
         p:endDialog()
     elseif answer == 3589 then
-        p:startQuest(questID)
+        quest:startFor(p, self.id)
         p:ask(4115, {3594, 3592, 3593, 3591})
     elseif answer == 3594 or answer == 3592 or answer == 3593 or answer == 3591 then
         p:ask(4116, {3595, 3596, 3597})
@@ -48,9 +49,9 @@ function npc:onTalk(p, answer)
     elseif answer == 3614 then p:ask(4119, {3606, 3607, 3608, 3609, 3610})
         --elseif answer >= 3606 and answer <= 3609 then fail(p)
     elseif answer == 3610 then
-        p:completeObjective(questID, 940)
+        quest:completeObjective(p, 940)
         self:onTalk(p, 0) -- This makes sure we have completed the quest
-    elseif p:questFinished(questID) and answer == 3616 then p:teleport(10692, 303)
+    elseif quest:finishedBy(p) and answer == 3616 then p:teleport(10692, 303)
     else fail(p)
     end
 end

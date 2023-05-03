@@ -35,7 +35,6 @@ function RegisterAdminGroup(id, name, isPlayer, commands) end
 ---@param bandits number[]
 function RegisterExpTables(players, guilds, jobs, mounts, pvp, livitinems, tormentators, bandits) end
 
-
 ---@param id number
 ---@param areaId number
 ---@param neighbors number[]
@@ -63,8 +62,9 @@ function Player:gender() end
 function Player:isGhost() end
 
 ---@param xp number
+---@param show boolean
 ---@return boolean hasLeveledUp
-function Player:addXP(xp) end
+function Player:addXP(xp, show) end
 
 ---@param question number
 ---@param answers table<number>
@@ -185,27 +185,6 @@ function Player:setSpellLevel(spell, level, modPoints) end
 ---@return boolean true if player's faction has the expected value after the call
 function Player:setFaction(faction, replace) end
 
---region Quests
----@param quest number
----@return boolean
-function Player:questAvailable(quest) end
-
----@param quest number
----@return boolean
-function Player:questFinished(quest) end
-
----@param quest number
----@return boolean
-function Player:questOngoing(quest) end
-
----@param quest number
----@return boolean
-function Player:startQuest(quest) end
-
----@param quest number
----@return boolean
-function Player:completeObjective(quest, objective) end
-
 ---@param def MobGroupDef {cellId, {mobID,grade}[]}
 function Player:forceFight(def) end
 
@@ -275,6 +254,9 @@ local Map = {}
 ---@return number
 function Map:id() end
 
+---@return MapDef
+function Map:def() end
+
 ---@return SubArea
 function Map:subArea() end
 
@@ -293,10 +275,10 @@ function Map:mobGroups() end
 ---@return number actorId
 function Map:spawnGroupDef(def) end
 
---- updateNpcForPlayer sends a GM|~ packet to the player
+--- updateNpcExtraForPlayer sends a GX packet to the player
+---@param npcDefId number
 ---@param player Player
----@param npc Npc
-function Map:updateNpcForPlayer(player, npc) end
+function Map:updateNpcExtraForPlayer(npcDefId, player) end
 
 -- SubArea
 ---@class SubArea

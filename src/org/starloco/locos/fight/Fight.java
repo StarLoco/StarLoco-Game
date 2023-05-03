@@ -8,6 +8,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
+import org.classdump.luna.Table;
 import org.starloco.locos.area.SubArea;
 import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.area.map.GameMap;
@@ -52,8 +53,8 @@ import org.starloco.locos.object.GameObject;
 import org.starloco.locos.object.ObjectTemplate;
 import org.starloco.locos.object.entity.SoulStone;
 import org.starloco.locos.other.Action;
-import org.starloco.locos.quest.Quest;
-import org.starloco.locos.quest.QuestPlayer;
+import org.starloco.locos.script.DataScriptVM;
+import org.starloco.locos.script.ScriptVM;
 import org.starloco.locos.util.TimerWaiter;
 
 public class Fight {
@@ -3905,6 +3906,8 @@ public class Fight {
                         } else if (this.mapOld.data.hasFightEndForType(this.type)) {
                             player.setLastFightForEndFightAction(this);
                         }
+
+                        earlyEndfightEvent(player);
                     }
                 }
 
@@ -4126,6 +4129,16 @@ public class Fight {
             }
         }
 
+    }
+
+    // This is a temporary hack function to trigger script's end fight event.
+    private void earlyEndfightEvent(Player p) {
+        boolean isWinner = winners.stream().map(Fighter::getPlayer).filter(Objects::nonNull).anyMatch(fp -> fp.getId() == p.getId());
+
+        Table winners = ScriptVM.scriptedValsTable(this.winners);
+        Table losers = ScriptVM.scriptedValsTable(this.losers);
+
+        DataScriptVM.getInstance().handlers.onFightEnd(p, type, isWinner, winners, losers);
     }
 
     void onPlayerWin(Fighter fighter, List<Fighter> looseTeam) {
@@ -4498,27 +4511,7 @@ public class Fight {
                     Player player = fighter.getPlayer();
                     if (player == null) continue;
 
-                    if (!player.getQuestPerso().isEmpty()) {
-                        for (Fighter ennemy : loosers) {
-                            if (ennemy.getMob() == null) continue;
-                            if (ennemy.getMob().getTemplate() == null) continue;
-
-                            for (QuestPlayer questP : player.getQuestPerso().values()) {
-                                if (questP == null) continue;
-                                Quest quest = questP.getQuest();
-                                if (quest == null) continue;
-                                quest.getObjectives().stream().filter(qEtape -> !questP.isQuestObjectiveIsValidate(qEtape) && (qEtape.getType() == 0 || qEtape.getType() == 6)).filter(qEtape -> qEtape.getMonsterId() == ennemy.getMob().getTemplate().getId()).forEach(qEtape -> {
-                                    try {
-                                        player.getQuestPersoByQuest(qEtape.getQuest()).getMonsterKill().put(ennemy.getMob().getTemplate().getId(), (short) 1);
-                                        qEtape.getQuest().update(player, false, 2);
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                        player.sendMessage(player.getLang().trans("fight.fight.quest.report.admin") + e.getMessage());
-                                    }
-                                });
-                            }
-                        }
-                    }
+                    // TODO: DIABU CALL LUA FOR QUEST UPDATE
                 }
             }
             //endregion

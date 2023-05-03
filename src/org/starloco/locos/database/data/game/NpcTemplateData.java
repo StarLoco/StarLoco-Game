@@ -7,7 +7,6 @@ import org.starloco.locos.entity.npc.NpcTemplate;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.Main;
 import org.starloco.locos.object.ObjectTemplate;
-import org.starloco.locos.quest.Quest;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -39,7 +38,7 @@ public class NpcTemplateData extends FunctionDAO<NpcTemplate> {
                      String quests = result.getString("quests");
                      String exchanges = result.getString("exchanges");
 
-                     NpcTemplate template = new NpcTemplate(id, bonusValue, gfxID, scaleX, scaleY, sex, color1, color2, color3, access, extraClip, customArtWork, initQId, ventes, quests, exchanges, result.getString("path"), result.getByte("informations"));
+                     NpcTemplate template = new NpcTemplate(id, bonusValue, gfxID, scaleX, scaleY, sex, color1, color2, color3, access, customArtWork, initQId, ventes, quests, exchanges, result.getString("path"), result.getByte("informations"));
                      World.world.addNpcTemplate(template);
                  }
              });
@@ -92,26 +91,5 @@ public class NpcTemplateData extends FunctionDAO<NpcTemplate> {
     @Override
     public Class<?> getReferencedClass() {
         return NpcTemplateData.class;
-    }
-
-    public void loadQuest() {
-        try {
-            getData("SELECT id, quests FROM " + getTableName() + ";", result -> {
-                while (result.next()) {
-                    int id = result.getInt("id");
-                    String quests = result.getString("quests");
-                    if (quests.equalsIgnoreCase(""))
-                        continue;
-                    NpcTemplate nt = World.world.getNPCTemplate(id);
-                    Quest quest = Quest.quests.get(Integer.parseInt(quests));
-                    if (nt == null || quest == null)
-                        continue;
-                    nt.setQuest(quest);
-                }
-            });
-        } catch (Exception e) {
-            super.sendError(e);
-            Main.stop("unknown");
-        }
     }
 }
