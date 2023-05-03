@@ -4872,7 +4872,7 @@ public class Player implements Scripted<SPlayer> {
             return;
         this.isGhost = false;
         this.dead = 0;
-        this.setEnergy(10000);
+        this.setEnergy(1000);
         this.setPdv(1);
         this.setGfxId(Integer.parseInt(this.getClasse() + "" + this.getSexe()));
         this.setCanAggro(true);
