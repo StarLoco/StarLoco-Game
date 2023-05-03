@@ -6,7 +6,7 @@ local dungeon = TreechnidDungeon
 ---@param p Player
 ---@param answer number
 function npc:onTalk(p, answer)
-    if answer == 0 then p:ask(3174, {2796})
+    if answer == 0 then p:ask(3271, {2796})
     elseif answer == 2796 then
         -- Check if p has item / keychain
         local responses = {}

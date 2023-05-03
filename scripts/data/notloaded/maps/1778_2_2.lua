@@ -10,12 +10,6 @@ local map = MapDef(
 	10
 )
 
-map.positions = "elezeAeBeNeOe2fe|fhfvfwfJfKfXfYga"
-map.mobGroupsCount = 3
-map.mobGroupsSize = 8
-
--- '0;0;0;0;0;0;0' forbiddens -> capabilities ? Or script ?
-
 map.onMovementEnd = {
 	[280] = moveEndTeleport(1777, 323),
 }
