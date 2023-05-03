@@ -1,14 +1,13 @@
 package org.starloco.locos.script.proxy;
 
 import org.classdump.luna.ByteString;
+import org.classdump.luna.Table;
 import org.classdump.luna.impl.DefaultUserdata;
 import org.classdump.luna.impl.ImmutableTable;
 import org.classdump.luna.lib.ArgumentIterator;
 import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.common.SocketManager;
-import org.starloco.locos.database.DatabaseManager;
-import org.starloco.locos.database.data.login.PlayerData;
 import org.starloco.locos.entity.monster.MobGroupDef;
 import org.starloco.locos.entity.monster.MonsterGroup;
 import org.starloco.locos.fight.spells.Spell;
@@ -19,15 +18,11 @@ import org.starloco.locos.job.JobStat;
 import org.starloco.locos.kernel.Constant;
 import org.starloco.locos.object.GameObject;
 import org.starloco.locos.object.ObjectTemplate;
-import org.starloco.locos.quest.Quest;
-import org.starloco.locos.quest.QuestObjective;
-import org.starloco.locos.quest.QuestPlayer;
-import org.starloco.locos.quest.QuestStep;
+import org.starloco.locos.quest.QuestProgress;
 import org.starloco.locos.script.ScriptVM;
 import org.starloco.locos.script.types.MetaTables;
 import org.starloco.locos.util.Pair;
 
-import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 
@@ -93,9 +88,12 @@ public class SPlayer extends DefaultUserdata<Player> {
 
     @SuppressWarnings("unused")
     private static boolean addXP(Player p, ArgumentIterator args) {
-        Number xp = args.nextNumber();
+        long xp = args.nextInteger();
+        boolean show = args.nextOptionalBoolean(true);
 
-        return p.addXp(xp.longValue());
+        if(show)SocketManager.GAME_SEND_Im_PACKET(p, "08;" + xp);
+        p.addXp(xp);
+        return true;
     }
 
     @SuppressWarnings("unused")
@@ -150,63 +148,111 @@ public class SPlayer extends DefaultUserdata<Player> {
     }
     //endregion
 
-    //region Quests
+    //region Quests (Private)
 
     @SuppressWarnings("unused")
-    private static boolean questAvailable(Player p, ArgumentIterator args) {
-        return p.getQuestPersoByQuestId(args.nextInt()) == null;
+    private static boolean _questAvailable(Player p, ArgumentIterator args) {
+        return p.getQuestProgress(args.nextInt()) == null;
     }
 
     @SuppressWarnings("unused")
-    private static boolean questFinished(Player p, ArgumentIterator args) {
-        return Optional.ofNullable(p.getQuestPersoByQuestId(args.nextInt())).map(QuestPlayer::isFinished).orElse(false);
+    private static boolean _questFinished(Player p, ArgumentIterator args) {
+        return Optional.ofNullable(p.getQuestProgress(args.nextInt())).map(QuestProgress::isFinished).orElse(false);
     }
 
     @SuppressWarnings("unused")
-    private static boolean questOngoing(Player p, ArgumentIterator args) {
-        return Optional.ofNullable(p.getQuestPersoByQuestId(args.nextInt())).map(s -> !s.isFinished()).orElse(false);
+    private static boolean _questOngoing(Player p, ArgumentIterator args) {
+        return Optional.ofNullable(p.getQuestProgress(args.nextInt())).map(s -> !s.isFinished()).orElse(false);
     }
 
     @SuppressWarnings("unused")
-    private static boolean startQuest(Player p, ArgumentIterator args) {
+    private static Table _ongoingQuests(Player p) {
+        return ScriptVM.listOf(p.getQuestProgressions().map(QuestProgress::getQuestId));
+    }
+
+    @SuppressWarnings("unused")
+    private static boolean _startQuest(Player p, ArgumentIterator args) {
         int id = args.nextInt();
+        int sId = args.nextInt();
+        boolean isAccountQuest = args.nextOptionalBoolean(false);
 
-        Quest q = Quest.quests.get(id);
-        if (q == null) return false;
+        if (p.getQuestProgress(id) != null) return false;
 
-        if (p.getQuestPersoByQuestId(id) != null) return false;
+        int progressOwnerId = isAccountQuest? QuestProgress.NO_PLAYER_ID: p.getId();
 
-        return q.apply(p);
+        p.addQuestProgression(new QuestProgress(p.getAccID(), progressOwnerId, id, sId));
+
+        SocketManager.GAME_SEND_Im_PACKET(p, "054;" + id);
+        p.saveQuestProgress();
+        return true;
     }
 
     @SuppressWarnings("unused")
-    private static boolean completeObjective(Player p, ArgumentIterator args) {
+    private static int _currentStep(Player p, ArgumentIterator args) {
+        int qID = args.nextInt();
+
+        QuestProgress qp = p.getQuestProgress(qID);
+        if(qp.isFinished()) return 0;
+
+        return qp.getCurrentStep();
+    }
+    @SuppressWarnings("unused")
+    private static Table _completedObjectives(Player p, ArgumentIterator args) {
+        int qID = args.nextInt();
+
+        QuestProgress qp = p.getQuestProgress(qID);
+        if(qp.isFinished()) return null;
+
+        return ScriptVM.listOf(qp.getCompletedObjectives().stream());
+    }
+
+    @SuppressWarnings("unused")
+    private static boolean _completeObjective(Player p, ArgumentIterator args) {
         int qID = args.nextInt();
         int oID = args.nextInt();
 
-        QuestPlayer qp = p.getQuestPersoByQuestId(qID);
-        if(qp == null) return false;
+        QuestProgress qp = p.getQuestProgress(qID);
+        if(qp.isFinished()) return false;
 
-        Quest q = qp.getQuest();
-        if(q == null) return false;
+        if(qp.hasCompletedObjective(oID)) return false;
 
-        QuestObjective qo = q.getObjectives().stream().filter(o -> o.getId() == oID).findFirst().orElse(null);
-        if(qo == null) return false;
-
-        QuestStep qs = QuestStep.steps.get(q.getCurrentObjectiveId(qp));
-        if(qs == null) return false;
-
-        qp.setQuestObjectiveValidate(qo);
+        qp.completeObjective(oID);
         SocketManager.GAME_SEND_Im_PACKET(p, "055;" + qID);
 
-        if (q.getNextStep(qs) == 0) {
-            // Quest finished
-            SocketManager.GAME_SEND_Im_PACKET(p, "056;" + qID);
-            q.applyButinOfQuest(p, qs);
-            qp.setFinished(true);
-        } else if (qp.overQuestStep(qs))  q.applyButinOfQuest(p, qs);
+        p.saveQuestProgress();
+        return true;
+    }
 
-        ((PlayerData) DatabaseManager.get(PlayerData.class)).update(p);
+    @SuppressWarnings("unused")
+    private static boolean _setCurrentStep(Player p, ArgumentIterator args) {
+        int qID = args.nextInt();
+        int sID = args.nextInt();
+
+        QuestProgress qp = p.getQuestProgress(qID);
+        if(qp.isFinished()) return false;
+        if(qp.getCurrentStep() == sID) return false;
+
+        qp.setCurrentStep(sID);
+
+        p.saveQuestProgress();
+        return true;
+    }
+
+    @SuppressWarnings("unused")
+    private static boolean _completeQuest(Player p, ArgumentIterator args) {
+        int qID = args.nextInt();
+        boolean remove = args.nextOptionalBoolean(false);
+
+        QuestProgress qp = p.getQuestProgress(qID);
+        if(qp.isFinished()) return false;
+
+        SocketManager.GAME_SEND_Im_PACKET(p, "056;" + qID);
+        if(remove) {
+            p.delQuestProgress(qp);
+        }else {
+            qp.markFinished();
+        }
+        p.saveQuestProgress();
         return true;
     }
 

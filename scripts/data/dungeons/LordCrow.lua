@@ -207,4 +207,5 @@ end
 --endregion
 
 
-respawnBoss()
+-- Call bossMapId to trigger boss spawn
+bossMapId()

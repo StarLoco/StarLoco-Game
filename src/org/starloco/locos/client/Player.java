@@ -15,10 +15,7 @@ import org.starloco.locos.command.administration.Group;
 import org.starloco.locos.common.Formulas;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.database.DatabaseManager;
-import org.starloco.locos.database.data.game.BankData;
-import org.starloco.locos.database.data.game.CollectorData;
-import org.starloco.locos.database.data.game.ExperienceTables;
-import org.starloco.locos.database.data.game.GuildMemberData;
+import org.starloco.locos.database.data.game.*;
 import org.starloco.locos.database.data.login.AccountData;
 import org.starloco.locos.database.data.login.ObjectData;
 import org.starloco.locos.database.data.login.PlayerData;
@@ -56,8 +53,9 @@ import org.starloco.locos.object.ObjectTemplate;
 import org.starloco.locos.other.Action;
 import org.starloco.locos.other.Dopeul;
 import org.starloco.locos.guild.Guild;
-import org.starloco.locos.quest.Quest;
-import org.starloco.locos.quest.QuestPlayer;
+import org.starloco.locos.quest.QuestProgress;
+import org.starloco.locos.quest.QuestInfo;
+import org.starloco.locos.script.DataScriptVM;
 import org.starloco.locos.script.Scripted;
 import org.starloco.locos.script.proxy.SPlayer;
 import org.starloco.locos.util.Pair;
@@ -70,6 +68,7 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Player implements Scripted<SPlayer> {
     private final SPlayer scriptVal;
@@ -221,8 +220,6 @@ public class Player implements Scripted<SPlayer> {
     public Start start;
     private int groupId;
     private boolean isInvisible = false;
-
-    private Map<Integer, QuestPlayer> questList = new HashMap<>();
     private boolean changeName;
     public boolean afterFight = false;
 
@@ -4180,7 +4177,7 @@ public class Player implements Scripted<SPlayer> {
         str.append(map);
 
         if(this.curMap.getSubArea() != null) {
-            //int SubAreaID = curMap.getSubArea().getArea().getSuperArea();
+            int superAreaID = curMap.getSubArea().getArea().getSuperArea();
             for (int i : _zaaps) {
                 try {
                     if (World.world.getMap(i) == null)
@@ -4189,8 +4186,8 @@ public class Player implements Scripted<SPlayer> {
                     Main.logger.error("Unknown zaap map #{}", i);
                     continue;
                 }
-                //if (World.world.getMap(i).getSubArea().getArea().getSuperArea() != SubAreaID)
-                //    continue;
+                if (World.world.getMap(i).getSubArea().getArea().getSuperArea() != superAreaID)
+                    continue;
                 int cost = Formulas.calculZaapCost(this, curMap, World.world.getMap(i));
                 if (i == curMap.getId())
                     cost = 0;
@@ -5821,43 +5818,79 @@ public class Player implements Scripted<SPlayer> {
         return false;
     }
 
-    public void addQuestPerso(QuestPlayer qPerso) {
-        questList.put(qPerso.getId(), qPerso);
+    public void addQuestProgression(QuestProgress qProgress) {
+        getAccount().addQuestProgression(qProgress);
     }
 
-    public void delQuestPerso(int key) {
-        this.questList.remove(key);
+    public void delQuestProgress(QuestProgress qProgress) {
+        getAccount().delQuestProgress(qProgress);
     }
 
-    public Map<Integer, QuestPlayer> getQuestPerso() {
-        return questList;
+    public QuestProgress getQuestProgress(int questId) {
+        return getAccount().getQuestProgress(this.id, questId);
     }
 
-    public QuestPlayer getQuestPersoByQuest(Quest quest) {
-        for (QuestPlayer questPlayer : this.questList.values())
-            if (questPlayer != null && questPlayer.getQuest().getId() == quest.getId())
-                return questPlayer;
-        return null;
+    public Optional<QuestProgress> getQuestProgressForCurrentStep(int stepId) {
+        return getAccount().getQuestProgressions(this.id).filter(qp -> qp.getCurrentStep() == stepId).findFirst();
     }
 
-    public QuestPlayer getQuestPersoByQuestId(int id) {
-        for (QuestPlayer qPerso : questList.values())
-            if (qPerso.getQuest().getId() == id)
-                return qPerso;
-        return null;
+
+    public Stream<QuestProgress> getQuestProgressions() {
+        return getAccount().getQuestProgressions(this.id);
     }
 
-    public String encodeQL() {
-        int nb = 0;
-        final StringBuilder packet = new StringBuilder("QL+");
-        for (QuestPlayer qPerso : questList.values()) {
-            packet.append(qPerso.getQuest().getId()).append(";");
-            packet.append(qPerso.isFinished() ? 1 : 0);
-            if (nb < questList.size() - 1)
-                packet.append("|");
-            nb++;
+    public void sendQuestStatus(int questId) {
+        QuestProgress qp = getAccount().getQuestProgress(this.id, questId);
+
+        if(qp == null) {
+            throw new NullPointerException("sendQuestStatus called for non current quest");
         }
-        return packet.toString();
+
+        // Call lua to get quest info
+        QuestInfo qi = DataScriptVM.getInstance().handlers.questInfo(this, questId, qp.getCurrentStep());
+        if(qi == null) {
+            throw new NullPointerException("sendQuestStatus called for unknown quest");
+        }
+
+        StringJoiner sj = new StringJoiner("|");
+        sj.add("QS"+String.join(";",
+            Objects.toString(questId),
+            qi.isAccountBound?"1":"0",
+            qi.isRepeatable?"1":"0"
+        ));
+
+
+        sj.add(String.valueOf(qp.getCurrentStep()));
+        sj.add(qi.objectives.stream().map(oId -> {
+            String completedStr = qp.hasCompletedObjective(oId)?"1":"0";
+            return oId+","+completedStr;
+        }).collect(Collectors.joining(";")));
+        sj.add(Objects.toString(qi.previous, ""));
+        sj.add(Objects.toString(qi.next, ""));
+        if (qi.question != null) {
+            sj.add(Objects.toString(qi.question));
+        }
+
+        send(sj.toString());
+    }
+
+    public String encodeQuestList() {
+        return "QL+" + getAccount().getQuestProgressions(this.id).
+            map(qp -> {
+                QuestInfo qi = DataScriptVM.getInstance().handlers.questInfo(this, qp.questId, qp.getCurrentStep());
+
+                return String.join(";",
+                    String.valueOf(qp.questId),
+                    qp.isFinished()?"1":"0",
+                    "", // List sort order. AccountBound/Repeatable quests tend to appear last (higher weight)
+                    qi.isAccountBound?"1":"0",
+                    qi.isRepeatable?"1":"0"
+                );
+            }).collect(Collectors.joining("|"));
+    }
+
+    public void saveQuestProgress() {
+        getAccount().saveQuestProgress();
     }
 
     public House getInHouse() {
@@ -5925,111 +5958,110 @@ public class Player implements Scripted<SPlayer> {
         }
     }
 
-	public void setFullMorphbouf(int team) {
+    public void setFullMorphbouf(int team) {
 
-		if (this.isOnMount()) this.toogleOnMount();
-		if (_morphMode)
-			unsetFullMorph();
-		if (this.isGhost)
-		{
-			SocketManager.send(this, "Im1185");
-			return;
-		}
+        if (this.isOnMount()) this.toogleOnMount();
+        if (_morphMode)
+            unsetFullMorph();
+        if (this.isGhost) {
+            SocketManager.send(this, "Im1185");
+            return;
+        }
 
-		_saveSpellPts = _spellPts;
-		_saveSorts.putAll(_sorts);
-		_saveSortsPlaces.putAll(_sortsPlaces);
-
-
-		_morphMode = true;
-		_sorts.clear();
-		_sortsPlaces.clear();
-		_spellPts = 0;
-		this.Savecolors = this.color1 + "," + this.color2 + "," + this.color3;
+        _saveSpellPts = _spellPts;
+        _saveSorts.putAll(_sorts);
+        _saveSortsPlaces.putAll(_sortsPlaces);
 
 
-		if(team == 0)//rouge
-		{
-			this.color1 = 16713479;
-			this.color2 = 16777215;
-			this.color3 = 16718620;
-		}else//bleu
-		{
-			this.color1 = 360441;
-			this.color2 = 94461;
-			this.color3 = 486135;
-		}
-		if (this.fight == null)
-			SocketManager.GAME_SEND_ALTER_GM_PACKET(this.getCurMap(), this);
-		parseSpellsFullMorph("143;5;b,689;5;c,151;5;d,50;5;e,449;1;f");
-		if (this.fight == null) {
-			//SocketManager.GAME_SEND_ALTER_GM_PACKET(this.getCurMap(), this);
-			//SocketManager.GAME_SEND_ASK(this.getGameClient(), this);
-			SocketManager.GAME_SEND_SPELL_LIST(this);
-		}
+        _morphMode = true;
+        _sorts.clear();
+        _sortsPlaces.clear();
+        _spellPts = 0;
+        this.Savecolors = this.color1 + "," + this.color2 + "," + this.color3;
 
-		this.Savestats = this.maxPdv + "," + this.pa + ","
-		+ this.pm + ","  + this.vitalite + "," + this.sagesse + ","
-		+ this.terre + "," + this.feu + "," + this.eau + "," + this.air
-		+ "," + this.initiative;
-			this.maxPdv = 1000;
-			this.setPdv(this.getMaxPdv());
-			this.pa = 6;
-			this.pm = 4;
-			this.vitalite = 1000;
-			this.sagesse = 100;
-			this.terre = 0;
-			this.feu = 0;
-			this.eau = 0;
-			this.air = 0;
-			this.initiative = Formulas.getRandomValue(1, 100);
-			this.useStats = true;
-			this.donjon = false;
-			this.useCac = false;
-			if (this.fight == null)
-				SocketManager.GAME_SEND_STATS_PACKET(this);
-	}
 
-	public void unsetFullMorphbouf() {
-		if (!_morphMode)
-			return;
+        if(team == 0)//rouge
+        {
+            this.color1 = 16713479;
+            this.color2 = 16777215;
+            this.color3 = 16718620;
+        }else//bleu
+        {
+            this.color1 = 360441;
+            this.color2 = 94461;
+            this.color3 = 486135;
+        }
+        if (this.fight == null)
+            SocketManager.GAME_SEND_ALTER_GM_PACKET(this.getCurMap(), this);
+        parseSpellsFullMorph("143;5;b,689;5;c,151;5;d,50;5;e,449;1;f");
+        if (this.fight == null) {
+            //SocketManager.GAME_SEND_ALTER_GM_PACKET(this.getCurMap(), this);
+            //SocketManager.GAME_SEND_ASK(this.getGameClient(), this);
+            SocketManager.GAME_SEND_SPELL_LIST(this);
+        }
 
-		int morphID = this.getClasse() * 10 + this.getSexe();
-		setGfxId(morphID);
+        this.Savestats = this.maxPdv + "," + this.pa + ","
+                + this.pm + ","  + this.vitalite + "," + this.sagesse + ","
+                + this.terre + "," + this.feu + "," + this.eau + "," + this.air
+                + "," + this.initiative;
+        this.maxPdv = 1000;
+        this.setPdv(this.getMaxPdv());
+        this.pa = 6;
+        this.pm = 4;
+        this.vitalite = 1000;
+        this.sagesse = 100;
+        this.terre = 0;
+        this.feu = 0;
+        this.eau = 0;
+        this.air = 0;
+        this.initiative = Formulas.getRandomValue(1, 100);
+        this.useStats = true;
+        this.donjon = false;
+        this.useCac = false;
+        if (this.fight == null)
+            SocketManager.GAME_SEND_STATS_PACKET(this);
+    }
 
-		useStats = false;
-		donjon = false;
-		_morphMode = false;
-		this.useCac = true;
-		_sorts.clear();
-		_sortsPlaces.clear();
-		_spellPts = _saveSpellPts;
-		_sorts.putAll(_saveSorts);
-		_sortsPlaces.putAll(_saveSortsPlaces);
-		String[] stats = this.Savestats.split(",");
+    public void unsetFullMorphbouf() {
+        if (!_morphMode)
+            return;
 
-		this.maxPdv = Integer.parseInt(stats[0]);
-		this.pa = Integer.parseInt(stats[1]);
-		this.pm = Integer.parseInt(stats[2]);
-		this.vitalite = Integer.parseInt(stats[3]);
-		this.sagesse = Integer.parseInt(stats[4]);
-		this.terre = Integer.parseInt(stats[5]);
-		this.feu = Integer.parseInt(stats[6]);
-		this.eau = Integer.parseInt(stats[7]);
-		this.air = Integer.parseInt(stats[8]);
-		this.initiative = Integer.parseInt(stats[9]);
+        int morphID = this.getClasse() * 10 + this.getSexe();
+        setGfxId(morphID);
 
-		String[] color = this.Savecolors.split(",");
+        useStats = false;
+        donjon = false;
+        _morphMode = false;
+        this.useCac = true;
+        _sorts.clear();
+        _sortsPlaces.clear();
+        _spellPts = _saveSpellPts;
+        _sorts.putAll(_saveSorts);
+        _sortsPlaces.putAll(_saveSortsPlaces);
+        String[] stats = this.Savestats.split(",");
 
-		this.color1 = Integer.parseInt(color[0]);
-		this.color2 = Integer.parseInt(color[1]);
-		this.color3 = Integer.parseInt(color[2]);
+        this.maxPdv = Integer.parseInt(stats[0]);
+        this.pa = Integer.parseInt(stats[1]);
+        this.pm = Integer.parseInt(stats[2]);
+        this.vitalite = Integer.parseInt(stats[3]);
+        this.sagesse = Integer.parseInt(stats[4]);
+        this.terre = Integer.parseInt(stats[5]);
+        this.feu = Integer.parseInt(stats[6]);
+        this.eau = Integer.parseInt(stats[7]);
+        this.air = Integer.parseInt(stats[8]);
+        this.initiative = Integer.parseInt(stats[9]);
 
-		parseSpells(encodeSpellsToDB(), true);
-		SocketManager.GAME_SEND_SPELL_LIST(this);
-		SocketManager.GAME_SEND_STATS_PACKET(this);
-		SocketManager.GAME_SEND_ALTER_GM_PACKET(this.curMap, this);
-	}
+        String[] color = this.Savecolors.split(",");
+
+        this.color1 = Integer.parseInt(color[0]);
+        this.color2 = Integer.parseInt(color[1]);
+        this.color3 = Integer.parseInt(color[2]);
+
+        parseSpells(encodeSpellsToDB(), true);
+        SocketManager.GAME_SEND_SPELL_LIST(this);
+        SocketManager.GAME_SEND_STATS_PACKET(this);
+        SocketManager.GAME_SEND_ALTER_GM_PACKET(this.curMap, this);
+    }
 
 
     public LangEnum getLang() {

@@ -1,7 +1,9 @@
 package org.starloco.locos.client;
 
+import org.starloco.locos.database.data.game.QuestProgressData;
 import org.starloco.locos.kernel.Config;
 import org.starloco.locos.kernel.Constant;
+import org.starloco.locos.quest.QuestProgress;
 import org.starloco.locos.util.Pair;
 import org.starloco.locos.command.administration.Group;
 import org.starloco.locos.common.SocketManager;
@@ -20,13 +22,13 @@ import org.starloco.locos.object.GameObject;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Account {
-	
-    private int id;
-    private String name;
-    private String pseudo;
-    private String answer;
+    private final int id;
+    private final String name;
+    private final String pseudo;
+    private final String answer;
     private String currentIp = "";
     private String lastIP = "";
     private String lastConnectionDate = "";
@@ -41,10 +43,11 @@ public class Account {
     private byte state;
     private String lastVoteIP;
     private long heureVote;
-    private List<GameObject> bank = new ArrayList<>();
-    private List<Integer> friends = new ArrayList<>();
-    private List<Integer> enemys = new ArrayList<>();
-    private Map<Integer, List<BigStoreListing>> hdvsItems;
+    private final List<GameObject> bank = new ArrayList<>();
+    private final List<Integer> friends = new ArrayList<>();
+    private final List<Integer> enemys = new ArrayList<>();
+    private final Map<Integer, List<BigStoreListing>> hdvsItems;
+    private final Map<Integer, Map<Integer, QuestProgress>> questsProgression = new HashMap<>();
 
     public Account(int guid, String name, String pseudo,
                    String answer, boolean banned,
@@ -89,8 +92,8 @@ public class Account {
             }
         }
 
-        if (((GiftData) DatabaseManager.get(GiftData.class)).load(guid).getSecond() == null)
-            ((GiftData) DatabaseManager.get(GiftData.class)).insert(new Pair<>(this, ""));
+        if (DatabaseManager.get(GiftData.class).load(guid).getSecond() == null)
+            DatabaseManager.get(GiftData.class).insert(new Pair<>(this, ""));
     }
 
     public long getHeureVote() {
@@ -142,12 +145,12 @@ public class Account {
     }
 
     public long getPoints() {
-        points = ((AccountData) DatabaseManager.get(AccountData.class)).loadPoints(name);
+        points = DatabaseManager.get(AccountData.class).loadPoints(name);
         return points;
     }
 
     public boolean modPoints(long d) {
-        World.Couple<Long,Boolean> ret = ((AccountData) DatabaseManager.get(AccountData.class)).modPoints(id, d);
+        World.Couple<Long,Boolean> ret = DatabaseManager.get(AccountData.class).modPoints(id, d);
         if(!ret.second) return false;
         points = ret.first;
         return true;
@@ -158,7 +161,7 @@ public class Account {
         if (minutes <= 0) return;
         muteTime = System.currentTimeMillis() + minutes * 60000;
         mutePseudo = pseudo;
-        ((AccountData) DatabaseManager.get(AccountData.class)).update(this);
+        DatabaseManager.get(AccountData.class).update(this);
         if (this.currentPlayer != null) this.currentPlayer.send("Im117;" + pseudo + "~" + minutes);
     }
 
@@ -166,7 +169,7 @@ public class Account {
         if (muteTime == 0) return;
         muteTime = 0;
         mutePseudo = "";
-        ((AccountData) DatabaseManager.get(AccountData.class)).update(this);
+        DatabaseManager.get(AccountData.class).update(this);
     }
 
     public boolean isMuted() {
@@ -176,7 +179,7 @@ public class Account {
             return true;
         muteTime = 0;
         mutePseudo = "";
-        ((AccountData) DatabaseManager.get(AccountData.class)).update(this);
+        DatabaseManager.get(AccountData.class).update(this);
         return false;
     }
 
@@ -211,7 +214,7 @@ public class Account {
 
     public void setBankKamas(long i) {
         this.bankKamas = i;
-        ((BankData) DatabaseManager.get(BankData.class)).update(this);
+        DatabaseManager.get(BankData.class).update(this);
     }
 
     public GameClient getGameClient() {
@@ -251,7 +254,7 @@ public class Account {
 
     public void setState(int state) {
         this.state = (byte) state;
-        ((AccountData) DatabaseManager.get(AccountData.class)).update(this);
+        DatabaseManager.get(AccountData.class).update(this);
     }
 
     public byte getState() {
@@ -259,7 +262,7 @@ public class Account {
     }
 
     public void setSubscribe() {
-        this.subscriber = ((AccountData) DatabaseManager.get(AccountData.class)).getSubscribe(this.id);
+        this.subscriber = DatabaseManager.get(AccountData.class).getSubscribe(this.id);
     }
 
     public long getSubscribeRemaining() {
@@ -328,7 +331,7 @@ public class Account {
         if (!this.friends.contains(id)) {
             this.friends.add(id);
             SocketManager.GAME_SEND_FA_PACKET(this.currentPlayer, "K" + account.getPseudo() + player.parseToFriendList(id));
-            ((AccountData) DatabaseManager.get(AccountData.class)).update(this);
+            DatabaseManager.get(AccountData.class).update(this);
         } else {
             SocketManager.GAME_SEND_FA_PACKET(this.currentPlayer, "Ea");
         }
@@ -340,7 +343,7 @@ public class Account {
             while(iterator.hasNext())
                 if(iterator.next() == id)
                     iterator.remove();
-            ((AccountData) DatabaseManager.get(AccountData.class)).update(this);
+            DatabaseManager.get(AccountData.class).update(this);
         }
         SocketManager.GAME_SEND_FD_PACKET(this.currentPlayer, "K");
     }
@@ -354,7 +357,7 @@ public class Account {
         for (int i : this.friends) {
             if (!str.equalsIgnoreCase(""))
                 str += ";";
-            str += i + "";
+            str += String.valueOf(i);
         }
         return str;
     }
@@ -388,7 +391,7 @@ public class Account {
             this.enemys.add(guid);
             Player Pr = World.world.getPlayerByName(packet);
             SocketManager.GAME_SEND_ADD_ENEMY(this.currentPlayer, Pr);
-            ((AccountData) DatabaseManager.get(AccountData.class)).update(this);
+            DatabaseManager.get(AccountData.class).update(this);
         } else
             SocketManager.GAME_SEND_iAEA_PACKET(this.currentPlayer);
     }
@@ -399,7 +402,7 @@ public class Account {
             while(iterator.hasNext())
                 if(iterator.next() == id)
                     iterator.remove();
-            ((AccountData) DatabaseManager.get(AccountData.class)).update(this);
+            DatabaseManager.get(AccountData.class).update(this);
         }
         SocketManager.GAME_SEND_iD_COMMANDE(this.currentPlayer, "K");
     }
@@ -413,7 +416,7 @@ public class Account {
         for (int i : this.enemys) {
             if (!str.equalsIgnoreCase(""))
                 str += ";";
-            str += i + "";
+            str += String.valueOf(i);
         }
         return str;
     }
@@ -468,17 +471,17 @@ public class Account {
     }
 
     public void disconnect(Player player) {
-        ((PlayerData) DatabaseManager.get(PlayerData.class)).updateAllLogged(this.getId(), 0);
+        DatabaseManager.get(PlayerData.class).updateAllLogged(this.getId(), 0);
 
         if (player.getExchangeAction() != null)
             GameClient.leaveExchange(player);
         if (player.getParty() != null)
             player.getParty().leave(player);
         if (player.getMount() != null)
-            ((MountData) DatabaseManager.get(MountData.class)).update(player.getMount());
+            DatabaseManager.get(MountData.class).update(player.getMount());
         if (player.getFight() != null) {
             if (player.getFight().onPlayerDisconnection(player, false)) {
-                ((PlayerData) DatabaseManager.get(PlayerData.class)).update(player);
+                DatabaseManager.get(PlayerData.class).update(player);
                 return;
             }
         }
@@ -492,11 +495,11 @@ public class Account {
         this.currentIp = "";
 
         for (Player character : this.getPlayers().values())
-            ((PlayerData) DatabaseManager.get(PlayerData.class)).update(character);
+            DatabaseManager.get(PlayerData.class).update(character);
 
         player.resetVars();
         this.resetAllChars();
-        ((AccountData) DatabaseManager.get(AccountData.class)).update(this);
+        DatabaseManager.get(AccountData.class).update(this);
         World.world.logger.info("The player " + player.getName() + " come to disconnect.");
     }
 
@@ -508,7 +511,7 @@ public class Account {
 
     public void parseBank(int kamas, String items) {
         if (kamas == -1 && items == null) {
-            ((BankData) DatabaseManager.get(BankData.class)).insert(this);
+            DatabaseManager.get(BankData.class).insert(this);
         } else {
             this.bankKamas = kamas;
 
@@ -526,11 +529,35 @@ public class Account {
 
     public void addGift(int template, short quantity, byte jp) {
         String gift = template + "," + quantity + "," + jp;
-        String gifts = ((GiftData) DatabaseManager.get(GiftData.class)).load(this.getId()).getSecond();
+        String gifts = DatabaseManager.get(GiftData.class).load(this.getId()).getSecond();
         if (gifts.isEmpty()) {
-            ((GiftData) DatabaseManager.get(GiftData.class)).update(new Pair<>(this, gift));
+            DatabaseManager.get(GiftData.class).update(new Pair<>(this, gift));
         } else {
-            ((GiftData) DatabaseManager.get(GiftData.class)).update(new Pair<>(this, gifts + ";" + gift));
+            DatabaseManager.get(GiftData.class).update(new Pair<>(this, gifts + ";" + gift));
         }
+    }
+
+    public void addQuestProgression(QuestProgress qProgress) {
+        questsProgression.computeIfAbsent(qProgress.playerId, k -> new HashMap<>()).put(qProgress.questId, qProgress);
+    }
+
+    public void delQuestProgress(QuestProgress qProgress) {
+        questsProgression.computeIfAbsent(qProgress.playerId, k -> new HashMap<>()).remove(qProgress.questId, qProgress);
+    }
+
+    public QuestProgress getQuestProgress(int playerId, int questId) {
+        QuestProgress qp = questsProgression.computeIfAbsent(playerId, k -> new HashMap<>()).get(questId);
+        if(qp != null) return qp;
+        return questsProgression.computeIfAbsent(QuestProgress.NO_PLAYER_ID, k -> new HashMap<>()).get(questId);
+    }
+
+    public Stream<QuestProgress> getQuestProgressions(int playerId) {
+        return Stream.of(QuestProgress.NO_PLAYER_ID, playerId)
+            .flatMap(id -> questsProgression.computeIfAbsent(id, k -> new HashMap<>()).values().stream());
+    }
+
+    public void saveQuestProgress() {
+        QuestProgressData dao = Objects.requireNonNull(DatabaseManager.get(QuestProgressData.class));
+        this.questsProgression.values().stream().flatMap(m -> m.values().stream()).forEach(dao::update);
     }
 }

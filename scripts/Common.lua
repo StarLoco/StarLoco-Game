@@ -24,6 +24,23 @@ table.shuffled = function(t)
     return out
 end
 
+---@param t table
+---@param fn fun(e:any):boolean
+---@return boolean
+table.ifind = function(t, fn)
+    for _, v in ipairs(t) do
+        if fn(v) then
+            return v
+        end
+    end
+end
+
+
+function requireReload(path)
+    package.loaded[path] = nil
+    require(path)
+end
+
 ---@class ItemStack
 ---@field itemID:number (0 for kamas)
 ---@field quantity:number
@@ -47,4 +64,17 @@ function teleportPlayers(players, mapId, cellId)
             player:teleport(mapId, cellId)
         end
     end
+end
+
+---@param fighters Fighter[]
+---@param id number
+---@return number
+function countFightersForMobId(fighters, id)
+    local count = 0
+    for _, mob in ipairs(fighters) do
+        if mob.grade and mob:id() == id then
+            count = count + 1
+        end
+    end
+    return count
 end

@@ -14,7 +14,7 @@ function npc:onTalk(p, answer)
             p:addItem(1653)
             p:ask(683, {620})
         end
-    elseif answer == 620 then p:ask(684, {})
+    elseif answer == 620 then p:ask(684)
     end
 end
 

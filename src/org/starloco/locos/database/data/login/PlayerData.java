@@ -9,12 +9,12 @@ import org.starloco.locos.database.DatabaseManager;
 
 import org.starloco.locos.database.data.FunctionDAO;
 import org.starloco.locos.database.data.game.GuildMemberData;
+import org.starloco.locos.database.data.game.QuestProgressData;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.Config;
 import org.starloco.locos.kernel.Constant;
 import org.starloco.locos.kernel.Main;
 
-import javax.xml.crypto.Data;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -60,6 +60,8 @@ public class PlayerData extends FunctionDAO<Player> {
                 player.setLastFightForEndFightAction(oldPlayer.getLastFight());
 
             player.VerifAndChangeItemPlace();
+
+            DatabaseManager.get(QuestProgressData.class).load(player.getId());
 
             // Find player's guild
             World.world.getGuilds().values().stream().map(g -> g.getMember(id)).findFirst().ifPresent(player::setGuildMember);
@@ -207,17 +209,11 @@ public class PlayerData extends FunctionDAO<Player> {
                 ((GuildMemberData) DatabaseManager.get(GuildMemberData.class)).update(entity);
             if (entity.getMount() != null)
                 ((MountData) DatabaseManager.get(MountData.class)).update(entity.getMount());
+            entity.saveQuestProgress();
         } catch (Exception e) {
             super.sendError(e);
         } finally {
             close(p);
-        }
-
-        try {
-            if (entity.getQuestPerso() != null && !entity.getQuestPerso().isEmpty())
-                entity.getQuestPerso().values().stream().filter(Objects::nonNull).forEach(QP -> ((QuestPlayerData) DatabaseManager.get(QuestPlayerData.class)).update(QP));
-        } catch(Exception e) {
-            e.printStackTrace();
         }
     }
 
@@ -270,6 +266,7 @@ public class PlayerData extends FunctionDAO<Player> {
                         player.setLastFightForEndFightAction(p.getLastFight());
                     player.VerifAndChangeItemPlace();
 
+                    DatabaseManager.get(QuestProgressData.class).load(player.getId());
                     // Find player's guild
                     World.world.getGuilds().values().stream().map(g -> g.getMember(player.getId())).filter(Objects::nonNull).findFirst().ifPresent(player::setGuildMember);
 

@@ -22,7 +22,7 @@ function npc:onTalk(p, answer)
 		p:endDialog()
 		-- Open dialog 4586
 	elseif answer == 4586 then
-		p:ask(5476, {})
+		p:ask(5476)
 	end
 end
 

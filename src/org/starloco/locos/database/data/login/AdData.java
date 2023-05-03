@@ -8,9 +8,9 @@ import org.starloco.locos.kernel.Config;
 
 import java.sql.SQLException;
 
-public class PubData extends FunctionDAO<Object> {
+public class AdData extends FunctionDAO<Object> {
 
-    public PubData(HikariDataSource dataSource)
+    public AdData(HikariDataSource dataSource)
 	{
 		super(dataSource, "world_pubs");
 	}
@@ -20,7 +20,7 @@ public class PubData extends FunctionDAO<Object> {
         try {
             getData("SELECT * FROM " + getTableName() + " WHERE `server` = " + Config.gameServerId, result -> {
                 while (result.next()) {
-                    WorldPub.pubs.add(result.getString("data"));
+                    WorldPub.ads.add(result.getString("data"));
                 }
             });
         } catch (SQLException e) {
@@ -50,6 +50,6 @@ public class PubData extends FunctionDAO<Object> {
 
     @Override
     public Class<?> getReferencedClass() {
-        return PubData.class;
+        return AdData.class;
     }
 }

@@ -1553,6 +1553,13 @@ public class SocketManager {
         perso.send(packet);
     }
 
+    public static void GAME_SEND_GX_PACKET(Player perso, Npc npc) {
+        int extra = npc.getTemplate().getExtraClip(perso);
+        String sExtra = extra==-1?"-":Integer.toString(extra);
+        String packet = "GX"+sExtra+"|"+npc.getId();
+        perso.send(packet);
+    }
+
     public static void GAME_SEND_ALTER_GM_PACKET(Player perso) {
         String packet = "GM|~" + perso.parseToGM();
         perso.send(packet);

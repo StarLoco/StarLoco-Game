@@ -167,7 +167,6 @@ public class World implements Scripted<SWorld> {
 
     public void addPlayer(Player player) {
         players.put(player.getId(), player);
-        ((QuestPlayerData) DatabaseManager.get(QuestPlayerData.class)).load(player.getId());
     }
 
     public Player getPlayerByName(String name) {
@@ -317,8 +316,8 @@ public class World implements Scripted<SWorld> {
         DatabaseManager.get(ServerData.class).loadFully();
         logger.debug("The reset of the logged players were done successfully.");
 
-        DatabaseManager.get(PubData.class).loadFully();
-        logger.debug("The pubs were loaded successfully.");
+        DatabaseManager.get(AdData.class).loadFully();
+        logger.debug("The ads were loaded successfully.");
 
         DatabaseManager.get(FullMorphData.class).loadFully();
         logger.debug("The incarnations were loaded successfully.");
@@ -346,18 +345,6 @@ public class World implements Scripted<SWorld> {
 
         DatabaseManager.get(NpcAnswerData.class).loadFully();
         logger.debug("The n-p-c answers were loaded successfully.");
-
-        DatabaseManager.get(QuestStepData.class).loadFully();
-        logger.debug("The quest goals were loaded successfully.");
-
-        DatabaseManager.get(QuestObjectiveData.class).loadFully();
-        logger.debug("The quest steps were loaded successfully.");
-
-        DatabaseManager.get(QuestData.class).loadFully();
-        logger.debug("The quests data were loaded successfully.");
-
-        ((NpcTemplateData) DatabaseManager.get(NpcTemplateData.class)).loadQuest();
-        logger.debug("The adding of quests on non-player characters was done successfully.");
 
         DatabaseManager.get(PrismData.class).loadFully();
         logger.debug("The prisms were loaded successfully.");
@@ -1720,6 +1707,10 @@ public class World implements Scripted<SWorld> {
     @Override
     public SWorld scripted() {
         return scriptVal;
+    }
+
+    public Account getAccount(int id) {
+        return accounts.get(id);
     }
 
 

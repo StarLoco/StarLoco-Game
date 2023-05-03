@@ -15,7 +15,7 @@ function npc:onTalk(p, answer)
 		if hasAllItems then
 			p:ask(4074, {3552})
 		else
-			p:ask (4074, {})
+			p:ask (4074)
 		end
 	elseif answer == 3552 then
 		local consumedAll = p:consumeItem(8003, 1) and
@@ -30,7 +30,7 @@ function npc:onTalk(p, answer)
 		end
 		p:endDialog()
 	else
-		p:ask(4074, {})
+		p:ask(4074)
 	end
 end
 

@@ -34,8 +34,6 @@ import org.starloco.locos.kernel.Constant;
 import org.starloco.locos.object.GameObject;
 import org.starloco.locos.object.ObjectTemplate;
 import org.starloco.locos.object.entity.SoulStone;
-import org.starloco.locos.quest.QuestPlayer;
-import org.starloco.locos.quest.Quest;
 import org.starloco.locos.util.TimerWaiter;
 
 import java.util.*;
@@ -196,27 +194,27 @@ public class Action {
                         player.removeItemByTemplateId(certificat, 1, false);
                     }
                 }
-                boolean b = true;
-                if (player.getQuestPerso() != null
-                        && !player.getQuestPerso().isEmpty()) {
-                    for (Entry<Integer, QuestPlayer> entry : new HashMap<>(player.getQuestPerso()).entrySet()) {
-                        QuestPlayer qa = entry.getValue();
-                        if (qa.getQuest().getId() == dopeuls.get((int) mapActuel.getId()).second) {
-                            b = false;
-                            if (qa.isFinished()) {
-                                player.delQuestPerso(entry.getKey());
-                                if (qa.removeQuestPlayer()) {
-                                    Quest q = Quest.quests.get(dopeuls.get((int) mapActuel.getId()).second);
-                                    q.apply(player);
-                                }
-                            }
-                        }
-                    }
-                }
-                if (b) {
-                    Quest q = Quest.quests.get(dopeuls.get((int) mapActuel.getId()).second);
-                    q.apply(player);
-                }
+//                boolean b = true;
+//                if (player.getQuestPerso() != null
+//                        && !player.getQuestPerso().isEmpty()) {
+//                    for (Entry<Integer, QuestPlayer> entry : new HashMap<>(player.getQuestPerso()).entrySet()) {
+//                        QuestPlayer qa = entry.getValue();
+//                        if (qa.getQuest().getId() == dopeuls.get((int) mapActuel.getId()).second) {
+//                            b = false;
+//                            if (qa.isFinished()) {
+//                                player.delQuestProgress(entry.getKey());
+//                                if (qa.removeQuestPlayer()) {
+//                                    Quest q = Quest.quests.get(dopeuls.get((int) mapActuel.getId()).second);
+//                                    q.apply(player);
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//                if (b) {
+//                    Quest q = Quest.quests.get(dopeuls.get((int) mapActuel.getId()).second);
+//                    q.apply(player);
+//                }
                 String grp = IDmob + "," + LVLmob + "," + LVLmob + ";";
                 MonsterGroup MG = new MonsterGroup(player.getCurMap().nextObjectId, map, player.getCurCell().getId(), grp);
                 player.getCurMap().startFigthVersusDopeuls(player, MG);
@@ -1099,59 +1097,59 @@ public class Action {
                 player.addStaticEmote(Integer.parseInt(args));
                 break;
 
-            case 40: //Donner une qu�te
-                int QuestID = Integer.parseInt(args);
-                boolean problem = false;
-                Quest quest0 = Quest.quests.get(QuestID);
-                if (quest0 == null) {
-                    SocketManager.GAME_SEND_MESSAGE(player, player.getLang().trans("other.action.apply.error.quest"));
-                    problem = true;
-                }
-                for (QuestPlayer qPerso : player.getQuestPerso().values()) {
-                    if (qPerso.getQuest().getId() == QuestID) {
-                        SocketManager.GAME_SEND_MESSAGE(player, player.getLang().trans("other.action.apply.error.quest.known"));
-                        problem = true;
-                        break;
-                    }
-                }
+//            case 40: //Donner une qu�te
+//                int QuestID = Integer.parseInt(args);
+//                boolean problem = false;
+//                Quest quest0 = Quest.quests.get(QuestID);
+//                if (quest0 == null) {
+//                    SocketManager.GAME_SEND_MESSAGE(player, player.getLang().trans("other.action.apply.error.quest"));
+//                    problem = true;
+//                }
+//                for (QuestPlayer qPerso : player.getQuestPerso().values()) {
+//                    if (qPerso.getQuest().getId() == QuestID) {
+//                        SocketManager.GAME_SEND_MESSAGE(player, player.getLang().trans("other.action.apply.error.quest.known"));
+//                        problem = true;
+//                        break;
+//                    }
+//                }
+//
+//                if (!problem) {
+//                    quest0.apply(player);
+//                    if(player.getExchangeAction() != null && player.getExchangeAction().getType() == ExchangeAction.TALKING_WITH) {
+//                        NpcDialogActionData data = (NpcDialogActionData) player.getExchangeAction().getValue();
+//                        player.send("GM|" + data.getNpc(player).encodeGM(true, player));
+//                    }
+//                }
+//                break;
+//
+//            case 41: //Confirm objective
+//                break;
 
-                if (!problem) {
-                    quest0.apply(player);
-                    if(player.getExchangeAction() != null && player.getExchangeAction().getType() == ExchangeAction.TALKING_WITH) {
-                        NpcDialogActionData data = (NpcDialogActionData) player.getExchangeAction().getValue();
-                        player.send("GM|" + data.getNpc(player).encodeGM(true, player));
-                    }
-                }
-                break;
+//            case 42: //Monte prochaine étape quete ou termine
+//                String[] split = args.split(";");
+//                int questId = Integer.parseInt(split[0]), objectifId = Integer.parseInt(split[1]);
+//
+//                player.getQuestPerso().values().stream().filter(quest -> quest.getQuest().getId() == questId).forEach(quest -> {
+//                    quest.getQuest().getObjectives().stream().filter(step -> step.getStepId() == objectifId).forEach(step -> {
+//                        step.getQuest().update(player, true, step.getValidationType());
+//                    });
+//                });
+//                break;
 
-            case 41: //Confirm objective
-                break;
-
-            case 42: //Monte prochaine étape quete ou termine
-                String[] split = args.split(";");
-                int questId = Integer.parseInt(split[0]), objectifId = Integer.parseInt(split[1]);
-
-                player.getQuestPerso().values().stream().filter(quest -> quest.getQuest().getId() == questId).forEach(quest -> {
-                    quest.getQuest().getObjectives().stream().filter(step -> step.getStepId() == objectifId).forEach(step -> {
-                        step.getQuest().update(player, true, step.getValidationType());
-                    });
-                });
-                break;
-
-            case 43: //T�l�portation de qu�te
-                split = args.split(";");
-                int mapid = Integer.parseInt(split[0].split(",")[0]);
-                cellid = Integer.parseInt(split[0].split(",")[1]);
-                int mapsecu = Integer.parseInt(split[1]);
-                questId = Integer.parseInt(split[2]);
-
-                if (player.getCurMap().getId() != mapsecu)
-                    return true;
-                QuestPlayer questt = player.getQuestPersoByQuestId(questId);
-                if (questt == null || !questt.isFinished())
-                    return true;
-                player.teleport((short) mapid, cellid);
-                break;
+//            case 43: //T�l�portation de qu�te
+//                split = args.split(";");
+//                int mapid = Integer.parseInt(split[0].split(",")[0]);
+//                cellid = Integer.parseInt(split[0].split(",")[1]);
+//                int mapsecu = Integer.parseInt(split[1]);
+//                questId = Integer.parseInt(split[2]);
+//
+//                if (player.getCurMap().getId() != mapsecu)
+//                    return true;
+//                QuestPlayer questt = player.getQuestPersoByQuestId(questId);
+//                if (questt == null || !questt.isFinished())
+//                    return true;
+//                player.teleport((short) mapid, cellid);
+//                break;
 
             case 50: //Traque
                 if (player.getAlignment() == 0 || player.getAlignment() == 3)
@@ -3680,56 +3678,56 @@ public class Action {
                 }
                 break;
 
-            case 983:
-                try {
-                    Quest q = Quest.quests.get(193);
-                    if (q == null)
-                        return true;
-                    GameMap curMap = player.getCurMap();
-                    if (curMap.getId() != (short) 10332)
-                        return true;
-                    if (player.getQuestPersoByQuest(q) == null)
-                        q.apply(player);
-                    else if (q.getCurrentObjective(player.getQuestPersoByQuest(q)).getId() != 793)
-                        return true;
+//            case 983:
+//                try {
+//                    Quest q = Quest.quests.get(193);
+//                    if (q == null)
+//                        return true;
+//                    GameMap curMap = player.getCurMap();
+//                    if (curMap.getId() != (short) 10332)
+//                        return true;
+//                    if (player.getQuestProgress(q) == null)
+//                        q.apply(player);
+//                    else if (q.getCurrentObjective(player.getQuestProgress(q)).getId() != 793)
+//                        return true;
+//
+//                    Monster petitChef = World.world.getMonstre(984);
+//                    if (petitChef == null)
+//                        return true;
+//                    MonsterGrade mg = petitChef.getGradeByLevel(10);
+//                    if (mg == null)
+//                        return true;
+//                    MonsterGroup _mg = new MonsterGroup(player.getCurMap().nextObjectId, player.getCurMap(), player.getCurCell().getId(), petitChef.getId() + "," + mg.getLevel() + "," + mg.getLevel() + ";");
+//                    player.getCurMap().startFightVersusMonstres(player, _mg);// Si bug startfight, voir "//Respawn d'un groupe fix" dans fight.java
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//                break;
 
-                    Monster petitChef = World.world.getMonstre(984);
-                    if (petitChef == null)
-                        return true;
-                    MonsterGrade mg = petitChef.getGradeByLevel(10);
-                    if (mg == null)
-                        return true;
-                    MonsterGroup _mg = new MonsterGroup(player.getCurMap().nextObjectId, player.getCurMap(), player.getCurCell().getId(), petitChef.getId() + "," + mg.getLevel() + "," + mg.getLevel() + ";");
-                    player.getCurMap().startFightVersusMonstres(player, _mg);// Si bug startfight, voir "//Respawn d'un groupe fix" dans fight.java
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                break;
-
-            case 984:
-                try {
-                    int xp = Integer.parseInt(args.split(",")[0]);
-                    int mapCurId = Integer.parseInt(args.split(",")[1]);
-                    int idQuest = Integer.parseInt(args.split(",")[2]);
-
-                    if (player.getCurMap().getId() != (short) mapCurId)
-                        return true;
-
-                    QuestPlayer qp = player.getQuestPersoByQuestId(idQuest);
-                    if (qp == null)
-                        return true;
-                    if (qp.isFinished())
-                        return true;
-
-                    player.addXp(xp);
-                    SocketManager.GAME_SEND_Im_PACKET(player, "08;" + xp);
-                    qp.setFinished(true);
-                    SocketManager.GAME_SEND_Im_PACKET(player, "055;" + idQuest);
-                    SocketManager.GAME_SEND_Im_PACKET(player, "056;" + idQuest);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                break;
+//            case 984:
+//                try {
+//                    int xp = Integer.parseInt(args.split(",")[0]);
+//                    int mapCurId = Integer.parseInt(args.split(",")[1]);
+//                    int idQuest = Integer.parseInt(args.split(",")[2]);
+//
+//                    if (player.getCurMap().getId() != (short) mapCurId)
+//                        return true;
+//
+//                    QuestPlayer qp = player.getQuestPersoByQuestId(idQuest);
+//                    if (qp == null)
+//                        return true;
+//                    if (qp.isFinished())
+//                        return true;
+//
+//                    player.addXp(xp);
+//                    SocketManager.GAME_SEND_Im_PACKET(player, "08;" + xp);
+//                    qp.setFinished(true);
+//                    SocketManager.GAME_SEND_Im_PACKET(player, "055;" + idQuest);
+//                    SocketManager.GAME_SEND_Im_PACKET(player, "056;" + idQuest);
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//                break;
 
             case 985:
                 if(client == null) return true;

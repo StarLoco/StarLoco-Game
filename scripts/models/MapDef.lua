@@ -18,10 +18,10 @@
 ---@field staticGroups MobGroupDef[]
 ---@field allowedMobGrades table<number,number> K: MobTemplateID, V: Grade
 ---@field zaapCell number Only set for maps with a zaap. Value is cellId
----@field onMovementEnd table<number, function(md:MapDef, m:Map, p:Player)>
----@field onFightInit table<number, function(md:MapDef, m:Map,team1:Fighter[], team2:Fighter[])> K: fight type, V: Handler function
----@field onFightStart table<number, function(md:MapDef, m:Map,team1:Fighter[], team2:Fighter[])> K: fight type, V: Handler function
----@field onFightEnd table<number, function(md:MapDef, m:Map, winners:Fighter[], losers:Fighter[])> K: fight type, V: Handler function
+---@field onMovementEnd table<number, fun(md:MapDef, m:Map, p:Player)>
+---@field onFightInit table<number, fun(md:MapDef, m:Map,team1:Fighter[], team2:Fighter[])> K: fight type, V: Handler function
+---@field onFightStart table<number, fun(md:MapDef, m:Map,team1:Fighter[], team2:Fighter[])> K: fight type, V: Handler function
+---@field onFightEnd table<number, fun(md:MapDef, m:Map, winners:Fighter[], losers:Fighter[])> K: fight type, V: Handler function
 ---
 
 -- Capabilities:
@@ -36,6 +36,7 @@
 -- canCollectTax (0x100)
 -- canSetPrism (0x200)
 
+---@type table<number, MapDef>
 MAPS = {}
 
 MapDef = {}
@@ -81,7 +82,7 @@ function MapDef:update(inst) end
 
 ---@param mapId number
 ---@param cellId number
----@return function(MapDef, Map, Player)
+---@return fun(MapDef, Map, Player)
 function moveEndTeleport(mapId, cellId)
     ---@param p Player
     return function(md, m, p)

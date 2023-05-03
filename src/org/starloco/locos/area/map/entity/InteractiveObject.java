@@ -12,9 +12,6 @@ import org.starloco.locos.job.JobConstant;
 import org.starloco.locos.kernel.Constant;
 import org.starloco.locos.object.GameObject;
 import org.starloco.locos.other.Dopeul;
-import org.starloco.locos.quest.Quest;
-import org.starloco.locos.quest.QuestPlayer;
-import org.starloco.locos.quest.QuestObjective;
 
 import java.util.ArrayList;
 
@@ -75,16 +72,16 @@ public class InteractiveObject {
             case 542://Statue Phoenix.
                 if (player.isGhost()) {
                     player.setAlive();
-                    Quest q = Quest.quests.get(190);
-                    if (q != null) {
-                        QuestPlayer qp = player.getQuestPersoByQuest(q);
-                        if (qp != null) {
-                            QuestObjective qe = q.getCurrentObjective(qp);
-                            if (qe != null)
-                                if(qe.getId() == 783)
-                                    q.update(player, true, qe.getValidationType());
-                        }
-                    }
+//                    Quest q = Quest.quests.get(190);
+//                    if (q != null) {
+//                        QuestPlayer qp = player.getQuestProgress(q);
+//                        if (qp != null) {
+//                            QuestObjective qe = q.getCurrentObjective(qp);
+//                            if (qe != null)
+//                                if(qe.getId() == 783)
+//                                    q.update(player, true, qe.getValidationType());
+//                        }
+//                    }
                 }
                 break;
 

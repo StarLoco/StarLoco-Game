@@ -21,7 +21,7 @@ function npc:onTalk(p, answer)
 			p:teleport(747, 407)
 			p:endDialog()
 		else
-			p:ask(299, {})
+			p:ask(299)
 		end	
 	end
 end

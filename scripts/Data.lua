@@ -1,20 +1,22 @@
 -- Init script for static data VM
 
+-- Load constant data
+requireReload("./data/AdminCommands")
+requireReload("./data/AdminGroups")
+requireReload("./data/Experience")
+requireReload("./data/FightTypes")
+requireReload("./data/GearSlots")
+requireReload("./data/Jobs")
+
 -- Define classes
-require("./models/NPC")
-require("./models/MapDef")
+requireReload("./models/NPC")
+requireReload("./models/MapDef")
+requireReload("./models/Quest")
 
-
--- Load data
-require("./data/AdminCommands")
-require("./data/AdminGroups")
-require("./data/Experience")
-require("./data/FightTypes")
-require("./data/GearSlots")
-require("./data/Jobs")
-
+-- Load instances
 loadDir("./data/npcs")
 loadDir("./data/maps")
+loadDir("./data/quests")
 
 loadDir("./data/dungeons") -- Always load last
 
