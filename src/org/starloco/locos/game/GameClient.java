@@ -3806,11 +3806,7 @@ public class GameClient {
                 actionAck(packet);
                 break;
             case 'P'://PvP Toogle
-                if(!this.player.is_showWings())
-                    this.player.toggleWings('+');
-                this.player.sendMessage(player.getLang().trans("game.gameclient.disable.align"));
-                this.send("BN");
-                //this.player.toggleWings(packet.charAt(2));
+                this.player.toggleWings(packet.charAt(2));
                 break;
             case 'p':
                 setPlayerPosition(packet);
