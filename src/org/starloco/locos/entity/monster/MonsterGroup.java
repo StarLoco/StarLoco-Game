@@ -176,7 +176,10 @@ public class MonsterGroup {
         // Compute aggro distance, faction, if we should enable XP/Drop bonus
         for(MonsterGrade mg : def.randomize()) {
             if (mg.getBaseXp() != 0) star = true;
+            Monster m = mg.getTemplate();
             this.mobs.put(guid, mg);
+            if (m.getAggroDistance() > this.aggroDistance)
+                this.aggroDistance = m.getAggroDistance();
             guid--;
         }
 
