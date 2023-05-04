@@ -16,7 +16,8 @@ map.mobGroupsCount = 3
 map.mobGroupsSize = 8
 map.npcs = {
 	[783] = {267, 1},
-}map.allowedMobGrades = {
+}
+map.allowedMobGrades = {
 	{668, 1},
 	{668, 2},
 	{668, 3},

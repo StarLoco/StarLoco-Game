@@ -17,7 +17,8 @@ map.npcs = {
 	[186] = {544, 3},
 	[187] = {582, 3},
 	[192] = {178, 1},
-}map.allowedMobGrades = {
+}
+map.allowedMobGrades = {
 	{296, 1},
 	{296, 2},
 	{296, 3},
