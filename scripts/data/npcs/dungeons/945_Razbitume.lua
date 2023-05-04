@@ -1,27 +1,23 @@
-local npc = Npc(942, 40)
+local npc = Npc(945, 50)
 
-npc.colors = {6247763, 6247763, 6247763}
-npc.accessories = {0, 8829, 0, 0, 0}
+npc.colors = {16773874, 16719648, 16510736}
+npc.accessories = {0, 8842, 0, 0, 0}
 
-local dungeonKeyId = 8971
-local enterDungeonDest = {10360, 364}
+local dungeonKeyId = 8972
+local enterDungeonDest = {11259, 447}
 
 ---@param p Player
 ---@param answer number
 function npc:onTalk(p, answer)
     local hasDungeonKey = p:getItem(dungeonKeyId) or hasKeyChainFor(p, dungeonKeyId)
-    if p:mapID() == 11066 then
-        local showKeyResponse = 3673
+    if p:mapID() == 11260 then
+        local showKeyResponse = 3682
 
         if answer == 0 then
-            p:ask(4192, {3670})
-        elseif answer == 3670 then
-            p:ask(4193, {3671})
-        elseif answer == 3671 then
-            p:ask(4194, {3672})
-        elseif answer == 3672 then
+            p:ask(4203, {3681})
+        elseif answer == 3681 then
             local responses = hasDungeonKey and {showKeyResponse} or {}
-            p:ask(4195, responses)
+            p:ask(4204, responses)
         elseif answer == showKeyResponse then
             if hasDungeonKey then
                 p:teleport(enterDungeonDest[1], enterDungeonDest[2])
@@ -30,9 +26,9 @@ function npc:onTalk(p, answer)
                 p:endDialog()
             end
         end
-    elseif p:mapID() == 11069 then
+    elseif p:mapID() == 11517 then
         local hasItems = hasDungeonKey
-        local showKeyResponse = 3679
+        local showKeyResponse = 3683
         if answer == 0 then
             local responses = hasItems and {showKeyResponse} or {}
             p:ask(4196, responses)
@@ -42,9 +38,9 @@ function npc:onTalk(p, answer)
                 p:endDialog()
                 return
             end
-            p:addItem(8972)
-            p:addItem(8672)
-            p:teleport(11066, 293)
+            p:addItem(8975)
+            p:addItem(8673)
+            p:teleport(11260, 264)
             p:endDialog()
         else
             p:endDialog()
