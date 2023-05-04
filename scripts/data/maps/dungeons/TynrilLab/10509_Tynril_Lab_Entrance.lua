@@ -14,8 +14,10 @@ map.positions = "dDd5ekeMe3ftfKga|dodQd7exeOfefvfX"
 map.capabilities = 32
 map.mobGroupsCount = 3
 map.mobGroupsSize = 6
+
 map.npcs = {
-	[943] = {281, 3},
+	[943] = {281, 3}
+
 }map.allowedMobGrades = {
 	{1075, 1},
 	{1075, 2},
@@ -51,15 +53,14 @@ map.npcs = {
 	{1073, 2},
 	{1073, 3},
 	{1073, 4},
-	{1073, 5},
+	{1073, 5}
 }
--- '0;0;0;0;0;0;0' forbiddens -> capabilities ? Or script ?
 
 map.onMovementEnd = {
 	[19] = moveEndTeleport(10500, 439),
 	[247] = moveEndTeleport(10507, 245),
 	[289] = moveEndTeleport(10511, 291),
-	[458] = moveEndTeleport(10518, 36),
+	[458] = moveEndTeleport(10518, 36)
 }
 
 RegisterMapDef(map)
