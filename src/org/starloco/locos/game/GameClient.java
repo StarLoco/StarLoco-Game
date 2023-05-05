@@ -1113,7 +1113,9 @@ public class GameClient {
             return;
         int MapX = Integer.parseInt(datas.split(",")[0]);
         int MapY = Integer.parseInt(datas.split(",")[1]);
-        List<Integer> i = World.world.getMapIdByPosInSuperArea(MapX, MapY, this.player.getCurMap().getArea().getSuperArea());
+        int sa = Optional.ofNullable(this.player.getCurMap()).map(GameMap::getArea).map(Area::getSuperArea).orElse(-1);
+
+        List<Integer> i = World.world.getMapIdByPosInSuperArea(MapX, MapY, sa);
 
         if (i.isEmpty())
             return;
