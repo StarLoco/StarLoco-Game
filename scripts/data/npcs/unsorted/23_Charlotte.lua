@@ -4,7 +4,7 @@ npc.gender = 1
 npc.colors = {8017470, 12288585, 16770534}
 
 npc.sales = {
-    {item= 770}
+    {item = 770}
 }
 
 ---@param p Player

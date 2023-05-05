@@ -112,7 +112,7 @@ local mapInfos = {
 ---@param losers Fighter[]
 local function endFight8545(p, isWinner, winners, losers)
     -- Count how many mob 123 were killed
-    local count = countFightersForMobId(losers,123)
+    local count = countFightersForMobId(losers, 123)
 
     local dest
     if count == 2 then

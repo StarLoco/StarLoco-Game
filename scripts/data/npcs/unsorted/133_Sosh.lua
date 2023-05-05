@@ -1,7 +1,7 @@
 local npc = Npc(133, 9034)
 
 npc.sales = {
-    {item=951}
+    {item = 951}
 }
 
 ---@param p Player

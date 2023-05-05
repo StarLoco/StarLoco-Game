@@ -3,7 +3,7 @@ local npc = Npc(558, 9032)
 npc.gender = 1
 
 npc.sales = {
-    {item=577}
+    {item = 577}
 }
 
 ---@param p Player
@@ -13,7 +13,7 @@ function npc:onTalk(p, answer)
     elseif answer == 1948 then p:ask(334, {271})
     elseif answer == 271 then
         if p:tryLearnJob(Farmer) then
-           p:ask(335)
+            p:ask(335)
         else
             p:ask(336)
         end

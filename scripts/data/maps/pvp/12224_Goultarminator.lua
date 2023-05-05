@@ -14,7 +14,7 @@ map.positions = "aJb6c0dUeOf_|aLb8c2dWeQgb"
 map.capabilities = 110
 
 map.onMovementEnd = {
-    [36] = moveEndTeleport(12227,264)
+    [36] = moveEndTeleport(12227, 264)
 }
 
 RegisterMapDef(map)

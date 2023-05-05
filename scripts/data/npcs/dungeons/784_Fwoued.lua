@@ -27,7 +27,7 @@ local function talkMapFinalRoom(p, answer)
     if answer == 0 then
         p:ask(3231, {2855})
     elseif answer == 2855 then
-        p:teleport(9397,90)
+        p:teleport(9397, 90)
         p:endDialog()
     end
 end

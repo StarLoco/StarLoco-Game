@@ -32,23 +32,23 @@ function npc:onTalk(p, answer)
     elseif p:mapID() == 11234 then
         local hasItems = hasDungeonKey or hasKeyChain
         local showKeyResponse = 3669
-            if answer == 0 then
-                local responses = hasItems and {showKeyResponse} or {}
-                p:ask(4191, responses)
+        if answer == 0 then
+            local responses = hasItems and {showKeyResponse} or {}
+            p:ask(4191, responses)
         elseif answer == showKeyResponse then
             if not useKeyChainFor(p, dungeonKeyId) and not p:consumeItem(dungeonKeyId, 1) then
                 -- Should not happen (cheat?)
                 p:endDialog()
                 return
             end
-                p:addItem(8971)
-                p:addItem(8671)
-                p:teleport(10722, 329)
-                p:endDialog()
-            else
-                p:endDialog()
-            end
+            p:addItem(8971)
+            p:addItem(8671)
+            p:teleport(10722, 329)
+            p:endDialog()
+        else
+            p:endDialog()
         end
     end
+end
 
 RegisterNPCDef(npc)

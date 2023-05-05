@@ -16,7 +16,7 @@ map.capabilities = 102
 -- '1;1;1;0;0;0;0' forbiddens -> capabilities ? Or script ?
 
 map.npcs = {
-    [145]= {357, 1}
+    [145] = {357, 1}
 }
 
 map.onMovementEnd = {

@@ -9,40 +9,40 @@ local rightMobId = 820
 -- TODO: Fix npcPos and down/right cell destinations
 local mapInfos = {
     -- -19/-62 (Entrance)
-    [9590] = {groupsCells={166,169}, npcPos={205,1}, down={9594,44}, right={9591,117}, dialog=3185},
+    [9590] = {groupsCells = {166, 169}, npcPos = {205, 1}, down = {9594, 44}, right = {9591, 117}, dialog = 3185},
     -- -18/-62
-    [9591] = {groupsCells={223,220}, npcPos={205,1}, down={9596,17}, right={9592,379}, dialog=3185},
+    [9591] = {groupsCells = {223, 220}, npcPos = {205, 1}, down = {9596, 17}, right = {9592, 379}, dialog = 3185},
     -- -17/-62
-    [9592] = {groupsCells={193,196}, npcPos={205,1}, down={9597,378}, right={9593,453}, dialog=3187},
+    [9592] = {groupsCells = {193, 196}, npcPos = {205, 1}, down = {9597, 378}, right = {9593, 453}, dialog = 3187},
     -- -16/-62
-    [9593] = {groupsCells={166,163}, npcPos={205,1}, down={9598,408}, right={9590,408}, dialog=3187},
+    [9593] = {groupsCells = {166, 163}, npcPos = {205, 1}, down = {9598, 408}, right = {9590, 408}, dialog = 3187},
 
     -- -19/-61
-    [9594] = {groupsCells={356,359}, npcPos={205,1}, down={9599,173}, right={9596,17}, dialog=3185},
+    [9594] = {groupsCells = {356, 359}, npcPos = {205, 1}, down = {9599, 173}, right = {9596, 17}, dialog = 3185},
     -- -18/-61
-    [9596] = {groupsCells={310,313}, npcPos={205,1}, down={9600,44}, right={9597,378}, dialog=3185},
+    [9596] = {groupsCells = {310, 313}, npcPos = {205, 1}, down = {9600, 44}, right = {9597, 378}, dialog = 3185},
     -- -17/-61
-    [9597] = {groupsCells={166,357}, npcPos={205,1}, down={9601,18}, right={9598,408}, dialog=3187},
+    [9597] = {groupsCells = {166, 357}, npcPos = {205, 1}, down = {9601, 18}, right = {9598, 408}, dialog = 3187},
     -- -16/-61
-    [9598] = {groupsCells={253,226}, npcPos={139,1}, down={9602,305}, right={9594,44}, dialog=3187},
+    [9598] = {groupsCells = {253, 226}, npcPos = {139, 1}, down = {9602, 305}, right = {9594, 44}, dialog = 3187},
 
     -- -19/-60
-    [9599] = {groupsCells={313,310}, npcPos={205,1}, down={9603,419}, right={9600,44}, dialog=3193},
+    [9599] = {groupsCells = {313, 310}, npcPos = {205, 1}, down = {9603, 419}, right = {9600, 44}, dialog = 3193},
     -- -18/-60
-    [9600] = {groupsCells={278,329}, npcPos={205,1}, down={9595,32}, right={9601,18}, dialog=3193},
+    [9600] = {groupsCells = {278, 329}, npcPos = {205, 1}, down = {9595, 32}, right = {9601, 18}, dialog = 3193},
     -- -17/-60
-    [9601] = {groupsCells={193,196}, npcPos={205,1}, down={9723,392}, right={9602,305}, dialog=3194},
+    [9601] = {groupsCells = {193, 196}, npcPos = {205, 1}, down = {9723, 392}, right = {9602, 305}, dialog = 3194},
     -- -16/-60
-    [9602] = {groupsCells={269,266}, npcPos={205,1}, down={9724,363}, right={9599,173}, dialog=3194},
+    [9602] = {groupsCells = {269, 266}, npcPos = {205, 1}, down = {9724, 363}, right = {9599, 173}, dialog = 3194},
 
     -- Cache says -18/-59 but let's use it as -19/-59
-    [9603] = {groupsCells={233,236}, npcPos={205,1}, down={9590,408}, right={9595,32}, dialog=3193},
+    [9603] = {groupsCells = {233, 236}, npcPos = {205, 1}, down = {9590, 408}, right = {9595, 32}, dialog = 3193},
     -- -18/-59
-    [9595] = {groupsCells={266,263}, npcPos={205,1}, down={9591,117}, right={9723,392}, dialog=3193},
+    [9595] = {groupsCells = {266, 263}, npcPos = {205, 1}, down = {9591, 117}, right = {9723, 392}, dialog = 3193},
     -- -17/-59
-    [9723] = {groupsCells={250,253}, npcPos={205,1}, down={9592,379}, right={9724,363}, dialog=3194},
+    [9723] = {groupsCells = {250, 253}, npcPos = {205, 1}, down = {9592, 379}, right = {9724, 363}, dialog = 3194},
     -- -16/-59
-    [9724] = {groupsCells={250,253}, npcPos={205,1}, down={9593,453}, right={9603,419}, dialog=3194}
+    [9724] = {groupsCells = {250, 253}, npcPos = {205, 1}, down = {9593, 453}, right = {9603, 419}, dialog = 3194}
 }
 
 ---@type number[]
@@ -52,30 +52,30 @@ for mapId in pairs(mapInfos) do
 end
 
 local bossGroup = {
-    {289, {1,2,3,4,5}},
-    {823, {1,2,3,4,5}},
-    {824, {1,2,3,4,5}},
-    {825, {1,2,3,4,5}}
+    {289, {1, 2, 3, 4, 5}},
+    {823, {1, 2, 3, 4, 5}},
+    {824, {1, 2, 3, 4, 5}},
+    {825, {1, 2, 3, 4, 5}}
 }
 
 local mobGroup1 = {
-    {281, {1,2,3,4,5}},
-    {281, {1,2,3,4,5}},
-    {281, {1,2,3,4,5}},
-    {818, {1,2,3,4,5}},
-    {818, {1,2,3,4,5}},
-    {820, {1,2,3,4,5}},
-    {820, {1,2,3,4,5}},
+    {281, {1, 2, 3, 4, 5}},
+    {281, {1, 2, 3, 4, 5}},
+    {281, {1, 2, 3, 4, 5}},
+    {818, {1, 2, 3, 4, 5}},
+    {818, {1, 2, 3, 4, 5}},
+    {820, {1, 2, 3, 4, 5}},
+    {820, {1, 2, 3, 4, 5}},
 }
 
 local mobGroup2 = {
-    {281, {1,2,3,4,5}},
-    {281, {1,2,3,4,5}},
-    {281, {1,2,3,4,5}},
-    {818, {1,2,3,4,5}},
-    {818, {1,2,3,4,5}},
-    {819, {1,2,3,4,5}},
-    {819, {1,2,3,4,5}},
+    {281, {1, 2, 3, 4, 5}},
+    {281, {1, 2, 3, 4, 5}},
+    {281, {1, 2, 3, 4, 5}},
+    {818, {1, 2, 3, 4, 5}},
+    {818, {1, 2, 3, 4, 5}},
+    {819, {1, 2, 3, 4, 5}},
+    {819, {1, 2, 3, 4, 5}},
 }
 --endregion
 
@@ -190,7 +190,7 @@ end
 --endregion
 
 --region Add NPC/Fight events/StaticGroup to Maps
-for k,v in pairs(mapInfos) do
+for k, v in pairs(mapInfos) do
     local map = MAPS[k]
     if map then
         map.npcs[npcId] = v.npcPos

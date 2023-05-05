@@ -8,7 +8,7 @@ local spellId = 370
 ---@param answer number
 function npc:onTalk(p, answer)
     if answer == 0 then
-local answers = p:spellLevel(spellId) == 0 and {1005, 1141} or {1141}
+        local answers = p:spellLevel(spellId) == 0 and {1005, 1141} or {1141}
         p:ask(258, answers)
     elseif answer == 1141 then p:ask(259)
     elseif answer == 1005 then

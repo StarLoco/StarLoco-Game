@@ -2,11 +2,11 @@ local npc = Npc(166, 9039)
 
 --TODO: check la suite de "quête" que donne l'item
 npc.sales = {
-    {item=1468},
-    {item=1463},
-    {item=1460},
-    {item=1459},
-    {item=1473},
+    {item = 1468},
+    {item = 1463},
+    {item = 1460},
+    {item = 1459},
+    {item = 1473},
 }
 ---@param p Player
 ---@param answer number

@@ -4,13 +4,13 @@ npc.gender = 1
 npc.colors = {1519221, 15642492, 14851125}
 
 npc.sales = {
-    {item=311},
-    {item=351}
+    {item = 311},
+    {item = 351}
 }
 
 npc.barters = {
-    {to={itemID=351, quantity= 1}, from= {
-        {itemID=401, quantity= 1}
+    {to = {itemID = 351, quantity = 1}, from = {
+        {itemID = 401, quantity = 1}
     }}
 }
 

@@ -17,12 +17,12 @@ map.npcs = {
 }
 
 map.onMovementEnd = {
-    [436] = moveEndTeleport(7280,40),
-    [220] = moveEndTeleport(7281,440),
-    [199] = moveEndTeleport(7282,441),
-    [353] = moveEndTeleport(7283,216),
-    [371] = moveEndTeleport(7286,302),
-    [136] = moveEndTeleport(10368,60)
+    [436] = moveEndTeleport(7280, 40),
+    [220] = moveEndTeleport(7281, 440),
+    [199] = moveEndTeleport(7282, 441),
+    [353] = moveEndTeleport(7283, 216),
+    [371] = moveEndTeleport(7286, 302),
+    [136] = moveEndTeleport(10368, 60)
 }
 
 RegisterMapDef(map)

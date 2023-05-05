@@ -8,8 +8,8 @@ local routes = {
 ---@param p Player
 ---@param answer number
 function npc:onTalk(p, answer)
-    if(answer == 0) then p:ask(4670, {4012})
-    elseif(answer == 4012) then
+    if (answer == 0) then p:ask(4670, {4012})
+    elseif (answer == 4012) then
         local dest = routes[p:mapID()]
         if not dest then return end
         p:sendAction(-1, 2, "6")

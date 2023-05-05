@@ -30,7 +30,7 @@ local function talkMapDungeonEntrance(p, answer)
             p:endDialog()
         end
     elseif answer == 3359 then
-        p:teleport(10335,267)
+        p:teleport(10335, 267)
         p:endDialog()
     end
 end
@@ -65,7 +65,7 @@ function npc:onTalk(p, answer)
         elseif answer == 3354 or answer == 3353 then
             p:ask(3824, {3355})
         elseif answer == 3355 then
-            p:ask(3826,{3356})
+            p:ask(3826, {3356})
         elseif answer == 3356 then
             quest:startFor(p, self.id)
             p:endDialog()

@@ -8,7 +8,7 @@ npc.accessories = {0, 0x24b3, 0, 0, 0}
 function npc:onTalk(p, answer)
     if p:mapID() == 11878 then
         BlopDungeon:onTalkToGateKeeper(p, answer)
-    elseif p:mapID() == 11891 then 
+    elseif p:mapID() == 11891 then
         if answer == 0 then
             local responses = {}
             local dungeon = RainbowBlopDungeon

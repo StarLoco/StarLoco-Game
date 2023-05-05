@@ -14,7 +14,7 @@ map.positions = "cAcOc0c2dedrdsdUdVdW|ehevfpfSgygDgNgRg2g3g4"
 map.capabilities = 78
 
 map.npcs = {
-    [887]= {283, 7}
+    [887] = {283, 7}
 }
 -- '1;1;1;0;0;0;0' forbiddens -> capabilities ? Or script ?
 

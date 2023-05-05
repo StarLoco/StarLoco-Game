@@ -3,11 +3,11 @@ local npc = Npc(88, 9003)
 npc.colors = {0, 0, 0}
 
 npc.barters = {
-    {to={itemID=805, quantity= 1}, from= {
-        {itemID=307, quantity= 200},
-        {itemID=290, quantity= 90},
-        {itemID=288, quantity= 75},
-        {itemID=427, quantity= 60}
+    {to = {itemID = 805, quantity = 1}, from = {
+        {itemID = 307, quantity = 200},
+        {itemID = 290, quantity = 90},
+        {itemID = 288, quantity = 75},
+        {itemID = 427, quantity = 60}
     }}
 }
 

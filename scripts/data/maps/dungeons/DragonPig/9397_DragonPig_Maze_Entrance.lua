@@ -17,7 +17,7 @@ map.npcs = {
 }
 
 map.onMovementEnd = {
-    [359] = moveEndTeleport(1413,225)
+    [359] = moveEndTeleport(1413, 225)
 }
 
 RegisterMapDef(map)

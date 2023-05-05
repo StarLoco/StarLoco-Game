@@ -29,7 +29,7 @@ map.staticGroups = {
 }
 
 map.onMovementEnd = {
-    [436] = moveEndTeleport(2147,169)
+    [436] = moveEndTeleport(2147, 169)
 }
 
 RegisterMapDef(map)

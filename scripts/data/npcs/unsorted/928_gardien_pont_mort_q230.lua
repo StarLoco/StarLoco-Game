@@ -12,7 +12,7 @@ local fail = function(p)
     p:endDialog()
     p:forceFight({-1, {
         {1094, {5}
-    }}})
+        }}})
 end
 
 ---@param p Player
@@ -20,7 +20,7 @@ end
 function npc:onTalk(p, answer)
     local quest = QUESTS[questID]
     if answer == 0 then
-        if quest:finishedBy(p) then  p:ask(4122, {3616})
+        if quest:finishedBy(p) then p:ask(4122, {3616})
         elseif quest:ongoingFor(p) then p:ask(4115, {3594, 3592, 3593, 3591})
         else p:ask(4114, {3589, 3590}) end
     elseif answer == 3590 then
@@ -41,12 +41,13 @@ function npc:onTalk(p, answer)
         local used, max = p:pods()
         local remainingBonus = max - used + bonusPods
         local count = remainingBonus / coralWeight
-        if count<50 then fail(p) end -- Should never happen, unless player has too many items somehow
+        if count < 50 then fail(p) end -- Should never happen, unless player has too many items somehow
         local expectedIdx = math.min(count / 100 + 1, 4)
         local expected = expectedIdx + 3600
         if answer == expected then p:ask(4120, {3611, 3612, 3613, 3615, 3614}) else fail(p) end
         --elseif answer >= 3611 and answer <= 3613 or answer == 3615 then fail(p)
-    elseif answer == 3614 then p:ask(4119, {3606, 3607, 3608, 3609, 3610})
+    elseif answer == 3614 then
+        p:ask(4119, {3606, 3607, 3608, 3609, 3610})
         --elseif answer >= 3606 and answer <= 3609 then fail(p)
     elseif answer == 3610 then
         quest:completeObjective(p, 940)

@@ -220,7 +220,6 @@ shiFuMiGame.answers[1016] = shiFuMiSecondResult(1352, {1019, 1020}, 1355)
 shiFuMiGame.answers[1017] = shiFuMiSecondResult(1353, {1021, 1023}, 1356)
 shiFuMiGame.answers[1018] = shiFuMiSecondResult(1354, {1022, 1024}, 1357)
 
-
 local shiFuMiThirdQuestion = function(p) p:ask(1358, {1025, 1026, 1027}) end
 
 shiFuMiGame.answers[1019] = shiFuMiThirdQuestion

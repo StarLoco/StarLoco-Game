@@ -41,12 +41,12 @@ map.staticGroups = {
 }
 
 map.onMovementEnd = {
-    [303] = moveEndTeleport(12223,210),
-    [249] = moveEndTeleport(12224,239),
-    [199] = moveEndTeleport(12225,268),
-    [407] = moveEndTeleport(12226,268),
-    [416] = moveEndTeleport(12228,301),
-    [136] = moveEndTeleport(12229,30)
+    [303] = moveEndTeleport(12223, 210),
+    [249] = moveEndTeleport(12224, 239),
+    [199] = moveEndTeleport(12225, 268),
+    [407] = moveEndTeleport(12226, 268),
+    [416] = moveEndTeleport(12228, 301),
+    [136] = moveEndTeleport(12229, 30)
 }
 
 RegisterMapDef(map)

@@ -4,8 +4,9 @@ local npc = Npc(385, 9059)
 ---@param p Player
 ---@param answer number
 function npc:onTalk(p, answer)
-    if answer == 0 then p:ask(1713)
-	-- manque la réponse au dialog et la réponse amène le dialog 1714
+    if answer == 0 then
+        p:ask(1713)
+        -- manque la réponse au dialog et la réponse amène le dialog 1714
     end
 end
 

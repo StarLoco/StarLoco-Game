@@ -14,7 +14,7 @@ map.positions = "eleqezeAeEeFeOeT|cNdcdJeMfffVfZga"
 map.capabilities = 47
 
 map.onMovementEnd = {
-    [237] = moveEndTeleport(7538,385)
+    [237] = moveEndTeleport(7538, 385)
 }
 --TODO: Check if troolls are here on offi
 

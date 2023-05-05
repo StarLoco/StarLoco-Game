@@ -3,8 +3,8 @@ local npc = Npc(240, 1207)
 npc.colors = {8355711, -1, -1}
 
 npc.sales = {
-    {item=1895},
-	{item=311}
+    {item = 1895},
+    {item = 311}
 }
 
 ---@param p Player

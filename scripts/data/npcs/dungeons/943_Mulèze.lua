@@ -20,7 +20,7 @@ function npc:onTalk(p, answer)
         elseif answer == 3676 then
             p:ask(4199, {3677})
         elseif answer == 3677 then
-        local responses = hasDungeonKey and {showKeyResponse} or {}
+            local responses = hasDungeonKey and {showKeyResponse} or {}
             p:ask(4200, responses)
         elseif answer == showKeyResponse then
             if hasDungeonKey then

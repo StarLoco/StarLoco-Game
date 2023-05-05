@@ -6,7 +6,7 @@ local function createBankClerk(id)
 
     ---@param p Player
     function npc:onTalk(p, answer)
-        if answer == 0 then p:ask(318, {259,329}, "[bankCost]")
+        if answer == 0 then p:ask(318, {259, 329}, "[bankCost]")
         elseif answer == 259 then p:openBank()
         elseif answer == 329 then p:ask(410) end
     end

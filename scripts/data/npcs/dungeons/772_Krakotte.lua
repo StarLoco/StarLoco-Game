@@ -5,7 +5,7 @@ npc.accessories = {0, 0x1b12, 0, 0, 0}
 local dungeon = CracklerDungeon
 ---@param p Player
 ---@param answer number
-function npc:onTalk(p, answer) 
+function npc:onTalk(p, answer)
     if answer == 0 then p:ask(3162, {2780})
     elseif answer == 2780 then
         -- Check if p has item / keychain
