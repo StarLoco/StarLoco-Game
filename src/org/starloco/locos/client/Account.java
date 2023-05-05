@@ -4,6 +4,8 @@ import org.starloco.locos.database.data.game.QuestProgressData;
 import org.starloco.locos.kernel.Config;
 import org.starloco.locos.kernel.Constant;
 import org.starloco.locos.quest.QuestProgress;
+import org.starloco.locos.script.proxy.SAccount;
+import org.starloco.locos.script.proxy.SPlayer;
 import org.starloco.locos.util.Pair;
 import org.starloco.locos.command.administration.Group;
 import org.starloco.locos.common.SocketManager;
@@ -25,6 +27,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Account {
+    private final SAccount scriptVal;
     private final int id;
     private final String name;
     private final String pseudo;
@@ -54,6 +57,7 @@ public class Account {
                    String lastIp, String lastConnectionDate, String friends,
                    String enemy, int points, long subscriber, long muteTime, String mutePseudo,
                    String lastVoteIP, String heureVote) {
+        this.scriptVal = new SAccount(this);
         this.id = guid;
         this.name = name;
         this.pseudo = pseudo;
@@ -352,6 +356,10 @@ public class Account {
         return friends.contains(id);
     }
 
+    public Stream<Integer> getFriendIds() {
+        return friends.stream();
+    }
+
     public String parseFriendListToDB() {
         String str = "";
         for (int i : this.friends) {
@@ -559,5 +567,9 @@ public class Account {
     public void saveQuestProgress() {
         QuestProgressData dao = Objects.requireNonNull(DatabaseManager.get(QuestProgressData.class));
         this.questsProgression.values().stream().flatMap(m -> m.values().stream()).forEach(dao::update);
+    }
+
+    public SAccount scripted() {
+        return this.scriptVal;
     }
 }

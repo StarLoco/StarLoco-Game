@@ -8,6 +8,7 @@ import org.classdump.luna.impl.ImmutableTable;
 import org.classdump.luna.lib.ArgumentIterator;
 import org.starloco.locos.area.SubArea;
 import org.starloco.locos.area.map.GameMap;
+import org.starloco.locos.client.Account;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.script.types.MetaTables;
@@ -35,6 +36,22 @@ public class SWorld extends DefaultUserdata<World> {
         out.rawset("sec", zdt.getSecond());
 
         return out;
+    }
+
+    @SuppressWarnings("unused")
+    private static SAccount account(World world, ArgumentIterator args) {
+        Object arg = args.next();
+
+        Account a;
+        if(arg instanceof Long) {
+            a = world.getAccount(((Long) arg).intValue());
+        } else if(arg instanceof ByteString) {
+            a = world.getAccountByPseudo(arg.toString());
+        } else {
+            throw new IllegalArgumentException("World:account param must be a number or a string");
+        }
+
+        return Optional.ofNullable(a).map(Account::scripted).orElse(null);
     }
 
     @SuppressWarnings("unused")

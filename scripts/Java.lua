@@ -229,11 +229,24 @@ function Item:hasTxtStat(stat, val) end
 ---@return boolean
 function Item:consumeTxtStat(stat, val) end
 
+---@class Account
+local Account = {}
+
+---@return number
+function Account:id() end
+
+---@return number[] accountId[]
+function Account:friends() end
+
 ---@class World
 local World = {}
 
 ---@return {day:number, month:number,year:number,hour:number,min:number,sec:number}
 function World:time() end
+
+---@param nameOrId string|number
+---@return Account
+function World:account(nameOrId) end
 
 ---@param nameOrId string|number
 ---@return Player
