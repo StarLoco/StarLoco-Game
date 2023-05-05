@@ -50,7 +50,7 @@ local group6 = {
 }
 
 local mapInfos = {
-    [8950] = {groupCell = 324, group = group1, winDest = {8952, 394}},
+    [8950] = {groupCell = 195, group = group1, winDest = {8952, 394}},
     [8952] = {groupCell = 150, group = group2, winDest = {8953, 379}},
     [8953] = {groupCell = 342, group = group3, winDest = {8954, 378}},
     [8963] = {groupCell = 369, group = group4, winDest = {8964, 393}},
