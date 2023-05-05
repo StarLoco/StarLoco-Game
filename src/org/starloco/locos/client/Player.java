@@ -4878,7 +4878,7 @@ public class Player implements Scripted<SPlayer> {
         this.setCanAggro(true);
         this.setAway(false);
         this.setSpeed(0);
-        SocketManager.GAME_SEND_MESSAGE(this, "Tu as gagné <b>10 000</b> points d'énergie.", "009900");
+        SocketManager.GAME_SEND_MESSAGE(this, "Tu as gagné <b>1000</b> points d'énergie.", "009900");
         SocketManager.GAME_SEND_STATS_PACKET(this);
         SocketManager.GAME_SEND_ALTER_GM_PACKET(this.curMap, this);
         SocketManager.send(this, "IH");
