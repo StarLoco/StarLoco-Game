@@ -12,11 +12,8 @@ function npc:onTalk(p, answer)
     elseif answer == 3550 then
         p:ask(4073, {3551})
     elseif answer == 3551 then
-        if hasAllItems then
-            p:ask(4074, {3552})
-        else
-            p:ask(4074)
-        end
+        local responses = hasAllItems and {3552} or {}
+        p:ask(4074, responses)
     elseif answer == 3552 then
         local consumedAll = p:consumeItem(8003, 1) and
                 p:consumeItem(8004, 1) and

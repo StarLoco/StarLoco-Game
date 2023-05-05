@@ -12,13 +12,12 @@ local map = MapDef(
 
 map.positions = "dcdqdEdSfjfxfLfZ|cgcucIcWd-emeAeO"
 map.capabilities = 44
-map.mobGroupsCount = 3
+map.mobGroupsCount = 2
 map.mobGroupsSize = 8
 
--- '0;0;0;0;0;0;0' forbiddens -> capabilities ? Or script ?
-
 map.onMovementEnd = {
-    [462] = moveEndTeleport(8955, 54),
+    [173] = moveEndTeleport(8959, 146),
+    [462] = moveEndTeleport(8955, 54)
 }
 
 RegisterMapDef(map)
