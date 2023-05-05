@@ -82,7 +82,7 @@ public class Monster {
                 } catch (Exception e) {
                     World.world.logger.error("  > Error : Monster (id:"+ id +", grade: " + n + " : column 'points' unreadable.", e);
                 }
-                grades.put(G, new MonsterGrade(this, G, level, PA, PM, resists, stats, thisStatsInfos, spells, pdvmax, init, xp, n));
+                grades.put(G, new MonsterGrade(this, G, level, PA, PM, resists, stats, thisStatsInfos, spells, pdvmax, init, xp));
                 G++;
             } catch (Exception e) {
                 // ok, pour les dopeuls ...
@@ -148,7 +148,7 @@ public class Monster {
                 } catch (Exception e) {
                     World.world.logger.error("  > Error : Monster (id:"+ id +", grade: " + n + " : column 'points' unreadable.", e);
                 }
-                grades.put(G, new MonsterGrade(this, G, level, PA, PM, resists, stats, thisStatsInfos, spells, pdvmax, init, xp, n));
+                grades.put(G, new MonsterGrade(this, G, level, PA, PM, resists, stats, thisStatsInfos, spells, pdvmax, init, xp));
                 G++;
             } catch (Exception e) {
                 // ok pour les dopeuls

@@ -15,9 +15,10 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 public class MonsterGrade {
+    private final static int baseSize = 90;
+    private final static int sizeBonusPerGrade = 5;
     private final SMobGrade scriptVal;
 
-    private static int pSize = 2;
     private Monster template;
     private int grade;
     private int level;
@@ -34,9 +35,9 @@ public class MonsterGrade {
     private Map<Integer, Spell.SortStats> spells = new HashMap<>();
     private ArrayList<Integer> statsInfos = new ArrayList<>();
 
-    public MonsterGrade(Monster template, int grade, int level, int pa, int pm, String resists, String stats, String statsInfos, String allSpells, int pdvMax, int aInit, int xp, int n) {
+    public MonsterGrade(Monster template, int grade, int level, int pa, int pm, String resists, String stats, String statsInfos, String allSpells, int pdvMax, int aInit, int xp) {
         this.scriptVal = new SMobGrade(this);
-        this.size = 100 + n * pSize;
+        this.size = baseSize + grade * sizeBonusPerGrade;
         this.template = template;
         this.grade = grade;
         this.level = level;
@@ -116,9 +117,9 @@ public class MonsterGrade {
                          int pdvMax, int pa, int pm,
                          Map<Integer, Integer> stats,
                          ArrayList<Integer> statsInfos,
-                         Map<Integer, Spell.SortStats> spells, int xp, int n) {
+                         Map<Integer, Spell.SortStats> spells, int xp) {
         this.scriptVal = new SMobGrade(this);
-        this.size = 100 + n * pSize;
+        this.size = baseSize + grade * sizeBonusPerGrade;
         this.template = template;
         this.grade = grade;
         this.level = level;
@@ -135,8 +136,7 @@ public class MonsterGrade {
 
     public MonsterGrade getCopy() {
         Map<Integer, Integer> newStats = new HashMap<>(this.stats);
-        int n = (this.size - 100) / pSize;
-        return new MonsterGrade(this.template, this.grade, this.level, this.pdv, this.pdvMax, this.pa, this.pm, newStats, this.statsInfos, this.spells, this.baseXp, n);
+        return new MonsterGrade(this.template, this.grade, this.level, this.pdv, this.pdvMax, this.pa, this.pm, newStats, this.statsInfos, this.spells, this.baseXp);
     }
 
     public void refresh() {
