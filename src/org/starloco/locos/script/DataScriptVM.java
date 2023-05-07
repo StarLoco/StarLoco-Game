@@ -19,6 +19,10 @@ import org.starloco.locos.game.world.World;
 
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.Collections;
 
 public final class DataScriptVM extends ScriptVM {
@@ -29,6 +33,7 @@ public final class DataScriptVM extends ScriptVM {
         super("Data");
     }
 
+    @Override
     public void loadData() throws CallException, LoaderException, IOException, CallPausedException, InterruptedException {
         super.loadData();
         this.customizeEnv();
@@ -55,8 +60,11 @@ public final class DataScriptVM extends ScriptVM {
     public static synchronized void init() throws LoaderException, IOException, CallException, CallPausedException, InterruptedException {
         if(instance != null) return;
 
+        Instant start = Instant.now();
         instance = new DataScriptVM();
         instance.loadData();
+        Duration loadDuration = Duration.between(start, Instant.now());
+        logger.info("Scripts loaded in {} ms", loadDuration.toMillis());
     }
 
     public static DataScriptVM getInstance()  {

@@ -2,7 +2,7 @@
 --- THOSE ARE ONLY FOR AUTO-COMPLETION
 
 ---@param path string
-function loadDir(path)  end
+function loadPack(path)  end
 
 ---@param fmt string
 ---@vararg any

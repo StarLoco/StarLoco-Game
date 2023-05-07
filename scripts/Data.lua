@@ -14,11 +14,11 @@ requireReload("./models/MapDef")
 requireReload("./models/Quest")
 
 -- Load instances
-loadDir("./data/npcs")
-loadDir("./data/maps")
-loadDir("./data/quests")
+loadPack("./data/npcs")
+loadPack("./data/maps")
+loadPack("./data/quests")
 
-loadDir("./data/dungeons") -- Always load last
+loadPack("./data/dungeons") -- Always load last
 
 -- Load event handlers
-loadDir("./eventhandlers")
+loadPack("./eventhandlers")

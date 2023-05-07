@@ -22,13 +22,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.game.world.World.Couple;
-import org.starloco.locos.script.proxy.SPlayer;
 import org.starloco.locos.util.Pair;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.net.URI;
+import java.nio.file.*;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -57,28 +55,54 @@ public class ScriptVM {
         TableLib.installInto(state, env);
 
         this.env.rawset("JLogF", new LogF());
-        this.env.rawset("loadDir", new LoadDir());
+        this.env.rawset("loadPack", new LoadPack());
         this.env.rawset("World", World.world.scripted());
     }
 
-    protected void loadData() throws CallException, LoaderException, IOException, CallPausedException, InterruptedException{
+    protected void loadData() throws CallException, LoaderException, IOException, CallPausedException, InterruptedException {
         runFile(Paths.get("scripts", "Common.lua"));
     }
 
-    protected void runDirectory(Path path) {
-        try (Stream<Path> paths = Files.walk(path)) {
-            Iterator<Path> it = paths
-                .filter(Files::isRegularFile)
-                .filter(p -> p.toString().endsWith(".lua")).iterator();
-            while(it.hasNext()) {
-                Path p = it.next();
+    protected void runArchive(Path path) {
+        try (FileSystem fs = FileSystems.newFileSystem(URI.create("jar:"+ path.normalize().toUri()),Collections.emptyMap())) {
+            fs.getRootDirectories()
+                    .forEach(root -> {
+                        try (Stream<Path> paths = Files.walk(root)) {
+                            runPathStream(paths);
+                        } catch (Exception e) {
+                            ScriptVM.logger.error("cannot load directory", e);
+                        }
+                    });
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void runPathStream(Stream<Path> paths) {
+        paths.parallel()
+            .filter(Files::isRegularFile)
+            .filter(p -> p.toString().endsWith(".lua"))
+            .forEach(p -> {
                 try {
                     this.runFile(p);
-                }catch(Exception e) {
-                    ScriptVM.logger.error("cannot load file: "+p, e);
+                } catch (Exception e) {
+                    ScriptVM.logger.error("cannot load file: " + p, e);
                 }
-            }
-        } catch(Exception e){
+            });
+    }
+
+    protected void runDirectoryOrArchive(Path path) {
+        Path archivePath = Paths.get(path.toString() + ".zip");
+
+        if (Files.exists(archivePath)) {
+            runArchive(archivePath);
+            return;
+        }
+
+        try (Stream<Path> paths = Files.walk(path)) {
+            runPathStream(paths);
+        } catch (Exception e) {
             ScriptVM.logger.error("cannot load directory", e);
         }
     }
@@ -86,10 +110,11 @@ public class ScriptVM {
     protected void runFile(Path path) throws IOException, LoaderException, CallException, CallPausedException, InterruptedException {
         byte[] bytes = Files.readAllBytes(path);
 
-        LuaFunction<?,?,?,?,?> fn = loader.loadTextChunk(new Variable(env), path.toString(), new String(bytes)); // May need to UTF-8 decode
+        LuaFunction<?, ?, ?, ?, ?> fn = loader.loadTextChunk(new Variable(env), path.toString(), new String(bytes)); // May need to UTF-8 decode
 
         this.executor.call(this.state, fn);
     }
+
     public Object[] call(Object val, Object... args) {
         synchronized (_vmLock) {
             try {
@@ -99,10 +124,11 @@ public class ScriptVM {
             }
         }
     }
+
     public Object[] run(String code) {
         synchronized (_vmLock) {
             try {
-                LuaFunction<?,?,?,?,?> fn = loader.loadTextChunk(new Variable(env), "command", code); // May need to UTF-8 decode
+                LuaFunction<?, ?, ?, ?, ?> fn = loader.loadTextChunk(new Variable(env), "command", code); // May need to UTF-8 decode
 
                 return this.executor.call(this.state, fn);
             } catch (Exception e) {
@@ -112,19 +138,21 @@ public class ScriptVM {
     }
 
     public static Object recursiveGet(Table t, Object key) {
-        if(t == null) return null;
+        if (t == null) return null;
 
         Object v = t.rawget(key);
-        if(v != null) return v;
+        if (v != null) return v;
         Object mtIndex = t.getMetatable().rawget("__index");
-        if(!(mtIndex instanceof Table)) return null;
+        if (!(mtIndex instanceof Table)) return null;
 
         return recursiveGet((Table) mtIndex, key);
     }
 
     static class LogF extends AbstractLibFunction {
         @Override
-        protected String name() { return "JLogF"; }
+        protected String name() {
+            return "JLogF";
+        }
 
         @Override
         public void invoke(ExecutionContext context, ArgumentIterator args) {
@@ -133,15 +161,17 @@ public class ScriptVM {
         }
     }
 
-    class LoadDir extends AbstractLibFunction {
+    class LoadPack extends AbstractLibFunction {
         @Override
-        protected String name() { return "RequireDir"; }
+        protected String name() {
+            return "LoadPack";
+        }
 
         @Override
         public void invoke(ExecutionContext context, ArgumentIterator args) {
             Path path = Paths.get("scripts", args.nextStrictString().toString());
 
-            runDirectory(path);
+            runDirectoryOrArchive(path);
 
             context.getReturnBuffer().setTo(true);
         }
@@ -150,21 +180,22 @@ public class ScriptVM {
 
     public static int rawOptionalInt(Table v, Object key, int val) {
         Object n = v.rawget(key);
-        if(n==null) return val;
-        return ((Long)v.rawget(key)).intValue();
+        if (n == null) return val;
+        return ((Long) v.rawget(key)).intValue();
     }
 
     public static int rawInt(Table v, Object key) {
-        return ((Long)v.rawget(key)).intValue();
+        return ((Long) v.rawget(key)).intValue();
     }
 
     public static Integer rawInteger(Table v, Object key) {
-        Long l = ((Long)v.rawget(key));
-        if(l==null) return null;
+        Long l = ((Long) v.rawget(key));
+        if (l == null) return null;
         return l.intValue();
     }
+
     public static int rawInt(Table v, long key) {
-        return ((Long)v.rawget(key)).intValue();
+        return ((Long) v.rawget(key)).intValue();
     }
 
     @SuppressWarnings("unchecked")
@@ -172,39 +203,39 @@ public class ScriptVM {
         ArrayList<T> out = new ArrayList<>();
 
         long len = t.rawlen();
-        for(int i=1;i<=len;i++){
-            out.add((T)t.rawget(i));
+        for (int i = 1; i <= len; i++) {
+            out.add((T) t.rawget(i));
         }
 
         return out;
     }
 
     @SuppressWarnings("unchecked")
-    public static <K,V> Pair<K,V> toPair(Table t) {
-        return new Pair<>((K)t.rawget(1L), (V)t.rawget(2L));
+    public static <K, V> Pair<K, V> toPair(Table t) {
+        return new Pair<>((K) t.rawget(1L), (V) t.rawget(2L));
     }
 
-    public static List<Pair<Integer,Integer>> listOfIntPairs(Table t) {
-        if(t == null) return null;
+    public static List<Pair<Integer, Integer>> listOfIntPairs(Table t) {
+        if (t == null) return null;
 
         long len = t.rawlen();
-        List<Pair<Integer,Integer>> out = new LinkedList<>();
+        List<Pair<Integer, Integer>> out = new LinkedList<>();
 
-        for(long i=0;i<len;i++){
-            out.add(ScriptVM.<Long,Long>toPair((Table)t.rawget(i+1)).map(Long::intValue,Long::intValue));
+        for (long i = 0; i < len; i++) {
+            out.add(ScriptVM.<Long, Long>toPair((Table) t.rawget(i + 1)).map(Long::intValue, Long::intValue));
         }
 
         return out;
     }
 
     public static List<String> listOfString(Table t) {
-        if(t == null) return null;
+        if (t == null) return null;
 
         long len = t.rawlen();
         List<String> out = new LinkedList<>();
 
-        for(long i=0; i<len; i++) {
-            ByteString bs = (ByteString)t.rawget(i+1);
+        for (long i = 0; i < len; i++) {
+            ByteString bs = (ByteString) t.rawget(i + 1);
             out.add(bs.toString());
         }
 
@@ -213,11 +244,11 @@ public class ScriptVM {
 
     public static List<Integer> intsFromLuaTable(Table t) {
         ArrayList<Integer> out = new ArrayList<>();
-        if(t == null) return out;
+        if (t == null) return out;
 
         long len = t.rawlen();
-        for(int i=1;i<=len;i++){
-            int a = rawInt (t, i);
+        for (int i = 1; i <= len; i++) {
+            int a = rawInt(t, i);
             out.add(a);
         }
 
@@ -225,47 +256,48 @@ public class ScriptVM {
     }
 
     public static int[] intArrayFromLuaTable(Table t) {
-        if(t == null) return null;
+        if (t == null) return null;
 
         long len = t.rawlen();
-        int[] out = new int[(int)len];
+        int[] out = new int[(int) len];
 
-        for(int i=0;i<len;i++){
-            out[i] = rawInt (t, i+1);
+        for (int i = 0; i < len; i++) {
+            out[i] = rawInt(t, i + 1);
         }
 
         return out;
     }
 
     public static long[] longArrayFromLuaTable(Table t) {
-        if(t == null) return null;
+        if (t == null) return null;
 
         long len = t.rawlen();
-        long[] out = new long[(int)len];
+        long[] out = new long[(int) len];
 
-        for(int i=0;i<len;i++){
-            out[i] = (Long)t.rawget(i+1);
+        for (int i = 0; i < len; i++) {
+            out[i] = (Long) t.rawget(i + 1);
         }
 
         return out;
     }
 
-    public static Table ItemStack(Couple<Integer,Integer> stack) {
+    public static Table ItemStack(Couple<Integer, Integer> stack) {
         return new ImmutableTable.Builder()
-            .add("itemID", stack.first)
-            .add("quantity", stack.second)
-            .build();
+                .add("itemID", stack.first)
+                .add("quantity", stack.second)
+                .build();
     }
-    public static Couple<Integer,Integer> ItemStackFromLua(Table t) {
+
+    public static Couple<Integer, Integer> ItemStackFromLua(Table t) {
         int id = rawInt(t, "itemID");
         int qua = rawInt(t, "quantity");
         return new Couple<>(id, qua);
     }
 
-    public static <K,V> Map<K,V> mapFromScript(Table t, Function<Object,K> keyMapper, Function<Object,V> valMapper) {
-        Map<K,V> out = new HashMap<>();
+    public static <K, V> Map<K, V> mapFromScript(Table t, Function<Object, K> keyMapper, Function<Object, V> valMapper) {
+        Map<K, V> out = new HashMap<>();
 
-        for(Object key = t.initialKey(); key != null; key = t.successorKeyOf(key)) {
+        for (Object key = t.initialKey(); key != null; key = t.successorKeyOf(key)) {
             Object val = t.rawget(key);
 
             out.put(keyMapper.apply(key), valMapper.apply(val));
@@ -281,9 +313,9 @@ public class ScriptVM {
     public static Table scriptedValsTable(Stream<? extends Scripted<?>> vals) {
         DefaultTable out = new DefaultTable();
 
-        int i=1;
+        int i = 1;
         Iterator<? extends Scripted<?>> it = vals.iterator();
-        while(it.hasNext()) {
+        while (it.hasNext()) {
             out.rawset(i, it.next().scripted());
             i++;
         }
@@ -292,9 +324,9 @@ public class ScriptVM {
 
     public static <T> Table listOf(Stream<T> vals) {
         DefaultTable out = new DefaultTable();
-        int i=1;
+        int i = 1;
         Iterator<T> it = vals.iterator();
-        while(it.hasNext()) {
+        while (it.hasNext()) {
             out.rawset(i, it.next());
             i++;
         }
