@@ -10,7 +10,7 @@ local map = MapDef(
         493
 )
 
-map.positions = ""
+map.positions = "|"
 map.capabilities = 46
 map.npcs = {
     [1034] = {191, 1}

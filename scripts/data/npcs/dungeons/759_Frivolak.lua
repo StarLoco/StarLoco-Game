@@ -8,7 +8,8 @@ function npc:onTalk(p, answer)
         if hasAllBroches then
             p:ask(3142, {2765})
         else
-            p:ask(3139, {2763}) end
+            p:ask(3139, {2763})
+        end
     elseif answer == 2765 and hasAllBroches then
         p:teleport(8977, 448)
         p:endDialog()

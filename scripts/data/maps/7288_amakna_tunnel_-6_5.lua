@@ -10,7 +10,7 @@ local map = MapDef(
         91
 )
 
-map.positions = ""
+map.positions = "|"
 map.capabilities = 5
 
 map.onMovementEnd = {
