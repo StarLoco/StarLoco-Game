@@ -35,8 +35,7 @@ map.onMovementEnd = {
 	[351] = moveEndTeleport(9559, 219),
 	[379] = moveEndTeleport(9569, 326),
 	[381] = moveEndTeleport(9565, 148),
-	[411] = moveEndTeleport(9570, 248),
-	[437] = moveEndTeleport(9538, 214),
+	[411] = moveEndTeleport(9570, 248)
 }
 
 RegisterMapDef(map)
