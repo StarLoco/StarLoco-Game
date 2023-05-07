@@ -61,7 +61,6 @@ end
 ---@param p Player
 ---@param answer number
 local function talkInsideMaze(p, answer)
-    JLogF("Called onTalk for inside maze map {}", p:mapID())
     if answer == 0 then
         p:ask(3207, {2836})
     elseif answer == 2836 then
