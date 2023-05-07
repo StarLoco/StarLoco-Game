@@ -3,7 +3,6 @@ local npc = Npc(758, 1439)
 local dungeonKeyId = 8073
 local enterDungeonDest = {8969, 380}
 
-
 ---@param p Player
 ---@param answer number
 function npc:onTalk(p, answer)
