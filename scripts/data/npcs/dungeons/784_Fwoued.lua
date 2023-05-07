@@ -132,7 +132,6 @@ for i = 9371, 9394 do
 end
 
 function npc:onTalk(p, answer)
-    JLogF("Called onTalk map {}", p:mapID())
     if onTalkMaps[p:mapID()] then
         onTalkMaps[p:mapID()](p, answer)
     end

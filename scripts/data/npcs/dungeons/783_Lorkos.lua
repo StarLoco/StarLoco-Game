@@ -179,10 +179,16 @@ end
 local onTalkMaps = {
     [9538] = talkMapMazeEntrance,
     [9876] = talkMapSlabsRoom,
-    [9557] = talkMapDungeonEntrance,
     [9877] = talkMapMinotororExit,
-    [9877] = talkMapMinototExit
+    [9881] = talkMapMinototExit
 }
+
+for i = 9553, 9577 do
+    onTalkMaps[i] = talkInsideMaze
+end
+
+-- Override maze central room
+onTalkMaps[9557] = talkMapDungeonEntrance
 
 for i = 9553, 9577 do
     if i ~= 9557 then
@@ -191,7 +197,6 @@ for i = 9553, 9577 do
 end
 
 function npc:onTalk(p, answer)
-    JLogF("Called onTalk map {}", p:mapID())
     if onTalkMaps[p:mapID()] then
         onTalkMaps[p:mapID()](p, answer)
     end
