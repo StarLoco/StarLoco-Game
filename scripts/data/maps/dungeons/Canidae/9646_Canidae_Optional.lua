@@ -14,7 +14,7 @@ map.positions = "bTdpdVd5e1e3e8gpgz|bEdqdWd6fkfsfufYgA"
 map.capabilities = 46
 
 map.mobGroupsCount = 3
-map.mobGroupsSize = 8
+map.mobGroupsMinSize = 8
 map.allowedMobGrades = {
     {299, 1},
     {299, 2},

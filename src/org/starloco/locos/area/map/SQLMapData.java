@@ -26,7 +26,7 @@ public class SQLMapData extends MapData {
     protected SQLMapData(int id, String date, String key, String data, int width, int height, int x, int y,
                          int subAreaID, boolean noSellers, boolean noCollectors, boolean noPrisms,
                          boolean noTp, boolean noDefy, boolean noAgro, boolean noCanal, int mobGroupsMaxCount,
-                         int mobGroupsMaxSize, List<MonsterGrade> monsters, String places) {
+                         int mobGroupsMinSize, int mobGroupsMaxSize, List<MonsterGrade> monsters, String places) {
         super(id,
                 date,
                 key,
@@ -44,6 +44,7 @@ public class SQLMapData extends MapData {
                 noAgro,
                 noCanal,
                 mobGroupsMaxCount,
+                mobGroupsMinSize,
                 mobGroupsMaxSize,
                 monsters,
                 places);
@@ -117,7 +118,7 @@ public class SQLMapData extends MapData {
             }
         }
 
-        return new SQLMapData(id, date, key, data, w, h, x, y, subAreaID, noSellers, noCollectors, noPrisms, noTp, noDefy, noAgro, noCanal, maxGroupCnt, maxSize, mobPossibles, places);
+        return new SQLMapData(id, date, key, data, w, h, x, y, subAreaID, noSellers, noCollectors, noPrisms, noTp, noDefy, noAgro, noCanal, maxGroupCnt, minSize, maxSize, mobPossibles, places);
     }
 
     public void addNpc(int id, int cellid, int orientation) {

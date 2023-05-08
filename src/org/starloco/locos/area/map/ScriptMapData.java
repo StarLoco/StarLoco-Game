@@ -25,7 +25,7 @@ public class ScriptMapData extends MapData {
     private final Table scriptVal;
     public final Integer zaapCell;
 
-    private ScriptMapData(Table scriptVal, int id, String date, String key, String cellsData, int width, int height, int x, int y, int subAreaID, int capabilities, int mobGroupsMaxCount, List<MonsterGrade> mobPossibles, String placesStr, int mobGroupsMaxSize, Integer zaapCell) {
+    private ScriptMapData(Table scriptVal, int id, String date, String key, String cellsData, int width, int height, int x, int y, int subAreaID, int capabilities, int mobGroupsMaxCount, List<MonsterGrade> mobPossibles, String placesStr, int mobGroupsMinSize, int mobGroupsMaxSize, Integer zaapCell) {
         super(id,
             date,
             key,
@@ -43,6 +43,7 @@ public class ScriptMapData extends MapData {
             (capabilities & 0x2) > 0,
             (capabilities & 0x80) > 0,
             mobGroupsMaxCount,
+            mobGroupsMinSize,
             mobGroupsMaxSize,
             mobPossibles,
             placesStr);
@@ -74,7 +75,10 @@ public class ScriptMapData extends MapData {
             rawInt(val, "subAreaId"),
             rawInt(val, "capabilities"),
             rawInt(val, "mobGroupsCount"),
-            allowedMonsters, val.rawget("positions").toString(), rawInt(val, "mobGroupsSize"),
+            allowedMonsters,
+            val.rawget("positions").toString(),
+            rawInt(val, "mobGroupsMinSize"),
+            rawInt(val, "mobGroupsMaxSize"),
             zaapCell
         );
     }

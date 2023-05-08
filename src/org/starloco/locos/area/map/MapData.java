@@ -25,6 +25,7 @@ public abstract class MapData {
 
     public final boolean noSellers, noCollectors, noPrisms, noTp, noDefy, noAgro, noCanal;
     public final int mobGroupsMaxCount;
+    public final int mobGroupsMinSize;
     public final int mobGroupsMaxSize;
 
     // Temporary variable to be able to copy the map.
@@ -35,7 +36,7 @@ public abstract class MapData {
     private final HashMap<Integer, InteractiveObject.InteractiveObjectTemplate> interactiveObjects = new HashMap<>();
 
 
-    protected MapData(int id, String date, String key, String cellsData, int width, int height, int x, int y, int subAreaID, boolean noSellers, boolean noCollectors, boolean noPrisms, boolean noTp, boolean noDefy, boolean noAgro, boolean noCanal, int mobGroupsMaxCount, int mobGroupsMaxSize, List<MonsterGrade> mobPossibles, String placesStr) {
+    protected MapData(int id, String date, String key, String cellsData, int width, int height, int x, int y, int subAreaID, boolean noSellers, boolean noCollectors, boolean noPrisms, boolean noTp, boolean noDefy, boolean noAgro, boolean noCanal, int mobGroupsMaxCount, int mobGroupsMinSize, int mobGroupsMaxSize, List<MonsterGrade> mobPossibles, String placesStr) {
         this.id = id;
         this.date = date;
         this.key = key;
@@ -53,6 +54,7 @@ public abstract class MapData {
         this.noAgro = noAgro;
         this.noCanal = noCanal;
         this.mobGroupsMaxCount = mobGroupsMaxCount;
+        this.mobGroupsMinSize= mobGroupsMinSize;
         this.mobGroupsMaxSize = mobGroupsMaxSize;
         this.mobPossibles = mobPossibles;
         this.placesStr = placesStr;

@@ -13,7 +13,7 @@ local map = MapDef(
 map.positions = "cJc_dbdDd-eAeCe2|bTcjclcNdZeEfKfX"
 map.capabilities = 36
 map.mobGroupsCount = 3
-map.mobGroupsSize = 6
+map.mobGroupsMaxSize = 6
 
 -- '0;0;0;0;0;0;0' forbiddens -> capabilities ? Or script ?
 

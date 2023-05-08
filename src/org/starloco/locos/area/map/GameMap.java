@@ -137,7 +137,6 @@ public class GameMap {
 
     public int nextObjectId = -1;
 
-    private byte minSize, fixSize;
     private final int maxTeam = 0;
     private boolean isMute = false;
     private final MountPark mountPark;
@@ -304,18 +303,6 @@ public class GameMap {
 
     public List<MonsterGrade> getMobPossibles() {
         return data.mobPossibles;
-    }
-
-    public int getMaxSize() {
-        return data.mobGroupsMaxSize;
-    }
-
-    public byte getMinSize() {
-        return this.minSize;
-    }
-
-    public byte getFixSize() {
-        return this.fixSize;
     }
 
     public int getId() {
@@ -571,7 +558,8 @@ public class GameMap {
         MonsterGrade grade = World.world.getMonstre(idMob).getRandomGrade();
         int cell = this.getRandomFreeCellId();
 
-        MonsterGroup group = new MonsterGroup(this.nextObjectId, Constant.ALIGNEMENT_NEUTRE, data.mobPossibles, this, cell, this.fixSize, grade);
+        int size = Formulas.getRandomValue(data.mobGroupsMinSize, data.mobGroupsMaxSize);
+        MonsterGroup group = new MonsterGroup(this.nextObjectId, Constant.ALIGNEMENT_NEUTRE, data.mobPossibles, this, cell, size, grade);
         if (group.getMobs().isEmpty())
             return false;
         this.mobGroups.put(this.nextObjectId, group);
@@ -672,7 +660,8 @@ public class GameMap {
             while(this.mobGroups.get(this.nextObjectId) != null)
                 this.nextObjectId--;
 
-            MonsterGroup group = new MonsterGroup(this.nextObjectId, align, mobPoss, this, cellID, this.fixSize, null);
+            int size = Formulas.getRandomValue(data.mobGroupsMinSize, data.mobGroupsMaxSize);
+            MonsterGroup group = new MonsterGroup(this.nextObjectId, align, mobPoss, this, cellID, size, null);
 
             if (group.getMobs().isEmpty())
                 continue;
@@ -698,7 +687,8 @@ public class GameMap {
         while (this.containsForbiddenCellSpawn(cell))
             cell = this.getRandomFreeCellId();
 
-        MonsterGroup group = new MonsterGroup(this.nextObjectId, Constant.ALIGNEMENT_NEUTRE, data.mobPossibles, this, cell, this.fixSize, _m);
+        int size = Formulas.getRandomValue(data.mobGroupsMinSize, data.mobGroupsMaxSize);
+        MonsterGroup group = new MonsterGroup(this.nextObjectId, Constant.ALIGNEMENT_NEUTRE, data.mobPossibles, this, cell, size, _m);
         group.setIsFix(false);
         this.mobGroups.put(this.nextObjectId, group);
         SocketManager.GAME_SEND_MAP_MOBS_GM_PACKET(this, group);
