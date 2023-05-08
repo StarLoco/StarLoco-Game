@@ -14,7 +14,8 @@
 ---@field positions string
 ---@field npcs table<number, number[]>[] All Npcs that may appear on this map: <template,[cell,orientation]>
 ---@field mobGroupsCount number
----@field mobGroupsSize number
+---@field mobGroupsMinSize number
+---@field mobGroupsMaxSize number
 ---@field staticGroups MobGroupDef[]
 ---@field allowedMobGrades table<number,number> K: MobTemplateID, V: Grade
 ---@field zaapCell number Only set for maps with a zaap. Value is cellId
@@ -57,7 +58,8 @@ setmetatable(MapDef, {
         self.capabilities = 0
         self.npcs = {}
         self.mobGroupsCount = 3
-        self.mobGroupsSize = 8
+        self.mobGroupsMinSize = 1
+        self.mobGroupsMaxSize = 8
         self.allowedMobGrades = {}
         self.positions = ""
         self.staticGroups = {}

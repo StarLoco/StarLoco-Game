@@ -112,25 +112,6 @@ public class GameMapData extends FunctionDAO<GameMap> {
         return GameMapData.class;
     }
 
-    public boolean updateGs(GameMap map) {
-        PreparedStatement p = null;
-        try {
-            p = getPreparedStatement("UPDATE " + getTableName() + " SET `numgroup` = ?, `minSize` = ?, `fixSize` = ?, `maxSize` = ? WHERE id = ?;");
-            p.setInt(1, map.getMaxGroupNumb());
-            p.setInt(2, map.getMinSize());
-            p.setInt(3, map.getFixSize());
-            p.setInt(4, map.getMaxSize());
-            p.setInt(5, map.getId());
-            execute(p);
-            return true;
-        } catch (SQLException e) {
-            super.sendError(e);
-        } finally {
-            close(p);
-        }
-        return false;
-    }
-
     public boolean updateMonster(GameMap map, String monsters) {
         PreparedStatement p = null;
         try {

@@ -11,8 +11,8 @@ local map = MapDef(
 )
 
 map.positions = "bUbVb9b-cncCcQc5|fEfTf7gkgzgAgOgP"
-map.mobGroupsCount = -1
-map.mobGroupsSize = -1
+
+
 map.allowedMobGrades = {
 	{102, 1},
 	{102, 2},
