@@ -14,18 +14,17 @@ map.positions = "ftfHfVf9glgzgNg1|cNc5dhdvdJdXd_eF"
 map.capabilities = 14
 map.mobGroupsCount = 12
 map.mobGroupsSize = 1
+
 map.npcs = {
-	[778] = {214, 1},
+	[778] = {257, 1}
 }
+
 map.allowedMobGrades = {
 	{98, 1},
 	{98, 2},
 	{98, 3},
 	{98, 4},
-	{98, 5},
+	{98, 5}
 }
--- '0;0;0;0;0;0;0' forbiddens -> capabilities ? Or script ?
-
-
 
 RegisterMapDef(map)

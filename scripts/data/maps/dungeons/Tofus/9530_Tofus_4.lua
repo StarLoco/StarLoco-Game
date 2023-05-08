@@ -12,11 +12,20 @@ local map = MapDef(
 
 map.positions = "a-bmbBbOb3cecsct|c3dud8d_e3fifkgp"
 map.capabilities = 14
-map.mobGroupsCount = 3
+map.mobGroupsCount = 1
 map.mobGroupsSize = 8
 
--- '0;0;0;0;0;0;0' forbiddens -> capabilities ? Or script ?
-
-
+map.allowedMobGrades = {
+	{98, 1},
+	{98, 2},
+	{98, 3},
+	{98, 4},
+	{98, 5},
+	{806, 1},
+	{806, 2},
+	{806, 3},
+	{806, 4},
+	{806, 5}
+}
 
 RegisterMapDef(map)
