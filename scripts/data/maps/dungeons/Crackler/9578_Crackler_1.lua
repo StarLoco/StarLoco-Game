@@ -13,8 +13,9 @@ local map = MapDef(
 map.positions = "fgfufvfIfKfYfZgb|dCdQd9ePeUeZe9f0"
 map.capabilities = 14
 map.mobGroupsCount = 1
+map.mobGroupsMinSize = 5
+map.mobGroupsMaxSize = 8
 
---TODO: Random size group 5 to 8
 map.allowedMobGrades = {
     {106, 1},
     {106, 2},
