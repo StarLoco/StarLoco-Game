@@ -143,8 +143,8 @@ end
 
 ---- Called by the Map class, allows some NPC to be shown only when player have a specific quest
 --function Npc:isVisible(jPlayer, jMap)
---    -- TODO
---    return true
+-- TODO
+--return true
 --end
 
 

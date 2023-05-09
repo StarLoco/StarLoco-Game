@@ -1,5 +1,3 @@
--- TODO: Double check grades
-
 local group1 = {
     {59, {1, 2, 3}},
     {61, {1, 2, 3}},
