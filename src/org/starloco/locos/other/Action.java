@@ -3282,43 +3282,43 @@ public class Action {
                 }
                 break;
 
-            case 971://Entr�e du donjon dragoeufs
-                if (player.getCurMap().getId() == (short) 9788) {
-                    boolean key0 = player.hasItemTemplate(8342, 1, false) && player.hasItemTemplate(8343, 1, false), key1 = false, key2 = false;
-                    if (key0 || player.hasItemTemplate(10207, 1, false)) {
-
-                        if(player.hasItemTemplate(10207, 1, false)) {
-                            String stats = player.getItemTemplate(10207).getTxtStat().get(Constant.STATS_NAME_DJ);
-                            for(String key : stats.split(",")) {
-                                id = Integer.parseInt(key, 16);
-                                if (id == 8342) key1 = true;
-                                if (id == 8343) key2 = true;
-                            }
-
-                            if(key1 && key2){
-                                String replace1 = Integer.toHexString(8342), replace2 = Integer.toHexString(8343), newStats = "";
-                                for (String i : stats.split(","))
-                                    if (!i.equals(replace1) || !i.equals(replace2))
-                                        newStats += (newStats.isEmpty() ? i : "," + i);
-                                player.getItemTemplate(10207).getTxtStat().remove(Constant.STATS_NAME_DJ);
-                                player.getItemTemplate(10207).getTxtStat().put(Constant.STATS_NAME_DJ, newStats);
-                                SocketManager.GAME_SEND_UPDATE_ITEM(player, player.getItemTemplate(10207));
-                            }
-                        }
-                        if(key0 && (!key1 || !key2)) {
-                            player.removeItemByTemplateId(8342, 1, false);
-                            player.removeItemByTemplateId(8343, 1, false);
-                        }
-                        if(key0 || (key1 && key2)) {
-                            SocketManager.GAME_SEND_Im_PACKET(player, "022;" + 1 + "~" + 8342);
-                            SocketManager.GAME_SEND_Im_PACKET(player, "022;" + 1 + "~" + 8343);
-                            player.teleport((short) 10098, 407);
-                            return true;
-                        }
-                    }
-                }
-                SocketManager.GAME_SEND_Im_PACKET(player, "119");
-                break;
+//            case 971://Entr�e du donjon dragoeufs
+//                if (player.getCurMap().getId() == (short) 9788) {
+//                    boolean key0 = player.hasItemTemplate(8342, 1, false) && player.hasItemTemplate(8343, 1, false), key1 = false, key2 = false;
+//                    if (key0 || player.hasItemTemplate(10207, 1, false)) {
+//
+//                        if(player.hasItemTemplate(10207, 1, false)) {
+//                            String stats = player.getItemTemplate(10207).getTxtStat().get(Constant.STATS_NAME_DJ);
+//                            for(String key : stats.split(",")) {
+//                                id = Integer.parseInt(key, 16);
+//                                if (id == 8342) key1 = true;
+//                                if (id == 8343) key2 = true;
+//                            }
+//
+//                            if(key1 && key2){
+//                                String replace1 = Integer.toHexString(8342), replace2 = Integer.toHexString(8343), newStats = "";
+//                                for (String i : stats.split(","))
+//                                    if (!i.equals(replace1) || !i.equals(replace2))
+//                                        newStats += (newStats.isEmpty() ? i : "," + i);
+//                                player.getItemTemplate(10207).getTxtStat().remove(Constant.STATS_NAME_DJ);
+//                                player.getItemTemplate(10207).getTxtStat().put(Constant.STATS_NAME_DJ, newStats);
+//                                SocketManager.GAME_SEND_UPDATE_ITEM(player, player.getItemTemplate(10207));
+//                            }
+//                        }
+//                        if(key0 && (!key1 || !key2)) {
+//                            player.removeItemByTemplateId(8342, 1, false);
+//                            player.removeItemByTemplateId(8343, 1, false);
+//                        }
+//                        if(key0 || (key1 && key2)) {
+//                            SocketManager.GAME_SEND_Im_PACKET(player, "022;" + 1 + "~" + 8342);
+//                            SocketManager.GAME_SEND_Im_PACKET(player, "022;" + 1 + "~" + 8343);
+//                            player.teleport((short) 10098, 407);
+//                            return true;
+//                        }
+//                    }
+//                }
+//                SocketManager.GAME_SEND_Im_PACKET(player, "119");
+//                break;
 
             case 972://Sortir du donjon skeunk avec le trousseau
                 if (player.getCurMap().getId() != (short) 8978)
