@@ -15,5 +15,12 @@ local map = MapDef(
 
 map.positions = "dceyfifrfHfTgogA|cCcOcRc-dndxfOgs"
 map.capabilities = 47
+map.npcs = {
+    [1277] = {239, 1},
+    [1278] = {237, 3},
+    [1279] = {181, 3},
+    [1280] = {241, 1},
+    [1281] = {297, 3}
+}
 
 RegisterMapDef(map)
