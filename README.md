@@ -12,15 +12,12 @@ The most advanced public 1.39.8 dofus emulator written in Java 8.
 To be able to use this project, you'll need to be sure your computer has :
 - Java - JDK 8 if you intend to compile the source code
 - Java - JRE 8 if you only want to run the .jar
-- MySQL - Version 8
+- MariaDB
 
 ## Usage
 
-There's "bin" folder where you'll find all the stuff you need to make it run.
-
-Create a database named "starloco_game", then execute "game.sql".
-
-Finally, run "start.bat" under bin folder.
+This repository is intended for people who want to compile their own version.
+If you just want to run the project, use the [Docker](https://github.com/StarLoco/StarLoco/tree/main/docker) image
 
 ## Contribute
 
