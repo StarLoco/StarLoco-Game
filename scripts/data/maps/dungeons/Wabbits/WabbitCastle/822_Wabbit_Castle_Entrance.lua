@@ -13,6 +13,34 @@ local map = MapDef(
 map.positions = "bQbTb4b5b7b8chck|fbfqfFfUgogCgDgR"
 map.capabilities = 47
 
+map.allowedMobGrades = {
+    {65, 1},
+    {65, 2},
+    {65, 3},
+    {65, 4},
+    {65, 5},
+    {97, 1},
+    {97, 2},
+    {97, 3},
+    {97, 4},
+    {97, 5},
+    {99, 1},
+    {99, 2},
+    {99, 3},
+    {99, 4},
+    {99, 5},
+    {68, 1},
+    {68, 2},
+    {68, 3},
+    {68, 4},
+    {68, 5},
+    {96, 1},
+    {96, 2},
+    {96, 3},
+    {96, 4},
+    {96, 5}
+}
+
 local function tryEntering(_, _, p)
     if p:getItem(961) and p:getItem(962) and p:getItem(963) then
         p:teleport(1767, 394)
