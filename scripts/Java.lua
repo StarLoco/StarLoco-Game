@@ -260,6 +260,10 @@ function World:subArea(id) end
 ---@return Map
 function World:map(id) end
 
+---@param delay number in milliseconds
+---@param fn fun
+function World:delayForMs(delay, fn) end
+
 -- Map instance
 ---@class Map
 local Map = {}

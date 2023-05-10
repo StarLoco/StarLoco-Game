@@ -6,15 +6,18 @@ import org.classdump.luna.impl.DefaultTable;
 import org.classdump.luna.impl.DefaultUserdata;
 import org.classdump.luna.impl.ImmutableTable;
 import org.classdump.luna.lib.ArgumentIterator;
+import org.classdump.luna.runtime.LuaFunction;
 import org.starloco.locos.area.SubArea;
 import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.client.Account;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.game.world.World;
+import org.starloco.locos.script.DataScriptVM;
 import org.starloco.locos.script.types.MetaTables;
 
 import java.time.ZonedDateTime;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 public class SWorld extends DefaultUserdata<World> {
     private static final ImmutableTable META_TABLE= MetaTables.MetaTable(MetaTables.ReflectIndexTable(SWorld.class));
@@ -78,5 +81,15 @@ public class SWorld extends DefaultUserdata<World> {
     @SuppressWarnings("unused")
     private static SMap map(World world, ArgumentIterator args) {
         return Optional.ofNullable(world.getMap(args.nextInt())).map(GameMap::scripted).orElse(null);
+    }
+
+    @SuppressWarnings("unused")
+    private static void delayForMs(World world, ArgumentIterator args) {
+        long delay = args.nextInteger();
+        LuaFunction<?,?,?,?,?> fn = args.nextFunction();
+
+        world.scheduler.schedule(() -> {
+            DataScriptVM.getInstance().call(fn);
+        }, delay, TimeUnit.MILLISECONDS);
     }
 }

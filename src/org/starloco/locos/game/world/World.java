@@ -51,6 +51,7 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -101,6 +102,8 @@ public class World implements Scripted<SWorld> {
     private final Map<Integer, GameMap> extraMonstreOnMap = new HashMap<>();
     private final Map<Integer, org.starloco.locos.area.map.entity.Tutorial> Tutorial = new HashMap<>();
     private final Map<Integer, Long> delayCollectors = new HashMap<>();
+
+    public final ScheduledThreadPoolExecutor scheduler = new ScheduledThreadPoolExecutor(3);
 
     public World() {
         this.scriptVal = new SWorld(this);
@@ -1789,23 +1792,4 @@ public class World implements Scripted<SWorld> {
         }
     }
 
-    public static class ExpLevel {
-        public long perso;
-        public int metier;
-        public int mount;
-        public int pvp;
-        public long guilde;
-        public long tourmenteurs;
-        public long bandits;
-
-        public ExpLevel(int lvl, long c, int m, int d, int p, long t, long b) {
-            perso = c;
-            metier = m;
-            this.mount = d;
-            pvp = p;
-            guilde = perso * 25;
-            tourmenteurs = t;
-            bandits = b;
-        }
-    }
 }
