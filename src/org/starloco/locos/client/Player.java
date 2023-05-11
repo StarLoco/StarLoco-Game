@@ -1382,10 +1382,9 @@ public class Player implements Scripted<SPlayer> {
     }
 
     public void startScenario(int id, String date, BiConsumer<Player,Boolean> onEnd) {
-        ExchangeAction<ScenarioActionData> action = new ExchangeAction<>(
+        exchangeAction =  new ExchangeAction<>(
                 ExchangeAction.IN_SCENARIO,
                 new ScenarioActionData(exchangeAction, onEnd));
-        exchangeAction = action;
         SocketManager.GAME_SEND_TUTORIAL_CREATE(this, id, date);
     }
 
