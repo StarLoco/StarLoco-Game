@@ -103,7 +103,7 @@ public class World implements Scripted<SWorld> {
     private final Map<Integer, org.starloco.locos.area.map.entity.Tutorial> Tutorial = new HashMap<>();
     private final Map<Integer, Long> delayCollectors = new HashMap<>();
 
-    public final ScheduledThreadPoolExecutor scheduler = new ScheduledThreadPoolExecutor(3);
+    public final ScheduledThreadPoolExecutor scheduler = new ScheduledThreadPoolExecutor(1);
 
     public World() {
         this.scriptVal = new SWorld(this);
