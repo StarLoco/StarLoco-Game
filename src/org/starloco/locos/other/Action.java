@@ -1077,7 +1077,7 @@ public class Action {
                         }
 
                         TimerWaiter.addNext(() -> {
-                            SocketManager.send(player, "TC" + tuto.getId() + "|7001010000");
+                            SocketManager.GAME_SEND_TUTORIAL_CREATE(player, tuto.getId(), "7001010000");
                             player.setExchangeAction(new ExchangeAction<>(ExchangeAction.IN_TUTORIAL, tuto));
                             player.setAway(true);
                         }, 1500);

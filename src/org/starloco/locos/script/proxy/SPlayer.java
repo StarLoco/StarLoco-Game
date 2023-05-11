@@ -120,6 +120,14 @@ public class SPlayer extends DefaultUserdata<Player> {
 
         SocketManager.GAME_SEND_Im_PACKET(p, type+""+msgId);
     }
+
+    @SuppressWarnings("unused")
+    private static void startScenario(Player p, ArgumentIterator args) {
+        int id = args.nextInt();
+        ByteString date = args.nextString();
+
+        SocketManager.GAME_SEND_TUTORIAL_CREATE(p, id, date.toString());
+    }
     //endregion
 
     //region Dialogs
@@ -145,6 +153,16 @@ public class SPlayer extends DefaultUserdata<Player> {
         p.setAway(false);
         p.setExchangeAction(null);
         SocketManager.GAME_SEND_END_DIALOG_PACKET(p.getGameClient());
+    }
+
+    @SuppressWarnings("unused")
+    private static void pauseDialog(Player p) {
+        if (p.getExchangeAction() == null || p.getExchangeAction().getType() != ExchangeAction.TALKING_WITH ){
+            return;
+        }
+        p.setAway(false);
+        p.setExchangeAction(null);
+        SocketManager.GAME_SEND_PAUSE_DIALOG_PACKET(p.getGameClient());
     }
     //endregion
 
