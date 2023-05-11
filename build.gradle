@@ -17,7 +17,11 @@ tasks.withType(JavaCompile).configureEach {
 sourceSets {
     main {
         java {
-            srcDirs = ['src']
+            srcDirs 'src'
+        }
+        resources {
+            srcDirs "src/org/starloco/locos/lang/translation"
+
         }
     }
 }
