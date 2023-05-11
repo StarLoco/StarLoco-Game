@@ -7004,7 +7004,6 @@ public class GameClient {
         this.player.setCurCell(cell);
 
         sad.onCompletion(player, succeed);
-        this.player.setExchangeAction(null);
     }
 
     /**

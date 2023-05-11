@@ -16,5 +16,6 @@ public class ScenarioActionData implements ActionDataInterface {
 
     public void onCompletion(Player player, boolean succeed) {
         onCompleted.accept(player, succeed);
+        player.setExchangeAction(source);
     }
 }

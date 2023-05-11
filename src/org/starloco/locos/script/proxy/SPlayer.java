@@ -121,7 +121,7 @@ public class SPlayer extends DefaultUserdata<Player> {
         if(type>9) throw new IllegalArgumentException("SPlayer:sendInfoMsg type param must be < 10");
         int msgId = args.nextInt();
 
-        SocketManager.GAME_SEND_Im_PACKET(p, type+""+msgId);
+        SocketManager.GAME_SEND_Im_PACKET(p, type+String.valueOf(msgId));
     }
 
     @SuppressWarnings("unused")
