@@ -99,7 +99,6 @@ public class World implements Scripted<SWorld> {
     private final Map<String, Map<String, String>> mobsGroupsFix = new HashMap<>();
     private final Map<Integer, Map<String, Map<String, Integer>>> extraMonstre = new HashMap<>();
     private final Map<Integer, GameMap> extraMonstreOnMap = new HashMap<>();
-    private final Map<Integer, org.starloco.locos.area.map.entity.Tutorial> Tutorial = new HashMap<>();
     private final Map<Integer, Long> delayCollectors = new HashMap<>();
 
     public World() {
@@ -405,9 +404,6 @@ public class World implements Scripted<SWorld> {
 
         DatabaseManager.get(PetTemplateData.class).loadFully();
         logger.debug("The templates of pets were loaded successfully.");
-
-        DatabaseManager.get(TutorialData.class).loadFully();
-        logger.debug("The tutorials were loaded successfully.");
 
         DatabaseManager.get(BaseMountParkData.class).loadFully();
         logger.debug("The statics parks of the mounts were loaded successfully.");
@@ -815,14 +811,6 @@ public class World implements Scripted<SWorld> {
 
     public void removeMount(int id) {
         Dragodindes.remove(id);
-    }
-
-    public void addTutorial(Tutorial tutorial) {
-        Tutorial.put(tutorial.getId(), tutorial);
-    }
-
-    public Tutorial getTutorial(int id) {
-        return Tutorial.get(id);
     }
 
     public InteractiveObjectTemplate getIOTemplate(int id) {

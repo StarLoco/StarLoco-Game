@@ -5,7 +5,6 @@ import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.area.map.entity.Animation;
 import org.starloco.locos.area.map.entity.House;
 import org.starloco.locos.area.map.entity.MountPark;
-import org.starloco.locos.area.map.entity.Tutorial;
 import org.starloco.locos.area.map.labyrinth.PigDragon;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.client.other.Stalk;
@@ -15,9 +14,7 @@ import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.database.DatabaseManager;
 import org.starloco.locos.database.data.game.NpcQuestionData;
 import org.starloco.locos.database.data.login.PlayerData;
-import org.starloco.locos.entity.monster.MonsterGrade;
 import org.starloco.locos.entity.monster.MonsterGroup;
-import org.starloco.locos.entity.monster.Monster;
 import org.starloco.locos.entity.npc.Npc;
 import org.starloco.locos.entity.npc.NpcQuestion;
 import org.starloco.locos.entity.pet.PetEntry;
@@ -1048,46 +1045,46 @@ public class Action {
                 }
                 break;
 
-            case 36: //Cout d'un jeu
-                try {
-                    long price = Integer.parseInt(args.split(";")[0]);
-                    int tutorial = Integer.parseInt(args.split(";")[1]);
-                    if (tutorial == 30) {
-                        int random = Formulas.getRandomValue(1, 200);
-                        if (random == 100)
-                            tutorial = 31;
-                        else
-                            ((NpcQuestionData) DatabaseManager.get(NpcQuestionData.class)).updateLot();
-                    }
-                    final Tutorial tuto = World.world.getTutorial(tutorial);
-                    if (tuto == null)
-                        return true;
-                    if (player.getKamas() >= price) {
-                        if (price != 0L) {
-                            player.setKamas(player.getKamas() - price);
-                            if (player.isOnline())
-                                SocketManager.GAME_SEND_STATS_PACKET(player);
-                            SocketManager.GAME_SEND_Im_PACKET(player, "046;"
-                                    + price);
-                        }
-                        try {
-                            tuto.getStart().apply(player, null, -1, (short) -1, null);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-
-                        TimerWaiter.addNext(() -> {
-                            SocketManager.GAME_SEND_TUTORIAL_CREATE(player, tuto.getId(), "7001010000");
-                            player.setExchangeAction(new ExchangeAction<>(ExchangeAction.IN_TUTORIAL, tuto));
-                            player.setAway(true);
-                        }, 1500);
-                        return true;
-                    }
-                    SocketManager.GAME_SEND_Im_PACKET(player, "182");
-                } catch (Exception e23) {
-                    e23.printStackTrace();
-                }
-                break;
+//            case 36: //Cout d'un jeu
+//                try {
+//                    long price = Integer.parseInt(args.split(";")[0]);
+//                    int tutorial = Integer.parseInt(args.split(";")[1]);
+//                    if (tutorial == 30) {
+//                        int random = Formulas.getRandomValue(1, 200);
+//                        if (random == 100)
+//                            tutorial = 31;
+//                        else
+//                            ((NpcQuestionData) DatabaseManager.get(NpcQuestionData.class)).updateLot();
+//                    }
+//                    final Tutorial tuto = World.world.getTutorial(tutorial);
+//                    if (tuto == null)
+//                        return true;
+//                    if (player.getKamas() >= price) {
+//                        if (price != 0L) {
+//                            player.setKamas(player.getKamas() - price);
+//                            if (player.isOnline())
+//                                SocketManager.GAME_SEND_STATS_PACKET(player);
+//                            SocketManager.GAME_SEND_Im_PACKET(player, "046;"
+//                                    + price);
+//                        }
+//                        try {
+//                            tuto.getStart().apply(player, null, -1, (short) -1, null);
+//                        } catch (Exception e) {
+//                            e.printStackTrace();
+//                        }
+//
+//                        TimerWaiter.addNext(() -> {
+//                            player.startScenario(tuto.getId(), "7001010000", null);
+//                            player.setExchangeAction(new ExchangeAction<>(ExchangeAction.IN_SCENARIO, tuto));
+//                            player.setAway(true);
+//                        }, 1500);
+//                        return true;
+//                    }
+//                    SocketManager.GAME_SEND_Im_PACKET(player, "182");
+//                } catch (Exception e23) {
+//                    e23.printStackTrace();
+//                }
+//                break;
 
             case 37://Loterie pioute
                 Loterie.startLoteriePioute(player);

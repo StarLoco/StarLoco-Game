@@ -208,7 +208,10 @@ function Player:setCtxVal(key, value) end
 function Player:getCtxVal(key) end
 
 --- Start a scripted scenario
-function Player:startScenario(id, date) end
+---@param id number
+---@param date string
+---@param onEnd fun(p:Player,succeed:boolean)
+function Player:startScenario(id, date, onEnd) end
 
 --endregion
 
