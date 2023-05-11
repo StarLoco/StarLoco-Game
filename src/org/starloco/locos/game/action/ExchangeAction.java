@@ -29,7 +29,7 @@ public class ExchangeAction<T> {
             IN_ZAAPING = 18,
             IN_ZAPPI = 19,
             IN_PRISM = 20,
-            IN_TUTORIAL = 21,
+            IN_SCENARIO = 21,
             FORGETTING_SPELL = 22,
             CRAFTING_BOOK = 23,
             LOCK_TRUNK = 24,

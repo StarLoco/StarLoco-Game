@@ -75,6 +75,10 @@ function Player:ask(question, answers, param) end
 ---@return void
 function Player:endDialog() end
 
+--- Pause dialog
+---@return void
+function Player:pauseDialog() end
+
 ---@param map number
 ---@param cell number
 ---@return void
@@ -203,10 +207,15 @@ function Player:setCtxVal(key, value) end
 ---@return any
 function Player:getCtxVal(key) end
 
+--- Start a scripted scenario
+---@param id number
+---@param date string
+---@param onEnd fun(p:Player,succeed:boolean)
+function Player:startScenario(id, date, onEnd) end
+
 --endregion
 
 ---@class MobGroupDef table<number, table<number,number[]>[]>
-
 
 ---@class Item
 local Item = {}

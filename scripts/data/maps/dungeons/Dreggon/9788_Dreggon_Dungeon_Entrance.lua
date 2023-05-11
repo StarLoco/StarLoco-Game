@@ -95,19 +95,14 @@ local function tryEntering(_, _, p, targetCell)
         end
     end
 
-    -- Teleport the player
-    if targetCell == 110 then
-        p:teleport(10098, 407)
-    elseif targetCell == 125 then
-        p:teleport(10098, 422)
-    end
+    p:teleport(10098, targetCell)
 end
 
 local function onPlayerMove(_, _, p)
     if p:cell() == 110 then
-        tryEntering(_, _, p, 110)
+        tryEntering(_, _, p, 407)
     elseif p:cell() == 125 then
-        tryEntering(_, _, p, 125)
+        tryEntering(_, _, p, 422)
     end
 end
 

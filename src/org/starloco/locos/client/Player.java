@@ -35,6 +35,7 @@ import org.starloco.locos.game.GameServer;
 import org.starloco.locos.game.action.ExchangeAction;
 import org.starloco.locos.game.action.GameAction;
 import org.starloco.locos.game.action.type.NpcDialogActionData;
+import org.starloco.locos.game.action.type.ScenarioActionData;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.guild.GuildMember;
 import org.starloco.locos.job.Job;
@@ -67,6 +68,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -1377,6 +1379,13 @@ public class Player implements Scripted<SPlayer> {
 
         learnJob(job);
         return true;
+    }
+
+    public void startScenario(int id, String date, BiConsumer<Player,Boolean> onEnd) {
+        exchangeAction =  new ExchangeAction<>(
+                ExchangeAction.IN_SCENARIO,
+                new ScenarioActionData(exchangeAction, onEnd));
+        SocketManager.GAME_SEND_TUTORIAL_CREATE(this, id, date);
     }
 
     public static class EnsureSpellLevelResult {
