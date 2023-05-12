@@ -10,7 +10,7 @@ local function onChestOpened(p, succeed)
     if not succeed then
         return
     end
-    p:teleport(1113, 213)
+    p:teleport(1113, 199)
 end
 
 ---@param p Player
