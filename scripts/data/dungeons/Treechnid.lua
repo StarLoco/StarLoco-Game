@@ -87,8 +87,8 @@ local group11 = {
 }
 
 local mapInfos = {
-    [8713] = {groupCell = 238, group = group1, winDest = {8714, 112}},
-    [8714] = {groupCell = 253, group = group2, winDest = {8715, 119}},
+    [8713] = {groupCell = 238, group = group1, winDest = {8709, 112}},
+    [8709] = {groupCell = 253, group = group2, winDest = {8715, 119}},
     [8716] = {groupCell = 310, group = group3, winDest = {8718, 439}},
     [8718] = {groupCell = 97, group = group4, winDest = {8719, 207}},
     [8721] = {groupCell = 338, group = group5, winDest = {8722, 422}},
