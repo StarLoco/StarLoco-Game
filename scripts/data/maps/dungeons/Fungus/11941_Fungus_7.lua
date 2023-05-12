@@ -17,8 +17,4 @@ map.mobGroupsMinSize = 8
 
 -- '0;0;0;0;0;0;0' forbiddens -> capabilities ? Or script ?
 
-map.onMovementEnd = {
-	[307] = moveEndTeleport(11935, 230),
-}
-
 RegisterMapDef(map)

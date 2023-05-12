@@ -17,6 +17,7 @@ map.mobGroupsMaxSize = 6
 map.npcs = {
 	[1036] = {330, 3},
 }
+
 map.allowedMobGrades = {
 	{1155, 1},
 	{1155, 2},
@@ -37,13 +38,13 @@ map.allowedMobGrades = {
 	{1154, 2},
 	{1154, 3},
 	{1154, 4},
-	{1154, 5},
+	{1154, 5}
 }
 -- '0;0;0;0;0;0;0' forbiddens -> capabilities ? Or script ?
 
 map.onMovementEnd = {
 	[24] = moveEndTeleport(11922, 445),
-	[276] = moveEndTeleport(11926, 361),
+	[276] = moveEndTeleport(11926, 361)
 }
 
 RegisterMapDef(map)
