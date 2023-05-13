@@ -69,12 +69,10 @@ jobs:
       # Create release
       - name: Create Release
         id: create_release
-        uses: actions/create-release@latest
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: "marvinpinto/action-automatic-releases@latest"
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          body: Release ${{ github.ref }}
-          draft: true
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
           prerelease: false
+          title: Release ${{ github.ref }}
+          files: |
+            ./build/libs/game.jar
