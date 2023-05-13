@@ -24,17 +24,16 @@ jobs:
           java-version: '8'
           distribution: 'adopt'
 
-      - name: Build JAR
-        run: |
-          find ./src -type f -name "*.java" > sources.txt
-          javac -cp "./libs/*" -d . "@sources.txt"
-          jar cmf ./src/META-INF/MANIFEST.MF ./game.jar -C . ./src
+      - name: Build with Gradle
+        uses: gradle/gradle-build-action@v2.4.2
+        with:
+          arguments: jar
 
       - name: Upload JAR artifact
         uses: actions/upload-artifact@v2
         with:
           name: game-jar
-          path: ./game.jar
+          path: ./build/libs/game.jar
 
       - name: Set output
         id: vars

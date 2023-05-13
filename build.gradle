@@ -32,6 +32,7 @@ dependencies {
 
 jar {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    archiveFileName = "game.jar"
 
     manifest {
         attributes(
