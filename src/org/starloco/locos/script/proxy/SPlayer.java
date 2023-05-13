@@ -5,6 +5,7 @@ import org.classdump.luna.Table;
 import org.classdump.luna.impl.DefaultUserdata;
 import org.classdump.luna.impl.ImmutableTable;
 import org.classdump.luna.lib.ArgumentIterator;
+import org.classdump.luna.runtime.LuaFunction;
 import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.common.SocketManager;
@@ -13,12 +14,14 @@ import org.starloco.locos.entity.monster.MonsterGroup;
 import org.starloco.locos.fight.spells.Spell;
 import org.starloco.locos.game.action.ExchangeAction;
 import org.starloco.locos.game.action.type.NpcDialogActionData;
+import org.starloco.locos.game.action.type.ScenarioActionData;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.job.JobStat;
 import org.starloco.locos.kernel.Constant;
 import org.starloco.locos.object.GameObject;
 import org.starloco.locos.object.ObjectTemplate;
 import org.starloco.locos.quest.QuestProgress;
+import org.starloco.locos.script.DataScriptVM;
 import org.starloco.locos.script.ScriptVM;
 import org.starloco.locos.script.types.MetaTables;
 import org.starloco.locos.util.Pair;
@@ -118,7 +121,16 @@ public class SPlayer extends DefaultUserdata<Player> {
         if(type>9) throw new IllegalArgumentException("SPlayer:sendInfoMsg type param must be < 10");
         int msgId = args.nextInt();
 
-        SocketManager.GAME_SEND_Im_PACKET(p, type+""+msgId);
+        SocketManager.GAME_SEND_Im_PACKET(p, type+String.valueOf(msgId));
+    }
+
+    @SuppressWarnings("unused")
+    private static void startScenario(Player p, ArgumentIterator args) {
+        int id = args.nextInt();
+        ByteString date = args.nextString();
+        LuaFunction<?,?,?,?,?> onEnd = args.nextFunction();
+
+        p.startScenario(id, date.toString(), (player, succeed) -> DataScriptVM.getInstance().call(onEnd, player.scripted(), succeed));
     }
     //endregion
 
@@ -145,6 +157,16 @@ public class SPlayer extends DefaultUserdata<Player> {
         p.setAway(false);
         p.setExchangeAction(null);
         SocketManager.GAME_SEND_END_DIALOG_PACKET(p.getGameClient());
+    }
+
+    @SuppressWarnings("unused")
+    private static void pauseDialog(Player p) {
+        if (p.getExchangeAction() == null || p.getExchangeAction().getType() != ExchangeAction.TALKING_WITH ){
+            return;
+        }
+        p.setAway(false);
+        p.setExchangeAction(null);
+        SocketManager.GAME_SEND_PAUSE_DIALOG_PACKET(p.getGameClient());
     }
     //endregion
 

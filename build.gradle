@@ -1,0 +1,44 @@
+apply plugin: 'java'
+
+group 'org.starloco.locos'
+// Get version from git tag, fallback to git commit hash
+version 'git rev-parse --abbrev-ref HEAD'.execute().getText().trim()
+if (version == 'HEAD') {
+    version 'git rev-parse --short HEAD'.execute().getText().trim()
+}
+
+// Make sure we compile in UTF-8 mode
+compileJava.options.encoding = 'UTF-8'
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs 'src'
+        }
+        resources {
+            srcDirs "src/org/starloco/locos/lang/translation"
+
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+}
+
+jar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+    manifest {
+        attributes(
+            'Main-Class': 'org.starloco.locos.kernel.Main'
+        )
+    }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}

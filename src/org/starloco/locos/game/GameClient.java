@@ -13,6 +13,7 @@ import io.jsonwebtoken.security.Keys;
 import org.starloco.locos.entity.exchange.NpcExchange;
 import org.starloco.locos.game.action.type.BigStoreActionData;
 import org.starloco.locos.game.action.type.NpcDialogActionData;
+import org.starloco.locos.game.action.type.ScenarioActionData;
 import org.starloco.locos.hdv.BigStore;
 import org.starloco.locos.util.Pair;
 import org.apache.mina.core.session.IoSession;
@@ -24,7 +25,6 @@ import org.starloco.locos.area.map.entity.InteractiveDoor;
 import org.starloco.locos.area.map.entity.InteractiveObject;
 import org.starloco.locos.area.map.entity.MountPark;
 import org.starloco.locos.area.map.entity.Trunk;
-import org.starloco.locos.area.map.entity.Tutorial;
 import org.starloco.locos.auction.AuctionManager;
 import org.starloco.locos.client.Account;
 import org.starloco.locos.client.Player;
@@ -6986,40 +6986,24 @@ public class GameClient {
      * Other *
      */
     private void parseTutorialsPacket(String packet) {
-        if(this.player.getExchangeAction() == null || this.player.getExchangeAction().getType() != ExchangeAction.IN_TUTORIAL)
+        if(this.player.getExchangeAction() == null || this.player.getExchangeAction().getType() != ExchangeAction.IN_SCENARIO)
             return;
         String[] param = packet.split("\\|");
-        Tutorial tutorial = (Tutorial) this.player.getExchangeAction().getValue();
-        this.player.setExchangeAction(null);
-        switch (packet.charAt(1)) {
-            case 'V':
-                if (packet.charAt(2) != '0' && packet.charAt(2) != '4') {
-                    try {
-                        int index = Integer.parseInt(packet.charAt(2) + "") - 1;
-                        tutorial.getReward().get(index).apply(this.player, null, -1, (short) -1, null);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-                try {
-                    Action end = tutorial.getEnd();
-                    if (end != null && this.player != null)
-                        end.apply(this.player, null, -1, (short) -1, null);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                this.player.setAway(false);
-                try {
-                    this.player.set_orientation(Byte.parseByte(param[2]));
-                    this.player.getCurCell().removePlayer(this.player);
-                    GameCase cell = this.player.getCurMap().getCase(Short.parseShort(param[1]));
-                    cell.addPlayer(player);
-                    this.player.setCurCell(cell);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                break;
+        ScenarioActionData sad = (ScenarioActionData) this.player.getExchangeAction().getValue();
+
+        if(packet.charAt(1) != 'V') {
+            return;
         }
+        boolean succeed = packet.charAt(2) == '1';
+
+        // Move player to expected cell (FIXME can probably be used to teleport)
+        this.player.set_orientation(Byte.parseByte(param[2]));
+        this.player.getCurCell().removePlayer(this.player);
+        GameCase cell = this.player.getCurMap().getCase(Short.parseShort(param[1]));
+        cell.addPlayer(player);
+        this.player.setCurCell(cell);
+
+        sad.onCompletion(player, succeed);
     }
 
     /**

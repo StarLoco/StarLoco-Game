@@ -1,0 +1,67 @@
+local map = MapDef(
+        10103,
+        "0706131721",
+        "395636447a3d775a597c6a484c6c5d38332a4e244c666e57433c2e27506a216f605b522c6e2e69273e51435c5f47444877614757496d4962724f2e3443692432557a64795847782532427b295b6a614655597578454423345e3744683c6f60616a395a5f574c5b75246f6d3e575b3763584c7a2625323553304e28295e376b226f4d2d6d685e7e3a6a544d5c3f2848696474337045",
+        "HhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaagaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhffeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhfdgaaaaaHhffeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhK7eaaaaaHhfdeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhfdgaaaaaHhK7eaaaaaHhfdeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhfdeaaaaaHhfdeaaaaaHhaagaaaZ8HhLleaaaaaHhfdeaaaaaHhaaeaaaaaHhaaeaaaaaHhfdgaaaaaHhK7eaaaaaHhK9eaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhe7eaaaA6HhffeaaaaaHhaagaaaZ_HhLkeaaaaaHhffeaaaaaHhfneZVaZNHhffgaaaaaHhK7eaaaaaHhaaeaaaZ8HhLleaaaaaHhffeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhe-eaaaaaHhK7eaaaaaHhaaeaaaaaHhaagaaaZ_HhLaeaaaaaHhGaeaaaaaHhGaeaaaaaHhK7eaaaaaHhaaeaaeZ_HhaagaaaZ8HhLleaaaaaHhfdeaaaaaHhaaeaaaaaHhaaeaaaaaHhaagaaaZ8HhLkeaaaaaHhLleaaaaaHhfdeaaaaaHhaagaaaZ8HhLneaaaaaHhGaeaaaaaHhLneaaaaaHhaaeaaeZ_HhaaeaaaaaHhaaeaaaaaHhLleaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaagaaaZ_HhLkeaaaaaHhK7eaaaaaHhfdeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeZ3aaaHhaaeaaaaaHhaaeaaaaaHhaagaaaZ_HhLleaaaaaHhffeaaaaaHhaaeaaaaaHhffeaaaaaHhaagaaaZ8HhLkeaaaaaHhLleaaaaaHhLneaaaA6HhGaeaaaaaHhaaeaaaAYHhGaeaaeaaHhLneaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaZ_HhK_eaaaaaHhfdeaaaaaHhK7eaaaaaHhfdeaaaaaHhaagaaaZ8HhK_eaaaaaHhGaeZ3aaaHhGaeaaaaaHhaaeaaaaaHhaaeaaaaaHhGaeaaaaaHhGaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaagaaaZ8HhK_eaaaaaHhaaeaaaZ8HhLleaaaaaHhffeaaaaaHhaagaaaaaHhLneaaaaaHhGaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhGaeaaaaaHhLneaaaaaHhaaeaaaaaHhfdgaaaaaHhK_eaaaaaHhaaeaaeZ8HhaaeaaaZ_HhLkeaaaaaHhfdeaaaaaHhGaeaaaaaHhGaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaagaaaaaHhaaeaaaaaHhGaeaaaaaHhGaeaaaaaHhaaeaaaaaHhK_eaaaaaHhaaeaaeZ8HhaagaaaaaHhaaeaaaZ8HhLaeaaaaaHhLneaaaaaHhGaeaaaaaHhaaeaaaaaHhaaeaaaaaHhfpeaaaaaHhaaeaaaaaHhaaeaaaaaHhGaeaaaaaHhGaeaaaaaHhK_eaaaaaHhaaeaaeZ_HhaaeaaaAYHhaagaaaaaHhaaeaaaaaHhGaeaaaaaHhGaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhGaeaaaaaHhGagaaaaaHhaaeaaeZ_HhaaeaaaaaHhaaeaaaaaHhaagaaaaaHhfneZVaZzHhGaeaaaaaHhaaeaaaaaHhaaeaaaaaHhfpeaaaaaHhaagaaaaaHhfpeaaaaaHhaaeaaaaaHhaaeaaaaaHhK8eaaaA5HhLneaaeaaHhaaeaaaaaHhaaeaaeaaHhaaeaaaaaHhGaeaaaA5HhGaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhGaeaaaaaHhaaeZVaZNHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhGaeasaaaHhLneaaaaaHhaaeaaaaaHhfpeaaaaaHhaaeaaaaaGhfpeaaaZvHhaaeaaaaaHhfpeaaaaaHhaaeaaaaaHhLneaaaaaHhGaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaAXHhaaeasaaaHhGaeasaaaHhiaeaaaAWHhaaeaaaaaHhaaeaaaaaHhaagaaaaaHhfkeaaaaaHhaaeaaaaaHhaaeaaaaaHhLneaaaaaHhGaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaag0baaaHhK8eaaaaaHhLpeaaaaaHhaaeaaaaaHhfpeaaaaaHhaaeaaaaaHhfpeaaaaaHhaaeaaaaaHhLpeaaaaaHhGaeaaaaaHhK7eaaaaaHhfdeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaagaaaaaHhK8eaaaaaHhGaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaagaaaaaHhaaeaaaaaHhGaeaaaaaHhK8eaaaaaHhaaeaaaZ8HhLleaaaaaHhffeaaaaaHhaaeaaaZOHhaaeaaaaaHhfdgaaaaaHhLaeaaaaaHhGaeaaaaaHhLpeaaaaaHhaaeaaaaaHhfpeaaaaaHhaaeaaaaaHhLpeZ3aaaHhGaeaaaaaHhffeaaaaaHhaaeaaaZ_HhLleaaaaaHhfdeaaaaaHhGaeaaaaaHhfdgaaaaaHhK-eaaaaaHhaaeaaeZ_HhK8eaaaaaHhGaeaaaaaHhaagaaaaaHhaaeaaaaaHhGaeaaaaaHhK8eaaaaaHhK9eaaaaaHhaaeaaaaaHhaaeaaaZ8HhLaeaaaaaHhe8eaaaA6HhGaeaaaaaHhK7eaaaaaHhaaeaaeZ8HhaaeaaaaaHhGaeaaaaaHhLpeaaaaaHhaaeaaaaaHhLpeaaaaaHhGaeaaaaaHhK9eaaaaaHhLkeaaaaaHhfdeaaaaaHhaaeaaaZ8HhaaeaaeZ_HhK8eaaaaaHhGaeaaaaaHhaaeaaeZ8HhaaeaaaaaHhfdgaaaaaHhK8eaaaaaHhGaeaaeaaHhGaeaaaaaHhK8eaaaaaHhaaeaaaZ8HhLkeaaaaaHhLleaaaaaHhffeaaaaaHhaaeaaeaaHhaagaaaaaHhK8eZ3aaaHhGaeaaaaaHhaaeaaaaaHhaaeaaaaaHhK7eaaaaaHhGaeaaaaaHhLpeaaaaaHhGaeaaaaaHhffeaaaaaHhaaeaaaaaHhLkeaaaaaHhLkeaaaaaHhfdeaaaaaHhaaeaaaaaHhGaeSIaaaHhGaeaaaaaHhGaeaaaaaHhfdgaaaaaHhK7eaaaaaHhaagaaeZ_HhK8eaaaaaGhe8eaaaZLHhK7eaaaaaHhfdeaaaaaHhaaeaaaZ8HhLleaaaaaHhLaeaaaaaHhaaeaaaaaHhe8eaaaaaHhGaeaaaaaHhK8eaaaaaHhGaeaaaaaHhK-eaaaaaHhaagaaeZ8Hhaae0aaaaGhe8eaaaZKHhaaeaaaZ8HhLkeaaaaaHhaaeaaaaaHhaaeaaaZ8HhK_eaaaaaHhaaeaaaaaHhaaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhaagaaeZ8HhaaeaaaaaHhaaeZ5aaaHhaaeaaaaaHhaaeaaaaaHhLkeaaaaaHhfdeaaaaaHhaaeaaaaaHhaaeaaaZ_HhaaeaaaaaHhaaeaaaA5HhK8eaaaaaHhGaeaaaaaHhK8eaaaaaHhGaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaZ8HhK_eaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhGaeaaaaaGhaaeaaaaaHhGaeaaaaaHhK8eaaaaaHhLneaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhe8eaaaA5HhfqeaaaA6Hhe8eaaaA2GhfneaaaaaHhaaeaaaZNHhaaeasaZzHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaGhaaeaaaAV",
+        15,
+        17,
+        -3,
+        24,
+        330
+)
+
+map.positions = "fDf6f7gxgygzg1g2g3|bTckclcOcPdgdhdKdL"
+map.capabilities = 46
+map.mobGroupsCount = 1
+map.mobGroupsMinSize = 7
+map.mobGroupsMaxSize = 7
+
+map.allowedMobGrades = {
+    {91, 1},
+    {91, 2},
+    {91, 3},
+    {91, 4},
+    {91, 5},
+    {858, 1},
+    {858, 2},
+    {858, 3},
+    {858, 4},
+    {858, 5},
+    {878, 1},
+    {878, 2},
+    {878, 3},
+    {878, 4},
+    {878, 5},
+    {879, 1},
+    {879, 2},
+    {879, 3},
+    {879, 4},
+    {879, 5},
+    {905, 1},
+    {905, 2},
+    {905, 3},
+    {905, 4},
+    {905, 5},
+    {848, 1},
+    {848, 2},
+    {848, 3},
+    {848, 4},
+    {848, 5},
+    {884, 1},
+    {884, 2},
+    {884, 3},
+    {884, 4},
+    {884, 5},
+    {885, 1},
+    {885, 2},
+    {885, 3},
+    {885, 4},
+    {885, 5},
+    {886, 1},
+    {886, 2},
+    {886, 3},
+    {886, 4},
+    {886, 5}
+}
+
+RegisterMapDef(map)

@@ -573,6 +573,9 @@ public class SocketManager {
         send(out, packet);
     }
 
+    public static void GAME_SEND_TUTORIAL_CREATE(Player out, int id, String date) {
+        SocketManager.send(out, "TC" + id + "|"+date);
+    }
     public static void GAME_SEND_Im_PACKET_TO_MAP(GameMap map, String id) {
         String packet = "Im" + id;
         for (Player z : map.getPlayers())
@@ -1082,6 +1085,11 @@ public class SocketManager {
 
     public static void GAME_SEND_END_DIALOG_PACKET(GameClient out) {
         String packet = "DV";
+        send(out, packet);
+    }
+
+    public static void GAME_SEND_PAUSE_DIALOG_PACKET(GameClient out) {
+        String packet = "DP";
         send(out, packet);
     }
 

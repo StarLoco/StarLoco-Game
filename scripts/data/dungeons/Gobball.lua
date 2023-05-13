@@ -112,7 +112,7 @@ local mapInfos = {
     [2080] = {groupCell = 183, group = group7, winDest = {2081, 409}},
     [2081] = {groupCell = 296, group = group8, winDest = {2082, 409}},
     [2082] = {groupCell = 268, group = group9, winDest = {2083, 409}},
-    [2083] = {groupCell = 269, group = group10, winDest = {2084, 409}}
+    [2083] = {groupCell = 269, group = group10, winDest = {2084, 395}}
 }
 
 for k, v in pairs(mapInfos) do
