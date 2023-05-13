@@ -28,6 +28,7 @@ jobs:
       - name: Build with Gradle
         uses: gradle/gradle-build-action@v2.4.2
         with:
+          gradle-version: 8.0.2
           arguments: jar
 
       - name: Upload JAR artifact
