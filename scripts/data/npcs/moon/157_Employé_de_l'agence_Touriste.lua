@@ -5,6 +5,7 @@ local price = 200
 ---@param answer number
 function npc:onTalk(p, answer)
     if answer == 0 then p:ask(550, {466, 464, 465, 482})
+        elseif answer == 466 then p:ask(553)
     elseif answer == 464 then p:ask(551, {468})
     elseif answer == 468 then
         p:ask(555, {469})

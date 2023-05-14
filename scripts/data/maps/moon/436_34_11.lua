@@ -15,7 +15,7 @@ map.capabilities = 32
 map.mobGroupsCount = 3
 map.mobGroupsMinSize = 8
 map.npcs = {
-	[157] = {179, 1},
+	[157] = {179, 1}
 }
 map.allowedMobGrades = {
 	{208, 1},
