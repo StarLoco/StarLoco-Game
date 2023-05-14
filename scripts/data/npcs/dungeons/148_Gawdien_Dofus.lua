@@ -4,7 +4,7 @@ local npc = Npc(148, 1056)
 ---@param answer number
 function npc:onTalk(p, answer)
     local hasAllItems = p:getItem(969) and p:getItem(970) and p:getItem(971)
-    local consumeAllItems = p:consumeItem(969, 1) and p:consumeItem(970, 1) and p:consumeItem (971, 1)
+    local consumeAllItems = p:consumeItem(969, 1) and p:consumeItem(970, 1) and p:consumeItem(971, 1)
     local showDofusResponse = 414
 
     if answer == 0 then
