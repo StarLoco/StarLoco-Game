@@ -12,16 +12,14 @@ local map = MapDef(
 
 map.positions = "eaeyezeAeXeYeZfl|bDbEb1b2b3b4cpcq"
 map.capabilities = 738
-map.mobGroupsCount = 3
-map.mobGroupsMinSize = 8
 map.npcs = {
-	[436] = {181, 1},
+	[436] = {181, 1}
 }
 -- '0;0;0;0;0;0;0' forbiddens -> capabilities ? Or script ?
 
 map.onMovementEnd = {
 	[278] = moveEndTeleport(1547, 423),
-	[284] = moveEndTeleport(750, 215),
+	[284] = moveEndTeleport(750, 215)
 }
 
 RegisterMapDef(map)
