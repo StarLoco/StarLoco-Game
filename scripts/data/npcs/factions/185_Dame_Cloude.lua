@@ -1,5 +1,5 @@
 local npc = Npc(185, 9012)
-
+--TODO: Quête Alignement 2 Bontarien
 npc.gender = 1
 npc.colors = {13922159, 15183606, 15368144}
 
