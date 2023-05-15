@@ -15,7 +15,7 @@ map.capabilities = 738
 map.mobGroupsCount = 3
 map.mobGroupsMinSize = 8
 map.npcs = {
-    [436] = {181, 1},
+    [436] = {181, 1}
 }
 -- '0;0;0;0;0;0;0' forbiddens -> capabilities ? Or script ?
 

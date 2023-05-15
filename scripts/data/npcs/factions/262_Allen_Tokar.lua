@@ -1,7 +1,7 @@
 local npc = Npc(262, 9004)
-
+--TODO: Lié à la quête Alignement 28 Bonta
 npc.sales = {
-    {item=946}
+    {item = 946}
 }
 
 ---@param p Player

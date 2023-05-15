@@ -1,5 +1,5 @@
 local npc = Npc(256, 9015)
---TODO: Lié à la quête Alignement Bonta #12
+--TODO: Lié à la quête d'alignement Bonta 12
 npc.sales = {
     {item = 493},
     {item = 494},

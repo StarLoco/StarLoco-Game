@@ -1,5 +1,5 @@
 local npc = Npc(233, 9045)
-
+--TODO: Lié à plusieurs quêtes d'alignement Bonta
 npc.accessories = {0, 1908, 0, 0, 0}
 
 ---@param p Player

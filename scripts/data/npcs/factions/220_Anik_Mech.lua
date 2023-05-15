@@ -1,5 +1,5 @@
 local npc = Npc(220, 9013)
---Lié aux quêtes d'alignement Bonta 28 & 32
+--TODO: Lié aux quêtes Alignement Bonta 28 & 32
 npc.gender = 1
 npc.accessories = {0, 1019, 0, 0, 0}
 

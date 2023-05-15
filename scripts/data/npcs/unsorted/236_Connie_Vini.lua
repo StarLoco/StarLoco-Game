@@ -1,5 +1,5 @@
 local npc = Npc(236, 9013)
-
+--TODO: Lié à la quête d'alignement 12 Bonta
 npc.gender = 1
 npc.colors = {4096672, 16777215, 1483286}
 

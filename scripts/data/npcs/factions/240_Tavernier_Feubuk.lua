@@ -1,5 +1,5 @@
 local npc = Npc(240, 1207)
---TODO: Lié à la quête Alignement Bonta #6
+--TODO: Lié à la quête d'alignement Bonta 6
 npc.colors = {8355711, -1, -1}
 
 npc.sales = {

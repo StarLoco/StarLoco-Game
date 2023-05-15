@@ -1,5 +1,5 @@
 local npc = Npc(259, 9025)
-
+--TODO: Lié à plusieurs quêtes Alignement Bonta/Brâkmar
 ---@param p Player
 ---@param answer number
 function npc:onTalk(p, answer)

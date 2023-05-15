@@ -1,5 +1,5 @@
 local npc = Npc(203, 90)
---Lié à la quête d'alignement 38 Bonta
+--TODO: Lié à la quête Alignement Bonta 38
 npc.colors = {0, 5618448, 3828287}
 npc.accessories = {0, 708, 0, 0, 0}
 
