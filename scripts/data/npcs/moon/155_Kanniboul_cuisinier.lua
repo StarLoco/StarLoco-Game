@@ -13,7 +13,7 @@ function npc:onTalk(p, answer)
 
         if hasAllItems then
             if consumeAll then
-                p:ask(584, {497})
+                p:ask(584, {496})
             else
                 p:endDialog()
             end
