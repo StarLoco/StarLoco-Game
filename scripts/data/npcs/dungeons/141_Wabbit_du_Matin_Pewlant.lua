@@ -9,7 +9,7 @@ function npc:onTalk(p, answer)
         else
             p:ask(467, {391})
         end
-        elseif answer == 391 then
+    elseif answer == 391 then
         p:addItem(961)
         p:endDialog()
     end

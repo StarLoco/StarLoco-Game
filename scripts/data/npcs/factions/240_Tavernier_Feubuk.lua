@@ -13,5 +13,5 @@ function npc:onTalk(p, answer)
     if answer == 0 then p:ask(932)
     end
 end
---TODO: Quête Alignement Ange 6
+
 RegisterNPCDef(npc)

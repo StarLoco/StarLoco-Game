@@ -1,5 +1,5 @@
 local npc = Npc(215, 1197)
-
+--Lié aux quêtes d'alignement 20/28/45
 npc.accessories = {0, 0, 945, 0, 0}
 
 ---@param p Player

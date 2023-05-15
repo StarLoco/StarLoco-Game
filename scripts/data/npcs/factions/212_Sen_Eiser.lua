@@ -1,5 +1,5 @@
-local npc = Npc(218, 9049)
-
+local npc = Npc(212, 9049)
+--Lié à la quête d'alignement 50 Bonta
 ---@param p Player
 ---@param answer number
 function npc:onTalk(p, answer)
