@@ -1,5 +1,5 @@
 local npc = Npc(300, 9008)
-
+--TODO: Mini "quête" avec timer pour devenir pêcheur
 npc.sales = {
     {item=1866},
     {item=1865},

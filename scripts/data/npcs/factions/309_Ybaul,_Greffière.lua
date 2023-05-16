@@ -1,5 +1,5 @@
 local npc = Npc(309, 9013)
-
+--TODO: Lié à la quête d'Alignement 20 Bonta
 npc.gender = 1
 
 ---@param p Player

@@ -1,5 +1,5 @@
 local npc = Npc(280, 9067)
-
+--TODO: Lié à plusieurs quêtes d'Alignement Brâkmar
 npc.colors = {13765674, 4074807, 0}
 
 npc.sales = {

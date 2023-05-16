@@ -1,5 +1,5 @@
 local npc = Npc(305, 9006)
-
+--TODO: Lié à plusieurs quêtes d'Alignement Bonta & permet de choisir la spécialisation alignement 40
 ---@param p Player
 ---@param answer number
 function npc:onTalk(p, answer)

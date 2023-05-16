@@ -1,5 +1,5 @@
 local npc = Npc(293, 1207)
-
+--TODO: Lié à la quête d'Alignement 42 Brâkmar
 npc.sales = {
     {item=2086},
     {item=311}
