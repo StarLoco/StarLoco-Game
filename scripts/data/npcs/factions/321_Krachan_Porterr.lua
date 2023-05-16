@@ -1,5 +1,5 @@
 local npc = Npc(321, 1012)
-
+--TODO: Lié à la quête d'Alignement 22 Brâkmar
 ---@param p Player
 ---@param answer number
 function npc:onTalk(p, answer)
