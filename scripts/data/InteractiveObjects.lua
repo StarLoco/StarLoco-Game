@@ -1,3 +1,21 @@
+ResourceObjectType = 1 -- Trees, Ores, plants, etc
+JobToolsObjectType = 2 -- Fabrication Table, workshop, cauldron, etc
+ZaapObjectType = 3
+FountainObjectType = 4 -- Incarnam healing fountain
+DoorObjectType = 5
+StorageObjectType = 6
+PotObjectType = 7 -- Only one (id=60) which allow to regenerate (sk=111)
+-- 8 unused
+-- 9 unused
+ZaapiObjectType = 10
+-- 11 unused
+CraftsmenBookObjectType = 12
+MountParkObjectType = 13
+SwitchObjectType = 14
+ClassStatueObjectType = 15
+Unk1ObjectType = 16  -- Only one (id=131) which allow to use/leave/[ref Maison]/[ref CoffreMaison] whatever that is
+
+-- Do we actually need that ?
 GfxToObjectId = {
     [7500] = 1,
     [7003] = 2,

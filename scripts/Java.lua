@@ -87,6 +87,9 @@ function Player:teleport(map, cell) end
 ---@return void
 function Player:openBank() end
 
+---@return void
+function Player:openZaap() end
+
 ---@param template number
 ---@param quantity number
 ---@return Item

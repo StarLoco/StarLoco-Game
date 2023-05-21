@@ -21,6 +21,7 @@ loadPack("./data/notloaded/npcs/untested")
 loadPack("./data/maps")
 loadPack("./data/quests")
 loadPack("./data/objects")
+loadPack("./data/skills")
 
 loadPack("./data/dungeons") -- Always load last
 

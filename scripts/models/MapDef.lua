@@ -23,6 +23,7 @@
 ---@field onFightInit table<number, fun(md:MapDef, m:Map,team1:Fighter[], team2:Fighter[])> K: fight type, V: Handler function
 ---@field onFightStart table<number, fun(md:MapDef, m:Map,team1:Fighter[], team2:Fighter[])> K: fight type, V: Handler function
 ---@field onFightEnd table<number, fun(md:MapDef, m:Map, winners:Fighter[], losers:Fighter[])> K: fight type, V: Handler function
+---@field objects table<number, number> K: cellId, V: ObjectDefId
 ---
 
 -- Capabilities:
@@ -67,6 +68,7 @@ setmetatable(MapDef, {
         self.onFightInit = {}
         self.onFightStart = {}
         self.onFightEnd = {}
+        self.objects = {}
         self.zaapCell = nil
 
         if MAPS[id] then
@@ -78,9 +80,19 @@ setmetatable(MapDef, {
     end,
 })
 
----@param inst Map
-function MapDef:update(inst) end
+---@param p Player
+---@param cellId number
+---@param skillId number
+---@return boolean worked
+function Map:onObjectUse(p, cellId, skillId)
+    local id = self.objects[cellId]
+    if not id then return end
 
+    local def = IO_DEFS[id]
+    if not def then return end
+
+    return def:onUseSkill(p, skillId)
+end
 
 ---@param mapId number
 ---@param cellId number

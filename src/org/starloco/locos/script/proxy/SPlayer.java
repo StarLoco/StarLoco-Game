@@ -73,6 +73,11 @@ public class SPlayer extends DefaultUserdata<Player> {
     }
 
     @SuppressWarnings("unused")
+    private static void openZaap(Player p) {
+        p.openZaapMenu();
+    }
+
+    @SuppressWarnings("unused")
     private static Object getCtxVal(Player p, ArgumentIterator args) {
         String key = args.nextString().toString();
         return Optional.ofNullable(p.getExchangeAction()).map(a -> a.getContextValue(key)).orElse(null);
