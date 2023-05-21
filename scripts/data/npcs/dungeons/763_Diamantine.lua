@@ -7,6 +7,7 @@ npc.colors = {4048569, 4048569, 4048569}
 ---@param answer number
 function npc:onTalk(p, answer)
     local hasAllItem = p:getItem(8077, 10) and p:getItem(8064, 10) and p:getItem(8075, 10) and p:getItem(8076, 10)
+    local consumeAllItems = p:consumeItem(8077, 10) and p:consumeItem(8064, 10) and p:consumeItem(8075, 10) and p:consumeItem(8076, 10)
     if answer == 0 then
         p:ask(3147, {2768})
     elseif answer == 2768 then
@@ -21,8 +22,8 @@ function npc:onTalk(p, answer)
         p:ask(3149, {2770})
     elseif answer == 2770 then
         if hasAllItem then
-            if
-            p:consumeItem(8077, 10) and p:consumeItem(8064, 10) and p:consumeItem(8075, 10) and p:consumeItem(8076, 10) then
+            if consumeAllItems
+            then
                 p:setSpellLevel(364, 1)
                 p:endDialog()
             else

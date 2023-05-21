@@ -5,7 +5,7 @@ npc.accessories = {0, 8009, 8007, 0, 0}
 ---@param p Player
 ---@param answer number
 function npc:onTalk(p, answer)
-    local hasAllItems = p:getItem(7904, 50) and p:getItem(7903, 50)
+    local hasAllItems = p:getItem(7904, 50) and p:getItem(7903, 50) and p:spellLevel(414) < 1
     if answer == 0 then
         local responses = hasAllItems and {2754, 2753} or {2753}
         p:ask(3127, responses)

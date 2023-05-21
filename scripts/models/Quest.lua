@@ -49,6 +49,13 @@ function Quest:ongoingFor(p)
 end
 
 ---@param p Player
+---@return QuestStep
+function Quest:currentStepFor(p)
+    local sId = p:_currentStep(self.id)
+    return sId and self:step(sId)
+end
+
+---@param p Player
 ---@param npcId number
 function Quest:startFor(p, npcId)
     if not self:availableTo(p) then return false end

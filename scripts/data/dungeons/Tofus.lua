@@ -44,19 +44,19 @@ local grouproyaltofu = {
 
 local mapInfos = {
 
-    [9521] = {groupCell = 228, group= group1, winDest = {9523, 436}},
+    [9521] = {groupCell = 228, group = group1, winDest = {9523, 436}},
     [9523] = {winDest = {9524, 436}},
     [9524] = {winDest = {9525, 436}},
     [9530] = {winDest = {9533, 450}},
     [9533] = {winDest = {9765, 436}},
-    [9765] = {groupCell = 168, group= group2, winDest = {9766, 436}},
-    [9766] = {groupCell = 311, group= grouptofuboss, winDest = {9522, 436}},
+    [9765] = {groupCell = 168, group = group2, winDest = {9766, 436}},
+    [9766] = {groupCell = 311, group = grouptofuboss, winDest = {9522, 436}},
     [9528] = {winDest = {9531, 434}},
     [9531] = {winDest = {9534, 434}},
     [9529] = {winDest = {9532, 436}},
     [9532] = {winDest = {9534, 434}},
     [9534] = {winDest = {9535, 436}},
-    [9535] = {groupCell = 340, group= grouproyaltofu, winDest = {9522, 436}}
+    [9535] = {groupCell = 340, group = grouproyaltofu, winDest = {9522, 436}}
 }
 
 for k, v in pairs(mapInfos) do

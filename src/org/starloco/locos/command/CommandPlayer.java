@@ -313,7 +313,7 @@ public class CommandPlayer {
         int mapId = player.getCurMap().getId();
         if (player.isInPrison() || player.cantTP() || player.getFight() != null || Config.gameServerId == 22)
             return true;
-        player.teleport((short) 10111, 151);
+        player.teleport((short) 952, 250);
 
         final Party party = player.getParty();
         if(party != null && party.getMaster() != null && party.getMaster().getName().equals(player.getName())) {
@@ -321,7 +321,7 @@ public class CommandPlayer {
                 if (slave.getCurMap().getId() == mapId) {
                     if (!player.isInPrison() && !player.cantTP())
                         if (player.getFight() == null)
-                            slave.teleport((short) 10111, 151);
+                            slave.teleport((short) 952, 250);
                 }
             });
         }
