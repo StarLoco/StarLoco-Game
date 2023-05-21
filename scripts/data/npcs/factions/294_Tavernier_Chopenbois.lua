@@ -1,5 +1,5 @@
 local npc = Npc(294, 1207)
---TODO: Lié à la quête Alignement Bonta #91 (est-ce que implanté sur offi ?) ou #41/#42 Brâkmar
+--TODO: Lié aux quêtes Alignement Brâkmar 41 & 42
 npc.colors = {5643035, -1, -1}
 
 npc.sales = {

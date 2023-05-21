@@ -1,5 +1,9 @@
 local npc = Npc(409, 9015)
 
+npc.sales = {
+    {item = 6601}
+}
+
 ---@param p Player
 ---@param answer number
 function npc:onTalk(p, answer)

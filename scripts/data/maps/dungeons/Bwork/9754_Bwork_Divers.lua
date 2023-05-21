@@ -13,9 +13,59 @@ local map = MapDef(
 map.positions = "eTfkfxfNf1gbgcgd|cicwcLc0dodCdDdS"
 map.capabilities = 46
 
+local function tryEntering(_, _, p)
+    local teleportCells = {
+        295, 310, 326, 311, 296, 281, 266, 251, 237, 252, 267, 282, 297,
+        312, 298, 283, 268, 253, 238, 223, 209, 224, 239, 254, 269, 284,
+        270, 255, 240, 225, 210, 196, 211, 226, 241
+    }
+
+    local playerCell = p:cell()
+    for _, cell in ipairs(teleportCells) do
+        if playerCell == cell then
+            p:teleport(9761, 268)
+            return
+        end
+    end
+end
+
 map.onMovementEnd = {
     [163] = moveEndTeleport(9753, 403),
-    [184] = moveEndTeleport(9755, 351)
+    [184] = moveEndTeleport(9755, 351),
+    [295] = tryEntering,
+    [310] = tryEntering,
+    [326] = tryEntering,
+    [311] = tryEntering,
+    [296] = tryEntering,
+    [281] = tryEntering,
+    [266] = tryEntering,
+    [251] = tryEntering,
+    [237] = tryEntering,
+    [252] = tryEntering,
+    [267] = tryEntering,
+    [282] = tryEntering,
+    [297] = tryEntering,
+    [312] = tryEntering,
+    [298] = tryEntering,
+    [283] = tryEntering,
+    [268] = tryEntering,
+    [253] = tryEntering,
+    [238] = tryEntering,
+    [223] = tryEntering,
+    [224] = tryEntering,
+    [239] = tryEntering,
+    [254] = tryEntering,
+    [269] = tryEntering,
+    [284] = tryEntering,
+    [270] = tryEntering,
+    [255] = tryEntering,
+    [240] = tryEntering,
+    [225] = tryEntering,
+    [210] = tryEntering,
+    [196] = tryEntering,
+    [211] = tryEntering,
+    [226] = tryEntering,
+    [241] = tryEntering,
 }
 
 RegisterMapDef(map)
