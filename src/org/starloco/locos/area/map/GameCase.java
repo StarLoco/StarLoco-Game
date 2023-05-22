@@ -755,15 +755,15 @@ public class GameCase {
             player.send("BN");
             return;
         }
-        int actionID = -1;
+        int skillId = -1;
         short CcellID = -1;
         try {
-            actionID = Integer.parseInt(GA.args.split(";")[1]);
+            skillId = Integer.parseInt(GA.args.split(";")[1]);
             CcellID = Short.parseShort(GA.args.split(";")[0]);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        if (actionID == -1) {
+        if (skillId == -1) {
             SocketManager.GAME_SEND_MESSAGE(player, player.getLang().trans("area.map.gamecase.startaction.idnull"));
             return;
         }
@@ -771,7 +771,7 @@ public class GameCase {
             SocketManager.GAME_SEND_MESSAGE(player, player.getLang().trans("area.map.gamecase.startaction.current.action"));
             return;
         }
-        if (JobConstant.isJobAction(actionID) && player.getFight() == null) {
+        if (JobConstant.isJobAction(skillId) && player.getFight() == null) {
             if (player.getPodUsed() > player.getMaxPod()) {
                 SocketManager.GAME_SEND_Im_PACKET(player, "112");
                 return;
@@ -783,10 +783,10 @@ public class GameCase {
                 }
             }
             player.setDoAction(true);
-            player.doJobAction(actionID, this.object, GA, this);
+            player.doJobAction(skillId, GA.id, this);
             return;
         }
-        switch (actionID) {
+        switch (skillId) {
             case 111:
             case 62://Fontaine de jouvence
                 SocketManager.GAME_SEND_MESSAGE(player, player.getLang().trans("area.map.gamecase.startaction.fountain"));

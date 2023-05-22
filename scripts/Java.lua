@@ -90,6 +90,11 @@ function Player:openBank() end
 ---@return void
 function Player:openZaap() end
 
+---@param cellId number
+---@param skillId number
+---@return void
+function Player:useCraftSkill(cellId, skillId) end
+
 ---@param template number
 ---@param quantity number
 ---@return Item

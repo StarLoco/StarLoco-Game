@@ -18,6 +18,7 @@ requireReload("./models/InteractiveObjectDef")
 
 -- Load instances
 loadPack("./data/notloaded/npcs/untested")
+loadPack("./data/npcs")
 loadPack("./data/maps")
 loadPack("./data/quests")
 loadPack("./data/objects")

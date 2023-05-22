@@ -66,11 +66,11 @@ public class JobStat {
         return null;
     }
 
-    public void startAction(int id, Player P, InteractiveObject IO, GameAction GA, GameCase cell) {
+    public void startAction(int id, Player P, int actionId, GameCase cell) {
         for (JobAction JA : this.posActions) {
             if (JA.getId() == id) {
                 this.curAction = JA;
-                JA.startAction(P, IO, GA, cell, this);
+                JA.startAction(P, actionId, cell, this);
                 return;
             }
         }

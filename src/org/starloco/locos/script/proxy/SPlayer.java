@@ -13,6 +13,7 @@ import org.starloco.locos.entity.monster.MobGroupDef;
 import org.starloco.locos.entity.monster.MonsterGroup;
 import org.starloco.locos.fight.spells.Spell;
 import org.starloco.locos.game.action.ExchangeAction;
+import org.starloco.locos.game.action.GameAction;
 import org.starloco.locos.game.action.type.NpcDialogActionData;
 import org.starloco.locos.game.action.type.ScenarioActionData;
 import org.starloco.locos.game.world.World;
@@ -75,6 +76,14 @@ public class SPlayer extends DefaultUserdata<Player> {
     @SuppressWarnings("unused")
     private static void openZaap(Player p) {
         p.openZaapMenu();
+    }
+
+    @SuppressWarnings("unused")
+    private static void useCraftSkill(Player p, ArgumentIterator args) {
+        int cellId = args.nextInt();
+        int skillId = args.nextInt();
+
+        p.doJobAction(skillId, 0, p.getCurMap().getCase(cellId));
     }
 
     @SuppressWarnings("unused")

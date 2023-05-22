@@ -3802,28 +3802,29 @@ public class Player implements Scripted<SPlayer> {
         return _metiers;
     }
 
-    public void doJobAction(int actionID, InteractiveObject object,
-                            GameAction GA, GameCase cell) {
-        JobStat SM = getMetierBySkill(actionID);
+    public void doJobAction(int skillId, int actionId, GameCase cell) {
+        JobStat SM = getMetierBySkill(skillId);
         if (SM == null) {
-            switch (actionID) {
+            switch (skillId) {
                 case 151:
-                    new JobAction(151, 4, 0, true, 100, 0).startAction(this, object, GA, cell);
-                    return;
+                    new JobAction(151, 4, 0, true, 100, 0).startAction(this);
+                    break;
                 case 121:
-                    new JobAction(121, 8, 0, true, 100, 0).startAction(this, object, GA, cell);
-                    return;
+                    new JobAction(121, 8, 0, true, 100, 0).startAction(this);
+                    break;
                 case 110:
-                    new JobAction(110, 2, 0, true, 100, 0).startAction(this, object, GA, cell);
-                    return;
+                    new JobAction(110, 2, 0, true, 100, 0).startAction(this);
+                    break;
                 case 22:
-                    new JobAction(22, 1, 0, true, 100, 0).startAction(this, object, GA, cell);
-                    return;
+                    new JobAction(22, 1, 0, true, 100, 0).startAction(this);
+                    break;
                 default:
                     return;
             }
+        } else {
+            SM.startAction(skillId, this, actionId, cell);
         }
-        SM.startAction(actionID, this, object, GA, cell);
+        SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(curMap, cell);
     }
 
     public void finishJobAction(int actionID, InteractiveObject object,

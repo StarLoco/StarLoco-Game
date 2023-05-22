@@ -24,6 +24,7 @@
 ---@field onFightStart table<number, fun(md:MapDef, m:Map,team1:Fighter[], team2:Fighter[])> K: fight type, V: Handler function
 ---@field onFightEnd table<number, fun(md:MapDef, m:Map, winners:Fighter[], losers:Fighter[])> K: fight type, V: Handler function
 ---@field objects table<number, number> K: cellId, V: ObjectDefId
+---@field switches table<number, fun(md:MapDef, p:Player)>
 ---
 
 -- Capabilities:
@@ -69,6 +70,7 @@ setmetatable(MapDef, {
         self.onFightStart = {}
         self.onFightEnd = {}
         self.objects = {}
+        self.switches = {}
         self.zaapCell = nil
 
         if MAPS[id] then
@@ -84,14 +86,8 @@ setmetatable(MapDef, {
 ---@param cellId number
 ---@param skillId number
 ---@return boolean worked
-function Map:onObjectUse(p, cellId, skillId)
-    local id = self.objects[cellId]
-    if not id then return end
-
-    local def = IO_DEFS[id]
-    if not def then return end
-
-    return def:onUseSkill(p, skillId)
+function MapDef:onObjectUse(p, cellId, skillId)
+    return IO_DEFS[self.objects[cellId]] and IO_DEFS[self.objects[cellId]]:onUseSkill(p, skillId)
 end
 
 ---@param mapId number
