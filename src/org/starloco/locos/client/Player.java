@@ -34,6 +34,7 @@ import org.starloco.locos.game.GameClient;
 import org.starloco.locos.game.GameServer;
 import org.starloco.locos.game.action.ExchangeAction;
 import org.starloco.locos.game.action.GameAction;
+import org.starloco.locos.game.action.type.EmptyActionData;
 import org.starloco.locos.game.action.type.NpcDialogActionData;
 import org.starloco.locos.game.action.type.ScenarioActionData;
 import org.starloco.locos.game.world.World;
@@ -42,6 +43,7 @@ import org.starloco.locos.job.Job;
 import org.starloco.locos.job.JobAction;
 import org.starloco.locos.job.JobConstant;
 import org.starloco.locos.job.JobStat;
+import org.starloco.locos.job.maging.BreakingObject;
 import org.starloco.locos.kernel.Config;
 import org.starloco.locos.kernel.Constant;
 import org.starloco.locos.kernel.Main;
@@ -1386,6 +1388,11 @@ public class Player implements Scripted<SPlayer> {
                 ExchangeAction.IN_SCENARIO,
                 new ScenarioActionData(exchangeAction, onEnd));
         SocketManager.GAME_SEND_TUTORIAL_CREATE(this, id, date);
+    }
+
+    public void openDocument(int id, String date) {
+        exchangeAction =  new ExchangeAction<>(ExchangeAction.USING_OBJECT, EmptyActionData.INSTANCE);
+        SocketManager.GAME_SEND_DOCUMENT_CREATE_PACKET(getGameClient(), id, date);
     }
 
     public static class EnsureSpellLevelResult {

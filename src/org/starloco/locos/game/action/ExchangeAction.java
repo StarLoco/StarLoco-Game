@@ -31,7 +31,7 @@ public class ExchangeAction<T> {
             IN_PRISM = 20,
             IN_SCENARIO = 21,
             FORGETTING_SPELL = 22,
-            CRAFTING_BOOK = 23,
+            USING_OBJECT = 23,
             LOCK_TRUNK = 24,
             LOCK_HOUSE = 25;
 

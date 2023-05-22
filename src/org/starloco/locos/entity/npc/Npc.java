@@ -49,7 +49,7 @@ public class Npc {
         ExchangeAction<NpcDialogActionData> action = new ExchangeAction<>(ExchangeAction.TALKING_WITH, data);
         player.setExchangeAction(action);
 
-        SocketManager.GAME_SEND_DCK_PACKET(player.getGameClient(), id);
+        SocketManager.GAME_SEND_DIALOG_CREATE_PACKET(player.getGameClient(), id);
         template.onCreateDialog(player);
     }
 

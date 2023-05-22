@@ -13,6 +13,7 @@ import org.starloco.locos.database.data.login.BaseTrunkData;
 import org.starloco.locos.fight.Fighter;
 import org.starloco.locos.game.action.ExchangeAction;
 import org.starloco.locos.game.action.GameAction;
+import org.starloco.locos.game.action.type.EmptyActionData;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.job.JobConstant;
 import org.starloco.locos.job.maging.BreakingObject;
@@ -1046,7 +1047,7 @@ public class GameCase {
                 break;
             case 170:// Livre des artisans
                 player.setLivreArtisant(true);
-                player.setExchangeAction(new ExchangeAction<>(ExchangeAction.CRAFTING_BOOK, new BreakingObject()));
+                player.setExchangeAction(new ExchangeAction<>(ExchangeAction.USING_OBJECT, EmptyActionData.INSTANCE));
                 SocketManager.GAME_SEND_ECK_PACKET(player, 14, "2;11;13;14;15;16;17;18;19;20;24;25;26;27;28;31;33;36;41;43;44;45;46;47;48;49;50;56;58;62;63;64;65");
                 break;
             case 181:

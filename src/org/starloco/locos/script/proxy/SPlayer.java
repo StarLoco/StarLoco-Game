@@ -1,5 +1,6 @@
 package org.starloco.locos.script.proxy;
 
+import com.singularsys.jep.functions.Arg;
 import org.classdump.luna.ByteString;
 import org.classdump.luna.Table;
 import org.classdump.luna.impl.DefaultUserdata;
@@ -125,7 +126,7 @@ public class SPlayer extends DefaultUserdata<Player> {
         if(actionID != -1) actionIDStr = String.valueOf(actionID);
 
         int actionType = args.nextInt();
-        ByteString actionValue = args.nextString();
+        String actionValue = args.nextString().toString();
 
         SocketManager.GAME_SEND_GA_PACKET(p.getGameClient(), actionIDStr, String.valueOf(actionType),  String.valueOf(p.getId()), actionValue.toString());
     }
@@ -145,6 +146,14 @@ public class SPlayer extends DefaultUserdata<Player> {
         LuaFunction<?,?,?,?,?> onEnd = args.nextFunction();
 
         p.startScenario(id, date.toString(), (player, succeed) -> DataScriptVM.getInstance().call(onEnd, player.scripted(), succeed));
+    }
+
+    @SuppressWarnings("unused")
+    private static void openDocument(Player p, ArgumentIterator args) {
+        int id = args.nextInt();
+        String date = args.nextString().toString();
+
+        p.openDocument(id, date);
     }
     //endregion
 

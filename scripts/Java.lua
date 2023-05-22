@@ -221,6 +221,10 @@ function Player:getCtxVal(key) end
 ---@param onEnd fun(p:Player,succeed:boolean)
 function Player:startScenario(id, date, onEnd) end
 
+---@param id number
+---@param date string
+function Player:openDocument(id, date) end
+
 --endregion
 
 ---@class MobGroupDef table<number, table<number,number[]>[]>

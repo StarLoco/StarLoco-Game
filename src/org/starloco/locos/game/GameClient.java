@@ -75,7 +75,6 @@ import org.starloco.locos.object.GameObject;
 import org.starloco.locos.object.ObjectTemplate;
 import org.starloco.locos.object.entity.Fragment;
 import org.starloco.locos.object.entity.SoulStone;
-import org.starloco.locos.other.Action;
 import org.starloco.locos.util.generator.NameGenerator;
 import org.starloco.locos.util.TimerWaiter;
 
@@ -1318,7 +1317,7 @@ public class GameClient {
         Collector collector = World.world.getCollector(id);
 
         if (collector != null && collector.getMap() == player.getCurMap().getId()) {
-            SocketManager.GAME_SEND_DCK_PACKET(this, id);
+            SocketManager.GAME_SEND_DIALOG_CREATE_PACKET(this, id);
             send(World.world.getGuild(collector.getGuildId()).encodeTaxCollectorDQ());
             return;
         }
@@ -1376,7 +1375,12 @@ public class GameClient {
     private void parseDocumentPacket(String packet) {
         switch (packet.charAt(1)) {
             case 'V':
-                this.player.send("dV");
+                if(player.getExchangeAction() != null
+                && player.getExchangeAction().getType() != ExchangeAction.USING_OBJECT) {
+                    player.setExchangeAction(null);
+                }
+
+                SocketManager.GAME_SEND_DOCUMENT_CLOSE_PACKET(this);
                 break;
         }
     }

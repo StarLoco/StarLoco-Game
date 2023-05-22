@@ -158,7 +158,10 @@ public class SocketManager {
             packet.append((color3 == -1 ? "-1" : Integer.toHexString(color3))).append("|");
             packet.append(perso.encodeItemASK());
             send(out, packet.toString());
-        } catch(Exception e) { e.printStackTrace(); System.out.println("Error occured : " + e.getMessage());}
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Error occured : " + e.getMessage());
+        }
     }
 
     public static void GAME_SEND_ALIGNEMENT(GameClient out, int alliID) {
@@ -230,7 +233,7 @@ public class SocketManager {
     }
 
     public static void GAME_SEND_MAP_NPCS_GMS_PACKETS(GameClient out, GameMap Map) {
-        if(out == null || out.getPlayer() == null || Map == null)
+        if (out == null || out.getPlayer() == null || Map == null)
             return;
         String packet = Map.getNpcsGMsPackets(out.getPlayer());
         if (packet.isEmpty())
@@ -401,14 +404,14 @@ public class SocketManager {
     public static void GAME_SEND_REFRESH_TEAM_PACKET_TO_MAP(GameMap map, int team, Collection<Fighter> fighters) {
         StringBuilder builder = new StringBuilder("Gt");
         builder.append(team);
-        for(Fighter fighter : fighters)
+        for (Fighter fighter : fighters)
             builder.append("|+").append(fighter.getId()).append(";").append(fighter.getPacketsName()).append(";").append(fighter.getLvl());
         sendPacketToMap(map, builder.toString());
     }
 
     public static void GAME_SEND_REMOVE_IN_TEAM_PACKET_TO_MAP(GameMap map,
                                                               int teamID, Fighter perso) {
-        if(map == null || perso == null) return;
+        if (map == null || perso == null) return;
         StringBuilder packet = new StringBuilder();
         packet.append("Gt").append(teamID).append("|-").append(perso.getId()).append(";").append(perso.getPacketsName()).append(";").append(perso.getLvl());
         for (Player z : map.getPlayers())
@@ -433,7 +436,7 @@ public class SocketManager {
         String packet = (_perso
                 .getFight() != null ?
                 map
-                .getFightersGMsPackets(_perso.getFight()) :
+                        .getFightersGMsPackets(_perso.getFight()) :
                 map
                         .getGMsPackets());
         send(_perso, packet);
@@ -574,8 +577,9 @@ public class SocketManager {
     }
 
     public static void GAME_SEND_TUTORIAL_CREATE(Player out, int id, String date) {
-        SocketManager.send(out, "TC" + id + "|"+date);
+        SocketManager.send(out, "TC" + id + "|" + date);
     }
+
     public static void GAME_SEND_Im_PACKET_TO_MAP(GameMap map, String id) {
         String packet = "Im" + id;
         for (Player z : map.getPlayers())
@@ -695,7 +699,7 @@ public class SocketManager {
         for (Fighter f : fight.getFighters(3)) {
             packet.append("|").append(f.getId()).append(";");
             if (f.isDead() || f.getCell() == null) {
-                if(f.getCell() == null)
+                if (f.getCell() == null)
                     f.setIsDead(true);
                 packet.append("1");
                 continue;
@@ -931,7 +935,7 @@ public class SocketManager {
     public static void GAME_SEND_cMK_PACKET_TO_MAP(GameMap map, String suffix, int guid, String name, String key) {
         String packet = "cMK" + suffix + "|" + guid + "|" + name + "|";
         for (Player target : map.getPlayers()) {
-            if(target != null && target.getLang() != null)
+            if (target != null && target.getLang() != null)
                 send(target, packet + target.getLang().trans(key));
         }
     }
@@ -1059,18 +1063,26 @@ public class SocketManager {
         send(out, packet);
     }
 
-    public static void GAME_SEND_DCK_PACKET(GameClient out, int id) {
-        String packet = "DCK" + id;
-        send(out, packet);
+    public static void GAME_SEND_DIALOG_CREATE_PACKET(GameClient out, int id) {
+        send(out, "DCK" + id);
     }
+
+    public static void GAME_SEND_DOCUMENT_CREATE_PACKET(GameClient out, int id, String date) {
+        send(out, "dCK" + id + "_" + date);
+    }
+
+    public static void GAME_SEND_DOCUMENT_CLOSE_PACKET(GameClient out) {
+        send(out, "dV");
+    }
+
     public static void GAME_SEND_QUESTION_PACKET(GameClient out, int id, List<Integer> answers, String param) {
         StringBuilder pck = new StringBuilder("DQ");
         pck.append(id);
-        if(param != null && !param.isEmpty()){
+        if (param != null && !param.isEmpty()) {
             pck.append(";");
             pck.append(param);
         }
-        if(answers != null && !answers.isEmpty()) {
+        if (answers != null && !answers.isEmpty()) {
             pck.append("|");
             pck.append(answers.stream().map(Object::toString).collect(Collectors.joining(";")));
         }
@@ -1563,8 +1575,8 @@ public class SocketManager {
 
     public static void GAME_SEND_GX_PACKET(Player perso, Npc npc) {
         int extra = npc.getTemplate().getExtraClip(perso);
-        String sExtra = extra==-1?"-":Integer.toString(extra);
-        String packet = "GX"+sExtra+"|"+npc.getId();
+        String sExtra = extra == -1 ? "-" : Integer.toString(extra);
+        String packet = "GX" + sExtra + "|" + npc.getId();
         perso.send(packet);
     }
 
@@ -1577,10 +1589,12 @@ public class SocketManager {
         String packet = "Ee" + c + s;
         send(perso, packet);
     }
+
     public static void GAME_SEND_Ee_PACKET_WAIT(Player perso, char c, String s) {
         String packet = "Ee" + c + s;
         send(perso, packet);
     }
+
     public static void GAME_SEND_cC_PACKET(Player perso, char c, String s) {
         String packet = "cC" + c + s;
         send(perso, packet);
@@ -1603,7 +1617,7 @@ public class SocketManager {
 
     public static void GAME_SEND_GDO_PACKET_TO_MAP(GameMap map, char c, int cell, int itm, int i) {
         String packet = "GDO" + c + cell + ";" + itm + ";" + i;
-        for (Player z : map.getPlayers()) 
+        for (Player z : map.getPlayers())
             send(z, packet);
     }
 
@@ -1663,10 +1677,10 @@ public class SocketManager {
         String packet = "gK" + str;
         send(p, packet);
     }
-    
+
     public static void GAME_SEND_gIG_PACKET(Player p, Guild g) {
         if (g == null) {
-            send(p,"gIG");
+            send(p, "gIG");
         } else {
             ExperienceTables.ExperienceTable xpTable = World.world.getExperiences().guilds;
 
@@ -1809,14 +1823,15 @@ public class SocketManager {
         String packet = "EHm-" + id;
         send(out, packet);
     }
+
     public static void GAME_SEND_EHm_ADD_PACKET(Player out, BigStore.CheapestListings c) {
         String packet = "EHm+" + String.join("|",
-            String.valueOf(c.lineId),
-            String.valueOf(c.itemTemplateId),
-            String.valueOf(c.stats),
-            c.minPrices[0]==0?"":String.valueOf(c.minPrices[0]),
-            c.minPrices[1]==0?"":String.valueOf(c.minPrices[1]),
-            c.minPrices[2]==0?"":String.valueOf(c.minPrices[2])
+                String.valueOf(c.lineId),
+                String.valueOf(c.itemTemplateId),
+                String.valueOf(c.stats),
+                c.minPrices[0] == 0 ? "" : String.valueOf(c.minPrices[0]),
+                c.minPrices[1] == 0 ? "" : String.valueOf(c.minPrices[1]),
+                c.minPrices[2] == 0 ? "" : String.valueOf(c.minPrices[2])
         );
         send(out, packet);
     }
@@ -1824,40 +1839,39 @@ public class SocketManager {
     public static void GAME_SEND_EHP_PACKET(Player out, int id) //Packet d'envoie du prix moyen du template (En r�ponse a un packet EHP)
     {
         ObjectTemplate template = World.world.getObjTemplate(id);
-        if(template != null)
-            send(out, "EHP" + id + "|" +  template.getAvgPrice());
+        if (template != null)
+            send(out, "EHP" + id + "|" + template.getAvgPrice());
     }
 
     public static void GAME_SEND_EHl(Player out, BigStore bigStore, int category, int templateId) {
         String packet = "EHl" + templateId + "|" + bigStore.linesForTemplate(category, templateId).stream()
-            .map(line -> {
-                // Encode lines
-                return String.join(
-                    ";",
-                    String.valueOf(line.lineId),
-                    line.stats,
-                    line.minPrices[0]==0?"":String.valueOf(line.minPrices[0]),
-                    line.minPrices[1]==0?"":String.valueOf(line.minPrices[1]),
-                    line.minPrices[2]==0?"":String.valueOf(line.minPrices[2]),
-                    String.valueOf(line.itemTemplateId)
-                );
-            })
-            .collect(Collectors.joining("|"));
+                .map(line -> {
+                    // Encode lines
+                    return String.join(
+                            ";",
+                            String.valueOf(line.lineId),
+                            line.stats,
+                            line.minPrices[0] == 0 ? "" : String.valueOf(line.minPrices[0]),
+                            line.minPrices[1] == 0 ? "" : String.valueOf(line.minPrices[1]),
+                            line.minPrices[2] == 0 ? "" : String.valueOf(line.minPrices[2]),
+                            String.valueOf(line.itemTemplateId)
+                    );
+                })
+                .collect(Collectors.joining("|"));
 
         send(out, packet);
     }
 
-    public static void GAME_SEND_EHL_PACKET(Player out, int categ, List<Integer> templates)
-    {
+    public static void GAME_SEND_EHL_PACKET(Player out, int categ, List<Integer> templates) {
         String packet = "EHL" + categ + "|" + templates.stream().map(String::valueOf).collect(Collectors.joining(";"));
         send(out, packet);
     }
 
     public static void GAME_SEND_HDVITEM_SELLING(Player perso, int hdvId) {
         String packet = "EL" + perso.getAccount().getHdvEntries(hdvId).stream()
-            .filter(Objects::nonNull)
-            .map(BigStoreListing::parseToEL)
-            .collect(Collectors.joining("|"));
+                .filter(Objects::nonNull)
+                .map(BigStoreListing::parseToEL)
+                .collect(Collectors.joining("|"));
         send(perso, packet);
     }
 
