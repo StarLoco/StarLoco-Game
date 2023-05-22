@@ -4086,7 +4086,7 @@ public class GameClient {
 
                 SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(this.player.getCurMap(), this.player.getId());
                 SocketManager.GAME_SEND_ADD_PLAYER_TO_MAP(this.player.getCurMap(), this.player);
-                this.player.getCurMap().onPlayerArriveOnCell(this.player, this.player.getCurCell().getId(), targetCell.getId());
+                this.player.getCurMap().onPlayerArriveOnCell(this.player, this.player.getCurCell().getId());
 //                if (targetCell.getObject() != null) {
 //                    if (Config.debug) {
 //                        World.world.logger.error("#3# Object Interactif : " + targetCell.getObject().getId());
