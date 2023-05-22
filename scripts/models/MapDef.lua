@@ -23,7 +23,7 @@
 ---@field onFightInit table<number, fun(md:MapDef, m:Map,team1:Fighter[], team2:Fighter[])> K: fight type, V: Handler function
 ---@field onFightStart table<number, fun(md:MapDef, m:Map,team1:Fighter[], team2:Fighter[])> K: fight type, V: Handler function
 ---@field onFightEnd table<number, fun(md:MapDef, m:Map, winners:Fighter[], losers:Fighter[])> K: fight type, V: Handler function
----@field objects table<number, number> K: cellId, V: ObjectDefId
+---@field objects table<number, number|fun(p:Player, skillId:number):boolean> K: cellId, V: ObjectDefId
 ---@field switches table<number, fun(md:MapDef, p:Player)>
 ---
 
@@ -87,7 +87,23 @@ setmetatable(MapDef, {
 ---@param skillId number
 ---@return boolean worked
 function MapDef:onObjectUse(p, cellId, skillId)
-    return IO_DEFS[self.objects[cellId]] and IO_DEFS[self.objects[cellId]]:onUseSkill(p, skillId)
+    local object = self.objects[cellId]
+
+    if object and type(object) == "function" then
+        return object(p, skillId)
+    end
+    return IO_DEFS[object] and IO_DEFS[object]:onUseSkill(p, skillId)
+end
+
+---@param docId number
+---@param docDate string
+---@return fun(p:Player, skillId:number):boolean
+function objectUseOpenDocument(docId, docDate)
+    ---@param p Player
+    return function(p, _)
+        p:openDocument(docId, docDate)
+        return true
+    end
 end
 
 ---@param mapId number

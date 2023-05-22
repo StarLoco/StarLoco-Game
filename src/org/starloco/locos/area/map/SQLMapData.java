@@ -136,6 +136,11 @@ public class SQLMapData extends MapData {
     }
 
     @Override
+    public void onUseObject(Player p, int cellId, int skillId) {
+        // Do nothing. Will be replaced by scripts
+    }
+
+    @Override
     public boolean cellHasMoveEndActions(int cellId) {
         return !moveEndActions.getOrDefault(cellId, Collections.emptyList()).isEmpty();
     }

@@ -76,6 +76,9 @@ public abstract class MapData {
     public abstract List<MobGroupDef> getStaticGroups();
 
     public abstract void onMoveEnd(Player p);
+
+    public abstract void onUseObject(Player p, int cellId, int skillId);
+
     public abstract boolean cellHasMoveEndActions(int cellId);
 
 

@@ -27,6 +27,10 @@ map.onMovementEnd = {
     [247] = moveEndTeleport(7395, 245),
 }
 
+map.objects = {
+    [230] = objectUseOpenDocument(139, "0612131303"),
+}
+
 map.zaapCell = 311
 
 RegisterMapDef(map)
