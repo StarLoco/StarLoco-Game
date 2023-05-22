@@ -4044,17 +4044,17 @@ public class GameClient {
             }
             if (result == 0) {
 
-                if (targetCell.getObject() != null) {
-                    if (Config.debug) {
-                        World.world.logger.error("#1# Object Interactif : " + targetCell.getObject().getId());
-                        World.world.logger.error("#1# On cellule : " + targetCell.getId());
-                    }
-                    InteractiveObject.getActionIO(this.player, targetCell, targetCell.getObject().getId());
-                    InteractiveObject.getSignIO(this.player, targetCell.getId(), targetCell.getObject().getId());
-                    SocketManager.GAME_SEND_GA_PACKET(this, "", "0", "", "");
-                    removeAction(GA);
-                    return;
-                }
+//                if (targetCell.getObject() != null) {
+//                    if (Config.debug) {
+//                        World.world.logger.error("#1# Object Interactif : " + targetCell.getObject().getId());
+//                        World.world.logger.error("#1# On cellule : " + targetCell.getId());
+//                    }
+//                    InteractiveObject.getActionIO(this.player, targetCell, targetCell.getObject().getId());
+//                    InteractiveObject.getSignIO(this.player, targetCell.getId(), targetCell.getObject().getId());
+//                    SocketManager.GAME_SEND_GA_PACKET(this, "", "0", "", "");
+//                    removeAction(GA);
+//                    return;
+//                }
                 SocketManager.GAME_SEND_GA_PACKET(this, "", "0", "", "");
                 removeAction(GA);
                 return;
