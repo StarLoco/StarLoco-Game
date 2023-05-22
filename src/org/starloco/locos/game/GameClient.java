@@ -4043,6 +4043,7 @@ public class GameClient {
                 GA.tp = true;
             }
             if (result == 0) {
+
                 if (targetCell.getObject() != null) {
                     if (Config.debug) {
                         World.world.logger.error("#1# Object Interactif : " + targetCell.getObject().getId());
@@ -4085,15 +4086,15 @@ public class GameClient {
 
                 SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(this.player.getCurMap(), this.player.getId());
                 SocketManager.GAME_SEND_ADD_PLAYER_TO_MAP(this.player.getCurMap(), this.player);
-                this.player.getCurMap().onPlayerArriveOnCell(this.player, this.player.getCurCell().getId());
-                if (targetCell.getObject() != null) {
-                    if (Config.debug) {
-                        World.world.logger.error("#3# Object Interactif : " + targetCell.getObject().getId());
-                        World.world.logger.error("#3# On cellule : " + targetCell.getId());
-                    }
-                    InteractiveObject.getActionIO(this.player, targetCell, targetCell.getObject().getId());
-                    InteractiveObject.getSignIO(this.player, targetCell.getId(), targetCell.getObject().getId());
-                }
+                this.player.getCurMap().onPlayerArriveOnCell(this.player, this.player.getCurCell().getId(), targetCell.getId());
+//                if (targetCell.getObject() != null) {
+//                    if (Config.debug) {
+//                        World.world.logger.error("#3# Object Interactif : " + targetCell.getObject().getId());
+//                        World.world.logger.error("#3# On cellule : " + targetCell.getId());
+//                    }
+//                    InteractiveObject.getActionIO(this.player, targetCell, targetCell.getObject().getId());
+//                    InteractiveObject.getSignIO(this.player, targetCell.getId(), targetCell.getObject().getId());
+//                }
                 SocketManager.GAME_SEND_GA_PACKET(this, "", "0", "", "");
                 this.player.refreshCraftSecure(true);
                 removeAction(GA);
@@ -4605,15 +4606,15 @@ public class GameClient {
                         this.player.getCurCell().addPlayer(this.player);
                         if (!this.player.isGhost())
                             this.player.setAway(false);
-                        this.player.getCurMap().onPlayerArriveOnCell(this.player, this.player.getCurCell().getId());
-                        if (targetCell.getObject() != null) {
-                            if (Config.debug) {
-                                World.world.logger.error("#2# Object Interactif : " + targetCell.getObject().getId());
-                                World.world.logger.error("#2# On cellule : " + targetCell.getId());
-                            }
-                            InteractiveObject.getActionIO(this.player, targetCell, targetCell.getObject().getId());
-                            InteractiveObject.getSignIO(this.player, targetCell.getId(), targetCell.getObject().getId());
-                        }
+                        this.player.getCurMap().onPlayerArriveOnCell(this.player, this.player.getCurCell().getId(), targetCell.getId());
+//                        if (targetCell.getObject() != null) {
+//                            if (Config.debug) {
+//                                World.world.logger.error("#2# Object Interactif : " + targetCell.getObject().getId());
+//                                World.world.logger.error("#2# On cellule : " + targetCell.getId());
+//                            }
+//                            InteractiveObject.getActionIO(this.player, targetCell, targetCell.getObject().getId());
+//                            InteractiveObject.getSignIO(this.player, targetCell.getId(), targetCell.getObject().getId());
+//                        }
 
                         if (GA.tp) {
                             GA.tp = false;
