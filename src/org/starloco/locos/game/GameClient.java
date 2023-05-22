@@ -4606,7 +4606,7 @@ public class GameClient {
                         this.player.getCurCell().addPlayer(this.player);
                         if (!this.player.isGhost())
                             this.player.setAway(false);
-                        this.player.getCurMap().onPlayerArriveOnCell(this.player, this.player.getCurCell().getId(), targetCell.getId());
+                        this.player.getCurMap().onPlayerArriveOnCell(this.player, this.player.getCurCell().getId());
 //                        if (targetCell.getObject() != null) {
 //                            if (Config.debug) {
 //                                World.world.logger.error("#2# Object Interactif : " + targetCell.getObject().getId());
