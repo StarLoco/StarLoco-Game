@@ -17,6 +17,7 @@ requireReload("./models/Quest")
 requireReload("./models/InteractiveObjectDef")
 
 -- Load instances
+loadPack("./data/npcs")
 loadPack("./data/notloaded/npcs/untested")
 loadPack("./data/npcs")
 loadPack("./data/maps")
