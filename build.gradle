@@ -21,7 +21,7 @@ sourceSets {
         }
         resources {
             srcDirs "src/org/starloco/locos/lang/translation"
-
+            srcDirs "src/org/starloco/locos/util/generator/"
         }
     }
 }
