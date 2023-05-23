@@ -98,9 +98,11 @@ end
 ---@param docId number
 ---@param docDate string
 ---@return fun(p:Player, skillId:number):boolean
-function objectUseOpenDocument(docId, docDate)
+function onObjectUseOpenDocument(docId, docDate)
     ---@param p Player
-    return function(p, _)
+    return function(p, skillId)
+        if skillId ~= 0 then return false end
+
         p:openDocument(docId, docDate)
         return true
     end

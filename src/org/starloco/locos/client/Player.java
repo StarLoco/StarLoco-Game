@@ -3105,11 +3105,12 @@ public class Player implements Scripted<SPlayer> {
         }
         if (cellID == -1 || action == -1)
             return;
-        //Si case invalide
 
-        if (!this.curMap.getCase(cellID).canDoAction(action))
-            return;
-        this.curMap.getCase(cellID).startAction(this, GA);
+        this.curMap.onPlayerUseObject(this, cellID, action);
+
+//        if (!this.curMap.getCase(cellID).canDoAction(action))
+//            return;
+//        this.curMap.getCase(cellID).startAction(this, GA);
     }
 
     public void finishActionOnCell(GameAction GA) {
