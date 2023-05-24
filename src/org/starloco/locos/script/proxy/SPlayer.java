@@ -75,6 +75,18 @@ public class SPlayer extends DefaultUserdata<Player> {
     }
 
     @SuppressWarnings("unused")
+    private static void savePosition(Player p, ArgumentIterator args) {
+        int mapId = args.nextInt();
+        int cellId = args.nextInt();
+        boolean send = args.nextOptionalBoolean(true);
+
+        p.setSavePos(mapId, cellId);
+        if(send) {
+            SocketManager.GAME_SEND_Im_PACKET(p, "06");
+        }
+    }
+
+    @SuppressWarnings("unused")
     private static void openZaap(Player p) {
         p.openZaapMenu();
     }

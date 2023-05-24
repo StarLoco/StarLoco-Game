@@ -28,15 +28,16 @@ function RegisterIODef(id, type, skills)
 end
 
 ---@param player Player
+---@param cellId number
 ---@param skillId number
 ---@return boolean worked
-function InteractiveObjectDef:onUseSkill(player, skillId)
+function InteractiveObjectDef:onUseSkill(player, cellId, skillId)
     if not table.contains(self.skills, skillId) then
         JLogF("{} tried to use invalid skill #{} on IO #{}", player:name(), skillId, self.id)
         return false
     end
 
-    -- TODO call skill handler
+    if not SKILLS[skillId] then return false end
 
-    return true
+    return SKILLS[skillId](player, cellId)
 end

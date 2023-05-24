@@ -17,12 +17,12 @@ requireReload("./models/Quest")
 requireReload("./models/InteractiveObjectDef")
 
 -- Load instances
+loadPack("./data/objects")
 loadPack("./data/npcs")
 loadPack("./data/notloaded/npcs/untested")
 loadPack("./data/npcs")
 loadPack("./data/maps")
 loadPack("./data/quests")
-loadPack("./data/objects")
 loadPack("./data/skills")
 
 loadPack("./data/dungeons") -- Always load last

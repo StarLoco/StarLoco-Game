@@ -87,6 +87,12 @@ function Player:teleport(map, cell) end
 ---@return void
 function Player:openBank() end
 
+---@param mapId number
+---@param cellId number
+---@param sendInfoMsg boolean defaults to false
+---@return void
+function Player:savePosition(mapId, cellId, sendInfoMsg) end
+
 ---@return void
 function Player:openZaap() end
 

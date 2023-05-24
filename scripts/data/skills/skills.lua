@@ -1,10 +1,9 @@
 ---@type table<number, fun(p:Player, cellId:number)>
 SKILLS = {}
 
----@param craftList number[]
 local function registerCraftSkill(skillId)
     SKILLS[skillId] = function(p, cellId)
-        p:useCraftSkill(skillId, cellId)
+        return p:useCraftSkill(skillId, cellId)
     end
 end
 
@@ -32,6 +31,16 @@ registerCraftSkill(21) -- Craft a shovel
 registerCraftSkill(22) -- Peel
 -- TODO More
 
+
+-- Save Zaap
+SKILLS[44] = function(p, _)
+    local md = p:map():def()
+    p:savePosition(md.id, md.zaapCell)
+    return true
+end
+
+-- Use Zaap
+SKILLS[114] = function(p, _) p:openZaap() return true end
 
 -- Use Switch
 SKILLS[179] = function(p, cellId)
