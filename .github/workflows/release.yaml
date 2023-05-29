@@ -10,6 +10,9 @@ env:
   DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
   DOCKER_ACCESS_TOKEN: ${{ secrets.DOCKER_ACCESS_TOKEN }}
 
+permissions:
+  contents: 'write'
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -24,10 +27,10 @@ jobs:
           java-version: '8'
           distribution: 'adopt'
 
-
       - name: Build with Gradle
         uses: gradle/gradle-build-action@v2.4.2
         with:
+          gradle-version: 8.0.2
           arguments: jar
 
       - name: Upload JAR artifact
@@ -36,7 +39,7 @@ jobs:
           name: game-jar
           path: ./build/libs/game.jar
 
-      # Upload to Docker
+      # Build / Upload to Docker
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
@@ -50,14 +53,12 @@ jobs:
           images: starloco/game
 
       - name: Build and push Docker image
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v4
         with:
           context: .
           file: ./Dockerfile
           push: true
-          tags: |
-            starloco/game:latest
-            starloco/game:${{ steps.vars.outputs.tag }}
+          tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
       - name: Docker Hub Description (README.md)
@@ -71,12 +72,10 @@ jobs:
       # Create release
       - name: Create Release
         id: create_release
-        uses: actions/create-release@latest
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          with:
-            tag_name: ${{ github.ref }}
-            release_name: Release ${{ github.ref }}
-            body: Release ${{ github.ref }}
-            draft: true
-            prerelease: false
+        uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          prerelease: false
+          title: Release ${{ github.ref }}
+          files: |
+            ./build/libs/game.jar
