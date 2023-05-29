@@ -58,4 +58,8 @@ map.onMovementEnd = {
 	[457] = moveEndTeleport(7811, 36),
 }
 
+map.objects = {
+	[252] = onObjectUseResurrect(), -- Phoenix
+}
+
 RegisterMapDef(map)

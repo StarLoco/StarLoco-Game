@@ -61,6 +61,9 @@ function Player:gender() end
 ---@return boolean
 function Player:isGhost() end
 
+---@return boolean
+function Player:resurrect() end
+
 ---@param xp number
 ---@param show boolean
 ---@return boolean hasLeveledUp
