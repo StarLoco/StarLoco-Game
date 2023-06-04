@@ -188,10 +188,10 @@ public class ObjectAction {
                                     break;
                             }
                         }
-                        if (arg.split(",").length == 1)
-                            if (!isOk1 || !isOk2)
+                        if (arg.split(",").length >= 1)
+                            if (!isOk1 && !isOk2)
                                 isOk = false;
-                            else if (!isOk1 && !isOk2)
+                            else if (isOk1 || isOk2)
                                 isOk = false;
                         send = false;
                         break;
