@@ -1,5 +1,6 @@
 package org.starloco.locos.common;
 
+import org.starloco.locos.area.map.CellCache;
 import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.client.Player;
@@ -1094,11 +1095,12 @@ public class PathFinding {
         return path.contains(id);
     }
 
-    public static ArrayList<GameCase> getCellListFromAreaString(GameMap map, int cellID, int castCellID, String zoneStr, int PONum, boolean isCC) {
+    public static List<GameCase> getCellListFromAreaString(GameMap map, int cellID, int castCellID, String zoneStr, int PONum, boolean isCC) {
+        if (map == null || map.getCase(cellID) == null)
+            return Collections.emptyList();
+        CellCache cache = map.getCellCache();
         ArrayList<GameCase> cases = new ArrayList<>();
 
-        if (map == null || map.getCase(cellID) == null)
-            return cases;
 
         cases.add(map.getCase(cellID));
 
@@ -1145,9 +1147,37 @@ public class PathFinding {
                 break;
 
             case 'P':// Player?
+                break;
+            case 'T': //Horizontal Line
+                break;
+            case 'O': //Hollow Ring
+                break;
+            case 'D': //Alternating rings
+                break;
+            case 'R': // Rectangle (untested)
+                if (size == 0) {
+                    break;
+                }
+
+                int cellX = cache.getOrthX(cellID);
+                int cellY = cache.getOrthY(cellID);
+
+                int minX = cellX - size;
+                int maxX = cellX + size;
+                int minY = cellY - size;
+                int maxY = cellY + size;
+
+                for(int x=minX; x<= maxX; x++) {
+                    for(int y=minY; y<= maxY; y++) {
+                        GameCase cell = map.getCase(cache.getOrthCellID(x, y));
+                        if(cell == null || !cell.isWalkableFight()) {
+                            continue;
+                        }
+                        cases.add(cell);
+                    }
+                }
 
                 break;
-
             default:
                 GameServer.a();
                 break;
