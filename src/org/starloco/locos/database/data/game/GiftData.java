@@ -1,5 +1,6 @@
 package org.starloco.locos.database.data.game;
 
+import com.sun.istack.internal.NotNull;
 import com.zaxxer.hikari.HikariDataSource;
 import org.starloco.locos.util.Pair;
 import org.apache.commons.lang.NotImplementedException;
@@ -20,6 +21,7 @@ public class GiftData extends FunctionDAO<Pair<Account, String>> {
     }
 
     @Override
+    @NotNull
     public Pair<Account, String> load(int id) {
         try {
             return new Pair<>(null, getData("SELECT * FROM " + getTableName() + " WHERE id = '" + id + "';", result -> result.next() ? result.getString("objects") : null));

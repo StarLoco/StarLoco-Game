@@ -536,12 +536,16 @@ public class Account {
     }
 
     public void addGift(int template, short quantity, byte jp) {
+        GiftData gd = DatabaseManager.get(GiftData.class);
+        if(gd == null) {
+            throw new NullPointerException("GiftData DAO is null");
+        }
         String gift = template + "," + quantity + "," + jp;
-        String gifts = DatabaseManager.get(GiftData.class).load(this.getId()).getSecond();
-        if (gifts.isEmpty()) {
-            DatabaseManager.get(GiftData.class).update(new Pair<>(this, gift));
+        String gifts = gd.load(this.getId()).getSecond();
+        if (gifts == null || gifts.isEmpty()) {
+            gd.update(new Pair<>(this, gift));
         } else {
-            DatabaseManager.get(GiftData.class).update(new Pair<>(this, gifts + ";" + gift));
+            gd.update(new Pair<>(this, gifts + ";" + gift));
         }
     }
 
