@@ -1,18 +1,15 @@
 package org.starloco.locos.other;
 
-import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.area.map.entity.Animation;
 import org.starloco.locos.area.map.entity.House;
 import org.starloco.locos.area.map.entity.MountPark;
-import org.starloco.locos.area.map.labyrinth.PigDragon;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.client.other.Stalk;
 import org.starloco.locos.client.other.Stats;
 import org.starloco.locos.common.Formulas;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.database.DatabaseManager;
-import org.starloco.locos.database.data.game.NpcQuestionData;
 import org.starloco.locos.database.data.login.PlayerData;
 import org.starloco.locos.entity.monster.MonsterGroup;
 import org.starloco.locos.entity.npc.Npc;
@@ -3556,43 +3553,6 @@ public class Action {
                         case 9379:
                             player.teleport((short) 9396, 387);
                             break;
-                    }
-                } catch (Exception e) {
-                    return true;
-                }
-                break;
-            case 979://T�l�portation labyrinth DC
-                try {
-                    short newMapID = Short.parseShort(args.split(",", 2)[0]);
-                    final GameMap newMap = World.world.getMap(newMapID);
-                    int newCellID = Integer.parseInt(args.split(",", 2)[1]);
-                    final GameCase curCase = player.getCurCell();
-                    final GameMap curMap = player.getCurMap();
-                    int idCurCase = curCase.getId();
-                    if (idCurCase < 52 || idCurCase > 412) // On monte ou on descend
-                    {
-                        player.teleportLaby(newMapID, newCellID);
-                        TimerWaiter.addNext(() -> {
-                            PigDragon.open(curMap, curCase);
-                            PigDragon.open(newMap, PigDragon.getDownCell(newMap));
-                            PigDragon.open(newMap, PigDragon.getUpCell(newMap));
-                            PigDragon.open(newMap, PigDragon.getRightCell(newMap));
-                            PigDragon.open(newMap, PigDragon.getLeftCell(newMap));
-                        }, 1000);
-                    } else if (idCurCase == 262 || idCurCase == 320 || idCurCase == 144 || idCurCase == 216 || idCurCase == 231 || idCurCase == 274) // A gauche ou a droite
-                    {
-                        player.teleportLaby(newMapID, newCellID);
-
-                        TimerWaiter.addNext(() -> {
-                            PigDragon.open(curMap, curCase);
-                            PigDragon.open(newMap, PigDragon.getLeftCell(newMap));
-                            PigDragon.open(newMap, PigDragon.getRightCell(newMap));
-                            PigDragon.open(newMap, PigDragon.getUpCell(newMap));
-                            PigDragon.open(newMap, PigDragon.getDownCell(newMap));
-                        }, 1000);
-                    } else {
-                        SocketManager.GAME_SEND_MESSAGE(player, player.getLang().trans("other.action.apply.door.error"));
-                        return true;
                     }
                 } catch (Exception e) {
                     return true;

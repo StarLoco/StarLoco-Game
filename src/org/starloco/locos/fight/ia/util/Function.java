@@ -1389,7 +1389,7 @@ public class Function {
         {
             return 0;
         }
-        ArrayList<GameCase> possibleLaunch = new ArrayList<GameCase>();
+        List<GameCase> possibleLaunch = new ArrayList<GameCase>();
         int CellF = -1;
         if (spell.getMaxPO() != 0)
         {
@@ -1424,7 +1424,7 @@ public class Function {
                 if (!fight.canCastSpell1(fighter, spell, cell, launchCell))
                     continue;
                 int curTarget = 0;
-                ArrayList<GameCase> cells = PathFinding.getCellListFromAreaString(fight.getMap(), cell.getId(), launchCell, spell.getPorteeType(), 0, false);
+                List<GameCase> cells = PathFinding.getCellListFromAreaString(fight.getMap(), cell.getId(), launchCell, spell.getPorteeType(), 0, false);
                 for (GameCase c : cells)
                 {
                     if (c == null)

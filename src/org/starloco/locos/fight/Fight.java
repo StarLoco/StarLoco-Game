@@ -12,7 +12,6 @@ import org.classdump.luna.Table;
 import org.starloco.locos.area.SubArea;
 import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.area.map.GameMap;
-import org.starloco.locos.area.map.labyrinth.Minotoror;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.client.other.Party;
 import org.starloco.locos.client.other.Stalk;
@@ -280,10 +279,6 @@ public class Fight {
             entry.getValue().setInFightID(entry.getKey());
             Fighter mob = new Fighter(this, entry.getValue());
             getTeam1().put(entry.getKey(), mob);
-            if (entry.getValue().getTemplate().getId() == 832) // D�minoboule
-                Minotoror.demi();
-            else if (entry.getValue().getTemplate().getId() == 831) // Mominotoror
-                Minotoror.momi();
         }
 
         SocketManager.GAME_SEND_FIGHT_GJK_PACKET_TO_FIGHT(this, 1, 2, 0, 1, 0, 45000, getType());
@@ -356,10 +351,6 @@ public class Fight {
             entry.getValue().setInFightID(entry.getKey());
             Fighter mob = new Fighter(this, entry.getValue());
             getTeam1().put(entry.getKey(), mob);
-            if (entry.getValue().getTemplate().getId() == 832) // D�minoboule
-                Minotoror.demi();
-            else if (entry.getValue().getTemplate().getId() == 831) // Mominotoror
-                Minotoror.momi();
         }
 
         if (perso.getCurPdv() >= perso.getMaxPdv()) {
@@ -4277,17 +4268,8 @@ public class Fight {
                         else
                             player.teleportFaction(this.getAlignementOfTraquer(this.getTeam1().values(), player));
                     } else {
-                        if (player.getCurMap() != null && player.getCurMap().getSubArea() != null && (player.getCurMap().getSubArea().getId() == 319 || player.getCurMap().getSubArea().getId() == 210)) {
-                            player.setNeededEndFightAction(this, new Action(1001, "9558,224", ""));
-                            player.teleportLaby((short) 9558, 224);
-                            TimerWaiter.addNext(() -> {
-                                Minotoror.sendPacketMap(player); // Retarde le paquet sinon les portes sont ferm�s. Le paquet de GameInformation doit faire chier ce p�d�
-                                player.setPdv(1);
-                            }, 3500);
-                        } else {
-                            player.setNeededEndFightAction(this, new Action(1001, player.getSavePosition().toString(","), ""));
-                            player.setPdv(1);
-                        }
+                        player.setNeededEndFightAction(this, new Action(1001, player.getSavePosition().toString(","), ""));
+                        player.setPdv(1);
                     }
                 }
             }
@@ -4994,11 +4976,6 @@ public class Fight {
                                         String[] split = drop.getCondition().split(",");
                                         quantity = Formulas.getRandomValue(Integer.parseInt(split[0]), Integer.parseInt(split[1]));
                                         itsOk = true;
-                                        break;
-
-                                    case 9:// Relique minotoror
-                                        if (player != null && Minotoror.isValidMap(player.getCurMap()))
-                                            itsOk = true;
                                         break;
 
                                     case 999:// Drop for collector

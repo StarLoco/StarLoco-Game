@@ -6,8 +6,6 @@ import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.area.map.entity.House;
 import org.starloco.locos.area.map.entity.InteractiveObject;
 import org.starloco.locos.area.map.entity.MountPark;
-import org.starloco.locos.area.map.labyrinth.Minotoror;
-import org.starloco.locos.area.map.labyrinth.PigDragon;
 import org.starloco.locos.client.other.Party;
 import org.starloco.locos.client.other.Stalk;
 import org.starloco.locos.client.other.Stats;
@@ -1940,12 +1938,6 @@ public class Player implements Scripted<SPlayer> {
 
         World.world.logger.info("The player " + this.getName() + " come to connect.");
 
-        if (this.getCurMap().getSubArea() != null) {
-            if (this.getCurMap().getSubArea().getId() == 319 || this.getCurMap().getSubArea().getId() == 210)
-                TimerWaiter.addNext(() -> Minotoror.sendPacketMap(this), 3, TimeUnit.SECONDS);
-            else if (this.getCurMap().getSubArea().getId() == 200)
-                TimerWaiter.addNext(() -> PigDragon.sendPacketMap(this), 3, TimeUnit.SECONDS);
-        }
         if(this.isMorph())
             this.send("AR3K");
         if (this.getEnergy() == 0)
@@ -3254,14 +3246,6 @@ public class Player implements Scripted<SPlayer> {
         if (this.getInHouse() != null)
             if (this.getInHouse().getMapId() == this.curMap.getId())
                 this.setInHouse(null);
-
-        if (map.getSubArea() != null) {
-            if (map.getSubArea().getId() == 200) {
-                TimerWaiter.addNext(() -> PigDragon.sendPacketMap(this), 1000);
-            } else if (map.getSubArea().getId() == 210 || map.getSubArea().getId() == 319) {
-                TimerWaiter.addNext(() -> Minotoror.sendPacketMap(this), 1000);
-            }
-        }
     }
 
     public void teleport(GameMap map, int cell) {

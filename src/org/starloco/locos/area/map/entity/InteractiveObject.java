@@ -2,7 +2,6 @@ package org.starloco.locos.area.map.entity;
 
 import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.area.map.GameMap;
-import org.starloco.locos.area.map.labyrinth.Minotoror;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.entity.monster.MonsterGroup;
@@ -205,22 +204,6 @@ public class InteractiveObject {
                 SocketManager.GAME_SEND_GA_PACKET(player.getGameClient(), "", "2", player.getId()
                         + "", "3");
                 player.teleport((short) 6844, 268);
-                break;
-            case 7041: // Bas
-                SocketManager.GAME_SEND_ACTION_TO_DOOR(player.getCurMap(), cell.getId(), true);
-                Minotoror.ouvrirBas(player.getCurMap());
-                break;
-            case 7042: // Haut
-                SocketManager.GAME_SEND_ACTION_TO_DOOR(player.getCurMap(), cell.getId(), true);
-                Minotoror.ouvrirHaut(player.getCurMap());
-                break;
-            case 7043: // Gauche
-                SocketManager.GAME_SEND_ACTION_TO_DOOR(player.getCurMap(), cell.getId(), true);
-                Minotoror.ouvrirGauche(player.getCurMap());
-                break;
-            case 7044: // Droite
-                SocketManager.GAME_SEND_ACTION_TO_DOOR(player.getCurMap(), cell.getId(), true);
-                Minotoror.ouvrirDroite(player.getCurMap());
                 break;
             default:
                 break;
