@@ -1,6 +1,5 @@
 package org.starloco.locos.common;
 
-import org.starloco.locos.area.map.CellCache;
 import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.area.map.OrthogonalProj;

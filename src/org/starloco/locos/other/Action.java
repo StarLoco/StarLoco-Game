@@ -28,7 +28,6 @@ import org.starloco.locos.kernel.Constant;
 import org.starloco.locos.object.GameObject;
 import org.starloco.locos.object.ObjectTemplate;
 import org.starloco.locos.object.entity.SoulStone;
-import org.starloco.locos.util.TimerWaiter;
 
 import java.util.*;
 import java.util.Map.Entry;

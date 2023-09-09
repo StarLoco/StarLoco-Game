@@ -1,6 +1,5 @@
 package org.starloco.locos.common;
 
-import org.starloco.locos.area.map.CellCache;
 import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.area.map.OrthogonalProj;
@@ -1330,7 +1329,7 @@ public class Formulas {
         for(int t=0; t < steps; t++, curX += offX/steps, curY += offY/steps) {
             int xFloored = (int) Math.floor(curX);
             int yFloored = (int) Math.floor(curY);
-            short cellId = (short) OrthogonalProj.getOrthCellID(xFloored, yFloored);
+            short cellId = (short) OrthogonalProj.getOrthCellID(map.data.width, xFloored, yFloored);
 
             // Ignore blocking cell if we are between two cells
             if(curX == xFloored && curY == yFloored)

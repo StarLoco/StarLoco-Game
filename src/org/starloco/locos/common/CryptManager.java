@@ -1,8 +1,6 @@
 package org.starloco.locos.common;
 
 import org.apache.commons.lang.StringEscapeUtils;
-import org.starloco.locos.area.map.CellCache;
-import org.starloco.locos.area.map.CellCacheImpl;
 import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.util.Pair;
