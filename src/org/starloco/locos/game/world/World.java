@@ -213,7 +213,11 @@ public class World implements Scripted<SWorld> {
 
     public GameMap getMap(int id) {
         // Atomically get or load map
-        return maps.computeIfAbsent(id, mapID -> new GameMap(mapsData.get(mapID)));
+        return maps.computeIfAbsent(id, mapID -> {
+            Optional<MapData> data = getMapData(mapID);
+            if(!data.isPresent()) throw new IllegalStateException(String.format("no data found for map #%d", mapID));
+            return new GameMap(mapsData.get(mapID));
+        });
     }
 
     //endregion
@@ -232,7 +236,7 @@ public class World implements Scripted<SWorld> {
     public GameObject getGameObject(int id) {
         GameObject object = objects.get(id);
         if (object == null) {
-            object = ((ObjectData) DatabaseManager.get(ObjectData.class)).load(id);
+            object = DatabaseManager.get(ObjectData.class).load(id);
         }
         return object;
     }

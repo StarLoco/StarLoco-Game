@@ -435,7 +435,7 @@ public class SocketManager {
                 map
                 .getFightersGMsPackets(_perso.getFight()) :
                 map
-                        .getGMsPackets());
+                        .getPlayersGMsPackets());
         send(_perso, packet);
     }
 

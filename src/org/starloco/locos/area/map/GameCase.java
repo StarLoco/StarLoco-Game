@@ -20,6 +20,7 @@ import org.starloco.locos.kernel.Constant;
 import org.starloco.locos.object.GameObject;
 import org.starloco.locos.util.TimerWaiter;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -121,7 +122,7 @@ public class GameCase {
     }
 
     private <T extends Actor> void addActor(T actor) {
-        map.actors.getOrDefault(cellId, Collections.emptyList()).add(actor);
+        map.actors.computeIfAbsent(cellId, i -> new ArrayList<>()).add(actor);
     }
 
     public void addPlayer(Player player) {

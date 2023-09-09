@@ -10,8 +10,6 @@ import org.starloco.locos.common.PathFinding;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.database.DatabaseManager;
 import org.starloco.locos.database.data.game.MountParkData;
-import org.starloco.locos.database.data.game.TrunkData;
-import org.starloco.locos.database.data.login.BaseTrunkData;
 import org.starloco.locos.database.data.login.MountData;
 import org.starloco.locos.entity.Collector;
 import org.starloco.locos.entity.Prism;
@@ -25,12 +23,8 @@ import org.starloco.locos.entity.npc.NpcMovable;
 import org.starloco.locos.entity.npc.NpcTemplate;
 import org.starloco.locos.fight.Fight;
 import org.starloco.locos.fight.Fighter;
-import org.starloco.locos.game.action.ExchangeAction;
-import org.starloco.locos.game.action.GameAction;
 import org.starloco.locos.game.scheduler.Updatable;
 import org.starloco.locos.game.world.World;
-import org.starloco.locos.job.JobConstant;
-import org.starloco.locos.job.maging.BreakingObject;
 import org.starloco.locos.kernel.*;
 import org.starloco.locos.object.GameObject;
 import org.starloco.locos.script.proxy.SMap;
@@ -762,13 +756,16 @@ public class GameMap {
         spawnGroup(Constant.ALIGNEMENT_BRAKMARIEN, 1, true, -1);//Spawn du groupe de gardes brakmarien s'il y a
     }
 
-    public String getGMsPackets() {
-        StringBuilder packet = new StringBuilder();
-        cases.stream().filter(Objects::nonNull)
-                .forEach(cell -> new ArrayList<>(cell.getPlayers()).stream()
+    public String getPlayersGMsPackets() {
+        return "GM" + actors.entrySet().stream()
+            .filter(e -> Objects.nonNull(e.getValue()))
+            .flatMap(e -> e.getValue().stream()
                 .filter(Objects::nonNull)
-                .forEach(player -> packet.append("GM|+").append(player.parseToGM()).append('\u0000')));
-        return packet.toString();
+                    .filter(Player.class::isInstance)
+                    .map(Player.class::cast)
+                    .map(p -> "|+"+p.parseToGM())
+            )
+        .collect(Collectors.joining());
     }
 
     public String getFightersGMsPackets(Fight fight) {
