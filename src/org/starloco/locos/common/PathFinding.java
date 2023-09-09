@@ -211,9 +211,6 @@ public class PathFinding {
         return list;
     }
 
-
-    public final static Map<String, List<Integer>> outForbiddenCells = new HashMap<>();
-
     public static int GetCaseIDFromDirrection(int cellId, char dir,
                                               GameMap map, boolean fight) {
         if (map == null)
@@ -245,8 +242,7 @@ public class PathFinding {
                 cell =  cellId - map.getW() + 1;
                 break;
         }
-        List<Integer> cells = outForbiddenCells.get(map.getW() + "_" + map.getH());
-        if(cells != null && cells.contains(cell))
+        if(OrthogonalProj.isEdgeCell(map.data.width, map.data.height, cell))
             return -1;
         return cell;
     }
@@ -1208,7 +1204,6 @@ public class PathFinding {
             return -1;
         if (forbidden == null) forbidden = new ArrayList<>();
         int dist = 1000, cellId = startCell;
-        List<Integer> cells = outForbiddenCells.get(map.getW() + "_" + map.getH());
 
         for (char d : new char[] {'b', 'd', 'f', 'h'}) {
             int newCellId = PathFinding.GetCaseIDFromDirrection(startCell, d, map, true);
@@ -1218,7 +1213,7 @@ public class PathFinding {
                 int distance = PathFinding.getDistanceBetween(map, endCell, newCellId);
 
                 if (distance < dist && cell.isWalkable(true, true, -1) && cell.getFirstFighter() == null
-                        && !forbidden.contains(cell) && !cells.contains(newCellId)) {
+                        && !forbidden.contains(cell) && OrthogonalProj.isEdgeCell(map.data.width, map.data.height, newCellId) ) {
                     dist = distance;
                     cellId = newCellId;
                 }
