@@ -75,9 +75,8 @@ import org.starloco.locos.object.GameObject;
 import org.starloco.locos.object.ObjectTemplate;
 import org.starloco.locos.object.entity.Fragment;
 import org.starloco.locos.object.entity.SoulStone;
-import org.starloco.locos.other.Action;
-import org.starloco.locos.util.generator.NameGenerator;
 import org.starloco.locos.util.TimerWaiter;
+import org.starloco.locos.util.generator.NameGenerator;
 
 public class GameClient {
 
@@ -2962,9 +2961,9 @@ public class GameClient {
                     return;
                 }
 
-                ArrayList<Job> jobs = player.getJobs();
+                List<Job> jobs = player.getJobs();
 
-                if (jobs == null)
+                if (jobs == null || jobs.isEmpty())
                     return;
 
                 GameObject object = player.getObjetByPos(Constant.ITEM_POS_ARME);
@@ -3046,8 +3045,8 @@ public class GameClient {
                     return;
                 }
 
-                ArrayList<Job> jobs = this.player.getJobs();
-                if (jobs == null) return;
+                List<Job> jobs = this.player.getJobs();
+                if (jobs == null || jobs.isEmpty()) return;
 
                 GameObject object = this.player.getObjetByPos(Constant.ITEM_POS_ARME);
                 if (object == null) return;
@@ -5718,14 +5717,14 @@ public class GameClient {
         }
         if (qua >= obj.getQuantity()) {
             this.player.removeItem(guid);
-            this.player.getCurMap().getCase(cellPosition).addDroppedItem(obj);
+            this.player.getCurMap().getCase(cellPosition).tryDropItem(obj);
             obj.setPosition(Constant.ITEM_POS_NO_EQUIPED);
             SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(this.player, guid);
         } else {
             obj.setQuantity(obj.getQuantity() - qua);
             GameObject obj2 = obj.getClone(qua, true);
             obj2.setPosition(Constant.ITEM_POS_NO_EQUIPED);
-            this.player.getCurMap().getCase(cellPosition).addDroppedItem(obj2);
+            this.player.getCurMap().getCase(cellPosition).tryDropItem(obj2);
             SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(this.player, obj);
         }
         if (Logging.USE_LOG)

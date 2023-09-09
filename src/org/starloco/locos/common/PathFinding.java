@@ -3,6 +3,7 @@ package org.starloco.locos.common;
 import org.starloco.locos.area.map.CellCache;
 import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.area.map.GameMap;
+import org.starloco.locos.area.map.OrthogonalProj;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.fight.Fight;
 import org.starloco.locos.fight.Fighter;
@@ -1098,7 +1099,7 @@ public class PathFinding {
     public static List<GameCase> getCellListFromAreaString(GameMap map, int cellID, int castCellID, String zoneStr, int PONum, boolean isCC) {
         if (map == null || map.getCase(cellID) == null)
             return Collections.emptyList();
-        CellCache cache = map.getCellCache();
+
         ArrayList<GameCase> cases = new ArrayList<>();
 
 
@@ -1149,33 +1150,36 @@ public class PathFinding {
             case 'P':// Player?
                 break;
             case 'T': //Horizontal Line
+                // TODO
                 break;
             case 'O': //Hollow Ring
+                // TODO
                 break;
             case 'D': //Alternating rings
+                // TODO
                 break;
-            case 'R': // Rectangle (untested)
+            case 'R': // Rectangle
                 if (size == 0) {
                     break;
                 }
 
-                int cellX = cache.getOrthX(cellID);
-                int cellY = cache.getOrthY(cellID);
+                int cellX = OrthogonalProj.getOrthX(map.data.width, cellID);
+                int cellY = OrthogonalProj.getOrthY(map.data.width, cellID);
 
                 int minX = cellX - size;
                 int maxX = cellX + size;
                 int minY = cellY - size;
                 int maxY = cellY + size;
 
-                for(int x=minX; x<= maxX; x++) {
-                    for(int y=minY; y<= maxY; y++) {
-                        GameCase cell = map.getCase(cache.getOrthCellID(x, y));
-                        if(cell == null || !cell.isWalkableFight()) {
-                            continue;
-                        }
-                        cases.add(cell);
-                    }
-                }
+//                for(int x=minX; x<= maxX; x++) {
+//                    for(int y=minY; y<= maxY; y++) {
+//                        GameCase cell = map.getCase(OrthogonalProj.getOrthCellID(map.data.width, x, y));
+//                        if(cell == null || !cell.isWalkableFight()) {
+//                            continue;
+//                        }
+//                        cases.add(cell);
+//                    }
+//                }
 
                 break;
             default:
@@ -1250,7 +1254,7 @@ public class PathFinding {
     }
 
     public static ArrayList<GameCase> getShortestPathBetween(GameMap map, int start,
-                                                         int dest, int distMax) {
+                                                              int dest, int distMax) {
         ArrayList<GameCase> curPath = new ArrayList<GameCase>();
         ArrayList<GameCase> curPath2 = new ArrayList<GameCase>();
         ArrayList<GameCase> closeCells = new ArrayList<GameCase>();
@@ -1538,7 +1542,7 @@ public class PathFinding {
     }
 
     public static GameCase checkIfCanPushEntity(Fight fight, int startCell,
-                                            int endCell, char direction) {
+                                                 int endCell, char direction) {
         GameMap map = fight.getMap();
         GameCase cell = map.getCase(getCellArroundByDir(startCell, direction, map));
         GameCase oldCell = cell;

@@ -37,18 +37,20 @@ public class InteractiveObject {
     };
 
     private final int id;
+    private final int cellId;
+
     private int state;
     private final GameMap map;
-    private final GameCase cell;
+    // private final GameCase cell;
     private boolean interactive = true;
     private final boolean walkable;
     private long lastTime = 0;
     private InteractiveObjectTemplate template;
 
-    public InteractiveObject(int id, final GameMap iMap, GameCase iCell) {
+    public InteractiveObject(int id, final GameMap iMap, int cellId) {
         this.id = id;
         this.map = iMap;
-        this.cell = iCell;
+        this.cellId = cellId;
         this.state = JobConstant.IOBJECT_STATE_FULL;
         this.template = World.world.getIOTemplate(this.id);
         this.walkable = this.getTemplate() != null && this.getTemplate().isWalkable() && this.state == JobConstant.IOBJECT_STATE_FULL;
@@ -377,7 +379,7 @@ public class InteractiveObject {
     private void enable() {
         this.state = JobConstant.IOBJECT_STATE_FULLING;
         this.interactive = true;
-        SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(this.map, this.cell);
+        SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(this.map, this.cellId, this);
         this.state = JobConstant.IOBJECT_STATE_FULL;
     }
 

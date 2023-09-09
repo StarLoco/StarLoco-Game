@@ -68,8 +68,6 @@ public class CryptManager {
         return list;
     }
 
-    public String key = "8fd8ad4a38cdd0432248a76f8f148ceb";
-
     private List<Integer> cellWalkable(int width, int height){
         List<Integer> limit = new ArrayList<>();
         int H = height;
@@ -145,61 +143,6 @@ public class CryptManager {
         for (char a : mapData.toCharArray()) if (Character.isDigit(a)) nb++;
         return (nb > 1000);
     }
-
-    // TODO: remove GameMap map param, pass only mapID
-    public Pair<CellCache, List<GameCase>> decompileMapData(GameMap map, String data, String key, int w, int h) {
-        List<GameCase> cells = new ArrayList<>();
-        List<Short> losCells = new ArrayList<>();
-
-        if(mapCrypted(data) && !key.isEmpty()) {
-            try {
-                data = this.decryptMapData(data, key);
-            } catch (Exception e) {
-                System.err.println("Cannot decipher map data : " + map.data.id);
-                e.printStackTrace();
-            }
-        }
-        if(PathFinding.outForbiddenCells.get(w + "_" + h) == null)
-            PathFinding.outForbiddenCells.put(w + "_" + h, cellWalkable(w, h));
-        try {
-            short cellId = 0;
-            for (; cellId < data.length()/10; cellId ++ ){
-                String cellData = data.substring(cellId*10, (cellId+1)*10);
-                byte[] array = new byte[10];
-                for (int i = 0; i < cellData.length(); i++)
-                    array[i] = (byte) getIntByHashedValue(cellData.charAt(i));
-
-                boolean active = (array[0] >> 5) != 0;
-
-                boolean los = true;
-                short groundSlope, groundLevel;
-                int io;
-
-                int walkable = ((array[2] & 56 ) >> 3); //  && !cellData.equalsIgnoreCase("bhGaeaaaaa") && !cellData.equalsIgnoreCase("Hhaaeaaaaa"))
-                if((array[0] & 1) == 0)
-                    los = false;
-                if(los) losCells.add(cellId);
-                short tmp = (short) ((array[4] & 60) >> 2);
-                if (tmp != 1) groundSlope = tmp;
-
-                tmp = (short) (array[1] & 15);
-                if (tmp != 0) groundLevel = tmp;
-
-                int layerObject2 = ((array[0] & 2) << 12) + ((array[7] & 1) << 12) + (array[8] << 6) + array[9];
-                boolean layerObject2Interactive = ((array[7] & 2) >> 1) != 0;
-                int obj = (layerObject2Interactive?layerObject2:-1);
-
-                cells.add(new GameCase(map, active, cellId, walkable, los, obj));
-
-            }
-            CellCacheImpl cache = new CellCacheImpl(losCells, w, h);
-            return new Pair<>(cache, cells);
-        } catch (Exception e) {
-            System.err.println(e.getMessage() + " : mapId : " + map.data.id);
-            throw e;
-        }
-    }
-
 
     // prepareData
     public String cryptMessage(String message, String key) {

@@ -3,6 +3,7 @@ package org.starloco.locos.common;
 import org.starloco.locos.area.map.CellCache;
 import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.area.map.GameMap;
+import org.starloco.locos.area.map.OrthogonalProj;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.fight.Fight;
 import org.starloco.locos.fight.Fighter;
@@ -1309,31 +1310,27 @@ public class Formulas {
         if(map == null || castID == targetID)
             return true;
 
-        CellCache cache = map.getCellCache();
-
-        if(cache == null)
-            return false;
         // Only compute the coordinates once
-        float curX = cache.getOrthX(castID);
-        float curY = cache.getOrthY(castID);
-        int dstX = cache.getOrthX(targetID);
-        int dstY = cache.getOrthY(targetID);
+        float curX = OrthogonalProj.getOrthX(map.data.width, castID);
+        float curY = OrthogonalProj.getOrthY(map.data.width, castID);
+        int dstX = OrthogonalProj.getOrthX(map.data.width, targetID);
+        int dstY = OrthogonalProj.getOrthY(map.data.width, targetID);
 
         // Get the offset between the cells
         int offX = (dstX - (int)curX);
         int offY = (dstY - (int)curY);
 
-        float steps = cache.getCellsDistance(castID, targetID);
+        float steps = OrthogonalProj.getCellsDistance(map.data.width, castID, targetID);
 
         steps = Math.max(1,steps);
-        curX += .5;
-        curY += .5;
+        curX += .5F;
+        curY += .5F;
 
         // Raycast & losCheck
         for(int t=0; t < steps; t++, curX += offX/steps, curY += offY/steps) {
             int xFloored = (int) Math.floor(curX);
             int yFloored = (int) Math.floor(curY);
-            short cellId = (short) cache.getOrthCellID(xFloored, yFloored);
+            short cellId = (short) OrthogonalProj.getOrthCellID(xFloored, yFloored);
 
             // Ignore blocking cell if we are between two cells
             if(curX == xFloored && curY == yFloored)
@@ -1347,7 +1344,7 @@ public class Formulas {
             GameCase cell = map.getCase(cellId);
             if(cell != null) {
                 Fighter fighter = cell.getFirstFighter();
-                if (!cell.isLoS() || (fighter != null && !fighter.isHidden()))
+                if (!map.data.lineOfSight(cellId) || (fighter != null && !fighter.isHidden()))
                     return false;
             }
         }

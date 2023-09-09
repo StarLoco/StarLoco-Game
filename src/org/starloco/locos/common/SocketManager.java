@@ -1322,9 +1322,7 @@ public class SocketManager {
         send(perso, packet);
     }
 
-    public static void GAME_SEND_GDF_PACKET_TO_MAP(GameMap map, GameCase cell) {
-        int cellID = cell.getId();
-        InteractiveObject object = cell.getObject();
+    public static void GAME_SEND_GDF_PACKET_TO_MAP(GameMap map, int cellID, InteractiveObject object) {
         String packet = "GDF|" + cellID + ";" + object.getState() + ";"
                 + (object.isInteractive() ? "1" : "0");
         for (Player z : map.getPlayers())

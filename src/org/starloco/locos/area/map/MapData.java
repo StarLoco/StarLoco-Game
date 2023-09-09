@@ -11,10 +11,11 @@ import org.starloco.locos.fight.Fighter;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.util.Pair;
 
+
 import java.util.*;
 
 // Holds all static data for maps
-public abstract class MapData {
+public abstract class MapData implements CellsDataProvider {
     // MapData must only contain final fields. It's a READ ONLY class
     public final int id;
     public final String date;
@@ -30,17 +31,19 @@ public abstract class MapData {
 
     // Temporary variable to be able to copy the map.
     // Eventually, we should split GameCase from CellData, or use neither of those
-    public final String cellsData;
+    public final CellsDataProvider.RawCellsDataProvider cellsData;
     public final List<MonsterGrade> mobPossibles;
     public final String placesStr;
     private final HashMap<Integer, InteractiveObject.InteractiveObjectTemplate> interactiveObjects = new HashMap<>();
 
 
     protected MapData(int id, String date, String key, String cellsData, int width, int height, int x, int y, int subAreaID, boolean noSellers, boolean noCollectors, boolean noPrisms, boolean noTp, boolean noDefy, boolean noAgro, boolean noCanal, int mobGroupsMaxCount, int mobGroupsMinSize, int mobGroupsMaxSize, List<MonsterGrade> mobPossibles, String placesStr) {
+        String decipheredData = World.world.getCryptManager().decryptMapData(cellsData, key);
+
         this.id = id;
         this.date = date;
         this.key = key;
-        this.cellsData = cellsData;
+        this.cellsData = new CellsDataProvider.RawCellsDataProvider(decipheredData.getBytes());
         this.width = width;
         this.height = height;
         this.x = x;
@@ -84,4 +87,16 @@ public abstract class MapData {
 
     public abstract boolean hasFightEndForType(int type);
     public abstract void onFightEnd(Fight f, Player p, List<Fighter> winTeam, List<Fighter> looseTeam);
+
+    public int cellCount() {
+        return width * height + (width-1) * (height-1);
+    }
+    public Map<Integer, InteractiveObject.InteractiveObjectTemplate> interactiveObjects() { return Collections.unmodifiableMap(interactiveObjects); }
+
+    public long cellData(int cellID) {
+        return cellsData.cellData(cellID);
+    }
+    public int overrideMask(int cellID) {
+        return cellsData.overrideMask(cellID);
+    }
 }

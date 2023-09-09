@@ -56,7 +56,7 @@ public class EventFindMe extends Event {
 
     @Override
     public void perform() {
-        this.cell.addDroppedItem(this.object);
+        this.cell.tryDropItem(this.object);
         for(Player player : World.world.getOnlinePlayers()) {
             player.sendTypeMessage("Event",  player.getLang().trans("event.findme.find", map.getSubArea().getName()));
         }

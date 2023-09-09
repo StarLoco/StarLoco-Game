@@ -2,8 +2,7 @@ package org.starloco.locos.area.map;
 
 import org.starloco.locos.area.Area;
 import org.starloco.locos.area.SubArea;
-import org.starloco.locos.area.map.entity.InteractiveDoor;
-import org.starloco.locos.area.map.entity.MountPark;
+import org.starloco.locos.area.map.entity.*;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.client.other.Party;
 import org.starloco.locos.common.Formulas;
@@ -11,6 +10,8 @@ import org.starloco.locos.common.PathFinding;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.database.DatabaseManager;
 import org.starloco.locos.database.data.game.MountParkData;
+import org.starloco.locos.database.data.game.TrunkData;
+import org.starloco.locos.database.data.login.BaseTrunkData;
 import org.starloco.locos.database.data.login.MountData;
 import org.starloco.locos.entity.Collector;
 import org.starloco.locos.entity.Prism;
@@ -24,8 +25,12 @@ import org.starloco.locos.entity.npc.NpcMovable;
 import org.starloco.locos.entity.npc.NpcTemplate;
 import org.starloco.locos.fight.Fight;
 import org.starloco.locos.fight.Fighter;
+import org.starloco.locos.game.action.ExchangeAction;
+import org.starloco.locos.game.action.GameAction;
 import org.starloco.locos.game.scheduler.Updatable;
 import org.starloco.locos.game.world.World;
+import org.starloco.locos.job.JobConstant;
+import org.starloco.locos.job.maging.BreakingObject;
 import org.starloco.locos.kernel.*;
 import org.starloco.locos.object.GameObject;
 import org.starloco.locos.script.proxy.SMap;
@@ -34,8 +39,10 @@ import org.starloco.locos.util.TimerWaiter;
 
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class GameMap {
 
@@ -140,9 +147,17 @@ public class GameMap {
     private final int maxTeam = 0;
     private boolean isMute = false;
     private final MountPark mountPark;
-    private final CellCache cellCache;
+    public final CellsDataProvider.CellsDataOverride cellsData;
     private final List<GameCase> cases;
     private List<Fight> fights = new ArrayList<>();
+
+    // Make those private once GameCase is gone
+    ConcurrentHashMap<Integer, List<Actor>> actors = new ConcurrentHashMap<>();
+    ConcurrentHashMap<Integer, GameObject> droppedItems = new ConcurrentHashMap<>();
+
+    Map<Integer, InteractiveObject> interactiveObjects;
+    // end: Make those private once GameCase is gone
+
     private final Map<Integer, MonsterGroup> mobGroups = new HashMap<>();
     private final Map<Integer, MonsterGroup> fixMobGroups = new HashMap<>();
     private final Map<Integer, Npc> npcs = new HashMap<>();
@@ -152,19 +167,24 @@ public class GameMap {
         Objects.requireNonNull(data);
         this.scriptVal = new SMap(this);
         this.data = data;
-        Pair<CellCache, List<GameCase>> p = World.world.getCryptManager().decompileMapData(this, data.cellsData, data.key, data.width, data.height);
-        this.cellCache = p.first;
-        this.cases = p.second;
+        this.cellsData = new CellsDataProvider.CellsDataOverride(data.cellsData);
+
+        // Temporary create proxy GameCase to replace old GameCase class access
+        this.cases = new ArrayList<>(data.cellCount());
+        for(int i=0;i<data.cellCount();i++) {
+            this.cases.add(new GameCase(this, i));
+        }
+
         this.mountPark = World.world.getMountParks().get(data.id);
 
         this.data.getNPCs().forEach((k, v) -> addNpc(k, v.first, v.second));
         this.data.getStaticGroups().forEach(this::addStaticGroup);
 
-        this.refreshSpawns();
-    }
+        Map<Integer, InteractiveObject> objects = new HashMap<>();
+        this.data.interactiveObjects().forEach((key, value) -> objects.put(key, new InteractiveObject(value.getId(), this, key)));
+        this.interactiveObjects = Collections.unmodifiableMap(objects);
 
-    public CellCache getCellCache() {
-        return cellCache;
+        this.refreshSpawns();
     }
 
     public String getForbidden() {
@@ -334,22 +354,7 @@ public class GameMap {
     }
 
     public GameCase getCase(int id) {
-        for(GameCase gameCase : this.cases)
-            if(gameCase.getId() == (id))
-                return gameCase;
-        return null;
-    }
-
-    public void removeCase(int id) {
-        Iterator<GameCase> iterator = this.cases.iterator();
-
-        while(iterator.hasNext()) {
-            GameCase gameCase = iterator.next();
-            if(gameCase != null && gameCase.getId() == id) {
-                iterator.remove();
-                break;
-            }
-        }
+        return this.cases.get(id);
     }
 
     public Fight newFight(Player init1, Player init2, int type) {
@@ -520,7 +525,7 @@ public class GameMap {
     public ArrayList<Player> getPlayers() {
         ArrayList<Player> player = new ArrayList<>();
         for (GameCase c : cases)
-            player.addAll(new ArrayList<>(c.getPlayers()));
+            player.addAll(c.getPlayers());
         return player;
     }
 
@@ -545,11 +550,11 @@ public class GameMap {
     }
 
     public boolean haveMobFix() {
-        return this.fixMobGroups.size() > 0;
+        return !this.fixMobGroups.isEmpty();
     }
 
     public boolean isPossibleToPutMonster() {
-        return !this.cases.isEmpty() && data.mobGroupsMaxCount > 0 && data.mobPossibles.size() > 0;
+        return !this.cases.isEmpty() && data.mobGroupsMaxCount > 0 && !data.mobPossibles.isEmpty();
     }
 
     public boolean loadExtraMonsterOnMap(int idMob) {
@@ -1450,6 +1455,12 @@ public class GameMap {
         this.mobGroups.put(this.nextObjectId, group);
         this.nextObjectId--;
         this.fixMobGroups.put(-1000 + this.nextObjectId, group);
+    }
+
+    public Stream<Integer> findObjectsPositionsByID(List<Integer> ids) {
+        return data.interactiveObjects().entrySet().stream()
+            .filter(e -> ids.contains(e.getValue().getId()))
+            .map(Entry::getKey);
     }
 
     public SMap scripted() { return scriptVal; }

@@ -1,5 +1,6 @@
 package org.starloco.locos.job;
 
+import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.area.map.entity.InteractiveObject;
 import org.starloco.locos.client.Player;
@@ -94,13 +95,13 @@ public class JobAction {
         this.jobCraft = new JobCraft(this, P);
     }
 
-    public void startAction(Player P, InteractiveObject IO, GameAction GA, GameCase cell, JobStat SM) {
+    public void startAction(Player P, InteractiveObject IO, GameAction GA, int cellId, JobStat SM) {
         this.SM = SM;
         this.player = P;
 
         if (P.getObjetByPos(Constant.ITEM_POS_ARME) != null && SM.getTemplate().getId() == 36) {
             if (World.world.getMetier(36).isValidTool(P.getObjetByPos(Constant.ITEM_POS_ARME).getTemplate().getId())) {
-                int dist = PathFinding.getDistanceBetween(P.getCurMap(), P.getCurCell().getId(), cell.getId());
+                int dist = PathFinding.getDistanceBetween(P.getCurMap(), P.getCurCell().getId(), cellId);
                 int distItem = JobConstant.getDistCanne(P.getObjetByPos(Constant.ITEM_POS_ARME).getTemplate().getId());
                 if (distItem < dist) {
                     SocketManager.GAME_SEND_MESSAGE(P, "Vous êtes trop loin pour pouvoir pécher ce poisson !");
@@ -115,32 +116,32 @@ public class JobAction {
             P.getGameClient().action = System.currentTimeMillis();
             IO.setInteractive(false);
             IO.setState(JobConstant.IOBJECT_STATE_EMPTYING);
-            SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(P.getCurMap(), cell);
+            SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(P.getCurMap(), cellId, IO);
             if(P.walkFast) {
-                TimerWaiter.addNext(() -> SocketManager.GAME_SEND_GA_PACKET_TO_MAP(P.getCurMap(), "" + GA.id, 501, P.getId() + "", cell.getId() + "," + this.time), 500);
+                TimerWaiter.addNext(() -> SocketManager.GAME_SEND_GA_PACKET_TO_MAP(P.getCurMap(), "" + GA.id, 501, P.getId() + "", cellId + "," + this.time), 500);
                 P.getLang().trans("jobaction.disable.walkfast");
             } else {
-                SocketManager.GAME_SEND_GA_PACKET_TO_MAP(P.getCurMap(), "" + GA.id, 501, P.getId() + "", cell.getId() + "," + this.time);
+                SocketManager.GAME_SEND_GA_PACKET_TO_MAP(P.getCurMap(), "" + GA.id, 501, P.getId() + "", cellId + "," + this.time);
             }
         } else {
             P.setAway(true);
             IO.setState(JobConstant.IOBJECT_STATE_EMPTYING);
             P.setExchangeAction(new ExchangeAction<>(ExchangeAction.CRAFTING, this));
             SocketManager.GAME_SEND_ECK_PACKET(P, 3, this.min + ";" + this.id);
-            SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(P.getCurMap(), cell);
+            SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(P.getCurMap(), cellId, IO);
         }
     }
 
-    public void startAction(Player P, InteractiveObject IO, GameAction GA, GameCase cell) {
+    public void startAction(Player P, InteractiveObject IO, GameAction GA, int cellId) {
         this.player = P;
         P.setAway(true);
         IO.setState(JobConstant.IOBJECT_STATE_EMPTYING);//FIXME trouver la bonne valeur
         P.setExchangeAction(new ExchangeAction<>(ExchangeAction.CRAFTING, this));
         SocketManager.GAME_SEND_ECK_PACKET(P, 3, this.min + ";" + this.id);//this.min => Nbr de Case de l'interface
-        SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(P.getCurMap(), cell);
+        SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(P.getCurMap(), cellId, IO);
     }
 
-    public void endAction(Player player, InteractiveObject IO, GameAction GA, GameCase cell) {
+    public void endAction(Player player, InteractiveObject IO, GameAction GA, int cellId) {
         if(!this.isCraft && player.getGameClient().action != 0) {
             if(System.currentTimeMillis() - player.getGameClient().action < this.time - 500) {
                 /*String ip = player.getAccount().getCurrentIp();
@@ -165,7 +166,7 @@ public class JobAction {
         if (!this.isCraft) {
             IO.setState(3);
             IO.disable();
-            SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(player.getCurMap(), cell);
+            SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(player.getCurMap(), cellId, IO);
             int qua = (this.max > this.min ? Formulas.getRandomValue(this.min, this.max) : this.min);
 
             if (SM.getTemplate().getId() == 36) {
@@ -205,7 +206,7 @@ public class JobAction {
                 for (int[] protector : JobConstant.JOB_PROTECTORS) {
                     if (tID == protector[1]) {
                         int monsterLvl = JobConstant.getProtectorLvl(player.getLevel());
-                        player.getCurMap().startFightVersusProtectors(player, new MonsterGroup(player.getCurMap().nextObjectId, player.getCurMap(), cell.getId(), protector[0] + "," + monsterLvl + "," + monsterLvl));
+                        player.getCurMap().startFightVersusProtectors(player, new MonsterGroup(player.getCurMap().nextObjectId, player.getCurMap(), cellId, protector[0] + "," + monsterLvl + "," + monsterLvl));
                         player.getCurMap().nextObjectId--;
                         break;
                     }

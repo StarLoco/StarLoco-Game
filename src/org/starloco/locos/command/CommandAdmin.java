@@ -6,7 +6,6 @@ import org.starloco.locos.script.DataScriptVM;
 import org.starloco.locos.util.Pair;
 import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.area.map.GameMap;
-import org.starloco.locos.area.map.entity.MountPark;
 import org.starloco.locos.client.Account;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.command.administration.AdminUser;
@@ -2569,35 +2568,6 @@ public class CommandAdmin extends AdminUser {
             ((BaseMountParkData) DatabaseManager.get(BaseMountParkData.class)).update(this.getPlayer().getCurMap().getMountPark());
             this.sendMessage("Vous avez ajoute la cellule e l'enclos.");
             return;
-        } else if (command.equalsIgnoreCase("O")) {
-            MountPark mp = this.getPlayer().getCurMap().getMountPark();
-
-            for (GameCase c : this.getPlayer().getCurMap().getCases()) {
-                if (c.getObject() != null) {
-                    switch (c.getObject().getTemplate().getId()) {
-                        case 6766:
-                        case 6767:
-                        case 6763:
-                        case 6772:
-                            mp.setDoor(c.getId());
-                            this.sendMessage("Vous avez ajoute une porte e l'enclos.");
-                            return;
-                    }
-                }
-            }
-            this.sendMessage("Vous ne vous situez pas sur la porte.");
-        } else if (command.equalsIgnoreCase("A1")) {
-            this.getPlayer().getCurMap().getMountPark().setMountCell(this.getPlayer().getCurCell().getId());
-            this.sendMessage("Vous avez modifie la cellule de spawn de l'enclos.");
-        } else if (command.equalsIgnoreCase("B1")) {
-            this.getPlayer().getCases = true;
-            this.sendMessage("Vous avez active le getCases.");
-        } else if (command.equalsIgnoreCase("C1")) {
-            this.getPlayer().getCases = false;
-            this.getPlayer().getCurMap().getMountPark().setCellObject(this.getPlayer().thisCases);
-            this.getPlayer().thisCases.clear();
-            ((BaseMountParkData) DatabaseManager.get(BaseMountParkData.class)).update(this.getPlayer().getCurMap().getMountPark());
-            this.sendMessage("Vous avez applique les nouvelles cases e l'enclos.");
         } else if (command.equalsIgnoreCase("CONVERT")) {
             try {
                 this.sendMessage(Long.toHexString(Long.parseLong(infos[1])));

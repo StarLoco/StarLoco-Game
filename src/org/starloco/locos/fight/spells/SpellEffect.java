@@ -1,5 +1,6 @@
 package org.starloco.locos.fight.spells;
 
+import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.common.Formulas;
