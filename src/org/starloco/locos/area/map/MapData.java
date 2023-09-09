@@ -4,6 +4,7 @@ import org.starloco.locos.area.Area;
 import org.starloco.locos.area.SubArea;
 import org.starloco.locos.area.map.entity.InteractiveObject;
 import org.starloco.locos.client.Player;
+import org.starloco.locos.common.CryptManager;
 import org.starloco.locos.entity.monster.MobGroupDef;
 import org.starloco.locos.entity.monster.MonsterGrade;
 import org.starloco.locos.fight.Fight;
@@ -38,12 +39,21 @@ public abstract class MapData implements CellsDataProvider {
 
 
     protected MapData(int id, String date, String key, String cellsData, int width, int height, int x, int y, int subAreaID, boolean noSellers, boolean noCollectors, boolean noPrisms, boolean noTp, boolean noDefy, boolean noAgro, boolean noCanal, int mobGroupsMaxCount, int mobGroupsMinSize, int mobGroupsMaxSize, List<MonsterGrade> mobPossibles, String placesStr) {
-        String decipheredData = World.world.getCryptManager().decryptMapData(cellsData, key);
+        CryptManager cMgr = World.world.getCryptManager();
+
+        String data = cellsData;
+        if(cMgr.isMapCiphered(data)) {
+            try {
+                data = cMgr.decryptMapData(cellsData, key);
+            } catch (Exception e) {
+                throw new RuntimeException("Cannot decipher mapdata #"+id,e);
+            }
+        }
 
         this.id = id;
         this.date = date;
         this.key = key;
-        this.cellsData = new CellsDataProvider.RawCellsDataProvider(decipheredData.getBytes());
+        this.cellsData = new CellsDataProvider.RawCellsDataProvider(data.getBytes());
         this.width = width;
         this.height = height;
         this.x = x;

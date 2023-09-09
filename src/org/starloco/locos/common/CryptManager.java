@@ -3,7 +3,6 @@ package org.starloco.locos.common;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.area.map.GameMap;
-import org.starloco.locos.util.Pair;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -113,7 +112,7 @@ public class CryptManager {
         return strArray[(num % 16)];
     }
 
-    public String decryptMapData(String mapData, String key) {
+    public String decryptMapData(String mapData, String key) throws UnsupportedEncodingException {
         key = prepareKey(key);
         String strsum = checksumKey(key);
         int checksum = Integer.parseInt(strsum, 16) * 2;
@@ -136,7 +135,7 @@ public class CryptManager {
         return unescape(dataToDecrypt.toString());
     }
 
-    private boolean mapCrypted(String mapData) {
+    public boolean isMapCiphered(String mapData) {
         int nb = 0;
         for (char a : mapData.toCharArray()) if (Character.isDigit(a)) nb++;
         return (nb > 1000);
@@ -186,16 +185,12 @@ public class CryptManager {
         }
     }
 
-    public String prepareKey(String key) {
+    public String prepareKey(String key) throws UnsupportedEncodingException {
         StringBuilder sb = new StringBuilder();
         for(int i = 0; i < key.length(); i += 2)
             sb.append((char) Integer.parseInt(key.substring(i, i + 2), 16));
 
-        try {
-            return URLDecoder.decode(sb.toString(), "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            return null;
-        }
+        return URLDecoder.decode(sb.toString(), "UTF-8");
     }
 
     private int checksum(String data) {

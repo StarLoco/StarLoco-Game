@@ -80,7 +80,7 @@ public interface CellsDataProvider {
             this.data = new long[data.length/10];
 
             for(int i=0;i<data.length;i+=10) {
-                this.data[i] = b64ToLong(data, i);
+                this.data[i/10] = b64ToLong(data, i);
             }
         }
 

@@ -1812,8 +1812,6 @@ public class CommandAdmin extends AdminUser {
                     DatabaseManager.get(NpcQuestionData.class).loadFully();
                     World.world.getNpcAnswers().clear();
                     DatabaseManager.get(NpcAnswerData.class).loadFully();
-                    // Reload lua
-                    DataScriptVM.getInstance().safeLoadData();
                     break;
                 case "SCRIPTS":
                     // Reload lua
@@ -1823,9 +1821,6 @@ public class CommandAdmin extends AdminUser {
                     //  Command.reload();
                     //  Group.reload();
                     Config.gameServer.getClients().stream().filter(client -> client != null && client.getPlayer() != null).forEach(client -> ((PlayerData) DatabaseManager.get(PlayerData.class)).reloadGroup(client.getPlayer()));
-                    break;
-                case "MAPS":
-                    ((GameMapData) DatabaseManager.get(GameMapData.class)).reload();
                     break;
                 case "MONSTERS":
                     DatabaseManager.get(MonsterData.class).loadFully();

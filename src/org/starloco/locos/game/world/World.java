@@ -373,17 +373,14 @@ public class World implements Scripted<SWorld> {
         DatabaseManager.get(ObjectSetData.class).loadFully();
         logger.debug("The panoplies were loaded successfully.");
 
-        DatabaseManager.get(GameMapData.class).loadFully();
-        logger.debug("The maps were loaded successfully.");
-
         DatabaseManager.get(ScriptedCellData.class).loadFully();
         logger.debug("The scripted cells were loaded successfully.");
 
 //        DatabaseManager.get(EndFightActionData.class).loadFully();
 //        logger.debug("The end fight actions were loaded successfully.");
-
-        DatabaseManager.get(NpcData.class).loadFully();
-        logger.debug("The placement of non-player character were done successfully.");
+//
+//        DatabaseManager.get(NpcData.class).loadFully();
+//        logger.debug("The placement of non-player character were done successfully.");
 
         DatabaseManager.get(ObjectActionData.class).loadFully();
         logger.debug("The action of objects were loaded successfully.");
