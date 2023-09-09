@@ -760,10 +760,9 @@ public class GameMap {
         return "GM" + actors.entrySet().stream()
             .filter(e -> Objects.nonNull(e.getValue()))
             .flatMap(e -> e.getValue().stream()
-                .filter(Objects::nonNull)
-                    .filter(Player.class::isInstance)
-                    .map(Player.class::cast)
-                    .map(p -> "|+"+p.parseToGM())
+                .filter(Player.class::isInstance)
+                .map(Player.class::cast)
+                .map(p -> "|+"+p.parseToGM())
             )
         .collect(Collectors.joining());
     }

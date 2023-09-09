@@ -11,7 +11,7 @@ public interface CellsDataProvider {
     int overrideMask(int cellID);
 
     default boolean active(int cellID) {
-        return (cellData(cellID) & 0x800000000000000L) != 0;
+        return (cellData(cellID) & 0x1L) != 0;
     }
 
     default boolean lineOfSight(int cellID) {
@@ -19,19 +19,19 @@ public interface CellsDataProvider {
     }
 
     default int movement(int cellID) {
-        return (int) ((cellData(cellID) >> 55) & 0x7);
+        return (int) ((cellData(cellID) >> 2) & 0x7);
     }
 
     default int groundLevel(int cellID) {
-        return (int) ((cellData(cellID) >> 53) & 0xF);
+        return (int) ((cellData(cellID) >> 5) & 0xF);
     }
 
     default int groundSlope(int cellID) {
-        return (int) ((cellData(cellID) >> 49) & 0xF);
+        return (int) ((cellData(cellID) >> 9) & 0xF);
     }
 
     default int ground(int cellID) {
-        return (int) ((cellData(cellID) >> 49) & 0xF);
+        return (int) ((cellData(cellID) >> 13) & 0xF);
     }
 
     static long b64ToLong(byte[] data, int offset) {

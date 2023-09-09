@@ -49,11 +49,17 @@ public abstract class MapData implements CellsDataProvider {
                 throw new RuntimeException("Cannot decipher mapdata #"+id,e);
             }
         }
+        // Decode b64
+        byte[] dataBytes = new byte[data.length()];
+        for (int i = 0; i < data.length(); i++) {
+            dataBytes[i] = (byte) cMgr.getIntByHashedValue(data.charAt(i));
+        }
+
 
         this.id = id;
         this.date = date;
         this.key = key;
-        this.cellsData = new CellsDataProvider.RawCellsDataProvider(data.getBytes());
+        this.cellsData = new CellsDataProvider.RawCellsDataProvider(dataBytes);
         this.width = width;
         this.height = height;
         this.x = x;

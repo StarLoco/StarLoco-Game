@@ -37,19 +37,19 @@ public class GameCase {
 
     public int getId() { return cellId; }
 
-    private <T extends Actor> List<T> getActors(Class<T> clz) {
+    private <T extends Actor> List<T> getActorsOfType(Class<T> clz) {
         return map.actors.getOrDefault(cellId, Collections.emptyList()).stream()
-                .filter(clz::isInstance)
-                .map(clz::cast)
-                .collect(Collectors.toList());
+            .filter(clz::isInstance)
+            .map(clz::cast)
+            .collect(Collectors.toList());
     }
 
     public List<Player> getPlayers() {
-        return getActors(Player.class);
+        return getActorsOfType(Player.class);
     }
 
     public List<Fighter> getFighters() {
-        return getActors(Fighter.class);
+        return getActorsOfType(Fighter.class);
     }
 
     public GameObject getDroppedItem(boolean delete) {
@@ -81,7 +81,7 @@ public class GameCase {
     }
 
     public boolean isWalkable(boolean useObject, boolean inFight) {
-        if (getObject() != null && useObject)
+        if (useObject && getObject() != null)
             return this._isWalkable(inFight) && getObject().isWalkable();
         return this._isWalkable(inFight);
     }
