@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public interface CellsDataProvider {
+    int cellCount();
+
     long cellData(int cellID);
     int overrideMask(int cellID);
 
@@ -15,7 +17,7 @@ public interface CellsDataProvider {
     }
 
     default boolean lineOfSight(int cellID) {
-        return (cellData(cellID)  & 0x400000000000000L) != 0;
+        return (cellData(cellID)  & 0x2L) != 0;
     }
 
     default int movement(int cellID) {
@@ -34,6 +36,14 @@ public interface CellsDataProvider {
         return (int) ((cellData(cellID) >> 13) & 0xF);
     }
 
+    default int object2(int cellId) {
+        return (int) ((cellData(cellId) >> 44) & 0x3FFF);
+    }
+
+    default boolean object2Interactive(int cellId) {
+        return (cellData(cellId) & 0x800000000000000L) != 0;
+    }
+
     static long b64ToLong(byte[] data, int offset) {
         long active = (data[offset] & 0x20) >> 5;
         long lineOfSight = data[offset] & 0x1;
@@ -48,26 +58,26 @@ public interface CellsDataProvider {
         long obj1Rot = ((data[offset+7] & 0x30) >> 4);
         long obj2Num = ((data[offset] & 0x2) << 12) | ((data[offset+7] & 0x1) << 12) | ((data[offset+8] & 0x3F) << 6) | (data[offset+9] & 0x3F);
         long obj2Flip = (data[offset+7] & 0x4) >> 2;
-        long obj2Int = (data[offset+7] & 0x2) >> 1;
+        long obj2Interactive = (data[offset+7] & 0x2) >> 1;
 
         // Obj2Interactive-Obj2Flip-Obj2Num-Obj1Rot-Obj1Flip-Obj1Num-GndRot-GndFlip-GndNum-GndSlope-GndLevel-Movement-LoS-Active
         // Each line make the room it needs first, then OR its value in.
         // Code could be optimized, but consistency and ease of read win.
         long result = 0;
-        result = (result << 1) | obj2Int;
-        result = (result << 1) | obj2Flip;
-        result = (result << 14) | obj2Num;
-        result = (result << 2) | obj1Rot;
-        result = (result << 1) | obj1Flip;
-        result = (result << 14) | obj1Num;
-        result = (result << 2) | groundRot;
-        result = (result << 1) | groundFlip;
-        result = (result << 11) | groundNum;
-        result = (result << 4) | groundSlope;
-        result = (result << 4) | groundLevel;
-        result = (result << 3) | movement;
-        result = (result << 1) | lineOfSight;
-        result = (result << 1) | active;
+        result = (result << 1) | obj2Interactive;   // Offset=59
+        result = (result << 1) | obj2Flip;          // Offset=58
+        result = (result << 14) | obj2Num;          // Offset=44
+        result = (result << 2) | obj1Rot;           // Offset=42
+        result = (result << 1) | obj1Flip;          // Offset=41
+        result = (result << 14) | obj1Num;          // Offset=27
+        result = (result << 2) | groundRot;         // Offset=25
+        result = (result << 1) | groundFlip;        // Offset=24
+        result = (result << 11) | groundNum;        // Offset=13
+        result = (result << 4) | groundSlope;       // Offset=9
+        result = (result << 4) | groundLevel;       // Offset=5
+        result = (result << 3) | movement;          // Offset=2
+        result = (result << 1) | lineOfSight;       // Offset=1
+        result = (result << 1) | active;            // Offset=0
 
         return result;
     }
@@ -83,6 +93,9 @@ public interface CellsDataProvider {
                 this.data[i/10] = b64ToLong(data, i);
             }
         }
+
+        @Override
+        public int cellCount() { return data.length; }
 
         @Override
         public long cellData(int cellID) {
@@ -101,6 +114,8 @@ public interface CellsDataProvider {
             this.base = base;
         }
 
+        @Override
+        public int cellCount() { return base.cellCount(); }
 
         @Override
         public long cellData(int cellID) {

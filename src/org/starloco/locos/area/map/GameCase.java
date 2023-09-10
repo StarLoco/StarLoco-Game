@@ -41,7 +41,7 @@ public class GameCase {
         return map.actors.getOrDefault(cellId, Collections.emptyList()).stream()
             .filter(clz::isInstance)
             .map(clz::cast)
-            .collect(Collectors.toList());
+            .collect(Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList));
     }
 
     public List<Player> getPlayers() {

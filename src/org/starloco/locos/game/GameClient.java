@@ -4067,11 +4067,11 @@ public class GameClient {
             if (this.player.walkFast) {
                 this.player.getCurCell().removePlayer(this.player);
                 SocketManager.GAME_SEND_BN(this);
-                //On prend la case cibl?e
+                //On prend la case ciblee
                 GameCase nextCell = this.player.getCurMap().getCase(World.world.getCryptManager().cellCode_To_ID(path.substring(path.length() - 2)));
                 targetCell = this.player.getCurMap().getCase(World.world.getCryptManager().cellCode_To_ID(GA.packet.substring(GA.packet.length() - 2)));
 
-                //On d?finie la case et on ajthise le this.playernnage sur la case
+                //On definie la case et on ajoute le personnage sur la case
                 this.player.setCurCell(nextCell);
                 this.player.set_orientation(World.world.getCryptManager().getIntByHashedValue(path.charAt(path.length() - 3)));
                 this.player.getCurCell().addPlayer(this.player);
@@ -4104,7 +4104,7 @@ public class GameClient {
             final Fighter fighter = this.player.getFight().getFighterByPerso(this.player);
             if (fighter != null) {
                 GA.args = path;
-                this.player.getFight().cast(this.player.getFight().getFighterByPerso(this.player), () -> this.player.getFight().onFighterDeplace(fighter, GA), null);
+                this.player.getFight().cast(this.player.getFight().getFighterByPerso(this.player), () -> this.player.getFight().onFighterMovement(fighter, GA), null);
             }
         }
     }

@@ -1900,8 +1900,8 @@ public class Fight {
         }
 
 
-        if ((getType() == Constant.FIGHT_TYPE_PVM) && (getAllChallenges().size() > 0) && !current.isInvocation() && !current.isDouble() && !current.isCollector()
-                || getType() == Constant.FIGHT_TYPE_DOPEUL && (getAllChallenges().size() > 0) && !current.isInvocation() && !current.isDouble() && !current.isCollector())
+        if ((getType() == Constant.FIGHT_TYPE_PVM) && (!getAllChallenges().isEmpty()) && !current.isInvocation() && !current.isDouble() && !current.isCollector()
+                || getType() == Constant.FIGHT_TYPE_DOPEUL && (!getAllChallenges().isEmpty()) && !current.isInvocation() && !current.isDouble() && !current.isCollector())
             for (Challenge challenge : this.getAllChallenges().values())
                 if (challenge != null)
                     challenge.onPlayerStartTurn(current);
@@ -2042,9 +2042,9 @@ public class Fight {
             onFighterDie(current, getInit0());
         }
 
-        if ((getType() == Constant.FIGHT_TYPE_PVM) && (getAllChallenges().size() > 0) && !current.isInvocation()
+        if ((getType() == Constant.FIGHT_TYPE_PVM) && (!getAllChallenges().isEmpty()) && !current.isInvocation()
                 && !current.isDouble() && !current.isCollector() && current.getTeam() == 0 || getType() == Constant.FIGHT_TYPE_DOPEUL
-                && (getAllChallenges().size() > 0) && !current.isInvocation() && !current.isDouble() && !current.isCollector() && current.getTeam() == 0) {
+                && (!getAllChallenges().isEmpty()) && !current.isInvocation() && !current.isDouble() && !current.isCollector() && current.getTeam() == 0) {
             for (Entry<Integer, Challenge> c : getAllChallenges().entrySet()) {
                 if (c.getValue() == null)
                     continue;
@@ -2336,7 +2336,7 @@ public class Fight {
         all.stream().filter(Fighter::isHidden).forEach(f -> SocketManager.GAME_SEND_GA_PACKET(p, 150, f.getId() + "", f.getId() + ",4"));
         if (p.getGroup() == null)
             SocketManager.GAME_SEND_Im_PACKET_TO_FIGHT(this, 7, "036;" + p.getName());
-        if ((getType() == Constant.FIGHT_TYPE_PVM) && (getAllChallenges().size() > 0) || getType() == Constant.FIGHT_TYPE_DOPEUL && getAllChallenges().size() > 0) {
+        if ((getType() == Constant.FIGHT_TYPE_PVM) && (!getAllChallenges().isEmpty()) || getType() == Constant.FIGHT_TYPE_DOPEUL && !getAllChallenges().isEmpty()) {
             for (Entry<Integer, Challenge> c : getAllChallenges().entrySet()) {
                 if (c.getValue() == null)
                     continue;
@@ -2534,7 +2534,7 @@ public class Fight {
             endTurn(false, current);
             return;
         }
-        if ((getType() == Constant.FIGHT_TYPE_PVM) && (getAllChallenges().size() > 0) || getType() == Constant.FIGHT_TYPE_DOPEUL && getAllChallenges().size() > 0) {
+        if ((getType() == Constant.FIGHT_TYPE_PVM) && (!getAllChallenges().isEmpty()) || getType() == Constant.FIGHT_TYPE_DOPEUL && !getAllChallenges().isEmpty()) {
             for (Entry<Integer, Challenge> c : getAllChallenges().entrySet()) {
                 if (c.getValue() == null)
                     continue;
@@ -2590,7 +2590,7 @@ public class Fight {
                     try {
                         if (getState() != Constant.FIGHT_STATE_ACTIVE)
                             break;
-                        if (this.getType() != Constant.FIGHT_TYPE_CHALLENGE && this.getAllChallenges().size() > 0) {
+                        if (this.getType() != Constant.FIGHT_TYPE_CHALLENGE && !this.getAllChallenges().isEmpty()) {
                             this.getAllChallenges().values().stream().filter(Objects::nonNull).forEach(challenge -> challenge.onFightersAttacked(targets, caster, SE, -1, false));
                         }
                         SE.applyToFight(this, caster, targets, true);
@@ -2667,7 +2667,7 @@ public class Fight {
             if (isEc) {
                 SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(this, 7, 302, fighter.getId() + "", spell.getSpellID() + ""); // envoi de  l'EC
             } else {
-                if (this.getType() != Constant.FIGHT_TYPE_CHALLENGE && this.getAllChallenges().size() > 0 && !current.isInvocation() && !current.isDouble() && !current.isCollector()) {
+                if (this.getType() != Constant.FIGHT_TYPE_CHALLENGE && !this.getAllChallenges().isEmpty() && !current.isInvocation() && !current.isDouble() && !current.isCollector()) {
                     this.getAllChallenges().values().stream().filter(Objects::nonNull)
                             .forEach(challenge -> {
                                 challenge.onPlayerAction(current, spell.getSpellID());
@@ -2742,7 +2742,7 @@ public class Fight {
         if (isEc) {
             SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(this, 7, 302, fighter.getId() + "", spell.getSpellID() + ""); // envoi de  l'EC
         } else {
-            if (this.getType() != Constant.FIGHT_TYPE_CHALLENGE && this.getAllChallenges().size() > 0 && !current.isInvocation() && !current.isDouble() && !current.isCollector()) {
+            if (this.getType() != Constant.FIGHT_TYPE_CHALLENGE && !this.getAllChallenges().isEmpty() && !current.isInvocation() && !current.isDouble() && !current.isCollector()) {
                 this.getAllChallenges().values().stream().filter(Objects::nonNull)
                         .forEach(challenge -> {
                             challenge.onPlayerAction(current, spell.getSpellID());
@@ -3024,7 +3024,7 @@ public class Fight {
         return true;
     }
 
-    public boolean onFighterDeplace(Fighter fighter, GameAction GA) {
+    public boolean onFighterMovement(Fighter fighter, GameAction GA) {
         final Fighter current = this.getFighterByGameOrder();
         if (current == null)
             return false;
@@ -3058,7 +3058,7 @@ public class Fight {
                         setCurFighterPm(0);
                         setCurFighterPa(getCurFighterPa() - looseAP);
                         this.setCurAction("");
-                        if ((getType() == Constant.FIGHT_TYPE_PVM) && (getAllChallenges().size() > 0) && !current.isInvocation() && !current.isDouble() && !current.isCollector() || (getType() == Constant.FIGHT_TYPE_DOPEUL) && (getAllChallenges().size() > 0) && !current.isInvocation() && !current.isDouble() && !current.isCollector())
+                        if ((getType() == Constant.FIGHT_TYPE_PVM) && (!getAllChallenges().isEmpty()) && !current.isInvocation() && !current.isDouble() && !current.isCollector() || (getType() == Constant.FIGHT_TYPE_DOPEUL) && (!getAllChallenges().isEmpty()) && !current.isInvocation() && !current.isDouble() && !current.isCollector())
                             this.getAllChallenges().values().stream().filter(Objects::nonNull).forEach(c -> c.onPlayerMove(fighter, true));
                         return false;
                     }
@@ -3094,7 +3094,7 @@ public class Fight {
             }
         }
 
-        // Si port�
+        // Si sur un panda
         final Fighter po = current.getHoldedBy();
 
         if (po != null) {
@@ -3103,7 +3103,7 @@ public class Fight {
                 // on retire les �tats
                 po.setState(Constant.ETAT_PORTEUR, 0);
                 current.setState(Constant.ETAT_PORTE, 0);
-                // on retire d� lie les 2 fighters
+
                 po.setIsHolding(null);
                 current.setHoldedBy(null);
                 // La nouvelle case sera d�finie plus tard dans le code. On
@@ -3113,7 +3113,7 @@ public class Fight {
             }
         }
 
-        current.getCell().getFighters().clear();
+        current.getCell().removeFighter(current);
         current.setCell(getMap().getCase(nextCellID));
         current.getCell().addFighter(current);
 
@@ -3142,7 +3142,7 @@ public class Fight {
             return true;
         }
 
-        if ((getType() == Constant.FIGHT_TYPE_PVM) && (getAllChallenges().size() > 0) && !current.isInvocation() && !current.isDouble() && !current.isCollector() || (getType() == Constant.FIGHT_TYPE_DOPEUL) && (getAllChallenges().size() > 0) && !current.isInvocation() && !current.isDouble() && !current.isCollector())
+        if ((getType() == Constant.FIGHT_TYPE_PVM) && (!getAllChallenges().isEmpty()) && !current.isInvocation() && !current.isDouble() && !current.isCollector() || (getType() == Constant.FIGHT_TYPE_DOPEUL) && (!getAllChallenges().isEmpty()) && !current.isInvocation() && !current.isDouble() && !current.isCollector())
             this.getAllChallenges().values().stream().filter(Objects::nonNull).forEach(c -> c.onPlayerMove(fighter, false));
 
         fighter.getPlayer().getGameClient().addAction(GA);
@@ -3196,7 +3196,7 @@ public class Fight {
                 deadList.add(target);
             }
             target.setIsDead(true);
-            target.getCell().getFighters().clear();
+            target.getCell().removeFighter(target);
 
             if (target.haveState(Constant.ETAT_PORTEUR)) {
                 Fighter f = target.getIsHolding();
@@ -3209,7 +3209,7 @@ public class Fight {
                 SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(this, 7, 950, f.getId() + "", f.getId() + "," + Constant.ETAT_PORTE + ",0");
                 SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(this, 7, 950, target.getId() + "", target.getId() + "," + Constant.ETAT_PORTEUR + ",0");
             }
-            if ((this.getType() == Constant.FIGHT_TYPE_PVM) && (this.getAllChallenges().size() > 0) || this.getType() == Constant.FIGHT_TYPE_DOPEUL && this.getAllChallenges().size() > 0)
+            if ((this.getType() == Constant.FIGHT_TYPE_PVM) && (!this.getAllChallenges().isEmpty()) || this.getType() == Constant.FIGHT_TYPE_DOPEUL && !this.getAllChallenges().isEmpty())
                 this.getAllChallenges().values().stream().filter(Objects::nonNull).forEach(challenge -> challenge.onFighterDie(target));
 
             if (target.getTeam() == 0) {
@@ -3322,7 +3322,7 @@ public class Fight {
             }
 
             final Fighter casterFinal = caster;
-            if ((getType() == Constant.FIGHT_TYPE_PVM || getType() == Constant.FIGHT_TYPE_DOPEUL) && getAllChallenges().size() > 0)
+            if ((getType() == Constant.FIGHT_TYPE_PVM || getType() == Constant.FIGHT_TYPE_DOPEUL) && !getAllChallenges().isEmpty())
                 this.getAllChallenges().values().stream().filter(Objects::nonNull).forEach(challenge -> challenge.onMobDie(target, casterFinal));
 
             new ArrayList<>(this.getGlyphs()).stream().filter(glyph -> glyph.getCaster().getId() == target.getId()).forEach(glyph -> {
@@ -3462,14 +3462,14 @@ public class Fight {
                 valid2 = true;
         if (getState() != 2 || isOccuped(cell) || player.isReady() || (team == 0 && !valid1) || (team == 1 && !valid2))
             return;
-        fighter.getCell().getFighters().clear();
+        fighter.getCell().removeFighter(fighter);
         fighter.setCell(getMap().getCase(cell));
         getMap().getCase(cell).addFighter(fighter);
         SocketManager.GAME_SEND_FIGHT_CHANGE_PLACE_PACKET_TO_FIGHT(this, 3, player.getId(), cell);
     }
 
     public boolean isOccuped(int cell) {
-        return getMap().getCase(cell) == null || getMap().getCase(cell).getFighters().size() > 0;
+        return getMap().getCase(cell) == null || !getMap().getCase(cell).getFighters().isEmpty();
     }
 
     public int getNextLowerFighterGuid() {
@@ -3603,7 +3603,7 @@ public class Fight {
             if (current != null)
                 SocketManager.GAME_SEND_GAMETURNSTART_PACKET(player, current.getId(), (int) (System.currentTimeMillis() - launchTime));
 
-            if (this.getType() == Constant.FIGHT_TYPE_PVM || this.getType() == Constant.FIGHT_TYPE_DOPEUL && this.getAllChallenges().size() > 0) {
+            if (this.getType() == Constant.FIGHT_TYPE_PVM || this.getType() == Constant.FIGHT_TYPE_DOPEUL && !this.getAllChallenges().isEmpty()) {
                 this.getAllChallenges().values().stream().filter(challenge -> challenge != null && !challenge.loose())
                         .forEach(challenge -> {
                             SocketManager.GAME_SEND_CHALLENGE_PERSO(player, challenge.parseToPacket());
@@ -3861,8 +3861,8 @@ public class Fight {
 
             try {
                 String challenges = "";
-                if ((this.getType() == Constant.FIGHT_TYPE_PVM && this.getAllChallenges().size() > 0)
-                        || (getType() == Constant.FIGHT_TYPE_DOPEUL && this.getAllChallenges().size() > 0)) {
+                if ((this.getType() == Constant.FIGHT_TYPE_PVM && !this.getAllChallenges().isEmpty())
+                        || (getType() == Constant.FIGHT_TYPE_DOPEUL && !this.getAllChallenges().isEmpty())) {
                     for (Challenge challenge : getAllChallenges().values()) {
                         if (challenge != null) {
                             challenge.fightEnd();
@@ -4451,7 +4451,7 @@ public class Fight {
 
                 winners.stream().filter(F -> !F.isInvocation() && F.haveState(Constant.ETAT_CAPT_AME)).forEach(F -> getCapturer().add(F));
 
-                if (this.getCapturer().size() > 0 && !SoulStone.isInArenaMap(this.getMapOld().getId())) // S'il y a des captureurs
+                if (!this.getCapturer().isEmpty() && !SoulStone.isInArenaMap(this.getMapOld().getId())) // S'il y a des captureurs
                 {
                     // FIXME Change template based on content
                     fullSoul = new SoulStone(1, 7010, Constant.ITEM_POS_NO_EQUIPED, stats); // Cr�e la pierre d'�me
@@ -4516,7 +4516,7 @@ public class Fight {
             }
             if (amande || rousse || doree) {
                 winners.stream().filter(fighter -> !fighter.isInvocation() && fighter.haveState(Constant.ETAT_APPRIVOISEMENT)).forEach(F -> getTrainer().add(F));
-                if (getTrainer().size() > 0) {
+                if (!getTrainer().isEmpty()) {
                     for (int i = 0; i < getTrainer().size(); i++) {
                         try {
                             Fighter f = getTrainer().get(Formulas.getRandomValue(0, getTrainer().size() - 1)); // R�cup�re un captureur au hasard dans la liste
@@ -4604,7 +4604,7 @@ public class Fight {
             if (starFactor < 1) starFactor = 1;
             if (totalProspecting < 0) totalProspecting = 0;
             // Calcul the total challenge percent.
-            if (this.getType() == Constant.FIGHT_TYPE_PVM && this.getAllChallenges().size() > 0)
+            if (this.getType() == Constant.FIGHT_TYPE_PVM && !this.getAllChallenges().isEmpty())
                 for (Challenge challenge : this.getAllChallenges().values())
                     if (challenge.getWin()) challengeFactor += challenge.getDrop();
             if (challengeFactor < 1) challengeFactor = 1;
@@ -4863,7 +4863,7 @@ public class Fight {
                         ArrayList<Drop> temporary3 = new ArrayList<>(dropsPlayers);
                         if (this.getType() == Constant.FIGHT_TYPE_PVM && this.monsterGroup != null && this.monsterGroup.getMobs().size() > 1 && Formulas.getRandomValue(0, 100) >= 98) {
                             List<ObjectTemplate> templates = World.world.getEtherealWeapons(i.isInvocation() ? i.getInvocator().getLvl() : i.getLvl());
-                            if (templates.size() > 0) {
+                            if (!templates.isEmpty()) {
                                 ObjectTemplate template = templates.get(templates.size() - 1);
                                 temporary3.add(new Drop(template.getId(), 5, 0));
                             }
@@ -5342,7 +5342,7 @@ public class Fight {
 
             winners.stream().filter(i -> i.isInvocation() && i.getMob() != null).filter(i -> i.getMob().getTemplate().getId() == ENUTROF_CHEST_ID).forEach(i -> invoks.put(i.getId(), i.getInvocator().getId()));
 
-            if (invoks != null && invoks.size() > 0)
+            if (invoks != null && !invoks.isEmpty())
                 for (Entry<Integer, Integer> entry : invoks.entrySet())
                     winners = this.deplace(winners, entry.getValue(), entry.getKey());
 
@@ -5554,7 +5554,7 @@ public class Fight {
 
                         if (objectTemplate == null || collector.getPodsTotal() + objectTemplate.getPod() * entry.getValue() >= collector.getMaxPod())
                             continue;
-                        if (drops.length() > 0) drops += ",";
+                        if (!drops.isEmpty()) drops += ",";
 
                         drops += entry.getKey() + "~" + entry.getValue();
 
@@ -5759,7 +5759,7 @@ public class Fight {
                 }
             });
 
-            if (players.size() > 0 && objects != null && !objects.isEmpty()) {
+            if (!players.isEmpty() && objects != null && !objects.isEmpty()) {
                 byte count = -1;
                 GameObject object;
 

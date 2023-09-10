@@ -175,7 +175,7 @@ public class GameMap {
         this.data.getStaticGroups().forEach(this::addStaticGroup);
 
         Map<Integer, InteractiveObject> objects = new HashMap<>();
-        this.data.interactiveObjects().forEach((key, value) -> objects.put(key, new InteractiveObject(value.getId(), this, key)));
+        this.data.interactiveObjects().forEach((key, gfxId) -> objects.put(key, new InteractiveObject(gfxId, this, key)));
         this.interactiveObjects = Collections.unmodifiableMap(objects);
 
         this.refreshSpawns();
@@ -348,6 +348,9 @@ public class GameMap {
     }
 
     public GameCase getCase(int id) {
+        if(id<0 || id >= this.cases.size()) {
+            return null;
+        }
         return this.cases.get(id);
     }
 
@@ -1455,7 +1458,7 @@ public class GameMap {
 
     public Stream<Integer> findObjectsPositionsByID(List<Integer> ids) {
         return data.interactiveObjects().entrySet().stream()
-            .filter(e -> ids.contains(e.getValue().getId()))
+            .filter(e -> ids.contains(e.getValue()))
             .map(Entry::getKey);
     }
 

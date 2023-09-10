@@ -1867,7 +1867,7 @@ public class CommandAdmin extends AdminUser {
                     List<Account> affected = new ArrayList<>();
 
                     for(Account account : World.world.getAccounts()) {
-                        if(account == null || account.getLastConnectionDate() == null || account.getLastConnectionDate().isEmpty() || account.getPlayers().size() == 0) continue;
+                        if(account == null || account.getLastConnectionDate() == null || account.getLastConnectionDate().isEmpty() || account.getPlayers().isEmpty()) continue;
 
                         String[] date = account.getLastConnectionDate().split("~");//2018~05~31~18~16
                         boolean okk = false;

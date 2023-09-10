@@ -5932,7 +5932,6 @@ public class Player implements Scripted<SPlayer>, Actor {
 
                 // Compute list of skills this player can use on this map
                 this.getCurMap().data.interactiveObjects().values().stream()
-                    .map(InteractiveObject.InteractiveObjectTemplate::getId)
                     .map(job.getSkills()::get) // Get possibles skills on this object
                     .filter(Objects::nonNull)   // Make sure we have one
                     .flatMap(List::stream)  // Group all possible skills from all objects in one list

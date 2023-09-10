@@ -35,16 +35,15 @@ public abstract class MapData implements CellsDataProvider {
     public final CellsDataProvider.RawCellsDataProvider cellsData;
     public final List<MonsterGrade> mobPossibles;
     public final String placesStr;
-    private final HashMap<Integer, InteractiveObject.InteractiveObjectTemplate> interactiveObjects = new HashMap<>();
+    private final Map<Integer, Integer> interactiveObjects;
 
 
-    protected MapData(int id, String date, String key, String cellsData, int width, int height, int x, int y, int subAreaID, boolean noSellers, boolean noCollectors, boolean noPrisms, boolean noTp, boolean noDefy, boolean noAgro, boolean noCanal, int mobGroupsMaxCount, int mobGroupsMinSize, int mobGroupsMaxSize, List<MonsterGrade> mobPossibles, String placesStr) {
+    protected MapData(int id, String date, String key, String data, int width, int height, int x, int y, int subAreaID, boolean noSellers, boolean noCollectors, boolean noPrisms, boolean noTp, boolean noDefy, boolean noAgro, boolean noCanal, int mobGroupsMaxCount, int mobGroupsMinSize, int mobGroupsMaxSize, List<MonsterGrade> mobPossibles, String placesStr) {
         CryptManager cMgr = World.world.getCryptManager();
 
-        String data = cellsData;
         if(cMgr.isMapCiphered(data)) {
             try {
-                data = cMgr.decryptMapData(cellsData, key);
+                data = cMgr.decryptMapData(data, key);
             } catch (Exception e) {
                 throw new RuntimeException("Cannot decipher mapdata #"+id,e);
             }
@@ -77,6 +76,13 @@ public abstract class MapData implements CellsDataProvider {
         this.mobGroupsMaxSize = mobGroupsMaxSize;
         this.mobPossibles = mobPossibles;
         this.placesStr = placesStr;
+
+        HashMap<Integer,Integer> interactiveObjects = new HashMap<>();
+        for(int cellId=0;cellId<cellsData.cellCount();cellId++) {
+            if(!cellsData.object2Interactive(cellId)) continue;
+            interactiveObjects.put(cellId, cellsData.object2(cellId));
+        }
+        this.interactiveObjects = Collections.unmodifiableMap(interactiveObjects);
     }
 
     public SubArea getSubArea() { return World.world.getSubArea(subAreaID); }
@@ -107,7 +113,7 @@ public abstract class MapData implements CellsDataProvider {
     public int cellCount() {
         return width * height + (width-1) * (height-1);
     }
-    public Map<Integer, InteractiveObject.InteractiveObjectTemplate> interactiveObjects() { return Collections.unmodifiableMap(interactiveObjects); }
+    public Map<Integer, Integer> interactiveObjects() { return interactiveObjects; }
 
     public long cellData(int cellID) {
         return cellsData.cellData(cellID);
