@@ -23,9 +23,14 @@ map.allowedMobGrades = {
 -- '0;0;0;0;0;0;0' forbiddens -> capabilities ? Or script ?
 
 map.onMovementEnd = {
+	[88]  = openAndCloseAfterMillis(8538, 125, 30000),
 	[125] = moveEndTeleport(8540, 309),
 	[276] = moveEndTeleport(7486, 303),
 	[454] = moveEndTeleport(8572, 35),
+}
+
+map.animations = {
+	[125] = AnimatedObjects.SlidingRock,
 }
 
 RegisterMapDef(map)

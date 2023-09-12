@@ -2,7 +2,6 @@ package org.starloco.locos.database.data.game;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.starloco.locos.area.map.MapData;
-import org.starloco.locos.area.map.SQLMapData;
 import org.starloco.locos.util.Pair;
 import org.apache.commons.lang.NotImplementedException;
 import org.starloco.locos.database.data.FunctionDAO;
@@ -31,11 +30,6 @@ public class NpcData extends FunctionDAO<Pair<Npc, Integer>> {
                         continue;
                     if (Config.modeHeroic && (id == 1121 || id == 1127)) // PNJ Traque Heroic
                         continue;
-
-                    if (md instanceof SQLMapData) {
-                        // We don't want to override script map data
-                        ((SQLMapData) md).addNpc(id, result.getInt("cellid"), result.getInt("orientation"));
-                    }
                 }
             });
         } catch (SQLException e) {

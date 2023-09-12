@@ -22,6 +22,10 @@ map.onMovementEnd = {
     [289] = moveEndTeleport(527, 262)
 }
 
+map.objects = {
+    [171] = Objects.Zaap,
+}
+
 map.zaapCell = 156
 
 RegisterMapDef(map)

@@ -1,6 +1,8 @@
 package org.starloco.locos.fight;
 
 import org.classdump.luna.impl.ImmutableTable;
+import org.starloco.locos.area.map.Actor;
+import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.client.other.Stats;
@@ -25,7 +27,7 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-public class Fighter implements Comparable<Fighter>, Scripted<Object> {
+public class Fighter implements Comparable<Fighter>, Scripted<Object>, Actor {
 
     public int nbrInvoc;
     private boolean trapped = false, glyphed = false;
@@ -1102,5 +1104,15 @@ public class Fighter implements Comparable<Fighter>, Scripted<Object> {
                 .add("level", this.getLvl())
                 .build();
         }
+    }
+
+    @Override
+    public long Id() {
+        return id;
+    }
+
+    @Override
+    public String name() {
+        return getPacketsName();
     }
 }

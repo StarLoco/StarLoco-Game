@@ -8,6 +8,7 @@ import org.classdump.luna.impl.ImmutableTable;
 import org.classdump.luna.lib.ArgumentIterator;
 import org.classdump.luna.runtime.LuaFunction;
 import org.starloco.locos.area.map.GameMap;
+import org.starloco.locos.area.map.entity.InteractiveObject;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.entity.monster.MobGroupDef;
@@ -95,8 +96,8 @@ public class SPlayer extends DefaultUserdata<Player> {
     private static void useCraftSkill(Player p, ArgumentIterator args) {
         int cellId = args.nextInt();
         int skillId = args.nextInt();
-
-        p.doJobAction(skillId, 0, p.getCurMap().getCase(cellId));
+        InteractiveObject io = p.getCurMap().getInteractiveObject(cellId);
+        p.doJobAction(skillId, 0, cellId, io);
     }
 
     @SuppressWarnings("unused")

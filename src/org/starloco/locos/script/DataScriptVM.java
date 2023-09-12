@@ -10,6 +10,8 @@ import org.classdump.luna.lib.ArgumentIterator;
 import org.classdump.luna.load.LoaderException;
 import org.classdump.luna.runtime.AbstractFunction1;
 import org.classdump.luna.runtime.ExecutionContext;
+import org.starloco.locos.anims.Animation;
+import org.starloco.locos.anims.KeyFrame;
 import org.starloco.locos.area.map.ScriptMapData;
 import org.starloco.locos.command.administration.Command;
 import org.starloco.locos.command.administration.Group;
@@ -24,6 +26,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalUnit;
 import java.util.Collections;
+import java.util.Map;
 
 public final class DataScriptVM extends ScriptVM {
     private static DataScriptVM instance;
@@ -54,6 +57,7 @@ public final class DataScriptVM extends ScriptVM {
         this.env.rawset("RegisterAdminGroup", new RegisterAdminGroup());
         this.env.rawset("RegisterExpTables", new RegisterExpTables());
         this.env.rawset("RegisterMapDef", new RegisterMapTemplate());
+        this.env.rawset("NewAnimation", new NewAnimation());
         this.env.rawset("Handlers", handlers);
     }
 
@@ -87,7 +91,11 @@ public final class DataScriptVM extends ScriptVM {
     static class RegisterMapTemplate extends AbstractFunction1<Table> {
         @Override
         public void invoke(ExecutionContext context, Table val) {
-            World.world.addMapData(ScriptMapData.build(val));
+            try {
+                World.world.addMapData(ScriptMapData.build(val));
+            }catch (Exception e) {
+                logger.error("Cannot register map #"+rawInt(val, "id"), e);
+            }
             context.getReturnBuffer().setTo();
         }
 
@@ -160,6 +168,31 @@ public final class DataScriptVM extends ScriptVM {
             World.world.setExperiences(tables);
 
             context.getReturnBuffer().setTo();
+        }
+    }
+
+    static class NewAnimation extends AbstractLibFunction {
+        @Override
+        protected String name() {
+            return "NewAnimation";
+        }
+        @Override
+        public void invoke(ExecutionContext context, ArgumentIterator  args) {
+            int tileId = args.nextInt();
+            String defaultFrame = args.nextString().toString();
+            Table tKeyFrames = args.nextTable();
+
+            Map<String, KeyFrame> keyFrames = DataScriptVM.mapFromScript(tKeyFrames,
+                Object::toString,
+                v -> KeyFrame.fromScriptValue((Table)v)
+            );
+
+            if(!keyFrames.containsKey(defaultFrame)) {
+                throw new IllegalArgumentException("default frame is not a key frame");
+            }
+
+            Animation anim = new org.starloco.locos.anims.Animation(tileId, defaultFrame, keyFrames);
+            context.getReturnBuffer().setTo(anim);
         }
     }
 

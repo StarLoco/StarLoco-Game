@@ -84,4 +84,12 @@ public class SMap extends DefaultUserdata<GameMap> {
 
         SocketManager.GAME_SEND_GX_PACKET(p, npc);
     }
+
+    @SuppressWarnings("unused")
+    private static void setAnimationFrame(GameMap m, ArgumentIterator args) {
+        int cellId = args.nextInt();
+        String animName = args.nextString().toString();
+
+        m.setAnimationFrame(cellId, animName);
+    }
 }

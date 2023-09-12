@@ -24,6 +24,7 @@
 ---@field onFightStart table<number, fun(md:MapDef, m:Map,team1:Fighter[], team2:Fighter[])> K: fight type, V: Handler function
 ---@field onFightEnd table<number, fun(md:MapDef, m:Map, winners:Fighter[], losers:Fighter[])> K: fight type, V: Handler function
 ---@field objects table<number, InteractiveObjectDef|fun(p:Player, skillId:number):boolean> K: cellId, V: InteractiveObjectDef or handler function
+---@field animations table<number, AnimatedObject>
 ---@field switches table<number, fun(md:MapDef, p:Player)>
 ---
 
@@ -71,6 +72,7 @@ setmetatable(MapDef, {
         self.onFightEnd = {}
         self.objects = {}
         self.switches = {}
+        self.animations = {}
         self.zaapCell = nil
 
         if MAPS[id] then
@@ -135,5 +137,12 @@ function fightEndTeleportWinnerPlayer(mapId, cellId)
     return function(p, isWinner, _, _)
         if not isWinner then return end
         p:teleport(mapId, cellId)
+    end
+end
+
+function openAndCloseAfterMillis(mapId, cellId, delayMs)
+    return function(md, m, p)
+        JLogF("{} is opening door #{} for {} ms", p:name(), cellId, delayMs)
+
     end
 end

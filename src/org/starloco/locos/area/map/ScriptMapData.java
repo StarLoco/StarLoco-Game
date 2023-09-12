@@ -2,6 +2,7 @@ package org.starloco.locos.area.map;
 
 import org.classdump.luna.Table;
 import org.classdump.luna.runtime.LuaFunction;
+import org.starloco.locos.anims.Animation;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.entity.monster.MobGroupDef;
 import org.starloco.locos.entity.monster.MonsterGrade;
@@ -11,7 +12,6 @@ import org.starloco.locos.game.world.World;
 import org.starloco.locos.script.DataScriptVM;
 import org.starloco.locos.script.ScriptMapper;
 import org.starloco.locos.script.ScriptVM;
-import org.starloco.locos.script.proxy.SSubArea;
 import org.starloco.locos.util.Pair;
 
 import javax.swing.text.html.Option;
@@ -25,7 +25,7 @@ public class ScriptMapData extends MapData {
     private final Table scriptVal;
     public final Integer zaapCell;
 
-    private ScriptMapData(Table scriptVal, int id, String date, String key, String cellsData, int width, int height, int x, int y, int subAreaID, int capabilities, int mobGroupsMaxCount, List<MonsterGrade> mobPossibles, String placesStr, int mobGroupsMinSize, int mobGroupsMaxSize, Integer zaapCell) {
+    private ScriptMapData(Table scriptVal, int id, String date, String key, String cellsData, int width, int height, int x, int y, int subAreaID, int capabilities, int mobGroupsMaxCount, List<MonsterGrade> mobPossibles, String placesStr, int mobGroupsMinSize, int mobGroupsMaxSize, Integer zaapCell, Map<Integer, Animation> animations) {
         super(id,
             date,
             key,
@@ -46,7 +46,8 @@ public class ScriptMapData extends MapData {
             mobGroupsMinSize,
             mobGroupsMaxSize,
             mobPossibles,
-            placesStr);
+            placesStr,
+            animations);
         this.scriptVal = scriptVal;
         this.zaapCell = zaapCell;
     }
@@ -61,6 +62,11 @@ public class ScriptMapData extends MapData {
             .filter(Objects::nonNull).collect(Collectors.toList());
 
         Integer zaapCell = Optional.ofNullable(val.rawget("zaapCell")).map(o -> (Long)o).map(Long::intValue).orElse(null);
+
+        Map<Integer, Animation> animations = DataScriptVM.mapFromScript((Table)val.rawget("animations"),
+            k -> ((Long)k).intValue(),
+            Animation.class::cast
+        );
 
         return new ScriptMapData(
             val,
@@ -79,7 +85,8 @@ public class ScriptMapData extends MapData {
             val.rawget("positions").toString(),
             rawInt(val, "mobGroupsMinSize"),
             rawInt(val, "mobGroupsMaxSize"),
-            zaapCell
+            zaapCell,
+            animations
         );
     }
 

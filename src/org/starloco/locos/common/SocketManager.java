@@ -438,7 +438,7 @@ public class SocketManager {
                 map
                         .getFightersGMsPackets(_perso.getFight()) :
                 map
-                        .getGMsPackets());
+                        .getPlayersGMsPackets());
         send(_perso, packet);
     }
 
@@ -1334,13 +1334,19 @@ public class SocketManager {
         send(perso, packet);
     }
 
-    public static void GAME_SEND_GDF_PACKET_TO_MAP(GameMap map, GameCase cell) {
-        int cellID = cell.getId();
-        InteractiveObject object = cell.getObject();
-        String packet = "GDF|" + cellID + ";" + object.getState() + ";"
-                + (object.isInteractive() ? "1" : "0");
-        for (Player z : map.getPlayers())
-            send(z, packet);
+    public static void GAME_SEND_GDF_PACKET_TO_MAP(GameMap map, int cellID, InteractiveObject object) {
+        GAME_SEND_GDF_PACKET_TO_MAP(map, cellID, object.getState(), object.isInteractive());
+    }
+
+    public static void GAME_SEND_GDF_PACKET_TO_MAP(GameMap map, int cellID, int state) {
+        String packet = "GDF|" + cellID + ";" + state;
+        map.getPlayers().forEach(p -> send(p, packet));
+    }
+
+    public static void GAME_SEND_GDF_PACKET_TO_MAP(GameMap map, int cellID, int state, boolean isInteractive) {
+        String packet = "GDF|" + cellID + ";" + state + ";"
+                + (isInteractive ? "1" : "0");
+        map.getPlayers().forEach(p -> send(p, packet));
     }
 
     public static void GAME_SEND_GDF_PACKET_TO_FIGHT(Player player, Collection<GameCase> collection) {

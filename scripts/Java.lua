@@ -40,6 +40,14 @@ function RegisterExpTables(players, guilds, jobs, mounts, pvp, livitinems, torme
 ---@param neighbors number[]
 function RegisterSubArea(id, areaId, neighbors) end
 
+---@class Animation Java object holder for animation data. Lua should not need to access it
+
+---@param id number
+---@param default string
+---@param keyFrames table<string, number[2]>
+---@return Animation
+function NewAnimation(id, default, keyFrames)  end
+
 ---@class Player
 local Player = {}
 
@@ -326,6 +334,23 @@ function Map:spawnGroupDef(def) end
 ---@param npcDefId number
 ---@param player Player
 function Map:updateNpcExtraForPlayer(npcDefId, player) end
+
+--- setCellData sets a cell data override field
+---@param cellId number
+---@param name string
+function Map:setAnimationFrame(cellId, name) end
+
+--- setCellData sets a cell data override field
+---@param cellId number
+---@param field string
+---@param val number
+function Map:setCellData(cellId, field, val) end
+
+--- resetCellData resets a cell data override field
+---@param cellId number
+---@param field string
+function Map:resetCellData(cellId, field) end
+
 
 -- SubArea
 ---@class SubArea

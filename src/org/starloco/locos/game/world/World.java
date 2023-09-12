@@ -216,7 +216,11 @@ public class World implements Scripted<SWorld> {
 
     public GameMap getMap(int id) {
         // Atomically get or load map
-        return maps.computeIfAbsent(id, mapID -> new GameMap(mapsData.get(mapID)));
+        return maps.computeIfAbsent(id, mapID -> {
+            Optional<MapData> data = getMapData(mapID);
+            if(!data.isPresent()) throw new IllegalStateException(String.format("no data found for map #%d", mapID));
+            return new GameMap(mapsData.get(mapID));
+        });
     }
 
     //endregion
@@ -235,7 +239,7 @@ public class World implements Scripted<SWorld> {
     public GameObject getGameObject(int id) {
         GameObject object = objects.get(id);
         if (object == null) {
-            object = ((ObjectData) DatabaseManager.get(ObjectData.class)).load(id);
+            object = DatabaseManager.get(ObjectData.class).load(id);
         }
         return object;
     }
@@ -376,17 +380,14 @@ public class World implements Scripted<SWorld> {
         DatabaseManager.get(ObjectSetData.class).loadFully();
         logger.debug("The panoplies were loaded successfully.");
 
-        DatabaseManager.get(GameMapData.class).loadFully();
-        logger.debug("The maps were loaded successfully.");
-
-        DatabaseManager.get(ScriptedCellData.class).loadFully();
-        logger.debug("The scripted cells were loaded successfully.");
-
+//        DatabaseManager.get(ScriptedCellData.class).loadFully();
+//        logger.debug("The scripted cells were loaded successfully.");
+//
 //        DatabaseManager.get(EndFightActionData.class).loadFully();
 //        logger.debug("The end fight actions were loaded successfully.");
-
-        DatabaseManager.get(NpcData.class).loadFully();
-        logger.debug("The placement of non-player character were done successfully.");
+//
+//        DatabaseManager.get(NpcData.class).loadFully();
+//        logger.debug("The placement of non-player character were done successfully.");
 
         DatabaseManager.get(ObjectActionData.class).loadFully();
         logger.debug("The action of objects were loaded successfully.");

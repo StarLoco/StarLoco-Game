@@ -217,7 +217,7 @@ public class Function {
         //Cr�ation d'une GameAction
         GameAction GA = new GameAction(0, 1, "");
         GA.args = pathstr;
-        boolean result = fight.onFighterDeplace(F, GA);
+        boolean result = fight.onFighterMovement(F, GA);
 
         return result;
     }
@@ -499,7 +499,7 @@ public class Function {
         GameAction GA = new GameAction(0, 1, "");
         GA.args = pathstr;
 
-        if(!fight.onFighterDeplace(F, GA))
+        if(!fight.onFighterMovement(F, GA))
             return 0;
 
         return nbrcase * 500;
@@ -1020,7 +1020,7 @@ public class Function {
         //Cr�ation d'une GameAction
         GameAction GA = new GameAction(0, 1, "");
         GA.args = pathstr;
-        if(!fight.onFighterDeplace(F, GA))
+        if(!fight.onFighterMovement(F, GA))
             return 0;
 
         return nbrcase * 500;
@@ -1111,7 +1111,7 @@ public class Function {
         //Cr�ation d'une GameAction
         GameAction GA = new GameAction(0, 1, "");
         GA.args = pathstr;
-        if(!fight.onFighterDeplace(F, GA))
+        if(!fight.onFighterMovement(F, GA))
             return 0;
 
         return nbrcase * 500;
@@ -1389,7 +1389,7 @@ public class Function {
         {
             return 0;
         }
-        ArrayList<GameCase> possibleLaunch = new ArrayList<GameCase>();
+        List<GameCase> possibleLaunch = new ArrayList<GameCase>();
         int CellF = -1;
         if (spell.getMaxPO() != 0)
         {
@@ -1424,7 +1424,7 @@ public class Function {
                 if (!fight.canCastSpell1(fighter, spell, cell, launchCell))
                     continue;
                 int curTarget = 0;
-                ArrayList<GameCase> cells = PathFinding.getCellListFromAreaString(fight.getMap(), cell.getId(), launchCell, spell.getPorteeType(), 0, false);
+                List<GameCase> cells = PathFinding.getCellListFromAreaString(fight.getMap(), cell.getId(), launchCell, spell.getPorteeType(), 0, false);
                 for (GameCase c : cells)
                 {
                     if (c == null)
@@ -1712,7 +1712,7 @@ public class Function {
 
         GameAction GA = new GameAction(0, 1, "");
         GA.args = str.toString();
-        return fight.onFighterDeplace(caster, GA);
+        return fight.onFighterMovement(caster, GA);
     }
 
     private boolean moveToCell(Fight fight, Fighter fighter, GameCase cell, GameCase cellTarget, boolean doneMove) {
@@ -1751,7 +1751,7 @@ public class Function {
 
         GameAction GA = new GameAction(0, 1, "");
         GA.args = str.toString();
-        return fight.onFighterDeplace(fighter, GA);
+        return fight.onFighterMovement(fighter, GA);
     }
 
     public int getCellToBeInTheSameLine(Fight fight, Spell.SortStats spell, int cellStart, int cellEnd) {

@@ -1,5 +1,6 @@
 package org.starloco.locos.job;
 
+import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.area.map.entity.InteractiveObject;
 import org.starloco.locos.client.Player;
@@ -66,21 +67,21 @@ public class JobStat {
         return null;
     }
 
-    public void startAction(int id, Player P, int actionId, GameCase cell) {
+    public void startAction(int id, Player P, int actionId, int cellId, InteractiveObject io) {
         for (JobAction JA : this.posActions) {
             if (JA.getId() == id) {
                 this.curAction = JA;
-                JA.startAction(P, actionId, cell, this);
+                JA.startAction(P, actionId, cellId, this, io);
                 return;
             }
         }
     }
 
-    public void endAction(Player P, InteractiveObject IO, GameAction GA, GameCase cell) {
+    public void endAction(Player P, InteractiveObject IO, GameAction GA, int cellId) {
         if (this.curAction == null)
             return;
 
-        this.curAction.endAction(P, IO, GA, cell);
+        this.curAction.endAction(P, IO, GA, cellId);
         this.curAction = null;
         ArrayList<JobStat> list = new ArrayList<>();
         list.add(this);

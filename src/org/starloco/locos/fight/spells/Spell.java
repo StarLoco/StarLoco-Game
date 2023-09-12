@@ -1,5 +1,6 @@
 package org.starloco.locos.fight.spells;
 
+import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.common.Formulas;
 import org.starloco.locos.common.PathFinding;
@@ -389,7 +390,7 @@ public class Spell {
                     if (isCC) {
                         POnum += this.effects.size() * 2;// On zaap la partie du String des effets hors CC
                     }
-                    ArrayList<GameCase> cells = PathFinding.getCellListFromAreaString(fight.getMap(), cell.getId(), perso.getCell().getId(), porteeType, POnum, isCC);
+                    List<GameCase> cells = PathFinding.getCellListFromAreaString(fight.getMap(), cell.getId(), perso.getCell().getId(), porteeType, POnum, isCC);
                     ArrayList<GameCase> finalCells = new ArrayList<GameCase>();
                     int TE = 0;
                     Spell S = World.world.getSort(spellID);

@@ -109,46 +109,47 @@ public class InteractiveDoor {
     }
 
     private synchronized boolean check(Player player) {
-        if(this.state) return false;
-        boolean ok = true;
-
-        for(Entry<Short, ArrayList<Couple<Short, String>>> requiredCells : this.requiredCells.entrySet()) {
-            final GameMap gameMap = World.world.getMap(requiredCells.getKey());
-            if(gameMap == null) continue;
-            boolean loc = false;
-            for(Couple<Short, String> couple : requiredCells.getValue()) {
-                GameCase gameCase = gameMap.getCase(couple.first);
-                if (gameCase == null) continue;
-
-                switch(player.getCurMap().getId()) {
-                    case 1884:
-                        if(gameCase.getPlayers().size() > 0) {
-                            loc = true;
-                            ok = true;
-                        }
-                        break;
-                }
-                if(loc) break;
-
-                if (couple.second != null) {
-                    if (!Condition.isValid(player, gameCase, couple.second)) {
-                        ok = false;
-                        break;
-                    }
-                } else if (gameCase.getPlayers().size() == 0) {
-                    ok = false;
-                    break;
-                }
-            }
-
-            if(!ok) break;
-        }
-
-        if(ok) {
-            this.open();
-            TimerWaiter.addNext(this::close, this.time, TimeUnit.SECONDS);
-        }
-        return ok;
+//        if(this.state) return false;
+//        boolean ok = true;
+//
+//        for(Entry<Short, ArrayList<Couple<Short, String>>> requiredCells : this.requiredCells.entrySet()) {
+//            final GameMap gameMap = World.world.getMap(requiredCells.getKey());
+//            if(gameMap == null) continue;
+//            boolean loc = false;
+//            for(Couple<Short, String> couple : requiredCells.getValue()) {
+//                GameCase gameCase = gameMap.getCase(couple.first);
+//                if (gameCase == null) continue;
+//
+//                switch(player.getCurMap().getId()) {
+//                    case 1884:
+//                        if(gameCase.getPlayers().size() > 0) {
+//                            loc = true;
+//                            ok = true;
+//                        }
+//                        break;
+//                }
+//                if(loc) break;
+//
+//                if (couple.second != null) {
+//                    if (!Condition.isValid(player, gameCase, couple.second)) {
+//                        ok = false;
+//                        break;
+//                    }
+//                } else if (gameCase.getPlayers().size() == 0) {
+//                    ok = false;
+//                    break;
+//                }
+//            }
+//
+//            if(!ok) break;
+//        }
+//
+//        if(ok) {
+//            this.open();
+//            TimerWaiter.addNext(this::close, this.time, TimeUnit.SECONDS);
+//        }
+//        return ok;
+        return false; // FIXME
     }
 
     private void open() {
@@ -199,25 +200,25 @@ public class InteractiveDoor {
 
     private void setStateCell(GameMap gameMap, short cell, boolean active, Player player) {
         String packet = "GDC" + cell;
-        GameCase gameCase = gameMap.getCase(cell), temporaryCell;
-        gameMap.removeCase(cell);
-
-        if(active) {
-            temporaryCell = new GameCase(gameMap, true, cell, 1, true, -1);
-            // FIXME? temporaryCell.setOnCellStop(gameCase.getOnCellStop());
-            gameMap.getCases().add(temporaryCell);
-            packet += ";aaGaaaaaaa801;1";
-        } else {
-            temporaryCell = new GameCase(gameMap, true, cell, 0, false, -1);
-            // FIXME? temporaryCell.setOnCellStop(gameCase.getOnCellStop());
-            gameMap.getCases().add(temporaryCell);
-            packet += ";aaaaaaaaaa801;1";
-        }
-
-        if(player != null)
-            player.send(packet);
-        else for (Player target : gameMap.getPlayers())
-            target.send(packet);
+//        //GameCase gameCase = gameMap.getCase(cell), temporaryCell;
+//        //gameMap.removeCase(cell);
+//
+//        if(active) {
+//            temporaryCell = new GameCase(gameMap, true, cell, 1, true, -1);
+//            // FIXME? temporaryCell.setOnCellStop(gameCase.getOnCellStop());
+//            //gameMap.getCases().add(temporaryCell);
+//            packet += ";aaGaaaaaaa801;1";
+//        } else {
+//            temporaryCell = new GameCase(gameMap, true, cell, 0, false, -1);
+//            // FIXME? temporaryCell.setOnCellStop(gameCase.getOnCellStop());
+//            //gameMap.getCases().add(temporaryCell);
+//            packet += ";aaaaaaaaaa801;1";
+//        }
+//
+//        if(player != null)
+//            player.send(packet);
+//        else for (Player target : gameMap.getPlayers())
+//            target.send(packet);
     }
 
     private static class Condition {

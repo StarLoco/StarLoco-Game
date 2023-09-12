@@ -1,5 +1,6 @@
 package org.starloco.locos.fight.spells;
 
+import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.common.Formulas;
@@ -205,7 +206,7 @@ public class SpellEffect implements Cloneable {
 									if (newCellId == 0) continue;
 
 									GameCase cacheCell = target.getCell();
-									cacheCell.getFighters().clear();
+									cacheCell.removeFighter(target);
 
 									target.setCell(fight.getMap().getCase(newCellId));
 									target.getCell().addFighter(target);
@@ -850,7 +851,7 @@ public class SpellEffect implements Cloneable {
 
 		if (cell.isWalkable(true, true, cell.getId()) && !fight.isOccuped(cell.getId()))//Si la case est prise, on va �viter que les joueurs se montent dessus *-*
 		{
-			caster.getCell().getFighters().clear();
+			caster.getCell().removeFighter(caster);;
 			caster.setCell(cell);
 			caster.getCell().addFighter(caster);
 
@@ -953,7 +954,7 @@ public class SpellEffect implements Cloneable {
 				}
 
 				GameCase cacheCell = target.getCell();
-				cacheCell.getFighters().clear();
+				cacheCell.removeFighter(target);
 
 				target.setCell(fight.getMap().getCase(newCellId));
 				target.getCell().addFighter(target);
@@ -1018,7 +1019,7 @@ public class SpellEffect implements Cloneable {
 
 
 				GameCase cacheCell = target.getCell();
-				cacheCell.getFighters().clear();
+				cacheCell.removeFighter(target);
 
 				target.setCell(fight.getMap().getCase(newCellID));
 				target.getCell().addFighter(target);
@@ -1080,8 +1081,8 @@ public class SpellEffect implements Cloneable {
 				break;
 		}
 		//on enleve les persos des cases
-		target.getCell().getFighters().clear();
-		caster.getCell().getFighters().clear();
+		target.getCell().removeFighter(target);
+		caster.getCell().removeFighter(caster);;
 		//on retient les cases
 		GameCase exTarget = target.getCell();
 		GameCase exCaster = caster.getCell();
@@ -1123,7 +1124,7 @@ public class SpellEffect implements Cloneable {
 		if (target.haveState(6)) return;//Stabilisation
 
 		//on enleve le porté de sa case
-		target.getCell().getFighters().clear();
+		target.getCell().removeFighter(target);
 		//on lui définie sa nouvelle case
 		target.setCell(caster.getCell());
 
@@ -1142,7 +1143,7 @@ public class SpellEffect implements Cloneable {
 
 	private void applyEffect_51(final Fight fight) {
 		//Si case pas libre
-		if (!cell.isWalkableFight() || cell.getFighters().size() > 0) return;
+		if (!cell.isWalkableFight() || !cell.getFighters().isEmpty()) return;
 		Fighter target = caster.getIsHolding();
 		if (target == null) return;
 		//if(target.isState(6))return;//Stabilisation
@@ -4239,8 +4240,8 @@ public class SpellEffect implements Cloneable {
 		GameCase cell1 = sacrified.getCell();
 		GameCase cell2 = target.getCell();
 
-		sacrified.getCell().getFighters().clear();
-		target.getCell().getFighters().clear();
+		sacrified.getCell().removeFighter(sacrified);
+		target.getCell().removeFighter(target);
 		sacrified.setCell(cell2);
 		sacrified.getCell().addFighter(sacrified);
 		target.setCell(cell1);
@@ -4354,7 +4355,7 @@ public class SpellEffect implements Cloneable {
 		GameCase newCell = PathFinding.checkIfCanPushEntity(fight, casterCell.getId(), cell.getId(), dir);
 		if (newCell != null) cell = newCell;
 
-		target.getCell().getFighters().clear();
+		target.getCell().removeFighter(target);
 		target.setCell(cell);
 		target.getCell().addFighter(target);
 
@@ -4373,7 +4374,7 @@ public class SpellEffect implements Cloneable {
 				}
 
 				if (origPos.get(F.getId()).getFirstFighter() == null) {
-					F.getCell().getFighters().clear();
+					F.getCell().removeFighter(F);
 					F.setCell(origPos.get(F.getId()));
 					F.getCell().addFighter(F);
 					SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 4, F.getId() + "", F.getId() + "," + F.getCell().getId());
@@ -4553,7 +4554,7 @@ public class SpellEffect implements Cloneable {
 		SortStats TS = World.world.getSort(spellID).getStatsByLevel(level);
 
 		if (cell.isWalkableFight() && !fight.isOccuped(cell.getId())) {
-			caster.getCell().getFighters().clear();
+			caster.getCell().removeFighter(caster);;
 			caster.setCell(cell);
 			caster.getCell().addFighter(caster);
 			new ArrayList<>(fight.getTraps()).stream().filter(trap -> PathFinding.getDistanceBetween(fight.getMap(), trap.getCell().getId(), caster.getCell().getId()) <= trap.getSize()).forEach(trap -> trap.onTrapped(caster));

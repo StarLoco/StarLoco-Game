@@ -102,7 +102,6 @@ public class DatabaseManager {
         this.daos.add(new CraftData(this.game));
         this.daos.add(new DungeonData(this.game));
         this.daos.add(new DropData(this.game));
-        this.daos.add(new EndFightActionData(this.game));
         this.daos.add(new ExtraMonsterData(this.game));
         this.daos.add(new FullMorphData(this.game));
         this.daos.add(new GiftData(this.game));
@@ -113,7 +112,6 @@ public class DatabaseManager {
         this.daos.add(new ObjectTemplateData(this.game));
         this.daos.add(new ObjectSetData(this.game));
         this.daos.add(new JobData(this.game));
-        this.daos.add(new GameMapData(this.game));
         this.daos.add(new MonsterData(this.game));
         this.daos.add(new MountParkData(this.game));
         this.daos.add(new NpcQuestionData(this.game));
@@ -123,7 +121,6 @@ public class DatabaseManager {
         this.daos.add(new ObjectActionData(this.game));
         this.daos.add(new PetTemplateData(this.game));
         this.daos.add(new RuneData(this.game));
-        this.daos.add(new ScriptedCellData(this.game));
         this.daos.add(new SubAreaData(this.game));
         this.daos.add(new SpellData(this.game));
         this.daos.add(new ZaapiData(this.game));

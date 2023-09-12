@@ -74,7 +74,7 @@ public class NameGenerator {
      * is called every time file name is changed or new NameGenerator object created.
      */
     public void refresh(String fileName) throws IOException {
-        InputStreamReader input = new InputStreamReader(Objects.requireNonNull(NameGenerator.class.getResourceAsStream(fileName)));
+        InputStreamReader input = new InputStreamReader(Objects.requireNonNull(NameGenerator.class.getResourceAsStream("/"+fileName)));
         BufferedReader bufRead = new BufferedReader(input);
         String line = "";
 
