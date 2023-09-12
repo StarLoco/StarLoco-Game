@@ -58,4 +58,6 @@ map.onMovementEnd = {
 	[457] = moveEndTeleport(7368, 36),
 }
 
+map:addObject(224, Objects.Well)
+
 RegisterMapDef(map)

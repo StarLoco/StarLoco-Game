@@ -39,6 +39,18 @@ SKILLS[44] = function(p, _)
     return true
 end
 
+-- Draw water from well
+SKILLS[102] = function(p, cellId)
+    local map = p:map()
+    if map:getAnimationState(cellId) ~= AnimStates.READY then
+        -- bad timing or hack attempt ?
+        return
+    end
+
+    p:map():setAnimationState(cellId, AnimStates.IN_USE)
+
+end
+
 -- Use Zaap
 SKILLS[114] = function(p, _) p:openZaap() return true end
 

@@ -29,8 +29,9 @@ map.onMovementEnd = {
 
 map.objects = {
     [230] = onObjectUseOpenDocument(139, "0612131303"),
-    [297] = Objects.Zaap,
 }
+
+map:addObject(297, Objects.Zaap)
 
 map.zaapCell = 311
 

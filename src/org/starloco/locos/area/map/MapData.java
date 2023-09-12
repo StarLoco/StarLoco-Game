@@ -78,6 +78,10 @@ public abstract class MapData implements CellsDataProvider {
         this.mobPossibles = mobPossibles;
         this.placesStr = placesStr;
 
+        if(cellsData.cellCount() != cellCount()) {
+            throw new IllegalStateException(String.format("Map #%d_%s: cellsData length doesn't match map cell count", id, date));
+        }
+
         HashMap<Integer,Integer> interactiveObjects = new HashMap<>();
         for(int cellId=0;cellId<cellsData.cellCount();cellId++) {
             if(!cellsData.object2Interactive(cellId)) continue;

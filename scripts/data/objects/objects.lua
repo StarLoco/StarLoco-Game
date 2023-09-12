@@ -1,3 +1,6 @@
+-- Make sure animations are loaded first
+require("data/objects/animations")
+
 Objects = {}
 
 Objects.Ash = RegisterIODef(1, ResourceObjectType, {6})
@@ -67,7 +70,7 @@ Objects.SludgyTrout = RegisterIODef(80, ResourceObjectType, {})
 Objects.GiantSeaFish = RegisterIODef(81, ResourceObjectType, {131})
 Objects.Cotton = RegisterIODef(82, ResourceObjectType, {})
 Objects.Spinner = RegisterIODef(83, JobToolsObjectType, {95})
-Objects.Well = RegisterIODef(84, ResourceObjectType, {102})
+Objects.Well = RegisterIODef(84, ResourceObjectType, {102}, AnimatedObjects.Well)
 Objects.Safe = RegisterIODef(85, StorageObjectType, {106,104,105})
 Objects.SewingMachine = RegisterIODef(86, JobToolsObjectType, {64,123})
 Objects.WoodBench = RegisterIODef(88, JobToolsObjectType, {110})

@@ -177,11 +177,18 @@ public class ScriptVM {
         }
     }
 
-
     public static int rawOptionalInt(Table v, Object key, int val) {
         Object n = v.rawget(key);
         if (n == null) return val;
         return ((Long) v.rawget(key)).intValue();
+    }
+
+    public static Optional<Object> rawOptional(Table v, Object key) {
+        return Optional.ofNullable(v.rawget(key));
+    }
+
+    public static String rawOptionalString(Table t, Object key) {
+        return rawOptional(t, key).map(Object::toString).orElse(null);
     }
 
     public static int rawInt(Table v, Object key) {

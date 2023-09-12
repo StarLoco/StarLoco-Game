@@ -31,10 +31,10 @@ public class DatabaseManager {
      * Construct the two connection database
      */
     public DatabaseManager() {
-        /*((Logger) LoggerFactory.getLogger("com.zaxxer.hikari.HikariDataSource")).setLevel(Level.ERROR);
+        ((Logger) LoggerFactory.getLogger("com.zaxxer.hikari.HikariDataSource")).setLevel(Level.ERROR);
         ((Logger) LoggerFactory.getLogger("com.zaxxer.hikari.HikariConfig")).setLevel(Level.ERROR);
         ((Logger) LoggerFactory.getLogger("com.zaxxer.hikari.pool.HikariPool")).setLevel(Level.ERROR);
-        ((Logger) LoggerFactory.getLogger("DEBUG com.zaxxer.hikari.pool.PoolBase")).setLevel(Level.ERROR);*/
+        ((Logger) LoggerFactory.getLogger("DEBUG com.zaxxer.hikari.pool.PoolBase")).setLevel(Level.ERROR);
 
         logger.trace("Reading database config");
         this.login = this.createHikariDataSource(Config.databaseLoginHost, String.valueOf(Config.databaseLoginPort), Config.databaseLoginName, Config.databaseLoginUser, Config.databaseLoginPass);

@@ -86,10 +86,16 @@ public class SMap extends DefaultUserdata<GameMap> {
     }
 
     @SuppressWarnings("unused")
-    private static void setAnimationFrame(GameMap m, ArgumentIterator args) {
+    private static String getAnimationState(GameMap m, ArgumentIterator args) {
+        int cellId = args.nextInt();
+        return m.getAnimationState(cellId);
+    }
+
+    @SuppressWarnings("unused")
+    private static void setAnimationState(GameMap m, ArgumentIterator args) {
         int cellId = args.nextInt();
         String animName = args.nextString().toString();
 
-        m.setAnimationFrame(cellId, animName);
+        m.setAnimationState(cellId, animName);
     }
 }

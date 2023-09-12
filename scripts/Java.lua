@@ -44,7 +44,7 @@ function RegisterSubArea(id, areaId, neighbors) end
 
 ---@param id number
 ---@param default string
----@param keyFrames table<string, number[2]>
+---@param keyFrames table<string, [number, number, string]>
 ---@return Animation
 function NewAnimation(id, default, keyFrames)  end
 
@@ -335,10 +335,15 @@ function Map:spawnGroupDef(def) end
 ---@param player Player
 function Map:updateNpcExtraForPlayer(npcDefId, player) end
 
---- setCellData sets a cell data override field
+--- getAnimationState returns the cell animation state
+---@param cellId number
+---@return string
+function Map:getAnimationState(cellId) end
+
+--- setAnimationState sets a cell animation state
 ---@param cellId number
 ---@param name string
-function Map:setAnimationFrame(cellId, name) end
+function Map:setAnimationState(cellId, name) end
 
 --- setCellData sets a cell data override field
 ---@param cellId number

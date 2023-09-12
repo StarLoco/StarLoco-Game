@@ -632,7 +632,12 @@ public class GameMap {
         return this.interactiveObjects.get(cellId);
     }
 
-    public void setAnimationFrame(int cellId, String frameName) {
+    public String getAnimationState(int cellId) {
+        Animation anim = Objects.requireNonNull(data.animations.get(cellId));
+        return animationStates.getOrDefault(cellId, anim.defaultState);
+    }
+
+    public void setAnimationState(int cellId, String frameName) {
         Animation anim = Objects.requireNonNull(data.animations.get(cellId));
 
         // Deal with default state
@@ -643,6 +648,11 @@ public class GameMap {
         } else {
             this.animationStates.put(cellId, frameName);
             frame = anim.frames.get(frameName);
+        }
+
+        if(frame.hasDuration()) {
+            // Start timer
+            // TODO
         }
 
         // Send packet

@@ -10,14 +10,16 @@ IO_DEFS = {}
 
 ---@param id number
 ---@param type number
+---@param anim Animation
 ---@return InteractiveObjectDef
-function RegisterIODef(id, type, skills)
+function RegisterIODef(id, type, skills, anim)
     local self = setmetatable({}, {
         __index = InteractiveObjectDef,
     })
     self.id = id
     self.type = type
     self.skills = skills
+    self.anim = anim
 
     if IO_DEFS[id] then
         error(string.format("InteractiveObject #%d already registered", self.id))
