@@ -21,36 +21,55 @@ import org.starloco.locos.object.GameObject;
 import org.starloco.locos.util.TimerWaiter;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
+//  Temporary proxy class until we fully clean up GameCase usages
 public class GameCase {
+    private final GameMap map;
+    public final int cellId;
 
-    private int id;
-    private final boolean active;
-    private boolean loS = true;
-    private int movement;
-
-    private List<Player> players;
-    private ArrayList<Fighter> fighters;
-    private InteractiveObject object;
-    private GameObject droppedItem;
-
-    public GameCase(GameMap map, boolean active, int id, int movement, boolean loS, int objId) {
-        this.active = active;
-        this.id = id;
-        this.movement = movement;
-        this.loS = loS;
-        if (objId != -1)
-            this.object = new InteractiveObject(objId, map, this);
+    public GameCase(GameMap map, int cellId) {
+        this.map = map;
+        this.cellId = cellId;
     }
 
-    public int getId() {
-        return id;
+    public int getId() { return cellId; }
+
+    private <T extends Actor> List<T> getActorsOfType(Class<T> clz) {
+        return map.actors.getOrDefault(cellId, Collections.emptyList()).stream()
+            .filter(clz::isInstance)
+            .map(clz::cast)
+            .collect(Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList));
+    }
+
+    public List<Player> getPlayers() {
+        return getActorsOfType(Player.class);
+    }
+
+    public List<Fighter> getFighters() {
+        return getActorsOfType(Fighter.class);
+    }
+
+    public GameObject getDroppedItem(boolean delete) {
+        if(delete) {
+            return map.droppedItems.remove(cellId);
+        }
+        return map.droppedItems.get(cellId);
+    }
+
+    public void clearDroppedItem() {
+        map.droppedItems.remove(cellId);
+    }
+
+    public InteractiveObject getObject() {
+        return map.interactiveObjects.get(cellId);
     }
 
     private boolean _isWalkable(boolean inFight) {
-        if(!active) return false;
-        switch (movement) {
+        if(!map.data.active(cellId)) return false;
+        switch (map.data.movement(cellId)) {
             case 0:
                 return false;
             case 1:
@@ -62,19 +81,20 @@ public class GameCase {
     }
 
     public boolean isWalkable(boolean useObject, boolean inFight) {
-        if (this.object != null && useObject)
-            return this._isWalkable(inFight) && this.object.isWalkable();
+        if (useObject && getObject() != null)
+            return this._isWalkable(inFight) && getObject().isWalkable();
         return this._isWalkable(inFight);
     }
 
     public boolean isWalkableFight() {
         return this._isWalkable(true);
     }
-
     public boolean isWalkable(boolean useObject, boolean inFight, int targetCell) {
-        if(this.object != null && useObject) {
-            if((inFight || this.getId() != targetCell) && this.object.getTemplate() != null) {
-                switch(this.object.getTemplate().getId()) {
+        InteractiveObject object = map.interactiveObjects.get(cellId);
+        
+        if(object != null && useObject) {
+            if((inFight || this.getId() != targetCell) && object.getTemplate() != null) {
+                switch(object.getTemplate().getId()) {
                     case 7515:
                     case 7511:
                     case 7517:
@@ -96,512 +116,460 @@ public class GameCase {
                         return false;
                 }
             }
-            return this._isWalkable(inFight) && this.object.isWalkable();
+            return this._isWalkable(inFight) && object.isWalkable();
         }
         return this._isWalkable(inFight);
     }
 
-    public boolean isLoS() {
-        return this.loS;
-    }
-
-    public boolean blockLoS() {
-        if (this.fighters == null)
-            return this.loS;
-        boolean hide = true;
-        for (Fighter fighter : this.fighters)
-            if (!fighter.isHidden())
-                hide = false;
-        return this.loS && hide;
+    private <T extends Actor> void addActor(T actor) {
+        map.actors.computeIfAbsent(cellId, i -> new ArrayList<>()).add(actor);
     }
 
     public void addPlayer(Player player) {
-        if (this.players == null)
-            this.players = new ArrayList<>();
-        if(!this.players.contains(player))
-            this.players.add(player);
+        addActor(player);
     }
 
-    public synchronized void removePlayer(Player player) {
-        if (this.players != null) {
-            this.players.remove(player);
-            if (this.players.isEmpty()) this.players = null;
-        }
+    public void addFighter(Fighter init0) { addActor(init0); }
+
+    private <T extends Actor> void removeActor(T actor) {
+        map.actors.getOrDefault(cellId, Collections.emptyList()).remove(actor);
     }
 
-    public List<Player> getPlayers() {
-        if (this.players == null)
-            return new ArrayList<>();
-        return players;
+    public void removePlayer(Player p) {
+        removeActor(p);
     }
-
-    public void addFighter(Fighter fighter) {
-        if (this.fighters == null)
-            this.fighters = new ArrayList<>();
-        if(!this.fighters.contains(fighter))
-            this.fighters.add(fighter);
-    }
-
-    public void removeFighter(Fighter fighter) {
-        if (this.fighters != null) {
-            if(this.fighters.contains(fighter))
-                this.fighters.remove(fighter);
-            if (this.fighters.isEmpty()) this.fighters = null;
-        }
-    }
-
-    public ArrayList<Fighter> getFighters() {
-        if (this.fighters == null)
-            return new ArrayList<>();
-        return fighters;
+    public void removeFighter(Fighter f) {
+        removeActor(f);
     }
 
     public Fighter getFirstFighter() {
-        if(this.fighters != null && this.fighters.size() > 0)
-            return fighters.get(0); // return this.fighters.get(0);o
-        return null;
-    }
-
-    public InteractiveObject getObject() {
-        return this.object;
-    }
-
-    public void addDroppedItem(GameObject obj) {
-        this.droppedItem = obj;
-    }
-
-    public GameObject getDroppedItem(boolean delete) {
-        GameObject obj = this.droppedItem;
-        if (delete)
-            this.droppedItem = null;
-        return obj;
-    }
-
-    public void clearDroppedItem() {
-        this.droppedItem = null;
+        if(getFighters().isEmpty()) return null;
+        return getFighters().get(0);
     }
 
     public boolean canDoAction(int id) {
-        if (this.object == null)
+        InteractiveObject object = map.interactiveObjects.get(cellId);
+
+        if (object == null)
             return false;
         switch (id) {
             //Atelier des F�es
             case 151:
-                return this.object.getId() == 7028;
+                return object.getId() == 7028;
 
             //Fontaine jouvence
             case 111:
             case 62:
-                return this.object.getId() == 7004;
+                return object.getId() == 7004;
             //Moudre et egrenner - Paysan
             case 122:
             case 47:
-                return this.object.getId() == 7007;
+                return object.getId() == 7007;
             //Faucher Bl�
             case 45:
-                switch (this.object.getId()) {
+                switch (object.getId()) {
                     case 7511://Bl�
-                        return this.object.getState() == JobConstant.IOBJECT_STATE_FULL;
+                        return object.getState() == JobConstant.IOBJECT_STATE_FULL;
                 }
                 return false;
             //Faucher Orge
             case 53:
-                switch (this.object.getId()) {
+                switch (object.getId()) {
                     case 7515://Orge
-                        return this.object.getState() == JobConstant.IOBJECT_STATE_FULL;
+                        return object.getState() == JobConstant.IOBJECT_STATE_FULL;
                 }
                 return false;
 
             //Faucher Avoine
             case 57:
-                switch (this.object.getId()) {
+                switch (object.getId()) {
                     case 7517://Avoine
-                        return this.object.getState() == JobConstant.IOBJECT_STATE_FULL;
+                        return object.getState() == JobConstant.IOBJECT_STATE_FULL;
                 }
                 return false;
             //Faucher Houblon
             case 46:
-                switch (this.object.getId()) {
+                switch (object.getId()) {
                     case 7512://Houblon
-                        return this.object.getState() == JobConstant.IOBJECT_STATE_FULL;
+                        return object.getState() == JobConstant.IOBJECT_STATE_FULL;
                 }
                 return false;
             //Faucher Lin
             case 50:
             case 68:
-                switch (this.object.getId()) {
+                switch (object.getId()) {
                     case 7513://Lin
-                        return this.object.getState() == JobConstant.IOBJECT_STATE_FULL;
+                        return object.getState() == JobConstant.IOBJECT_STATE_FULL;
                 }
                 return false;
             //Faucher Riz
             case 159:
-                switch (this.object.getId()) {
+                switch (object.getId()) {
                     case 7550://Riz
-                        return this.object.getState() == JobConstant.IOBJECT_STATE_FULL;
+                        return object.getState() == JobConstant.IOBJECT_STATE_FULL;
                 }
                 return false;
             //Faucher Seigle
             case 52:
-                switch (this.object.getId()) {
+                switch (object.getId()) {
                     case 7516://Seigle
-                        return this.object.getState() == JobConstant.IOBJECT_STATE_FULL;
+                        return object.getState() == JobConstant.IOBJECT_STATE_FULL;
                 }
                 return false;
             //Faucher Malt
             case 58:
-                switch (this.object.getId()) {
+                switch (object.getId()) {
                     case 7518://Malt
-                        return this.object.getState() == JobConstant.IOBJECT_STATE_FULL;
+                        return object.getState() == JobConstant.IOBJECT_STATE_FULL;
                 }
                 return false;
             //Faucher Chanvre - Cueillir Chanvre
             case 69:
             case 54:
-                switch (this.object.getId()) {
+                switch (object.getId()) {
                     case 7514://Chanvre
-                        return this.object.getState() == JobConstant.IOBJECT_STATE_FULL;
+                        return object.getState() == JobConstant.IOBJECT_STATE_FULL;
                 }
                 return false;
             //Scier - Bucheron
             case 101:
-                return this.object.getId() == 7003;
+                return object.getId() == 7003;
             //Couper Fr�ne
             case 6:
-                switch (this.object.getId()) {
+                switch (object.getId()) {
                     case 7500://Fr�ne
-                        return this.object.getState() == JobConstant.IOBJECT_STATE_FULL;
+                        return object.getState() == JobConstant.IOBJECT_STATE_FULL;
                 }
                 return false;
             //Couper Ch�taignier
             case 39:
-                switch (this.object.getId()) {
+                switch (object.getId()) {
                     case 7501://Ch�taignier
-                        return this.object.getState() == JobConstant.IOBJECT_STATE_FULL;
+                        return object.getState() == JobConstant.IOBJECT_STATE_FULL;
                 }
                 return false;
             //Couper Noyer
             case 40:
-                switch (this.object.getId()) {
+                switch (object.getId()) {
                     case 7502://Noyer
-                        return this.object.getState() == JobConstant.IOBJECT_STATE_FULL;
+                        return object.getState() == JobConstant.IOBJECT_STATE_FULL;
                 }
                 return false;
             //Couper Ch�ne
             case 10:
-                switch (this.object.getId()) {
+                switch (object.getId()) {
                     case 7503://Ch�ne
-                        return this.object.getState() == JobConstant.IOBJECT_STATE_FULL;
+                        return object.getState() == JobConstant.IOBJECT_STATE_FULL;
                 }
                 return false;
             //Couper Oliviolet
             case 141:
-                switch (this.object.getId()) {
+                switch (object.getId()) {
                     case 7542://Oliviolet
-                        return this.object.getState() == JobConstant.IOBJECT_STATE_FULL;
+                        return object.getState() == JobConstant.IOBJECT_STATE_FULL;
                 }
                 return false;
             //Couper Bombu
             case 139:
-                switch (this.object.getId()) {
+                switch (object.getId()) {
                     case 7541://Bombu
-                        return this.object.getState() == JobConstant.IOBJECT_STATE_FULL;
+                        return object.getState() == JobConstant.IOBJECT_STATE_FULL;
                 }
                 return false;
             //Couper Erable
             case 37:
-                switch (this.object.getId()) {
+                switch (object.getId()) {
                     case 7504://Erable
-                        return this.object.getState() == JobConstant.IOBJECT_STATE_FULL;
+                        return object.getState() == JobConstant.IOBJECT_STATE_FULL;
                 }
                 return false;
             //Couper Bambou
             case 154:
-                switch (this.object.getId()) {
+                switch (object.getId()) {
                     case 7553://Bambou
-                        return this.object.getState() == JobConstant.IOBJECT_STATE_FULL;
+                        return object.getState() == JobConstant.IOBJECT_STATE_FULL;
                 }
                 return false;
             //Couper If
             case 33:
-                switch (this.object.getId()) {
+                switch (object.getId()) {
                     case 7505://If
-                        return this.object.getState() == JobConstant.IOBJECT_STATE_FULL;
+                        return object.getState() == JobConstant.IOBJECT_STATE_FULL;
                 }
                 return false;
             //Couper Merisier
             case 41:
-                switch (this.object.getId()) {
+                switch (object.getId()) {
                     case 7506://Merisier
-                        return this.object.getState() == JobConstant.IOBJECT_STATE_FULL;
+                        return object.getState() == JobConstant.IOBJECT_STATE_FULL;
                 }
                 return false;
             //Couper Eb�ne
             case 34:
-                switch (this.object.getId()) {
+                switch (object.getId()) {
                     case 7507://Eb�ne
-                        return this.object.getState() == JobConstant.IOBJECT_STATE_FULL;
+                        return object.getState() == JobConstant.IOBJECT_STATE_FULL;
                 }
                 return false;
             //Couper Kalyptus
             case 174:
-                switch (this.object.getId()) {
+                switch (object.getId()) {
                     case 7557://Kalyptus
-                        return this.object.getState() == JobConstant.IOBJECT_STATE_FULL;
+                        return object.getState() == JobConstant.IOBJECT_STATE_FULL;
                 }
                 return false;
             //Couper Charme
             case 38:
-                switch (this.object.getId()) {
+                switch (object.getId()) {
                     case 7508://Charme
-                        return this.object.getState() == JobConstant.IOBJECT_STATE_FULL;
+                        return object.getState() == JobConstant.IOBJECT_STATE_FULL;
                 }
                 return false;
             //Couper Orme
             case 35:
-                switch (this.object.getId()) {
+                switch (object.getId()) {
                     case 7509://Orme
-                        return this.object.getState() == JobConstant.IOBJECT_STATE_FULL;
+                        return object.getState() == JobConstant.IOBJECT_STATE_FULL;
                 }
                 return false;
             //Couper Bambou Sombre
             case 155:
-                switch (this.object.getId()) {
+                switch (object.getId()) {
                     case 7554://Bambou Sombre
-                        return this.object.getState() == JobConstant.IOBJECT_STATE_FULL;
+                        return object.getState() == JobConstant.IOBJECT_STATE_FULL;
                 }
                 return false;
             //Couper Bambou Sacr�
             case 158:
-                switch (this.object.getId()) {
+                switch (object.getId()) {
                     case 7552://Bambou Sacr�
-                        return this.object.getState() == JobConstant.IOBJECT_STATE_FULL;
+                        return object.getState() == JobConstant.IOBJECT_STATE_FULL;
                 }
                 return false;
             //Puiser
             case 102:
-                switch (this.object.getId()) {
+                switch (object.getId()) {
                     case 7519://Puits
-                        return this.object.getState() == JobConstant.IOBJECT_STATE_FULL;
+                        return object.getState() == JobConstant.IOBJECT_STATE_FULL;
                 }
                 return false;
             //Polir
             case 48:
-                return this.object.getId() == 7005;
+                return object.getId() == 7005;
             //Tas de patate
             case 42:
-                return this.object.getId() == 7510;
+                return object.getId() == 7510;
             //Moule/Fondre - Mineur
             case 32:
-                return this.object.getId() == 7002;
+                return object.getId() == 7002;
             case 22:
-                return this.object.getId() == 7006;
+                return object.getId() == 7006;
             //Miner Fer
             case 24:
-                switch (this.object.getId()) {
+                switch (object.getId()) {
                     case 7520://Miner
-                        return this.object.getState() == JobConstant.IOBJECT_STATE_FULL;
+                        return object.getState() == JobConstant.IOBJECT_STATE_FULL;
                 }
                 return false;
             //Miner Cuivre
             case 25:
-                switch (this.object.getId()) {
+                switch (object.getId()) {
                     case 7522://Miner
-                        return this.object.getState() == JobConstant.IOBJECT_STATE_FULL;
+                        return object.getState() == JobConstant.IOBJECT_STATE_FULL;
                 }
                 return false;
             //Miner Bronze
             case 26:
-                switch (this.object.getId()) {
+                switch (object.getId()) {
                     case 7523://Miner
-                        return this.object.getState() == JobConstant.IOBJECT_STATE_FULL;
+                        return object.getState() == JobConstant.IOBJECT_STATE_FULL;
                 }
                 return false;
             //Miner Kobalte
             case 28:
-                switch (this.object.getId()) {
+                switch (object.getId()) {
                     case 7525://Miner
-                        return this.object.getState() == JobConstant.IOBJECT_STATE_FULL;
+                        return object.getState() == JobConstant.IOBJECT_STATE_FULL;
                 }
                 return false;
             //Miner Manga
             case 56:
-                switch (this.object.getId()) {
+                switch (object.getId()) {
                     case 7524://Miner
-                        return this.object.getState() == JobConstant.IOBJECT_STATE_FULL;
+                        return object.getState() == JobConstant.IOBJECT_STATE_FULL;
                 }
                 return false;
             //Miner Sili
             case 162:
-                switch (this.object.getId()) {
+                switch (object.getId()) {
                     case 7556://Miner
-                        return this.object.getState() == JobConstant.IOBJECT_STATE_FULL;
+                        return object.getState() == JobConstant.IOBJECT_STATE_FULL;
                 }
                 return false;
             //Miner Etain
             case 55:
-                switch (this.object.getId()) {
+                switch (object.getId()) {
                     case 7521://Miner
-                        return this.object.getState() == JobConstant.IOBJECT_STATE_FULL;
+                        return object.getState() == JobConstant.IOBJECT_STATE_FULL;
                 }
                 return false;
             //Miner Argent
             case 29:
-                switch (this.object.getId()) {
+                switch (object.getId()) {
                     case 7526://Miner
-                        return this.object.getState() == JobConstant.IOBJECT_STATE_FULL;
+                        return object.getState() == JobConstant.IOBJECT_STATE_FULL;
                 }
                 return false;
             //Miner Bauxite
             case 31:
-                switch (this.object.getId()) {
+                switch (object.getId()) {
                     case 7528://Miner
-                        return this.object.getState() == JobConstant.IOBJECT_STATE_FULL;
+                        return object.getState() == JobConstant.IOBJECT_STATE_FULL;
                 }
                 return false;
             //Miner Or
             case 30:
-                switch (this.object.getId()) {
+                switch (object.getId()) {
                     case 7527://Miner
-                        return this.object.getState() == JobConstant.IOBJECT_STATE_FULL;
+                        return object.getState() == JobConstant.IOBJECT_STATE_FULL;
                 }
                 return false;
             //Miner Dolomite
             case 161:
-                switch (this.object.getId()) {
+                switch (object.getId()) {
                     case 7555://Miner
-                        return this.object.getState() == JobConstant.IOBJECT_STATE_FULL;
+                        return object.getState() == JobConstant.IOBJECT_STATE_FULL;
                 }
                 return false;
             //Fabriquer potion - Alchimiste
             case 23:
-                return this.object.getId() == 7019;
+                return object.getId() == 7019;
             //Cueillir Tr�fle
             case 71:
-                switch (this.object.getId()) {
+                switch (object.getId()) {
                     case 7533://Tr�fle
-                        return this.object.getState() == JobConstant.IOBJECT_STATE_FULL;
+                        return object.getState() == JobConstant.IOBJECT_STATE_FULL;
                 }
                 return false;
             //Cueillir Menthe
             case 72:
-                switch (this.object.getId()) {
+                switch (object.getId()) {
                     case 7534://Menthe
-                        return this.object.getState() == JobConstant.IOBJECT_STATE_FULL;
+                        return object.getState() == JobConstant.IOBJECT_STATE_FULL;
                 }
                 return false;
             //Cueillir Orchid�e
             case 73:
-                switch (this.object.getId()) {
+                switch (object.getId()) {
                     case 7535:// Orchid�e
-                        return this.object.getState() == JobConstant.IOBJECT_STATE_FULL;
+                        return object.getState() == JobConstant.IOBJECT_STATE_FULL;
                 }
                 return false;
             //Cueillir Edelweiss
             case 74:
-                switch (this.object.getId()) {
+                switch (object.getId()) {
                     case 7536://Edelweiss
-                        return this.object.getState() == JobConstant.IOBJECT_STATE_FULL;
+                        return object.getState() == JobConstant.IOBJECT_STATE_FULL;
                 }
                 return false;
             //Cueillir Graine de Pandouille
             case 160:
-                switch (this.object.getId()) {
+                switch (object.getId()) {
                     case 7551://Graine de Pandouille
-                        return this.object.getState() == JobConstant.IOBJECT_STATE_FULL;
+                        return object.getState() == JobConstant.IOBJECT_STATE_FULL;
                 }
                 return false;
             //Vider - P�cheur
             case 133:
-                return this.object.getId() == 7024;
+                return object.getId() == 7024;
             //P�cher Petits poissons de mer
             case 128:
-                switch (this.object.getId()) {
+                switch (object.getId()) {
                     case 7530://Petits poissons de mer
-                        return this.object.getState() == JobConstant.IOBJECT_STATE_FULL;
+                        return object.getState() == JobConstant.IOBJECT_STATE_FULL;
                 }
                 return false;
             //P�cher Petits poissons de rivi�re
             case 124:
-                switch (this.object.getId()) {
+                switch (object.getId()) {
                     case 7529://Petits poissons de rivi�re
-                        return this.object.getState() == JobConstant.IOBJECT_STATE_FULL;
+                        return object.getState() == JobConstant.IOBJECT_STATE_FULL;
                 }
                 return false;
             //P�cher Pichon
             case 136:
-                switch (this.object.getId()) {
+                switch (object.getId()) {
                     case 7544://Pichon
-                        return this.object.getState() == JobConstant.IOBJECT_STATE_FULL;
+                        return object.getState() == JobConstant.IOBJECT_STATE_FULL;
                 }
                 return false;
             //P�cher Ombre Etrange
             case 140:
-                switch (this.object.getId()) {
+                switch (object.getId()) {
                     case 7543://Ombre Etrange
-                        return this.object.getState() == JobConstant.IOBJECT_STATE_FULL;
+                        return object.getState() == JobConstant.IOBJECT_STATE_FULL;
                 }
                 return false;
             //P�cher Poissons de rivi�re
             case 125:
-                switch (this.object.getId()) {
+                switch (object.getId()) {
                     case 7532://Poissons de rivi�re
-                        return this.object.getState() == JobConstant.IOBJECT_STATE_FULL;
+                        return object.getState() == JobConstant.IOBJECT_STATE_FULL;
                 }
                 return false;
             //P�cher Poissons de mer
             case 129:
-                switch (this.object.getId()) {
+                switch (object.getId()) {
                     case 7531://Poissons de mer
-                        return this.object.getState() == JobConstant.IOBJECT_STATE_FULL;
+                        return object.getState() == JobConstant.IOBJECT_STATE_FULL;
                 }
                 return false;
             //P�cher Gros poissons de rivi�re
             case 126:
-                switch (this.object.getId()) {
+                switch (object.getId()) {
                     case 7537://Gros poissons de rivi�re
-                        return this.object.getState() == JobConstant.IOBJECT_STATE_FULL;
+                        return object.getState() == JobConstant.IOBJECT_STATE_FULL;
                 }
                 return false;
             //P�cher Gros poissons de mers
             case 130:
-                switch (this.object.getId()) {
+                switch (object.getId()) {
                     case 7538://Gros poissons de mers
-                        return this.object.getState() == JobConstant.IOBJECT_STATE_FULL;
+                        return object.getState() == JobConstant.IOBJECT_STATE_FULL;
                 }
                 return false;
             //P�cher Poissons g�ants de rivi�re
             case 127:
-                switch (this.object.getId()) {
+                switch (object.getId()) {
                     case 7539://Poissons g�ants de rivi�re
-                        return this.object.getState() == JobConstant.IOBJECT_STATE_FULL;
+                        return object.getState() == JobConstant.IOBJECT_STATE_FULL;
                 }
                 return false;
             //P�cher Poissons g�ants de mer
             case 131:
-                switch (this.object.getId()) {
+                switch (object.getId()) {
                     case 7540://Poissons g�ants de mer
-                        return this.object.getState() == JobConstant.IOBJECT_STATE_FULL;
+                        return object.getState() == JobConstant.IOBJECT_STATE_FULL;
                 }
                 return false;
             //Boulanger
             case 109://Pain
             case 27://Bonbon
-                return this.object.getId() == 7001;
+                return object.getId() == 7001;
             //Poissonier
             case 135://Faire un poisson (mangeable)
-                return this.object.getId() == 7022;
+                return object.getId() == 7022;
             //Chasseur
             case 134:
-                return this.object.getId() == 7023;
+                return object.getId() == 7023;
             //Boucher
             case 132:
-                return this.object.getId() == 7025;
+                return object.getId() == 7025;
             case 157:
-                return (this.object.getId() == 7030 || this.object.getId() == 7031);
+                return (object.getId() == 7030 || object.getId() == 7031);
             case 44://Sauvegarder le Zaap
             case 114://Utiliser le Zaap
-                switch (this.object.getId()) {
+                switch (object.getId()) {
                     //Zaaps
                     case 7000:
                     case 7026:
@@ -615,7 +583,7 @@ public class GameCase {
             case 176://Acheter
             case 177://Vendre
             case 178://Modifier le prix de vente
-                switch (this.object.getId()) {
+                switch (object.getId()) {
                     //Enclos
                     case 6763:
                     case 6766:
@@ -626,10 +594,10 @@ public class GameCase {
                 return false;
 
             case 179://Levier
-                return this.object.getId() == 7045;
+                return object.getId() == 7045;
             //Se rendre � incarnam
             case 183:
-                switch (this.object.getId()) {
+                switch (object.getId()) {
                     case 1845:
                     case 1853:
                     case 1854:
@@ -655,7 +623,7 @@ public class GameCase {
             case 118:
             case 119:
             case 120:
-                return this.object.getId() == 7020;
+                return object.getId() == 7020;
 
             //Enclume
             case 19:
@@ -670,42 +638,42 @@ public class GameCase {
             case 66:
             case 20:
             case 18:
-                return this.object.getId() == 7012;
+                return object.getId() == 7012;
 
             //Costume Mage
             case 167:
             case 165:
             case 166:
-                return this.object.getId() == 7036;
+                return object.getId() == 7036;
 
             //Coordo Mage
             case 164:
             case 163:
-                return this.object.getId() == 7037;
+                return object.getId() == 7037;
 
             //Joai Mage
             case 168:
             case 169:
-                return this.object.getId() == 7038;
+                return object.getId() == 7038;
 
             //Bricoleur
             case 171:
             case 182:
-                return this.object.getId() == 7039;
+                return object.getId() == 7039;
 
             //Forgeur Bouclier
             case 156:
-                return this.object.getId() == 7027;
+                return object.getId() == 7027;
 
             //Coordonier
             case 13:
             case 14:
-                return this.object.getId() == 7011;
+                return object.getId() == 7011;
 
             //Tailleur (Dos)
             case 123:
             case 64:
-                return this.object.getId() == 7015;
+                return object.getId() == 7015;
 
             //Sculteur
             case 17:
@@ -714,36 +682,36 @@ public class GameCase {
             case 148:
             case 149:
             case 15:
-                return this.object.getId() == 7013;
+                return object.getId() == 7013;
             //TODO: R�par�
             //Tailleur (Haut)
             case 63:
-                return (this.object.getId() == 7014 || this.object.getId() == 7016);
+                return (object.getId() == 7014 || object.getId() == 7016);
             //Atelier : Cr�er Amu // Anneau
             case 11:
             case 12:
-                return (this.object.getId() >= 7008 && this.object.getId() <= 7010);
+                return (object.getId() >= 7008 && object.getId() <= 7010);
             //Maison
             case 81://V�rouiller
             case 84://Acheter
             case 97://Entrer
             case 98://Vendre
             case 108://Modifier le prix de vente
-                return (this.object.getId() >= 6700 && this.object.getId() <= 6776);
+                return (object.getId() >= 6700 && object.getId() <= 6776);
             //Coffre
             case 104://Ouvrir
             case 105://Code
-                return (this.object.getId() == 7350
-                        || this.object.getId() == 7351 || this.object.getId() == 7353);
+                return (object.getId() == 7350
+                        || object.getId() == 7351 || object.getId() == 7353);
             case 170://Livre des artisants.
-                return this.object.getId() == 7035;
+                return object.getId() == 7035;
             case 121:
             case 181:
-                return this.object.getId() == 7021;
+                return object.getId() == 7021;
             case 110:
-                return this.object.getId() == 7018;
+                return object.getId() == 7018;
             case 153:
-                return this.object.getId() == 7352;
+                return object.getId() == 7352;
 
             default:
                 return false;
@@ -757,6 +725,8 @@ public class GameCase {
         }
         int actionID = -1;
         short CcellID = -1;
+        InteractiveObject object = map.interactiveObjects.get(cellId);
+
         try {
             actionID = Integer.parseInt(GA.args.split(";")[1]);
             CcellID = Short.parseShort(GA.args.split(";")[0]);
@@ -783,7 +753,7 @@ public class GameCase {
                 }
             }
             player.setDoAction(true);
-            player.doJobAction(actionID, this.object, GA, this);
+            player.doJobAction(actionID, object, GA, cellId);
             return;
         }
         switch (actionID) {
@@ -794,23 +764,23 @@ public class GameCase {
                 break;
 
             case 42://Tas de patate
-                if (!this.object.isInteractive())
+                if (!object.isInteractive())
                     return;//Si l'objet est utilis�
-                if (this.object.getState() != JobConstant.IOBJECT_STATE_FULL)
+                if (object.getState() != JobConstant.IOBJECT_STATE_FULL)
                     return;//Si le puits est vide
-                this.object.setState(JobConstant.IOBJECT_STATE_EMPTYING);
-                this.object.setInteractive(false);
+                object.setState(JobConstant.IOBJECT_STATE_EMPTYING);
+                object.setInteractive(false);
                 SocketManager.GAME_SEND_GA_PACKET_TO_MAP(player.getCurMap(), ""
-                        + GA.id, 501, player.getId() + "", this.id + ","
-                        + this.object.getUseDuration() + ","
-                        + this.object.getUnknowValue());
-                SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(player.getCurMap(), this);
+                        + GA.id, 501, player.getId() + "", this.cellId + ","
+                        + object.getUseDuration() + ","
+                        + object.getUnknowValue());
+                SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(player.getCurMap(), this.cellId, object);
 
                 TimerWaiter.addNext(() -> {
                     this.getObject().setState(JobConstant.IOBJECT_STATE_EMPTY);
                     this.getObject().setInteractive(false);
                     this.getObject().disable();
-                    SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(player.getCurMap(), this);
+                    SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(player.getCurMap(), this.cellId, object);
                     int qua = Formulas.getRandomValue(1, 5);
                     GameObject obj = World.world.getObjTemplate(537).createNewItem(qua, false);
                     if (player.addItem(obj, true, false))
@@ -835,16 +805,16 @@ public class GameCase {
                 this.getObject().setState(JobConstant.IOBJECT_STATE_EMPTYING);
                 this.getObject().setInteractive(false);
                 SocketManager.GAME_SEND_GA_PACKET_TO_MAP(player.getCurMap(), ""
-                        + GA.id, 501, player.getId() + "", this.id + ","
+                        + GA.id, 501, player.getId() + "", this.cellId + ","
                         + this.getObject().getUseDuration() + ","
                         + this.getObject().getUnknowValue());
-                SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(player.getCurMap(), this);
+                SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(player.getCurMap(), this.cellId, object);
 
                 TimerWaiter.addNext(() -> {
                     this.getObject().setState(JobConstant.IOBJECT_STATE_EMPTY);
                     this.getObject().setInteractive(false);
                     this.getObject().disable();
-                    SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(player.getCurMap(), this);
+                    SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(player.getCurMap(), this.cellId, object);
                     int qua = Formulas.getRandomValue(1, 10);
                     GameObject obj = World.world.getObjTemplate(311).createNewItem(qua, false);
                     if (player.addItem(obj, true, false))
@@ -978,8 +948,7 @@ public class GameCase {
                     SocketManager.GAME_SEND_MESSAGE(player, player.getLang().trans("area.map.gamecase.startaction.house.broken"));
                     return;
                 }
-                GameCase caseHouse = mapHouse.getCase(house.getHouseCellId());
-                if (caseHouse == null || !caseHouse.isWalkable(true, false)) {
+                if (!mapHouse.getCase(house.getHouseCellId()).isWalkable(true, false)) {
                     SocketManager.GAME_SEND_MESSAGE(player, player.getLang().trans("area.map.gamecase.startaction.house.broken"));
                     return;
                 }
@@ -1068,8 +1037,10 @@ public class GameCase {
         if (actionID == -1)
             return;
 
+        InteractiveObject object = map.interactiveObjects.get(cellId);
+
         if (JobConstant.isJobAction(actionID)) {
-            perso.finishJobAction(actionID, this.object, GA, this);
+            perso.finishJobAction(actionID, object, GA, cellId);
             perso.setDoAction(false);
             return;
         }
@@ -1091,12 +1062,12 @@ public class GameCase {
             case 183:
                 break;
             case 42://Tas de patate
-                if (this.object == null)
+                if (object == null)
                     return;
-                this.object.setState(JobConstant.IOBJECT_STATE_EMPTY);
-                this.object.setInteractive(false);
-                this.object.disable();
-                SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(perso.getCurMap(), this);
+                object.setState(JobConstant.IOBJECT_STATE_EMPTY);
+                object.setInteractive(false);
+                object.disable();
+                SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(perso.getCurMap(), cellId, object);
                 int qua = Formulas.getRandomValue(1, 5);
                 GameObject obj = World.world.getObjTemplate(537).createNewItem(qua, false);
                 if (perso.addItem(obj, true, false))
@@ -1104,13 +1075,13 @@ public class GameCase {
                 SocketManager.GAME_SEND_IQ_PACKET(perso, perso.getId(), qua);
                 break;
             case 102://Puiser
-                if (this.object == null)
+                if (object == null)
                     return;
 
-                this.object.setState(JobConstant.IOBJECT_STATE_EMPTY);
-                this.object.setInteractive(false);
-                this.object.disable();
-                SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(perso.getCurMap(), this);
+                object.setState(JobConstant.IOBJECT_STATE_EMPTY);
+                object.setInteractive(false);
+                object.disable();
+                SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(perso.getCurMap(), cellId, object);
                 qua = Formulas.getRandomValue(1, 10);//On a entre 1 et 10 eaux
                 obj = World.world.getObjTemplate(311).createNewItem(qua, false);
                 if (perso.addItem(obj, true, false))
@@ -1118,5 +1089,21 @@ public class GameCase {
                 SocketManager.GAME_SEND_IQ_PACKET(perso, perso.getId(), qua);
                 break;
         }
+    }
+
+    public void tryDropItem(GameObject obj) {
+        if(map.droppedItems.putIfAbsent(cellId, obj) != null) {
+            throw new IllegalStateException("attempted to drop item on a cell that already has a dropped item");
+        }
+    }
+
+    public boolean blockLoS() {
+        if (getFighters() == null)
+            return map.data.lineOfSight(cellId);
+        boolean hide = true;
+        for (Fighter fighter : getFighters())
+            if (!fighter.isHidden())
+                hide = false;
+        return map.data.lineOfSight(cellId) && hide;
     }
 }

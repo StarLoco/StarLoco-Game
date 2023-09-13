@@ -87,7 +87,11 @@ public final class DataScriptVM extends ScriptVM {
     static class RegisterMapTemplate extends AbstractFunction1<Table> {
         @Override
         public void invoke(ExecutionContext context, Table val) {
-            World.world.addMapData(ScriptMapData.build(val));
+            try {
+                World.world.addMapData(ScriptMapData.build(val));
+            }catch (Exception e) {
+                logger.error("Cannot register map #"+rawInt(val, "id"), e);
+            }
             context.getReturnBuffer().setTo();
         }
 

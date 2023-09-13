@@ -113,7 +113,6 @@ public class DatabaseManager {
         this.daos.add(new ObjectTemplateData(this.game));
         this.daos.add(new ObjectSetData(this.game));
         this.daos.add(new JobData(this.game));
-        this.daos.add(new GameMapData(this.game));
         this.daos.add(new MonsterData(this.game));
         this.daos.add(new MountParkData(this.game));
         this.daos.add(new NpcQuestionData(this.game));

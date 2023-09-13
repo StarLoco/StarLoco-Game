@@ -75,9 +75,8 @@ import org.starloco.locos.object.GameObject;
 import org.starloco.locos.object.ObjectTemplate;
 import org.starloco.locos.object.entity.Fragment;
 import org.starloco.locos.object.entity.SoulStone;
-import org.starloco.locos.other.Action;
-import org.starloco.locos.util.generator.NameGenerator;
 import org.starloco.locos.util.TimerWaiter;
+import org.starloco.locos.util.generator.NameGenerator;
 
 public class GameClient {
 
@@ -2962,9 +2961,9 @@ public class GameClient {
                     return;
                 }
 
-                ArrayList<Job> jobs = player.getJobs();
+                List<Job> jobs = player.getJobs();
 
-                if (jobs == null)
+                if (jobs == null || jobs.isEmpty())
                     return;
 
                 GameObject object = player.getObjetByPos(Constant.ITEM_POS_ARME);
@@ -3046,8 +3045,8 @@ public class GameClient {
                     return;
                 }
 
-                ArrayList<Job> jobs = this.player.getJobs();
-                if (jobs == null) return;
+                List<Job> jobs = this.player.getJobs();
+                if (jobs == null || jobs.isEmpty()) return;
 
                 GameObject object = this.player.getObjetByPos(Constant.ITEM_POS_ARME);
                 if (object == null) return;
@@ -4068,11 +4067,11 @@ public class GameClient {
             if (this.player.walkFast) {
                 this.player.getCurCell().removePlayer(this.player);
                 SocketManager.GAME_SEND_BN(this);
-                //On prend la case cibl?e
+                //On prend la case ciblee
                 GameCase nextCell = this.player.getCurMap().getCase(World.world.getCryptManager().cellCode_To_ID(path.substring(path.length() - 2)));
                 targetCell = this.player.getCurMap().getCase(World.world.getCryptManager().cellCode_To_ID(GA.packet.substring(GA.packet.length() - 2)));
 
-                //On d?finie la case et on ajthise le this.playernnage sur la case
+                //On definie la case et on ajoute le personnage sur la case
                 this.player.setCurCell(nextCell);
                 this.player.set_orientation(World.world.getCryptManager().getIntByHashedValue(path.charAt(path.length() - 3)));
                 this.player.getCurCell().addPlayer(this.player);
@@ -4105,7 +4104,7 @@ public class GameClient {
             final Fighter fighter = this.player.getFight().getFighterByPerso(this.player);
             if (fighter != null) {
                 GA.args = path;
-                this.player.getFight().cast(this.player.getFight().getFighterByPerso(this.player), () -> this.player.getFight().onFighterDeplace(fighter, GA), null);
+                this.player.getFight().cast(this.player.getFight().getFighterByPerso(this.player), () -> this.player.getFight().onFighterMovement(fighter, GA), null);
             }
         }
     }
@@ -4204,7 +4203,7 @@ public class GameClient {
                 if (((player.getAlignment() != 0 && (!player.getCurMap().data.noAgro)) || target.getDeshonor() > 0)) {
                     if (!target.isOnline() || target.getFight() != null || target.getCurMap().getId()
                             != this.player.getCurMap().getId() || target.getAlignment() == this.player.getAlignment() || this.player.
-                            getCurMap().getPlaces().equalsIgnoreCase("|") || !target.canAggro() || target.isDead() == 1
+                            getCurMap().getPlaces().size() < 2 || !target.canAggro() || target.isDead() == 1
                             || this.player.getFight() != null || player.isDead() == 1 || player.isGhost() || target.isGhost())
                         return;
 
@@ -4215,7 +4214,7 @@ public class GameClient {
                     return;
                 }
             }
-            if (this.player.getCurMap().getPlaces().equalsIgnoreCase("|")) {
+            if (this.player.getCurMap().getPlaces().size() < 2) {
                 SocketManager.GAME_SEND_DUEL_Y_AWAY(this, this.player.getId());
                 return;
             }
@@ -4362,7 +4361,7 @@ public class GameClient {
 
             if (target == null || !target.isOnline() || target.getFight() != null || target.getCurMap().getId()
                     != this.player.getCurMap().getId() || target.getAlignment() == this.player.getAlignment() || this.player.
-                    getCurMap().getPlaces().equalsIgnoreCase("|") || !target.canAggro() || target.isDead() == 1)
+                    getCurMap().getPlaces().size() < 2 || !target.canAggro() || target.isDead() == 1)
                 return;
 
             Area area = this.player.getCurMap().getArea();
@@ -5024,7 +5023,7 @@ public class GameClient {
             SocketManager.GAME_SEND_Im_PACKET(this.player, "1168;1");
             return;
         }
-        if (map.getPlaces().length() < 5 || SoulStone.isInArenaMap(map.getId()) || map.data.noCollectors) {//La map ne poss?de pas de "places"
+        if (map.getPlaces().size() < 2 || SoulStone.isInArenaMap(map.getId()) || map.data.noCollectors) {//La map ne poss?de pas de "places"
             SocketManager.GAME_SEND_Im_PACKET(this.player, "113");
             return;
         }
@@ -5718,14 +5717,14 @@ public class GameClient {
         }
         if (qua >= obj.getQuantity()) {
             this.player.removeItem(guid);
-            this.player.getCurMap().getCase(cellPosition).addDroppedItem(obj);
+            this.player.getCurMap().getCase(cellPosition).tryDropItem(obj);
             obj.setPosition(Constant.ITEM_POS_NO_EQUIPED);
             SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(this.player, guid);
         } else {
             obj.setQuantity(obj.getQuantity() - qua);
             GameObject obj2 = obj.getClone(qua, true);
             obj2.setPosition(Constant.ITEM_POS_NO_EQUIPED);
-            this.player.getCurMap().getCase(cellPosition).addDroppedItem(obj2);
+            this.player.getCurMap().getCase(cellPosition).tryDropItem(obj2);
             SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(this.player, obj);
         }
         if (Logging.USE_LOG)

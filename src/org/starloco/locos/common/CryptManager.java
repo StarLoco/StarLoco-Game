@@ -1,11 +1,8 @@
 package org.starloco.locos.common;
 
 import org.apache.commons.lang.StringEscapeUtils;
-import org.starloco.locos.area.map.CellCache;
-import org.starloco.locos.area.map.CellCacheImpl;
 import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.area.map.GameMap;
-import org.starloco.locos.util.Pair;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -19,73 +16,36 @@ public class CryptManager {
             '8', '9', '-', '_'};
     private final char[] HEX_CHARS = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
 
-    public String cellID_To_Code(int cellID) {
-
-        int char1 = cellID / 64, char2 = cellID % 64;
-        return HASH[char1] + "" + HASH[char2];
+    public static String cellID_To_Code(int cellID) {
+        return HASH[cellID>>6] + "" + HASH[cellID & 0x3F];
     }
 
     public int cellCode_To_ID(String cellCode) {
 
         char char1 = cellCode.charAt(0), char2 = cellCode.charAt(1);
-        int code1 = 0, code2 = 0, a = 0;
+        int code1 = -1, code2 = -1, a = 0;
 
         while (a < HASH.length) {
             if (HASH[a] == char1)
-                code1 = a * 64;
+                code1 = a << 6;
             if (HASH[a] == char2)
                 code2 = a;
+            if(code1 != -1 && code2 != -1)
+                return (code1 + code2);
             a++;
         }
-        return (code1 + code2);
+        throw new IllegalStateException("invalid cellCode passed to cellCode_To_ID");
     }
 
-    public int getIntByHashedValue(char c) {
+    public static int getIntByHashedValue(char c) {
         for (int a = 0; a < HASH.length; a++)
             if (HASH[a] == c)
                 return a;
         return -1;
     }
 
-    public char getHashedValueByInt(int c) {
+    public static char getHashedValueByInt(int c) {
         return HASH[c];
-    }
-
-    public ArrayList<GameCase> parseStartCell(GameMap map, int num) {
-        ArrayList<GameCase> list = null;
-        String infos;
-        if (!map.getPlaces().equalsIgnoreCase("-1")) {
-            infos = map.getPlaces().split("\\|")[num];
-            int a = 0;
-            list = new ArrayList<>();
-            while (a < infos.length()) {
-                GameCase cell = map.getCase((getIntByHashedValue(infos.charAt(a)) << 6) + getIntByHashedValue(infos.charAt(a + 1)));
-                if(cell != null && cell.isWalkable(false, false))
-                    list.add(cell);
-                a = a + 2;
-            }
-        }
-        return list;
-    }
-
-    public String key = "8fd8ad4a38cdd0432248a76f8f148ceb";
-
-    private List<Integer> cellWalkable(int width, int height){
-        List<Integer> limit = new ArrayList<>();
-        int H = height;
-        int W = (width-1);
-        int val = 0;
-        for (int h = 0; h < H; h++ ){
-            if (h ==0) val = W;
-            else val = (val + (W * 2) + 1);
-            limit.add(val);
-            limit.add((val-W));
-        }
-        for (int w = 1; w < W; w++){
-            limit.add(w);
-            limit.add((((H * (W+1)+((H-1)*W))-1)-w));
-        }
-        return limit;
     }
 
     public String prepareMapDataKey(String key) {
@@ -100,11 +60,11 @@ public class CryptManager {
         return unescape(data.toString());
     }
 
-    private String unescape(String data) {
+    private static String unescape(String data) {
         return StringEscapeUtils.unescapeJava(data);
     }
 
-    public String checksumKey(String data) {
+    public static String checksumKey(String data) {
         int num = 0;
         int num3 = (data.length() - 1);
         int i = 0;
@@ -117,7 +77,7 @@ public class CryptManager {
         return strArray[(num % 16)];
     }
 
-    public String decryptMapData(String mapData, String key) {
+    public static String decryptMapData(String mapData, String key) throws UnsupportedEncodingException {
         key = prepareKey(key);
         String strsum = checksumKey(key);
         int checksum = Integer.parseInt(strsum, 16) * 2;
@@ -125,7 +85,7 @@ public class CryptManager {
         return mapData;
     }
 
-    public String decypherData(String Data, String Key, int Checksum) {
+    public static String decypherData(String Data, String Key, int Checksum) {
         StringBuilder dataToDecrypt = new StringBuilder();
         int num4 = (Data.length() - 2);
         int i = 0;
@@ -140,66 +100,11 @@ public class CryptManager {
         return unescape(dataToDecrypt.toString());
     }
 
-    private boolean mapCrypted(String mapData) {
+    public static boolean isMapCiphered(String mapData) {
         int nb = 0;
         for (char a : mapData.toCharArray()) if (Character.isDigit(a)) nb++;
         return (nb > 1000);
     }
-
-    // TODO: remove GameMap map param, pass only mapID
-    public Pair<CellCache, List<GameCase>> decompileMapData(GameMap map, String data, String key, int w, int h) {
-        List<GameCase> cells = new ArrayList<>();
-        List<Short> losCells = new ArrayList<>();
-
-        if(mapCrypted(data) && !key.isEmpty()) {
-            try {
-                data = this.decryptMapData(data, key);
-            } catch (Exception e) {
-                System.err.println("Cannot decipher map data : " + map.data.id);
-                e.printStackTrace();
-            }
-        }
-        if(PathFinding.outForbiddenCells.get(w + "_" + h) == null)
-            PathFinding.outForbiddenCells.put(w + "_" + h, cellWalkable(w, h));
-        try {
-            short cellId = 0;
-            for (; cellId < data.length()/10; cellId ++ ){
-                String cellData = data.substring(cellId*10, (cellId+1)*10);
-                byte[] array = new byte[10];
-                for (int i = 0; i < cellData.length(); i++)
-                    array[i] = (byte) getIntByHashedValue(cellData.charAt(i));
-
-                boolean active = (array[0] >> 5) != 0;
-
-                boolean los = true;
-                short groundSlope, groundLevel;
-                int io;
-
-                int walkable = ((array[2] & 56 ) >> 3); //  && !cellData.equalsIgnoreCase("bhGaeaaaaa") && !cellData.equalsIgnoreCase("Hhaaeaaaaa"))
-                if((array[0] & 1) == 0)
-                    los = false;
-                if(los) losCells.add(cellId);
-                short tmp = (short) ((array[4] & 60) >> 2);
-                if (tmp != 1) groundSlope = tmp;
-
-                tmp = (short) (array[1] & 15);
-                if (tmp != 0) groundLevel = tmp;
-
-                int layerObject2 = ((array[0] & 2) << 12) + ((array[7] & 1) << 12) + (array[8] << 6) + array[9];
-                boolean layerObject2Interactive = ((array[7] & 2) >> 1) != 0;
-                int obj = (layerObject2Interactive?layerObject2:-1);
-
-                cells.add(new GameCase(map, active, cellId, walkable, los, obj));
-
-            }
-            CellCacheImpl cache = new CellCacheImpl(losCells, w, h);
-            return new Pair<>(cache, cells);
-        } catch (Exception e) {
-            System.err.println(e.getMessage() + " : mapId : " + map.data.id);
-            throw e;
-        }
-    }
-
 
     // prepareData
     public String cryptMessage(String message, String key) {
@@ -245,16 +150,12 @@ public class CryptManager {
         }
     }
 
-    public String prepareKey(String key) {
+    public static String prepareKey(String key) throws UnsupportedEncodingException {
         StringBuilder sb = new StringBuilder();
         for(int i = 0; i < key.length(); i += 2)
             sb.append((char) Integer.parseInt(key.substring(i, i + 2), 16));
 
-        try {
-            return URLDecoder.decode(sb.toString(), "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            return null;
-        }
+        return URLDecoder.decode(sb.toString(), "UTF-8");
     }
 
     private int checksum(String data) {

@@ -26,7 +26,7 @@ public class SQLMapData extends MapData {
     protected SQLMapData(int id, String date, String key, String data, int width, int height, int x, int y,
                          int subAreaID, boolean noSellers, boolean noCollectors, boolean noPrisms,
                          boolean noTp, boolean noDefy, boolean noAgro, boolean noCanal, int mobGroupsMaxCount,
-                         int mobGroupsMinSize, int mobGroupsMaxSize, List<MonsterGrade> monsters, String places) {
+                         int mobGroupsMinSize, int mobGroupsMaxSize, List<MonsterGrade> monsters, List<List<Integer>> places) {
         super(id,
                 date,
                 key,
@@ -50,7 +50,7 @@ public class SQLMapData extends MapData {
                 places);
     }
 
-    public static SQLMapData build(int id, String date, int w, int h, String key, String data, String places, String monsters, String mapPos, int maxGroupCnt, byte fixSize, byte minSize, byte maxSize, String forbidden) {
+    public static SQLMapData build(int id, String date, int w, int h, String key, String data, String strPlaces, String monsters, String mapPos, int maxGroupCnt, byte fixSize, byte minSize, byte maxSize, String forbidden) {
         String[] split = forbidden.split(";");
         boolean noSellers = split.length>0 && split[0].equals("1");
         boolean noCollectors = split.length>1 && split[1].equals("1");
@@ -65,6 +65,7 @@ public class SQLMapData extends MapData {
         x = Integer.parseInt(mapInfos[0]);
         y = Integer.parseInt(mapInfos[1]);
         subAreaID = Integer.parseInt(mapInfos[2]);
+
 
         String unique = "";
         if(monsters.contains("@")) {
@@ -118,6 +119,7 @@ public class SQLMapData extends MapData {
             }
         }
 
+        List<List<Integer>> places = MapData.decodePositions(strPlaces);
         return new SQLMapData(id, date, key, data, w, h, x, y, subAreaID, noSellers, noCollectors, noPrisms, noTp, noDefy, noAgro, noCanal, maxGroupCnt, minSize, maxSize, mobPossibles, places);
     }
 

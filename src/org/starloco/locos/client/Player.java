@@ -1,6 +1,7 @@
 package org.starloco.locos.client;
 
 import org.starloco.locos.area.SubArea;
+import org.starloco.locos.area.map.Actor;
 import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.area.map.entity.House;
@@ -70,7 +71,7 @@ import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class Player implements Scripted<SPlayer> {
+public class Player implements Scripted<SPlayer>, Actor {
     private final SPlayer scriptVal;
 
     public Stats stats;
@@ -1384,6 +1385,16 @@ public class Player implements Scripted<SPlayer> {
                 ExchangeAction.IN_SCENARIO,
                 new ScenarioActionData(exchangeAction, onEnd));
         SocketManager.GAME_SEND_TUTORIAL_CREATE(this, id, date);
+    }
+
+    @Override
+    public long Id() {
+        return id;
+    }
+
+    @Override
+    public String name() {
+        return name;
     }
 
     public static class EnsureSpellLevelResult {
@@ -3774,12 +3785,8 @@ public class Player implements Scripted<SPlayer> {
         return false;
     }
 
-    public ArrayList<Job> getJobs() {
-        ArrayList<Job> list = new ArrayList<>();
-        for (JobStat js : _metiers.values())
-            if (js.getTemplate() != null)
-                list.add(js.getTemplate());
-        return (list.isEmpty() ? null : list);
+    public List<Job> getJobs() {
+        return Collections.unmodifiableList(_metiers.values().stream().map(JobStat::getTemplate).collect(Collectors.toList()));
     }
 
     public Map<Integer, JobStat> getMetiers() {
@@ -3787,35 +3794,35 @@ public class Player implements Scripted<SPlayer> {
     }
 
     public void doJobAction(int actionID, InteractiveObject object,
-                            GameAction GA, GameCase cell) {
+                            GameAction GA, int cellId) {
         JobStat SM = getMetierBySkill(actionID);
         if (SM == null) {
             switch (actionID) {
                 case 151:
-                    new JobAction(151, 4, 0, true, 100, 0).startAction(this, object, GA, cell);
+                    new JobAction(151, 4, 0, true, 100, 0).startAction(this, object, GA, cellId);
                     return;
                 case 121:
-                    new JobAction(121, 8, 0, true, 100, 0).startAction(this, object, GA, cell);
+                    new JobAction(121, 8, 0, true, 100, 0).startAction(this, object, GA, cellId);
                     return;
                 case 110:
-                    new JobAction(110, 2, 0, true, 100, 0).startAction(this, object, GA, cell);
+                    new JobAction(110, 2, 0, true, 100, 0).startAction(this, object, GA, cellId);
                     return;
                 case 22:
-                    new JobAction(22, 1, 0, true, 100, 0).startAction(this, object, GA, cell);
+                    new JobAction(22, 1, 0, true, 100, 0).startAction(this, object, GA, cellId);
                     return;
                 default:
                     return;
             }
         }
-        SM.startAction(actionID, this, object, GA, cell);
+        SM.startAction(actionID, this, object, GA, cellId);
     }
 
     public void finishJobAction(int actionID, InteractiveObject object,
-                                GameAction GA, GameCase cell) {
+                                GameAction GA, int cellId) {
         JobStat SM = getMetierBySkill(actionID);
         if (SM == null)
             return;
-        SM.endAction(this, object, GA, cell);
+        SM.endAction(this, object, GA, cellId);
     }
 
     public String parseJobData() {
@@ -4370,16 +4377,12 @@ public class Player implements Scripted<SPlayer> {
             return;
         GameMap map = World.world.getMap(Integer.valueOf(packet.substring(2)));
 
-        short cell = 100;
         if (map != null) {
-            for (GameCase entry : map.getCases()) {
-                InteractiveObject obj = entry.getObject();
-                if (obj != null) {
-                    if (obj.getId() == 7031 || obj.getId() == 7030) {
-                        cell = (short) (entry.getId() + 18);
-                    }
-                }
-            }
+            int cell = map.findObjectsPositionsByID(Arrays.asList(7030, 7031)).findFirst().orElse(0);
+            if(cell == 0) throw new IllegalStateException(String.format("no zaapi found for map #%d", map.getId()));
+
+            cell += 18; // Get cell below
+
             if (map.getSubArea() != null && (map.getSubArea().getArea().getId() == 7 || map.getSubArea().getArea().getId() == 11)) {
                 int price = 20;
                 if (this.getAlignment() == 1 || this.getAlignment() == 2)
@@ -4388,7 +4391,7 @@ public class Player implements Scripted<SPlayer> {
                 SocketManager.GAME_SEND_STATS_PACKET(this);
                 if ((map.getSubArea().getArea().getId() == 7 && this.getCurMap().getSubArea().getArea().getId() == 7)
                         || (map.getSubArea().getArea().getId() == 11 && this.getCurMap().getSubArea().getArea().getId() == 11)) {
-                    this.teleport(Integer.valueOf(packet.substring(2)), cell, false);
+                    this.teleport(Integer.parseInt(packet.substring(2)), cell, false);
                 }
                 SocketManager.GAME_SEND_CLOSE_ZAAPI_PACKET(this);
                 this.setExchangeAction(null);
@@ -5906,47 +5909,42 @@ public class Player implements Scripted<SPlayer> {
     }
 
     public void refreshCraftSecure(boolean unequip) {
+        // Optimize by directly checking the job for the equipped tool
         for (Player player : this.getCurMap().getPlayers()) {
-            if(player == null || player.getJobs() == null) continue;
-            ArrayList<Job> jobs = player.getJobs();
+            if(player == null) continue;
 
-            if (jobs != null) {
-                GameObject object = player.getObjetByPos(Constant.ITEM_POS_ARME);
+            GameObject object = player.getObjetByPos(Constant.ITEM_POS_ARME);
+            if (object == null) {
+                if (unequip) {
+                    for(Player target : this.getCurMap().getPlayers())
+                        target.send("EW+" + player.getId() + "|");
+                }
+                continue;
+            }
+            int toolID = object.getTemplate().getId();
 
-                if (object == null) {
-                    if (unequip) {
-                        for(Player target : this.getCurMap().getPlayers())
-                            target.send("EW+" + player.getId() + "|");
-                    }
+            List<Integer> availableSkills = new ArrayList<>();
+            for (Job job : player.getJobs()) {
+                if (job.getSkills().isEmpty())
                     continue;
-                }
+                if (!job.isValidTool(toolID))
+                    continue;
 
-                String packet = "EW+" + player.getId() + "|", data = "";
+                // Compute list of skills this player can use on this map
+                this.getCurMap().data.interactiveObjects().values().stream()
+                    .map(job.getSkills()::get) // Get possibles skills on this object
+                    .filter(Objects::nonNull)   // Make sure we have one
+                    .flatMap(List::stream)  // Group all possible skills from all objects in one list
+                    .forEach(availableSkills::add);
+            }
 
-                for (Job job : jobs) {
-                    if (job.getSkills().isEmpty())
-                        continue;
-                    if (!job.isValidTool(object.getTemplate().getId()))
-                        continue;
+            if(availableSkills.isEmpty()) continue;
 
-                    for (GameCase cell : this.getCurMap().getCases()) {
-                        if (cell.getObject() != null) {
-                            if (cell.getObject().getTemplate() != null) {
-                                int io = cell.getObject().getTemplate().getId();
-                                ArrayList<Integer> skills = job.getSkills().get(io);
+            String packet = "EW+" + player.getId() + "|" + availableSkills.stream().distinct().map(String::valueOf).collect(Collectors.joining(";"));
+            for(Player target : this.getCurMap().getPlayers()) {
+                if (target == null) continue;
 
-                                if (skills != null)
-                                    for (int skill : skills)
-                                        if (!data.contains(String.valueOf(skill)))
-                                            data += (data.isEmpty() ? skill : ";" + skill);
-                            }
-                        }
-                    }
-                }
-
-                for(Player target : this.getCurMap().getPlayers())
-                    if(target != null)
-                        target.send(packet + data);
+                target.send(packet);
             }
         }
     }

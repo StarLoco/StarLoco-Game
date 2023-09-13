@@ -217,7 +217,7 @@ public class Function {
         //Cr�ation d'une GameAction
         GameAction GA = new GameAction(0, 1, "");
         GA.args = pathstr;
-        boolean result = fight.onFighterDeplace(F, GA);
+        boolean result = fight.onFighterMovement(F, GA);
 
         return result;
     }
@@ -499,7 +499,7 @@ public class Function {
         GameAction GA = new GameAction(0, 1, "");
         GA.args = pathstr;
 
-        if(!fight.onFighterDeplace(F, GA))
+        if(!fight.onFighterMovement(F, GA))
             return 0;
 
         return nbrcase * 500;
@@ -1020,7 +1020,7 @@ public class Function {
         //Cr�ation d'une GameAction
         GameAction GA = new GameAction(0, 1, "");
         GA.args = pathstr;
-        if(!fight.onFighterDeplace(F, GA))
+        if(!fight.onFighterMovement(F, GA))
             return 0;
 
         return nbrcase * 500;
@@ -1111,7 +1111,7 @@ public class Function {
         //Cr�ation d'une GameAction
         GameAction GA = new GameAction(0, 1, "");
         GA.args = pathstr;
-        if(!fight.onFighterDeplace(F, GA))
+        if(!fight.onFighterMovement(F, GA))
             return 0;
 
         return nbrcase * 500;
@@ -1712,7 +1712,7 @@ public class Function {
 
         GameAction GA = new GameAction(0, 1, "");
         GA.args = str.toString();
-        return fight.onFighterDeplace(caster, GA);
+        return fight.onFighterMovement(caster, GA);
     }
 
     private boolean moveToCell(Fight fight, Fighter fighter, GameCase cell, GameCase cellTarget, boolean doneMove) {
@@ -1751,7 +1751,7 @@ public class Function {
 
         GameAction GA = new GameAction(0, 1, "");
         GA.args = str.toString();
-        return fight.onFighterDeplace(fighter, GA);
+        return fight.onFighterMovement(fighter, GA);
     }
 
     public int getCellToBeInTheSameLine(Fight fight, Spell.SortStats spell, int cellStart, int cellEnd) {

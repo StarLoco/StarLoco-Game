@@ -1,0 +1,81 @@
+local map = MapDef(
+	2170,
+	"0806201705",
+	"585c355832532768285b6a777e762d7d4925324229587c732e2725324231726c2756554347375a5a78775e796c47343e573a2a304c69525146476a3b33462260314a64242d792532354f73543138387a6f7920694e273a425149237c583963266048624c587a43386f665d4c6b4c7625324279653d4263253235494424245452423132502532422d55745a6c7e6e40246e7e7c6f2f20772e3d69303b625533667c405d5d7843782259287d68315d7c2d7b6e487c72573c7a326b7e6a6e6355312c52575e6f3e6b253235232a2625323568296426634c30503c593c7a7d3e512d5c5c682d76237c24203d235b313058385d4f",
+	"HhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaPeaaaaaHhaaeaaadAHhaaeaaadAHhGaeaaaaaHhGaeaaaaaH3N7eaaaaaHhGaeaaaaaHhGaeqgaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaH3GQeaaaaaHhaaeaaaaaHhaaeaaadAHhGaeaaaaaHhN4eaaaaaHhN_eaaaaaHxN_eaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhaPeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhN_eaaaaaHNN6eaaaaaHxN_em1aaaHhGaeaaaaaHhGaem0aaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaH3GQeaaaaaHhaaeaaaaaHhGaeaaaaaHhaaeaaadAHhN_eaaaaaHNN-eaaaaaH3N-eaaaaaHxN_eaaaaaHhGaem1aaaHhGaem1aaaHhGaeaaaaaGhaaeaaaduHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhaPeaaaaaGhaaeaaadEGhaaeaaaduHNN7eaaaaaHxN6em0aaaHhN0eaaaaaH3N-eaaaaaHxN_em0aaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaGhaaeaaadFHhGaeaaaaaH3GQeaaaaaHhaaeaaaaaHhGaeaaaaaH3N7eaaaaaH3N_eaaaaaHxN-eaaadmHhN0eaaaaaH3N6eaaaaaHhN7eaaaaaHhN4eaaaaaH3N7eaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaGhaaeaaadFHhaPeaaaaaHhaaeaaadAHhN_eaaaaaHxN_eaaaaaH3N_eaaaaaHxN-eaaaaaHhN-eaaaaaH3N9eaaaaaHhGaeaaaaaHhN_eaaaaaGxh_eaaaduHhN4eaaaaaHhGaeaaaaaHhaaeaaadAH3GQeaaaaaGhaaeaaaduHhN_eaaaaaHhN1eaaaaaHxN_eaaaaaH3N_eaaaaaHhN6eaaaaaHhN1eaaaaaHxN_eaaaaaHhN_eaaaaaH3G6eaaaaaHxN_eaaaaaGhaaeaaaaRGhaaeaaaduHhGaeaaaaaHhaPeaaaaaHhN_eaaaaaHhGNeaaaaaHhGNeaaaaaHhGaeaaaaaH3N_eaaaaaHhN1eaaaaaHhN1eaaaaaHNN9eaaaaaHNN-eaaaaaH3N-eaaaaaHxN_eaaaaaHhGaeaaaaaHhGaeaaaaaHhGOeaaaaaHhaaeaaaaaHhN1eaaadmHhN1eaaaaaHNN_eaaaaaHhGaeaaaaaH3N_eaaaaaHhN1eaaaaaHhN1eaaaaaHNG6eaaaaaHhN0eaaadmH3N-eiFaaaHxN_eaaaaaHhGaeaaaaaH3GQeaaaaaHhcieaaaaaH3N_eaaaaaHhN1eaaaaaHNN_eaaaaaHhGaeaaaaaHhGaeaaaaaH3N_eaaaaaHhN1eaaaaaHhN1eaaaaaHxN-eaaaaaHhN0eaaaaaH3N-eaaaaaHxN_eaaaaaHhGaeaaaaaGhaPeaaadFHhaaeaaaaaH3N_eaaaaaHNN_eaaaaaHhGaeaaaaaHhaaeaaadQHhGaeaaaaaH3N_eaaaaaHhN1eaaaaaHhN1eaaaaaHxN-eaaaaaHhN0eiFaaaH3N-eaaaaaHxN_eaaaaaH3GQeaaaaaHhcieaaaaaHhGaeqgaaaHxN7eaaaaaHhGaeaaaaaHhGaeaaaaaGhh_eaaaaRHxN_eaaaaaH3N_eaaaaaHhN1eaaaaaHhN9eaaaaaHxN-eaaaaaHhN0eaaaaaGha6eaaadtHhN7eaaaaaHhGPeaaaaaHhaaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhN_ebNaaaHhN1eaaaaaGxh_eaaadtG3h_eaaadtHNN_eaaaaaH3N_eaaaaaHxN-eaaaaaHhN-eaaaaaHNN_eaaaaaH3GQeaaaaaHhcieaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHNN7eaaaaaHhN1eaaaaaHhN1eaaaaaHhN7eaaaaaHxh7eaaadyHhGaeaaaaaHxN9eaaaaaHxG6eaaaaaH3N9eaaaaaHhGaeaaaaaHhGPeaaaaaHhaaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaH3N_eaaaaaHhN1eaaaaaHNN_eaaaaaHhGaebNaaaHhGaeaaaaaHhN_eaaaaaHhN1eaaaaaHhN1eaaaaaHhGaeaaaaaH3GQeaaaaaHhcieaaaaaHhGaeaaaaaHhN4eaaaaaHhaaeaaadyHhGaeaaaaaH3N_eaaaaaHNN_eaaaaaHhGaeaaaaaHhGaeaaaaaGhh_eaaadtHhN1eaaaaaHhN1eaaaaaHNN_eaaaaaGhaaeaaadEHhGPeaaaaaHhaaeaaaaaHhN4eaaaaaHhGaeaaaaaGhaaebNadtGhaaeaaadEHxN7eaaaaaHhGaeaaaaaGhaaeaaadFHhN_eaaaaaHhGNeaaaaaHhN1eaaaaaHNN_eaaaaaHhGaeaaaaaH3GQeaaaaaGhcieaaadvHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaGhaaeaaaduGhaaeaaaaRHhN_eaaaaaHhN1eaaaaaHhN1eaaaaaHNN_eaaaaaHhGaeaaaaaHhGaeaaaaaHhaPeaaadAHhaaeaaaaaHhGaeaaaaaHhGaeaaaaaH3N7eaaaaaHhGaeaaaaaHhaaeaaadAHhGaeaaaaaHhN_eaaaaaHhN1eaaaaaHhN1eaaaaaHNN_eaaaaaHhGaeaaaaaHhGaeaaaaaG3aQeaaaduHhcieaaaaaHhGaeaaaaaHhGaeaaaaaHhN_eaaaaaHxN_eaaaaaGhaaeaaaaRHhGaeaaaaaHhN_eaaaaaHhGNeaaaaaHhN1eaaaaaHNN_eaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGPeaaaaaHhaaeaaaaaHhGaeaaaaaHhN_eaaaaaH3G6eaaaaaHxN_eaaaaaHhGaeaaaaaGNh7eaaadtHhN1eaaaaaHhN1eaaaaaHNN_eaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaH3GQeaaaaaHhcieaaadAHhGaeaaaaaHhN_eaaaaaHNN-em1aaaH3N-eaaaaaHxN_eaaaaaHhaaeaaadyH3N_eaaaaaHhGNem0aaaHNN_eaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGPeaaaaaHhaaeaaaaaHNN7eaaaaaHNG6eaaadmHhN0eaaadmHhG6eaaaaaHhN7eaaaaaHhGaeaaaaaH3N_eaaaaaHNN_eaaaaaHhGaeaaaaaHhGaeaaaaaGhaaeaaadFHhGaeaaaaaH3GQeaaaaaHhcieaaaaaHhGaeaaaaaH3N_eaaaaaHxN-eaaaaaHhN-eaaaaaHNN_eaaaaaHhGaeaaaaaHhGaem0aaaHxN7eaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGPeaaaaaHhaaeaaaaaHhGaeaaaaaH3N_em1aaaHxG6eaaaaaGNh_eaaadtHhGaeaaaaaHhN4eaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaGhaaeaaaduHhGaeaaaaaGhaaeaaadEH3GQeaaaaaHhcieaaaaaHhGaeaaaaaHhGaeaaaaaH3N_eaaaaaHNh_eaaadyHhGaeaaaaaHhGaeaaaaaHhGaem1aaaHhN4eaaaaaHhGaeaaaaaGhaaeaaaaRHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGPeaaaaaHhaaeaaaaaHhGaeaaaaaHhGaeaaaaaHxN7eaaaaaHhGaeaaaaaHhGaeaaadmHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhaaeaaadAHhGaeaaaaaH3GQeaaaaaHhcieaaaaaGhaaeaaadEHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaGhaaeaaadNHhGaeaaaaaGhaaeaaadEGhaaeaaaduHhGaeaaaaaHhaPeaaadAHhaaeaaaaaHhGaeaaaaaHhaaeaaadyHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhaaeaaadOHhGaeaaaaaHhaaeaaadRHhaaeaaaaaHhaaeaaadAGhaOeaaadEGhcieaaadvHhaaeaaadAGhaaeaaaaRHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhGaeqgaaaHhGaeaaaaaHhGaeaaaaaHhGaeaaaaaHhaaeaaadAHhaaeaaaaaH3aQeaaadAHhcieaaadAGhaaeaaadFHhaaeaaadAHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaPeaaadAHhcieaaaaa",
+	15,
+	17,
+	-10,
+	-14,
+	33
+)
+
+map.positions = "aIa0bzdPd0fpgOg6|cLdjdqdVd6ekeMeO"
+map.mobGroupsCount = 3
+map.mobGroupsMinSize = 8
+map.allowedMobGrades = {
+	{159, 1},
+	{159, 2},
+	{159, 3},
+	{159, 4},
+	{159, 5},
+	{655, 1},
+	{655, 2},
+	{655, 3},
+	{655, 4},
+	{655, 5},
+	{47, 1},
+	{47, 2},
+	{47, 3},
+	{47, 4},
+	{47, 5},
+	{653, 1},
+	{653, 2},
+	{653, 3},
+	{653, 4},
+	{653, 5},
+	{46, 1},
+	{46, 2},
+	{46, 3},
+	{46, 4},
+	{46, 5},
+	{654, 1},
+	{654, 2},
+	{654, 3},
+	{654, 4},
+	{654, 5},
+	{34, 1},
+	{34, 2},
+	{34, 3},
+	{34, 4},
+	{34, 5},
+	{254, 1},
+	{254, 2},
+	{254, 3},
+	{254, 4},
+	{254, 5},
+	{652, 1},
+	{652, 2},
+	{652, 3},
+	{652, 4},
+	{652, 5},
+	{650, 1},
+	{650, 2},
+	{650, 3},
+	{650, 4},
+	{650, 5},
+	{255, 1},
+	{255, 2},
+	{255, 3},
+	{255, 4},
+	{255, 5},
+}
+-- '0;0;0;0;0;0;0' forbiddens -> capabilities ? Or script ?
+
+map.onMovementEnd = {
+	[21] = moveEndTeleport(2171, 441),
+	[189] = moveEndTeleport(2160, 187),
+	[456] = moveEndTeleport(2167, 36),
+}
+
+RegisterMapDef(map)
