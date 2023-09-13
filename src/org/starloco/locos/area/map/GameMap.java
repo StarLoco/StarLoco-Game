@@ -652,7 +652,9 @@ public class GameMap {
 
         if(frame.hasDuration()) {
             // Start timer
-            // TODO
+            World.world.eventScheduler.schedule(() -> {
+                this.setAnimationState(cellId, frame.nextFrame);
+            }, frame.durationMillis(), TimeUnit.MILLISECONDS);
         }
 
         // Send packet

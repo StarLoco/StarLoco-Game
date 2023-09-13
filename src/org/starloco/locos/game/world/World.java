@@ -49,10 +49,7 @@ import org.starloco.locos.util.TimerWaiter;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 public class World implements Scripted<SWorld> {
@@ -61,6 +58,9 @@ public class World implements Scripted<SWorld> {
     public final static World world = new World();
 
     public Logger logger = (Logger) LoggerFactory.getLogger(World.class);
+
+    // Single threaded executor to avoid concurrency issues. Will be optimized once we refactor threads
+    public final ScheduledExecutorService eventScheduler = Executors.newSingleThreadScheduledExecutor(r -> new Thread(r, "World"));
 
     private final Map<Integer, Account> accounts = new HashMap<>();
     private final Map<Integer, Player> players = new HashMap<>();

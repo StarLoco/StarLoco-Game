@@ -1,16 +1,20 @@
 package org.starloco.locos.anims;
 
+import com.singularsys.jep.functions.IllegalParameterException;
 import org.classdump.luna.Table;
 import org.starloco.locos.script.DataScriptVM;
 
 import java.security.InvalidParameterException;
 
 public class KeyFrame {
+    private final double FPS = 60F;
+
     public final int frame;
-    public final int duration;
+    private final int duration;
     public final String nextFrame;
 
     private KeyFrame(int frame, int duration, String nextFrame) {
+        if(duration > 0 && nextFrame.isEmpty()) throw new IllegalParameterException("nextFrame is mandatory when duration is set")
         this.frame = frame;
         this.duration = duration;
         this.nextFrame = nextFrame;
@@ -27,4 +31,6 @@ public class KeyFrame {
     }
 
     public boolean hasDuration() { return duration != 0; }
+
+    public int durationMillis() { return (int) (duration*1000D/FPS); }
 }
