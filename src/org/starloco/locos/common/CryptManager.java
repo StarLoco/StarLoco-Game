@@ -16,71 +16,36 @@ public class CryptManager {
             '8', '9', '-', '_'};
     private final char[] HEX_CHARS = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
 
-    public String cellID_To_Code(int cellID) {
-
-        int char1 = cellID / 64, char2 = cellID % 64;
-        return HASH[char1] + "" + HASH[char2];
+    public static String cellID_To_Code(int cellID) {
+        return HASH[cellID>>6] + "" + HASH[cellID & 0x3F];
     }
 
     public int cellCode_To_ID(String cellCode) {
 
         char char1 = cellCode.charAt(0), char2 = cellCode.charAt(1);
-        int code1 = 0, code2 = 0, a = 0;
+        int code1 = -1, code2 = -1, a = 0;
 
         while (a < HASH.length) {
             if (HASH[a] == char1)
-                code1 = a * 64;
+                code1 = a << 6;
             if (HASH[a] == char2)
                 code2 = a;
+            if(code1 != -1 && code2 != -1)
+                return (code1 + code2);
             a++;
         }
-        return (code1 + code2);
+        throw new IllegalStateException("invalid cellCode passed to cellCode_To_ID");
     }
 
-    public int getIntByHashedValue(char c) {
+    public static int getIntByHashedValue(char c) {
         for (int a = 0; a < HASH.length; a++)
             if (HASH[a] == c)
                 return a;
         return -1;
     }
 
-    public char getHashedValueByInt(int c) {
+    public static char getHashedValueByInt(int c) {
         return HASH[c];
-    }
-
-    public ArrayList<GameCase> parseStartCell(GameMap map, int num) {
-        ArrayList<GameCase> list = null;
-        String infos;
-        if (!map.getPlaces().equalsIgnoreCase("-1")) {
-            infos = map.getPlaces().split("\\|")[num];
-            int a = 0;
-            list = new ArrayList<>();
-            while (a < infos.length()) {
-                GameCase cell = map.getCase((getIntByHashedValue(infos.charAt(a)) << 6) + getIntByHashedValue(infos.charAt(a + 1)));
-                if(cell != null && cell.isWalkable(false, false))
-                    list.add(cell);
-                a = a + 2;
-            }
-        }
-        return list;
-    }
-
-    private List<Integer> cellWalkable(int width, int height){
-        List<Integer> limit = new ArrayList<>();
-        int H = height;
-        int W = (width-1);
-        int val = 0;
-        for (int h = 0; h < H; h++ ){
-            if (h ==0) val = W;
-            else val = (val + (W * 2) + 1);
-            limit.add(val);
-            limit.add((val-W));
-        }
-        for (int w = 1; w < W; w++){
-            limit.add(w);
-            limit.add((((H * (W+1)+((H-1)*W))-1)-w));
-        }
-        return limit;
     }
 
     public String prepareMapDataKey(String key) {
@@ -95,11 +60,11 @@ public class CryptManager {
         return unescape(data.toString());
     }
 
-    private String unescape(String data) {
+    private static String unescape(String data) {
         return StringEscapeUtils.unescapeJava(data);
     }
 
-    public String checksumKey(String data) {
+    public static String checksumKey(String data) {
         int num = 0;
         int num3 = (data.length() - 1);
         int i = 0;
@@ -112,7 +77,7 @@ public class CryptManager {
         return strArray[(num % 16)];
     }
 
-    public String decryptMapData(String mapData, String key) throws UnsupportedEncodingException {
+    public static String decryptMapData(String mapData, String key) throws UnsupportedEncodingException {
         key = prepareKey(key);
         String strsum = checksumKey(key);
         int checksum = Integer.parseInt(strsum, 16) * 2;
@@ -120,7 +85,7 @@ public class CryptManager {
         return mapData;
     }
 
-    public String decypherData(String Data, String Key, int Checksum) {
+    public static String decypherData(String Data, String Key, int Checksum) {
         StringBuilder dataToDecrypt = new StringBuilder();
         int num4 = (Data.length() - 2);
         int i = 0;
@@ -135,7 +100,7 @@ public class CryptManager {
         return unescape(dataToDecrypt.toString());
     }
 
-    public boolean isMapCiphered(String mapData) {
+    public static boolean isMapCiphered(String mapData) {
         int nb = 0;
         for (char a : mapData.toCharArray()) if (Character.isDigit(a)) nb++;
         return (nb > 1000);
@@ -185,7 +150,7 @@ public class CryptManager {
         }
     }
 
-    public String prepareKey(String key) throws UnsupportedEncodingException {
+    public static String prepareKey(String key) throws UnsupportedEncodingException {
         StringBuilder sb = new StringBuilder();
         for(int i = 0; i < key.length(); i += 2)
             sb.append((char) Integer.parseInt(key.substring(i, i + 2), 16));

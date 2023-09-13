@@ -582,7 +582,7 @@ public class ObjectAction {
                             player.send("Im1147");
                             return;
                         }
-                        if (map0.getPlaces().equalsIgnoreCase("|") || map0.getPlaces().isEmpty() || map0.data.noPrisms
+                        if (map0.getPlaces().size() < 2 || map0.data.noPrisms
                                 || area.getId() == 42 || (subArea != null && (subArea.getId() == 9
                                 || subArea.getId() == 95)) || map0.haveMobFix()) {
                             player.send("Im1146");

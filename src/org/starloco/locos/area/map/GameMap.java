@@ -339,8 +339,8 @@ public class GameMap {
         return data.key;
     }
 
-    public String getPlaces() {
-        return data.placesStr;
+    public List<List<Integer>> getPlaces() {
+        return data.places;
     }
 
     public List<GameCase> getCases() {
@@ -587,8 +587,8 @@ public class GameMap {
     }
 
     public boolean isAggroByMob(Player player, int cell) {
-        if (data.placesStr.equalsIgnoreCase("|"))
-            return false;
+        if (data.places.size() < 2) return false;
+
         if (player.getCurMap().data.id != data.id || !player.canAggro())
             return false;
         for (MonsterGroup group : this.mobGroups.values()) {
@@ -880,7 +880,7 @@ public class GameMap {
             SocketManager.GAME_SEND_EXCHANGE_REQUEST_ERROR(player.getGameClient(), 'S');
             return;
         }
-        if (data.placesStr.isEmpty() || data.placesStr.equals("|")) {
+        if (data.places.size() < 2) {
             player.sendMessage(player.getLang().trans("area.map.gamemap.place.empty"));
             return;
         }
@@ -941,7 +941,7 @@ public class GameMap {
 
         int id = 1;
 
-        if (data.placesStr.isEmpty() || data.placesStr.equals("|")) {
+        if (data.places.size() < 2) {
             player.sendMessage(player.getLang().trans("area.map.gamemap.place.empty"));
             return;
         }
@@ -1411,7 +1411,7 @@ public class GameMap {
         InteractiveDoor.check(player, this);
         this.data.onMoveEnd(player);
 
-        if (data.placesStr.equalsIgnoreCase("|"))
+        if (data.places.size() < 2)
             return;
         if (player.getCurMap().getId() != data.id || !player.canAggro())
             return;

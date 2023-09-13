@@ -4203,7 +4203,7 @@ public class GameClient {
                 if (((player.getAlignment() != 0 && (!player.getCurMap().data.noAgro)) || target.getDeshonor() > 0)) {
                     if (!target.isOnline() || target.getFight() != null || target.getCurMap().getId()
                             != this.player.getCurMap().getId() || target.getAlignment() == this.player.getAlignment() || this.player.
-                            getCurMap().getPlaces().equalsIgnoreCase("|") || !target.canAggro() || target.isDead() == 1
+                            getCurMap().getPlaces().size() < 2 || !target.canAggro() || target.isDead() == 1
                             || this.player.getFight() != null || player.isDead() == 1 || player.isGhost() || target.isGhost())
                         return;
 
@@ -4214,7 +4214,7 @@ public class GameClient {
                     return;
                 }
             }
-            if (this.player.getCurMap().getPlaces().equalsIgnoreCase("|")) {
+            if (this.player.getCurMap().getPlaces().size() < 2) {
                 SocketManager.GAME_SEND_DUEL_Y_AWAY(this, this.player.getId());
                 return;
             }
@@ -4361,7 +4361,7 @@ public class GameClient {
 
             if (target == null || !target.isOnline() || target.getFight() != null || target.getCurMap().getId()
                     != this.player.getCurMap().getId() || target.getAlignment() == this.player.getAlignment() || this.player.
-                    getCurMap().getPlaces().equalsIgnoreCase("|") || !target.canAggro() || target.isDead() == 1)
+                    getCurMap().getPlaces().size() < 2 || !target.canAggro() || target.isDead() == 1)
                 return;
 
             Area area = this.player.getCurMap().getArea();
@@ -5023,7 +5023,7 @@ public class GameClient {
             SocketManager.GAME_SEND_Im_PACKET(this.player, "1168;1");
             return;
         }
-        if (map.getPlaces().length() < 5 || SoulStone.isInArenaMap(map.getId()) || map.data.noCollectors) {//La map ne poss?de pas de "places"
+        if (map.getPlaces().size() < 2 || SoulStone.isInArenaMap(map.getId()) || map.data.noCollectors) {//La map ne poss?de pas de "places"
             SocketManager.GAME_SEND_Im_PACKET(this.player, "113");
             return;
         }
