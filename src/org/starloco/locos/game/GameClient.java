@@ -1104,7 +1104,7 @@ public class GameClient {
     private void goToMap(String packet) {
         if (this.player.getGroup() == null)
             return;
-        if (this.player.getGroup().isPlayer() || this.player.getGroup().getId() > 3)
+        if (this.player.getGroup().isPlayer())
             return;
 
         String datas = packet.substring(3);

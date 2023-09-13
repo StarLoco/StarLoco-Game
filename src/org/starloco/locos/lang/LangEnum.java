@@ -43,6 +43,6 @@ public enum  LangEnum {
     }
 
     private static Map<String, Object> loadYAML(String fileName) {
-        return (Map<String, Object>) new Yaml().load(LangEnum.class.getResourceAsStream("/" + fileName));
+        return (Map<String, Object>) new Yaml().load(LangEnum.class.getResourceAsStream("/translations/" + fileName));
     }
 }
