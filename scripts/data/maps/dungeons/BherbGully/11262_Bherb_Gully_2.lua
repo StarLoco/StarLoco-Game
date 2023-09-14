@@ -13,4 +13,4 @@ local map = MapDef(
 map.positions = "eaeGe8fhfjfLf3gJgXg-|bzbAbCb1b5cfcxcHdn"
 map.capabilities = 46
 
-RegisterMapDef(map)
+

@@ -21,4 +21,4 @@ map.onMovementEnd = {
 }
 
 --TODO: IO door for entrance
-RegisterMapDef(map)
+

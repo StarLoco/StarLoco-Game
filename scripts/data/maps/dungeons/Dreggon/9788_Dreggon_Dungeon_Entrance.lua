@@ -114,4 +114,4 @@ map.onMovementEnd = {
     [125] = onPlayerMove
 }
 
-RegisterMapDef(map)
+

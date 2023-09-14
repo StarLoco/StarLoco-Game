@@ -24,4 +24,4 @@ map.onMovementEnd = {
 
 map.zaapCell = 269
 
-RegisterMapDef(map)
+

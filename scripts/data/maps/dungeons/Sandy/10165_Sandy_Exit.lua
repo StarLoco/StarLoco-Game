@@ -16,4 +16,4 @@ map.npcs = {
     [798] = {253, 1}
 }
 
-RegisterMapDef(map)
+

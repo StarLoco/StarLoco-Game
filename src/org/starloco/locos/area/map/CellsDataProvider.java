@@ -315,5 +315,9 @@ public interface CellsDataProvider {
         public Stream<Integer> getOverrides() {
             return overrides.keySet().stream();
         }
+
+        public boolean isEmpty() {
+            return overrides.isEmpty();
+        }
     }
 }

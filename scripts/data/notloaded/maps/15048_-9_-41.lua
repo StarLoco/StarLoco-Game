@@ -19,4 +19,4 @@ map.mobGroupsMaxSize = 4
 
 
 
-RegisterMapDef(map)
+

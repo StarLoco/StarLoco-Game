@@ -7,21 +7,21 @@ local roomInfo = {
     [9572] = {levers={-1, -1, 399,234}, doors={-1, 346, 443, 263}},
     [9573] = {levers={-1, -1, 396, 190}, doors={-1, -1, 440, 219}},
 
-    [9574] = {levers={-1, 242, 396, -1}, doors={51, 273, 425, -1}},
+    [9574] = {levers={-1, 244, 396, -1}, doors={51, 273, 425, -1}},
     [9575] = {levers={-1, 330, 385, -1}, doors={94, 331, 427, 335}},
     [9576] = {levers={-1, 288, 412, 277}, doors={67, 317, 441, 306}},
     [9577] = {levers={-1, 403, 427, 366}, doors={50, 390, 426, 364}},
     [9554] = {levers={-1, -1, 277,402}, doors={138, -1, 431, 306}},
 
-    [9555] = {levers={78, 345, 396, -1}, doors={76, 332, 440, -1}},
-    [9556] = {levers={92, 260, 444, -1}, doors={64, 332, 428, 306}},
+    [9555] = {levers={78, 345, 396, -1}, doors={79, 332, 440, -1}},
+    [9556] = {levers={93, 260, 444, -1}, doors={64, 332, 428, 306}},
     [9557] = {levers={94, 201, 369, 262}, doors={51, 230, 413, 306}},
-    [9558] = {levers={78, -1, 383, 279}, doors={77, 361, 427, 277}},
+    [9558] = {levers={78, -1, 383, 278}, doors={77, 361, 427, 277}},
     [9559] = {levers={66, -1, 428, 190}, doors={65, -1, 427, 277}},
 
     [9560] = {levers={109, 301, -1, -1}, doors={52, 302, 428, -1}},
     [9561] = {levers={79, 288, -1, -1}, doors={80, 317, 441, 306}},
-    [9562] = {levers={96, 260, -1, -1}, doors={52, 303, 429, 320}},
+    [9562] = {levers={96, 260, -1, 276}, doors={52, 303, 429, 320}},
     [9563] = {levers={51, -1, -1, 293}, doors={52, 288, 429, 292}},
     [9565] = {levers={80, -1, -1, 233}, doors={51, -1, 414, 262}},
 
@@ -32,7 +32,6 @@ local roomInfo = {
     [9570] = {levers={50, -1, -1, 247}, doors={51, -1, -1, 306}},
 }
 
-local mazeWidth = 5
 local roomPositions = {
     {9553, 9564, 9571, 9572, 9573},
     {9574, 9575, 9576, 9577, 9554},
@@ -61,20 +60,48 @@ local dofus1LeverBehavior = function(mapID, dir)
     -- Bottom lever opens bottom door of bottom map
     local dstMapID = roomInfo[mapID].neighbors[dir]
     if dstMapID == -1 then
-        JLogF("MinosMaze: dstMapID is -1 for mapID {} and dir {}", mapID, dir)
+        error("MinosMaze: dstMapID is -1 for mapID %d and dir %d", mapID, dir)
         return
     end
 
+    local dstMapID2 = roomInfo[dstMapID].neighbors[dir]
+
     local doorCellID = roomInfo[dstMapID].doors[dir]
     if doorCellID == -1 then
-        JLogF("MinosMaze: doorCellID is -1 for mapID {} and dir {}", dstMapID, dir)
+        error("MinosMaze: doorCellID is -1 for mapID %d and dir %d", dstMapID, dir)
         return
     end
 
     local dstMap = World:map(dstMapID)
     if dstMap:getAnimationState(doorCellID) ~= AnimStates.NOT_READY then return end
-
     dstMap:setAnimationState(doorCellID, AnimStates.READYING)
+
+    local oppositeDir = 1 + ((dir + 1) % 4)
+    if dstMapID2 ~= -1 then
+        local dstMap2 = World:map(dstMapID2)
+        local doorCellID2 = roomInfo[dstMapID2].doors[oppositeDir]
+
+        if doorCellID2== -1 then
+            error("MinosMaze: doorCellID is -1 for mapID %d and dir %d", dstMapID2, dir)
+            return
+        end
+
+
+        if dstMap2:getAnimationState(doorCellID2) ~= AnimStates.NOT_READY then return end
+        dstMap2:setAnimationState(doorCellID2, AnimStates.READYING)
+    end
+
+    World:delayForMs(10000, function()
+        dstMap:setAnimationState(doorCellID, AnimStates.IN_USE)
+
+        if dstMapID2 ~= -1 then
+            local dstMap2 = World:map(dstMapID2)
+            local doorCellID2 = roomInfo[dstMapID2].doors[oppositeDir]
+
+            dstMap2:setAnimationState(doorCellID2, AnimStates.IN_USE)
+        end
+    end)
+
 end
 
 --endregion

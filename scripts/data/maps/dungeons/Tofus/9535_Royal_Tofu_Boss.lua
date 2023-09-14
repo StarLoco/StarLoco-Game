@@ -15,4 +15,4 @@ map.capabilities = 78
 map.mobGroupsCount = 3
 map.mobGroupsMinSize = 8
 
-RegisterMapDef(map)
+

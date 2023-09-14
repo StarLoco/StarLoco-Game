@@ -60,4 +60,4 @@ map.onMovementEnd = {
 
 map:addObject(224, Objects.Well)
 
-RegisterMapDef(map)
+

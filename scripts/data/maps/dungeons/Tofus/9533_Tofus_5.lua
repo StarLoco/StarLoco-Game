@@ -28,4 +28,4 @@ map.allowedMobGrades = {
     {806, 5}
 }
 
-RegisterMapDef(map)
+

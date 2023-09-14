@@ -35,4 +35,4 @@ map.animations = {
 	[125] = AnimatedObjects.SlidingRock,
 }
 
-RegisterMapDef(map)
+

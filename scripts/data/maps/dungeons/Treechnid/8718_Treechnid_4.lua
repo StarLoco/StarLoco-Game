@@ -15,4 +15,4 @@ map.capabilities = 46
 
 -- '1;1;1;1;1;1;0' forbiddens -> capabilities ? Or script ?
 
-RegisterMapDef(map)
+

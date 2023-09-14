@@ -104,4 +104,4 @@ map.allowedMobGrades = {
 
 
 
-RegisterMapDef(map)
+

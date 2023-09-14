@@ -23,7 +23,6 @@ AnimatedObjects.Well = NewAnimation(7519, AnimStates.READY, {
 
 --- Minos Maze doors / levers
 AnimatedObjects.MinosMazeBlueDoor = NewAnimation(6570, AnimStates.NOT_READY, doorSG(600, 600))
---AnimatedObjects.MinosMazeBlueDoor = NewAnimation(6572, AnimStates.NOT_READY, doorSG(600, 600))
 AnimatedObjects.MinosMazeYellowDoor = NewAnimation(6574, AnimStates.NOT_READY, doorSG(600, 600))
 
 AnimatedObjects.MinosMazeBlueSwitch = NewAnimation(7041, AnimStates.READY, {[AnimStates.READY] = {frame=1}, [AnimStates.IN_USE] = {frame=2, duration=600, next=AnimStates.READY}})

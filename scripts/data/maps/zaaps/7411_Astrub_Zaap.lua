@@ -35,4 +35,4 @@ map:addObject(297, Objects.Zaap)
 
 map.zaapCell = 311
 
-RegisterMapDef(map)
+

@@ -820,7 +820,7 @@ public class GameClient {
                         msg = Formulas.translateMsg(msg);
                 if (this.player.getFight() == null) {
                     SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(this.player.getCurMap(), "", this.player.getId(), this.player.getName(), msg);
-                    AuctionManager.getInstance().onPlayerChat(this.player, msg);
+                    // Broken: AuctionManager.getInstance().onPlayerChat(this.player, msg);
                 } else
                     SocketManager.GAME_SEND_cMK_PACKET_TO_FIGHT(this.player.getFight(), 7, "", this.player.getId(), this.player.getName(), msg);
                 break;

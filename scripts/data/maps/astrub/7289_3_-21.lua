@@ -61,4 +61,4 @@ map.onMovementEnd = {
     [229] = tryEntering
 }
 
-RegisterMapDef(map)
+

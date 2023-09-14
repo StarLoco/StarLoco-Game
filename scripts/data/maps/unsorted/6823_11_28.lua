@@ -24,4 +24,4 @@ map.npcs = {
 
 
 
-RegisterMapDef(map)
+

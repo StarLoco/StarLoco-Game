@@ -693,10 +693,13 @@ public class GameMap {
     }
 
     public void sendOverrides(Player player) {
+        if(cellsData.isEmpty()) return;
         SocketManager.GAME_SEND_GDC_PACKET(player, this, true);
     }
 
     public void sendAnimStates(Player player) {
+        if(this.animationStates.isEmpty()) return;
+
         SocketManager.GAME_SEND_GDF_PACKET(player,
             this.animationStates.entrySet()
                 .stream()

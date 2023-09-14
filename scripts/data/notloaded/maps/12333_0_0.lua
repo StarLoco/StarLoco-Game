@@ -17,4 +17,4 @@ map.mobGroupsCount = 5
 
 
 
-RegisterMapDef(map)
+

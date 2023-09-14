@@ -207,5 +207,8 @@ end
 --endregion
 
 
--- Call bossMapId to trigger boss spawn
-bossMapId()
+table.insert(POST_INITS, function()
+    -- Call bossMapId to trigger boss spawn
+    bossMapId()
+end)
+

@@ -41,4 +41,4 @@ map.allowedMobGrades = {
 
 -- '0;0;0;0;0;0;0' forbiddens -> capabilities ? Or script ?
 
-RegisterMapDef(map)
+

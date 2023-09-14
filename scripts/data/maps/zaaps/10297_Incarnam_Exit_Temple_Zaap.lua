@@ -50,4 +50,4 @@ map.onMovementEnd = {
 
 map.zaapCell = 199
 
-RegisterMapDef(map)
+

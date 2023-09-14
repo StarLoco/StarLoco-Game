@@ -18,4 +18,4 @@ map.positions = "bBbNbQb5cecKc_do|eRe7fhfifyfMgdgs"
 
 
 
-RegisterMapDef(map)
+

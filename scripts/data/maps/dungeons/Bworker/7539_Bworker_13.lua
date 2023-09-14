@@ -18,4 +18,4 @@ map.onMovementEnd = {
 }
 --TODO: Check if troolls are here on offi
 
-RegisterMapDef(map)
+

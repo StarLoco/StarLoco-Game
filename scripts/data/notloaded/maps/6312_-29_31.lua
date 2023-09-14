@@ -18,4 +18,4 @@ map.mobGroupsMinSize = 8
 
 
 
-RegisterMapDef(map)
+

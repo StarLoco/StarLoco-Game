@@ -1,5 +1,8 @@
 -- Init script for static data VM
 
+---@type table<fun>
+POST_INITS = {}
+
 -- Load constant data
 requireReload("data/AdminCommands")
 requireReload("data/AdminGroups")
@@ -21,12 +24,20 @@ requireReload("models/InteractiveObjectDef")
 loadPack("data/objects")
 loadPack("data/npcs")
 loadPack("data/notloaded/npcs/untested")
-loadPack("data/npcs")
 loadPack("data/maps")
 loadPack("data/quests")
 loadPack("data/skills")
-
-loadPack("data/dungeons") -- Always load last
+loadPack("data/dungeons") -- Always load after maps
 
 -- Load event handlers
 loadPack("eventhandlers")
+
+
+-- Register Maps to Java
+for _, map in pairs(MAPS) do
+    RegisterMapDef(map)
+end
+
+for _, fn in ipairs(POST_INITS) do
+    fn()
+end

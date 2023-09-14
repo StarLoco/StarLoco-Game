@@ -62,4 +62,4 @@ map.objects = {
 	[252] = onObjectUseResurrect(), -- Phoenix
 }
 
-RegisterMapDef(map)
+

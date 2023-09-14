@@ -24,4 +24,4 @@ map.onMovementEnd = {
 	[457] = moveEndTeleport(908, 51),
 }
 
-RegisterMapDef(map)
+

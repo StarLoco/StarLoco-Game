@@ -19,4 +19,4 @@ map.npcs = {
 }
 -- '1;1;1;1;1;1;0' forbiddens -> capabilities ? Or script ?
 
-RegisterMapDef(map)
+
