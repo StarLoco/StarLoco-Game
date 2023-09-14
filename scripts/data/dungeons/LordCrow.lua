@@ -7,7 +7,7 @@ local downMobId = 819
 local rightMobId = 820
 
 -- TODO: Fix npcPos and down/right cell destinations
-local mapInfos = {
+local mapsInfo = {
     -- -19/-62 (Entrance)
     [9590] = {groupsCells = {166, 169}, npcPos = {205, 1}, down = {9594, 44}, right = {9591, 117}, dialog = 3185},
     -- -18/-62
@@ -47,7 +47,7 @@ local mapInfos = {
 
 ---@type number[]
 local mapIds = {}
-for mapId in pairs(mapInfos) do
+for mapId in pairs(mapsInfo) do
     table.insert(mapIds, mapId)
 end
 
@@ -139,7 +139,7 @@ end
 ---@param losers Fighter[]
 local function onFightEnd(p, isWinner, winners, losers)
     -- Get info for current map
-    local info = mapInfos[p:mapID()]
+    local info = mapsInfo[p:mapID()]
     if not info then return end -- Should not happen
 
     -- Check if it contained one of the mob
@@ -166,7 +166,7 @@ local function onTalkInsideDungeon(npc, p, answer)
     elseif answer == 7655 then p:endDialog()
     elseif answer == 2809 then
         -- Where does Lord Crow hide ?
-        local mapInfo = mapInfos[bossMapId()]
+        local mapInfo = mapsInfo[bossMapId()]
         p:ask(mapInfo.dialog, {7655})
     end
 end
@@ -190,7 +190,7 @@ end
 --endregion
 
 --region Add NPC/Fight events/StaticGroup to Maps
-for k, v in pairs(mapInfos) do
+for k, v in pairs(mapsInfo) do
     local map = MAPS[k]
     if map then
         map.npcs[npcId] = v.npcPos

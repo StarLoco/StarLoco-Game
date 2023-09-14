@@ -58,5 +58,9 @@ SKILLS[114] = function(p, _) p:openZaap() return true end
 SKILLS[179] = function(p, cellId)
     local switchHandler = p:map():def().switches[cellId]
     if not switchHandler then return end
-    switchHandler(md, p)
+    if p:map():getAnimationState(cellId) ~= AnimStates.READY then return end
+
+    if switchHandler(p) then
+        p:map():setAnimationState(cellId, AnimStates.IN_USE)
+    end
 end

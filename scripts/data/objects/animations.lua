@@ -13,7 +13,7 @@ local doorSG = function(inUseDuration, readyingDuration)
 end
 
 ---@field Well Animation
--- Well
+--- Well
 AnimatedObjects.Well = NewAnimation(7519, AnimStates.READY, {
     [AnimStates.READY] = {frame=1},
     [AnimStates.IN_USE] = {frame=2, duration=433, next= AnimStates.NOT_READY},
@@ -21,8 +21,17 @@ AnimatedObjects.Well = NewAnimation(7519, AnimStates.READY, {
     [AnimStates.READYING] = {frame=5, duration=400, next=AnimStates.READY}
 })
 
+--- Minos Maze doors / levers
+AnimatedObjects.MinosMazeBlueDoor = NewAnimation(6570, AnimStates.NOT_READY, doorSG(600, 600))
+--AnimatedObjects.MinosMazeBlueDoor = NewAnimation(6572, AnimStates.NOT_READY, doorSG(600, 600))
+AnimatedObjects.MinosMazeYellowDoor = NewAnimation(6574, AnimStates.NOT_READY, doorSG(600, 600))
+
+AnimatedObjects.MinosMazeBlueSwitch = NewAnimation(7041, AnimStates.READY, {[AnimStates.READY] = {frame=1}, [AnimStates.IN_USE] = {frame=2, duration=600, next=AnimStates.READY}})
+AnimatedObjects.MinosMazeYellowSwitch = NewAnimation(7044, AnimStates.READY, {[AnimStates.READY] = {frame=1}, [AnimStates.IN_USE] = {frame=2, duration=600, next=AnimStates.READY}})
+
+
 --- Sliding rock cave entrance
 AnimatedObjects.SlidingRock = NewAnimation(6550, AnimStates.NOT_READY, doorSG(3700, 4700))
--- Sliding mine cart
+--- Sliding mine cart
 AnimatedObjects.SlidingMineCart = NewAnimation(6553, AnimStates.NOT_READY, doorSG(8050, 666))
 
