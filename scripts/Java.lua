@@ -40,11 +40,21 @@ function RegisterExpTables(players, guilds, jobs, mounts, pvp, livitinems, torme
 ---@param neighbors number[]
 function RegisterSubArea(id, areaId, neighbors) end
 
+---@class CellOverrides
+---@field movement number
+
+---@class KeyFrame
+---@field frame number
+---@field duration number (Optional) in ms
+---@field next string (Optional) Next keyframe
+---@field overrides CellOverrides
+
+
 ---@class Animation Java object holder for animation data. Lua should not need to access it
 
 ---@param id number
 ---@param default string
----@param keyFrames table<string, [number, number, string]>
+---@param keyFrames table<string, KeyFrame>
 ---@return Animation
 function NewAnimation(id, default, keyFrames)  end
 

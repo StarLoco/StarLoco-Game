@@ -14,6 +14,7 @@ import org.starloco.locos.util.Pair;
 
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 // Holds all static data for maps
 public abstract class MapData implements CellsDataProvider {
@@ -29,6 +30,7 @@ public abstract class MapData implements CellsDataProvider {
     public final int mobGroupsMaxCount;
     public final int mobGroupsMinSize;
     public final int mobGroupsMaxSize;
+    public final List<List<Integer>> places;
     public final Map<Integer, Integer> interactiveObjects;
     public final Map<Integer, Animation> animations;
 
@@ -36,15 +38,12 @@ public abstract class MapData implements CellsDataProvider {
     // Eventually, we should split GameCase from CellData, or use neither of those
     public final CellsDataProvider.RawCellsDataProvider cellsData;
     public final List<MonsterGrade> mobPossibles;
-    public final String placesStr;
 
 
-    protected MapData(int id, String date, String key, String data, int width, int height, int x, int y, int subAreaID, boolean noSellers, boolean noCollectors, boolean noPrisms, boolean noTp, boolean noDefy, boolean noAgro, boolean noCanal, int mobGroupsMaxCount, int mobGroupsMinSize, int mobGroupsMaxSize, List<MonsterGrade> mobPossibles, String placesStr, Map<Integer,Animation> animations) {
-        CryptManager cMgr = World.world.getCryptManager();
-
-        if(cMgr.isMapCiphered(data)) {
+    protected MapData(int id, String date, String key, String data, int width, int height, int x, int y, int subAreaID, boolean noSellers, boolean noCollectors, boolean noPrisms, boolean noTp, boolean noDefy, boolean noAgro, boolean noCanal, int mobGroupsMaxCount, int mobGroupsMinSize, int mobGroupsMaxSize, List<MonsterGrade> mobPossibles, List<List<Integer>> places, Map<Integer,Animation> animations) {
+        if(CryptManager.isMapCiphered(data)) {
             try {
-                data = cMgr.decryptMapData(data, key);
+                data = CryptManager.decryptMapData(data, key);
             } catch (Exception e) {
                 throw new RuntimeException("Cannot decipher mapdata #"+id,e);
             }
@@ -52,7 +51,7 @@ public abstract class MapData implements CellsDataProvider {
         // Decode b64
         byte[] dataBytes = new byte[data.length()];
         for (int i = 0; i < data.length(); i++) {
-            dataBytes[i] = (byte) cMgr.getIntByHashedValue(data.charAt(i));
+            dataBytes[i] = (byte) CryptManager.getIntByHashedValue(data.charAt(i));
         }
 
 
@@ -76,7 +75,7 @@ public abstract class MapData implements CellsDataProvider {
         this.mobGroupsMinSize= mobGroupsMinSize;
         this.mobGroupsMaxSize = mobGroupsMaxSize;
         this.mobPossibles = mobPossibles;
-        this.placesStr = placesStr;
+        this.places = places;
 
         if(cellsData.cellCount() != cellCount()) {
             throw new IllegalStateException(String.format("Map #%d_%s: cellsData length doesn't match map cell count", id, date));
@@ -95,7 +94,7 @@ public abstract class MapData implements CellsDataProvider {
     public Area getArea() { return getSubArea().getArea(); }
 
     // TODO: Replace with Pair<List<Integer>,List<Integer>>
-    public String getPlaces() { return placesStr; }
+    public List<List<Integer>> getPlaces() { return places; }
 
     public abstract Map<Integer, Pair<Integer, Integer>> getNPCs();
 
@@ -132,4 +131,25 @@ public abstract class MapData implements CellsDataProvider {
         return cellsData.overrideMask(cellID);
     }
 
+
+    protected static List<List<Integer>> decodePositions(String strPlaces) {
+        return Arrays.stream(strPlaces.split("\\|"))
+            .filter(s -> !s.isEmpty())
+            .map(p -> {
+                if(p.length() %2 != 0) throw new IllegalArgumentException("places length must be pair");
+
+                ArrayList<Integer> teamPlaces = new ArrayList<>(p.length()>>1);
+                for(int i=0; i < p.length(); i+=2) {
+                    teamPlaces.add((CryptManager.getIntByHashedValue(p.charAt(i)) << 6) + CryptManager.getIntByHashedValue(p.charAt(i + 1)));
+                }
+                return Collections.unmodifiableList(teamPlaces);
+            })
+            .collect(Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList));
+    }
+
+    public static String encodePositions(List<List<Integer>> positions) {
+        return positions.stream().map(teamPositions -> teamPositions.stream()
+            .map(CryptManager::cellID_To_Code)
+            .collect(Collectors.joining())).collect(Collectors.joining("|"));
+    }
 }

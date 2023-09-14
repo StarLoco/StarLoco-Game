@@ -14,8 +14,6 @@ import org.starloco.locos.script.ScriptMapper;
 import org.starloco.locos.script.ScriptVM;
 import org.starloco.locos.util.Pair;
 
-import javax.swing.text.html.Option;
-import javax.xml.crypto.Data;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -25,7 +23,7 @@ public class ScriptMapData extends MapData {
     private final Table scriptVal;
     public final Integer zaapCell;
 
-    private ScriptMapData(Table scriptVal, int id, String date, String key, String cellsData, int width, int height, int x, int y, int subAreaID, int capabilities, int mobGroupsMaxCount, List<MonsterGrade> mobPossibles, String placesStr, int mobGroupsMinSize, int mobGroupsMaxSize, Integer zaapCell, Map<Integer, Animation> animations) {
+    private ScriptMapData(Table scriptVal, int id, String date, String key, String cellsData, int width, int height, int x, int y, int subAreaID, int capabilities, int mobGroupsMaxCount, List<MonsterGrade> mobPossibles, List<List<Integer>> places, int mobGroupsMinSize, int mobGroupsMaxSize, Integer zaapCell, Map<Integer, Animation> animations) {
         super(id,
             date,
             key,
@@ -46,7 +44,7 @@ public class ScriptMapData extends MapData {
             mobGroupsMinSize,
             mobGroupsMaxSize,
             mobPossibles,
-            placesStr,
+            places,
             animations);
         this.scriptVal = scriptVal;
         this.zaapCell = zaapCell;
@@ -62,6 +60,11 @@ public class ScriptMapData extends MapData {
             .filter(Objects::nonNull).collect(Collectors.toList());
 
         Integer zaapCell = Optional.ofNullable(val.rawget("zaapCell")).map(o -> (Long)o).map(Long::intValue).orElse(null);
+
+        String positions = val.rawget("positions").toString();
+        if(positions == null) positions = "";
+
+        List<List<Integer>> places = MapData.decodePositions(positions);
 
         Map<Integer, Animation> animations = DataScriptVM.mapFromScript((Table)val.rawget("animations"),
             k -> ((Long)k).intValue(),
@@ -82,7 +85,7 @@ public class ScriptMapData extends MapData {
             rawInt(val, "capabilities"),
             rawInt(val, "mobGroupsCount"),
             allowedMonsters,
-            val.rawget("positions").toString(),
+            places,
             rawInt(val, "mobGroupsMinSize"),
             rawInt(val, "mobGroupsMaxSize"),
             zaapCell,

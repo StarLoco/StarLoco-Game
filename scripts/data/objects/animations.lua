@@ -1,21 +1,28 @@
 -- Layer2 object animations (Find/fix frame indices using o[1-7].swf)
+---@class AnimatedObjects
 AnimatedObjects = {}
 
--- Returns a State Graph for the usual READY/IN USE/NOT_READY/READYING behavior using frame 1,2,3,4
-local basicSG = function(inUseDuration, readyingDuration)
+-- Returns a State Graph for a door/entrance behavior using frame 1,2,3,4
+local doorSG = function(inUseDuration, readyingDuration)
     return {
-        [AnimStates.NOT_READY] = {1},
-        [AnimStates.READYING] = {2, readyingDuration, AnimStates.READY},
-        [AnimStates.READY] = {3},
-        [AnimStates.IN_USE]= {4, inUseDuration, AnimStates.NOT_READY}
+        [AnimStates.NOT_READY] = {frame=1},
+        [AnimStates.READYING] = {frame=2, duration=readyingDuration, next=AnimStates.READY},
+        [AnimStates.READY] = {frame=3, overrides = {movement= 4}},
+        [AnimStates.IN_USE]= {frame=4, duration=inUseDuration, next=AnimStates.NOT_READY}
     }
 end
 
+---@field Well Animation
 -- Well
-AnimatedObjects.Well = NewAnimation(7519, AnimStates.READY, {[AnimStates.READY] = {1, 0}, [AnimStates.IN_USE] = {3, 26, AnimStates.NOT_READY}, [AnimStates.NOT_READY] = {3, 0}, [AnimStates.READYING] = {5, 24, AnimStates.READY} } )
+AnimatedObjects.Well = NewAnimation(7519, AnimStates.READY, {
+    [AnimStates.READY] = {frame=1},
+    [AnimStates.IN_USE] = {frame=2, duration=433, next= AnimStates.NOT_READY},
+    [AnimStates.NOT_READY] = {frame=3},
+    [AnimStates.READYING] = {frame=5, duration=400, next=AnimStates.READY}
+})
 
--- Sliding rock cave entrance
-AnimatedObjects.SlidingRock = NewAnimation(6550, AnimStates.NOT_READY, basicSG(222, 282))
+--- Sliding rock cave entrance
+AnimatedObjects.SlidingRock = NewAnimation(6550, AnimStates.NOT_READY, doorSG(3700, 4700))
 -- Sliding mine cart
-AnimatedObjects.SlidingMineCart = NewAnimation(6553, AnimStates.NOT_READY, basicSG(29, 24))
+AnimatedObjects.SlidingMineCart = NewAnimation(6553, AnimStates.NOT_READY, doorSG(8050, 666))
 

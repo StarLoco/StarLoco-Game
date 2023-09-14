@@ -91,11 +91,13 @@ public class InteractiveDoor {
     }
 
     public static void show(Player player) {
-        InteractiveDoor.interactiveDoors.stream().filter(interactiveDoor -> interactiveDoor.state).forEach(interactiveDoor -> {
-            interactiveDoor.setState(interactiveDoor.cellsEnable, true, false, player);
-            interactiveDoor.setState(interactiveDoor.cellsDisable, false, false, player);
-            interactiveDoor.setState(interactiveDoor.doorsEnable, true, true, player);
-            interactiveDoor.setState(interactiveDoor.doorsDisable, false, true, player);
+        InteractiveDoor.interactiveDoors.stream()
+            .filter(interactiveDoor -> interactiveDoor.state)
+            .forEach(interactiveDoor -> {
+                interactiveDoor.setState(interactiveDoor.cellsEnable, true, false, player);
+                interactiveDoor.setState(interactiveDoor.cellsDisable, false, false, player);
+                interactiveDoor.setState(interactiveDoor.doorsEnable, true, true, player);
+                interactiveDoor.setState(interactiveDoor.doorsDisable, false, true, player);
         });
     }
 

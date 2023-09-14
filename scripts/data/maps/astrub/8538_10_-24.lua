@@ -1,3 +1,5 @@
+require("data/objects/animations")
+
 local map = MapDef(
 	8538,
 	"0706131721",
@@ -23,7 +25,7 @@ map.allowedMobGrades = {
 -- '0;0;0;0;0;0;0' forbiddens -> capabilities ? Or script ?
 
 map.onMovementEnd = {
-	[88]  = openAndCloseAfterMillis(8538, 125, 30000),
+	[88]  = openAndCloseAfterMillis(8538, 125, 25000),
 	[125] = moveEndTeleport(8540, 309),
 	[276] = moveEndTeleport(7486, 303),
 	[454] = moveEndTeleport(8572, 35),

@@ -58,10 +58,6 @@ public class World implements Scripted<SWorld> {
     public final static World world = new World();
 
     public Logger logger = (Logger) LoggerFactory.getLogger(World.class);
-
-    // Single threaded executor to avoid concurrency issues. Will be optimized once we refactor threads
-    public final ScheduledExecutorService eventScheduler = Executors.newSingleThreadScheduledExecutor(r -> new Thread(r, "World"));
-
     private final Map<Integer, Account> accounts = new HashMap<>();
     private final Map<Integer, Player> players = new HashMap<>();
     private final Map<Integer, GameMap> maps = new ConcurrentHashMap<>();
@@ -102,6 +98,7 @@ public class World implements Scripted<SWorld> {
     private final Map<Integer, GameMap> extraMonstreOnMap = new HashMap<>();
     private final Map<Integer, Long> delayCollectors = new HashMap<>();
 
+    // Single threaded executor to avoid concurrency issues. Will be optimized once we refactor threads
     public final ScheduledThreadPoolExecutor scheduler = new ScheduledThreadPoolExecutor(1);
 
     public World() {
@@ -1779,6 +1776,9 @@ public class World implements Scripted<SWorld> {
             this.first = s;
             this.second = i;
         }
+
+        public L getFirst() { return first; }
+        public R getSecond() { return second; }
     }
 
 }

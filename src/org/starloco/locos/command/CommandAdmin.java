@@ -3060,38 +3060,17 @@ public class CommandAdmin extends AdminUser {
         } /**/ else if (command.equalsIgnoreCase("SHOWFIGHTPOS")) {
             String mess = "Liste des StartCell [teamID][cellID]:";
             this.sendMessage(mess);
-            String places = this.getPlayer().getCurMap().getPlaces();
-            if (places.indexOf('|') == -1 || places.length() < 2) {
+            List<List<Integer>> places = this.getPlayer().getCurMap().getPlaces();
+            if (places.isEmpty()) {
                 mess = "Les places n'ont pas ete definies";
                 this.sendMessage(mess);
                 return;
             }
-            String team0 = "", team1 = "";
-            String[] p = places.split("\\|");
-            try {
-                team0 = p[0];
-            } catch (Exception e) {
-                // ok
-            }
 
-            try {
-                team1 = p[1];
-            } catch (Exception e) {
-                // ok
+            for(int i=0; i < places.size(); i++) {
+                mess = "Team " + i + " : " + places.get(i).stream().map(String::valueOf).collect(Collectors.joining(","));
+                this.sendMessage(mess);
             }
-
-            mess = "Team 0 : ";
-            for (int a = 0; a <= team0.length() - 2; a += 2) {
-                String code = team0.substring(a, a + 2);
-                mess += World.world.getCryptManager().cellCode_To_ID(code) + ",";
-            }
-            this.sendMessage(mess);
-            mess = "Team 1 : ";
-            for (int a = 0; a <= team1.length() - 2; a += 2) {
-                String code = team1.substring(a, a + 2);
-                mess += World.world.getCryptManager().cellCode_To_ID(code) + ",";
-            }
-            this.sendMessage(mess);
         } else if (command.equalsIgnoreCase("FINDEXTRAMONSTER")) {
             java.util.Map<Integer, java.util.Map<String, java.util.Map<String, Integer>>> extras = World.world.getExtraMonsters();
 

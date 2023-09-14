@@ -1,7 +1,9 @@
 package org.starloco.locos.common;
 
+import org.starloco.locos.area.map.CellsDataProvider;
 import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.area.map.GameMap;
+import org.starloco.locos.area.map.MapData;
 import org.starloco.locos.area.map.entity.InteractiveObject;
 import org.starloco.locos.area.map.entity.MountPark;
 import org.starloco.locos.area.map.entity.Trunk;
@@ -28,10 +30,12 @@ import org.starloco.locos.object.ObjectSet;
 import org.starloco.locos.object.ObjectTemplate;
 import org.starloco.locos.guild.Guild;
 import org.starloco.locos.guild.GuildMember;
+import org.starloco.locos.util.Pair;
 
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class SocketManager {
 
@@ -350,9 +354,10 @@ public class SocketManager {
         }
     }
 
-    public static void GAME_SEND_FIGHT_PLACES_PACKET_TO_FIGHT(Fight fight,
-                                                              int teams, String places, int team) {
-        String packet = "GP" + places + "|" + team;
+    public static void GAME_SEND_FIGHT_PLACES_PACKET_TO_FIGHT(Fight fight, int teams, List<List<Integer>> positions, int team) {
+        if(positions.size() != 2) throw new IllegalStateException("attempted to send invalid number of fight positions");
+
+        String packet = "GP" + MapData.encodePositions(positions) + "|" + team;
         for (Fighter f : fight.getFighters(teams)) {
             if (f.hasLeft())
                 continue;
@@ -559,8 +564,10 @@ public class SocketManager {
     }
 
     public static void GAME_SEND_FIGHT_PLACES_PACKET(GameClient out,
-                                                     String places, int team) {
-        String packet = "GP" + places + "|" + team;
+                                                     List<List<Integer>> positions, int team) {
+        if(positions.size() != 2) throw new IllegalStateException("attempted to send invalid number of fight positions");
+
+        String packet = "GP" + MapData.encodePositions(positions) + "|" + team;
 
         send(out, packet);
     }
@@ -1334,6 +1341,29 @@ public class SocketManager {
         send(perso, packet);
     }
 
+    public static void GAME_SEND_GDC_PACKET_TO_MAP(GameMap map, int cellID, boolean permanentLevel) {
+        String cellData = map.cellsData.encodeCellData(cellID);
+        String hexMask = Integer.toHexString(map.cellsData.overrideMask(cellID));
+
+        String packet = "GDC"+cellID+";"+cellData+hexMask+";"+(permanentLevel?"1":"0");
+        sendPacketToMap(map, packet);
+    }
+
+
+    public static void GAME_SEND_GDC_PACKET(Player player, GameMap map, boolean permanentLevel) {
+        String level = permanentLevel?"1":"0";
+
+        CellsDataProvider.CellsDataOverride ov = map.cellsData;
+
+        String packet = "GDC" + ov.getOverrides().map(cellID -> {
+            String cellData = ov.encodeCellData(cellID);
+            String hexMask = Integer.toHexString(ov.overrideMask(cellID));
+
+            return cellID+";"+cellData+hexMask+";"+level;
+        }).collect(Collectors.joining("|"));
+        send(player, packet);
+    }
+
     public static void GAME_SEND_GDF_PACKET_TO_MAP(GameMap map, int cellID, InteractiveObject object) {
         GAME_SEND_GDF_PACKET_TO_MAP(map, cellID, object.getState(), object.isInteractive());
     }
@@ -1341,6 +1371,11 @@ public class SocketManager {
     public static void GAME_SEND_GDF_PACKET_TO_MAP(GameMap map, int cellID, int state) {
         String packet = "GDF|" + cellID + ";" + state;
         map.getPlayers().forEach(p -> send(p, packet));
+    }
+
+    public static void GAME_SEND_GDF_PACKET(Player player, Stream<Pair<Integer, Integer>> cellStates) {
+        String packet = "GDF" + cellStates.map(p -> "|"+p.first+";"+p.second).collect(Collectors.joining());
+        send(player, packet);
     }
 
     public static void GAME_SEND_GDF_PACKET_TO_MAP(GameMap map, int cellID, int state, boolean isInteractive) {
@@ -2140,16 +2175,6 @@ public class SocketManager {
 
     public static void GAME_SEND_ACTION_TO_DOOR(Player p, int args, boolean open) {
         send(p, "GDF|" + args + ";" + (open ? "2" : "4"));
-    }
-
-    public static void GAME_UPDATE_CELL(GameMap map, String args) {
-        String packet = "GDC" + args;
-        for (Player z : map.getPlayers())
-            send(z, packet);
-    }
-
-    public static void GAME_UPDATE_CELL(Player p, String args) {
-        send(p, "GDC" + args);
     }
 
     public static void sendPacketToMap(GameMap map, String packet) {

@@ -17,4 +17,6 @@ public class Animation {
         this.defaultState = defaultState;
         this.frames = Collections.unmodifiableMap(frames);
     }
+
+    public KeyFrame getFrame(String name) { return this.frames.get(name); }
 }

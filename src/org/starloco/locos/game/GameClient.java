@@ -4043,10 +4043,6 @@ public class GameClient {
                 GA.tp = true;
             }
             if (result == 0) {
-                if(this.player.getCurCell().getId() != targetCell.getId()) {
-                    // Player is probably trying to use an object
-                    this.player.getCurMap().onPlayerUseObject(this.player, targetCell.getId(), 0);
-                }
                 SocketManager.GAME_SEND_GA_PACKET(this, "", "0", "", "");
                 removeAction(GA);
                 return;
@@ -4079,10 +4075,7 @@ public class GameClient {
                 SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(this.player.getCurMap(), this.player.getId());
                 SocketManager.GAME_SEND_ADD_PLAYER_TO_MAP(this.player.getCurMap(), this.player);
                 this.player.getCurMap().onPlayerArriveOnCell(this.player, this.player.getCurCell().getId());
-                if(nextCell.getId() != targetCell.getId()) {
-                    // Player is probably trying to use an object
-                    this.player.getCurMap().onPlayerUseObject(this.player, targetCell.getId(), 0);
-                }
+
                 SocketManager.GAME_SEND_GA_PACKET(this, "", "0", "", "");
                 this.player.refreshCraftSecure(true);
                 removeAction(GA);
@@ -4197,7 +4190,7 @@ public class GameClient {
                 if (((player.getAlignment() != 0 && (!player.getCurMap().data.noAgro)) || target.getDeshonor() > 0)) {
                     if (!target.isOnline() || target.getFight() != null || target.getCurMap().getId()
                             != this.player.getCurMap().getId() || target.getAlignment() == this.player.getAlignment() || this.player.
-                            getCurMap().getPlaces().equalsIgnoreCase("|") || !target.canAggro() || target.isDead() == 1
+                            getCurMap().getPlaces().size() < 2 || !target.canAggro() || target.isDead() == 1
                             || this.player.getFight() != null || player.isDead() == 1 || player.isGhost() || target.isGhost())
                         return;
 
@@ -4208,7 +4201,7 @@ public class GameClient {
                     return;
                 }
             }
-            if (this.player.getCurMap().getPlaces().equalsIgnoreCase("|")) {
+            if (this.player.getCurMap().getPlaces().size() < 2) {
                 SocketManager.GAME_SEND_DUEL_Y_AWAY(this, this.player.getId());
                 return;
             }
@@ -4355,7 +4348,7 @@ public class GameClient {
 
             if (target == null || !target.isOnline() || target.getFight() != null || target.getCurMap().getId()
                     != this.player.getCurMap().getId() || target.getAlignment() == this.player.getAlignment() || this.player.
-                    getCurMap().getPlaces().equalsIgnoreCase("|") || !target.canAggro() || target.isDead() == 1)
+                    getCurMap().getPlaces().size() < 2 || !target.canAggro() || target.isDead() == 1)
                 return;
 
             Area area = this.player.getCurMap().getArea();
@@ -4539,8 +4532,10 @@ public class GameClient {
 
             //items au sol
             this.player.getCurMap().sendFloorItems(this.player);
-            //Porte int?ractif
-            InteractiveDoor.show(this.player);
+            // Cell overrides
+            this.player.getCurMap().sendOverrides(this.player);
+            // Anim states
+            this.player.getCurMap().sendAnimStates(this.player);
 
             AuctionManager.getInstance().onPlayerLoadMap(player);
             World.world.showPrismes(this.player);
@@ -4596,10 +4591,6 @@ public class GameClient {
                             this.player.setAway(false);
                         this.player.getCurMap().onPlayerArriveOnCell(this.player, this.player.getCurCell().getId());
 
-                        if(nextCell.getId() != targetCell.getId()) {
-                            // Player is probably trying to use an object
-                            this.player.getCurMap().onPlayerUseObject(this.player, targetCell.getId(), 0);
-                        }
 
                         if (GA.tp) {
                             GA.tp = false;
@@ -5014,7 +5005,7 @@ public class GameClient {
             SocketManager.GAME_SEND_Im_PACKET(this.player, "1168;1");
             return;
         }
-        if (map.getPlaces().length() < 5 || SoulStone.isInArenaMap(map.getId()) || map.data.noCollectors) {//La map ne poss?de pas de "places"
+        if (map.getPlaces().size() < 2 || SoulStone.isInArenaMap(map.getId()) || map.data.noCollectors) {//La map ne poss?de pas de "places"
             SocketManager.GAME_SEND_Im_PACKET(this.player, "113");
             return;
         }

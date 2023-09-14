@@ -349,8 +349,8 @@ public class GameMap {
         return data.key;
     }
 
-    public String getPlaces() {
-        return data.placesStr;
+    public List<List<Integer>> getPlaces() {
+        return data.places;
     }
 
     public List<GameCase> getCases() {
@@ -597,8 +597,8 @@ public class GameMap {
     }
 
     public boolean isAggroByMob(Player player, int cell) {
-        if (data.placesStr.equalsIgnoreCase("|"))
-            return false;
+        if (data.places.size() < 2) return false;
+
         if (player.getCurMap().data.id != data.id || !player.canAggro())
             return false;
         for (MonsterGroup group : this.mobGroups.values()) {
@@ -637,8 +637,13 @@ public class GameMap {
         return animationStates.getOrDefault(cellId, anim.defaultState);
     }
 
-    public void setAnimationState(int cellId, String frameName) {
+    public void setAnimationState(int cellId, String frameName, Runnable cb) {
         Animation anim = Objects.requireNonNull(data.animations.get(cellId));
+        String previousStateName = this.animationStates.get(cellId);
+
+        if(frameName.equals(previousStateName)) return;
+
+        KeyFrame previousState = Optional.ofNullable(previousStateName).map(anim::getFrame).orElse(null);
 
         // Deal with default state
         KeyFrame frame;
@@ -650,15 +655,53 @@ public class GameMap {
             frame = anim.frames.get(frameName);
         }
 
-        if(frame.hasDuration()) {
-            // Start timer
-            World.world.eventScheduler.schedule(() -> {
-                this.setAnimationState(cellId, frame.nextFrame);
-            }, frame.durationMillis(), TimeUnit.MILLISECONDS);
+        // Remove overrides from previous state
+        boolean overridesChanged = Optional.ofNullable(previousStateName)
+            .map(anim::getFrame)
+            .map(KeyFrame::getCellOverrides)
+            .map(o -> cellsData.removeOverrides(cellId, o)).orElse(false);
+
+        // Add overrides for new state
+        overridesChanged |= cellsData.applyOverrides(cellId, frame.getCellOverrides());
+
+        // ALWAYS send GDC first
+        if(overridesChanged) {
+            SocketManager.GAME_SEND_GDC_PACKET_TO_MAP(this, cellId, true);
         }
 
-        // Send packet
+        // Official servers don't send GDF after automated state transition (Opening -> Opened)
+        // This prevents them from change cell states after starting an animation.
+        // For now, we just send that extra GDF to give us more possibilities.
+        // It's usually invisible to the user.
+        // If it becomes an issue, we can update the code to send GDC and GDF together
         SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(this, cellId, frame.frame);
+
+
+        if(frame.hasDuration()) {
+            // Start timer
+            World.world.scheduler.schedule(() -> {
+                this.setAnimationState(cellId, frame.nextFrame, null);
+                if(cb != null) { cb.run(); }
+            }, frame.durationMillis(), TimeUnit.MILLISECONDS);
+        } else if(cb != null) {
+            cb.run();
+        }
+    }
+
+    public void setAnimationState(int cellId, String frameName) {
+        setAnimationState(cellId, frameName, null);
+    }
+
+    public void sendOverrides(Player player) {
+        SocketManager.GAME_SEND_GDC_PACKET(player, this, true);
+    }
+
+    public void sendAnimStates(Player player) {
+        SocketManager.GAME_SEND_GDF_PACKET(player,
+            this.animationStates.entrySet()
+                .stream()
+                .map(e -> new Pair<>(e.getKey(), data.animations.get(e.getKey()).frames.get(e.getValue()).frame))
+        );
     }
 
     private static class RespawnGroup {
@@ -923,7 +966,7 @@ public class GameMap {
             SocketManager.GAME_SEND_EXCHANGE_REQUEST_ERROR(player.getGameClient(), 'S');
             return;
         }
-        if (data.placesStr.isEmpty() || data.placesStr.equals("|")) {
+        if (data.places.size() < 2) {
             player.sendMessage(player.getLang().trans("area.map.gamemap.place.empty"));
             return;
         }
@@ -984,7 +1027,7 @@ public class GameMap {
 
         int id = 1;
 
-        if (data.placesStr.isEmpty() || data.placesStr.equals("|")) {
+        if (data.places.size() < 2) {
             player.sendMessage(player.getLang().trans("area.map.gamemap.place.empty"));
             return;
         }
@@ -1458,7 +1501,7 @@ public class GameMap {
         InteractiveDoor.check(player, this);
         this.data.onMoveEnd(player);
 
-        if (data.placesStr.equalsIgnoreCase("|"))
+        if (data.places.size() < 2)
             return;
         if (player.getCurMap().getId() != data.id || !player.canAggro())
             return;
