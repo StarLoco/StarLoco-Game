@@ -69,8 +69,8 @@ public class GameCase {
     }
 
     private boolean _isWalkable(boolean inFight) {
-        if(!map.data.active(cellId)) return false;
-        switch (map.data.movement(cellId)) {
+        if(!map.cellsData.active(cellId)) return false;
+        switch (map.cellsData.movement(cellId)) {
             case 0:
                 return false;
             case 1:

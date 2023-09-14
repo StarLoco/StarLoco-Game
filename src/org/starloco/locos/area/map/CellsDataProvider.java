@@ -157,7 +157,7 @@ public interface CellsDataProvider {
     class CellsDataOverride implements CellsDataProvider {
         private final RawCellsDataProvider base;
 
-        // K: cellID, V: [newCellData, modMask]
+        // K: cellID, V: [overrides, modMask]
         private final HashMap<Integer, long[]> overrides = new HashMap<>();
 
         public CellsDataOverride(RawCellsDataProvider base) {
@@ -170,8 +170,13 @@ public interface CellsDataProvider {
         @Override
         public long cellData(int cellID) {
             long[] override = overrides.get(cellID);
-            if(override == null) return base.cellData(cellID);
-            return override[0];
+            long data = base.cellData(cellID);
+            // We have an override
+            if(override != null && override[1] != 0) {
+                data &= ~ override[1];
+                data |= override[0];
+            }
+            return data;
         }
 
         @Override
