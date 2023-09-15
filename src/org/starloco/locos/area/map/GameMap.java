@@ -150,7 +150,7 @@ public class GameMap {
     private List<Fight> fights = new ArrayList<>();
 
     // Make those private once GameCase is gone
-    ConcurrentHashMap<Integer, List<Actor>> actors = new ConcurrentHashMap<>();
+    ConcurrentHashMap<Integer, Set<Actor>> actors = new ConcurrentHashMap<>();
     ConcurrentHashMap<Integer, GameObject> droppedItems = new ConcurrentHashMap<>();
 
     Map<Integer, InteractiveObject> interactiveObjects;
