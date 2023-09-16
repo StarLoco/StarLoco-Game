@@ -470,6 +470,14 @@ public class SPlayer extends DefaultUserdata<Player> {
         p.addItem(itemID, quantity, isPerfect, true);
         return true;
     }
+
+    @SuppressWarnings("unused")
+    private static void showReceivedItem(Player p, ArgumentIterator args) {
+        int actorID = args.nextInt();
+        int quantity = args.nextInt();
+
+        p.showReceivedItem(actorID, quantity);
+    }
     //endregion
 
     //region Jobs

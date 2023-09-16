@@ -1,11 +1,13 @@
 -- Make sure animations are loaded first
 require("data/objects/animations")
+require("data/objects/animations_jobs")
+
 
 Objects = {}
 
 Objects.Ash = RegisterIODef(1, ResourceObjectType, {6})
 Objects.Saw = RegisterIODef(2, JobToolsObjectType, {101})
-Objects.Oak = RegisterIODef(8, ResourceObjectType, {10})
+Objects.Oak = RegisterIODef(8, ResourceObjectType, {10}, AnimatedObjects.Tree_Oak)
 Objects.FabricationTable = RegisterIODef(11, JobToolsObjectType, {13,14})
 Objects.Workshop = RegisterIODef(12, JobToolsObjectType, {11,12})
 Objects.Bench = RegisterIODef(13, JobToolsObjectType, {148,147,149,16,17,15})

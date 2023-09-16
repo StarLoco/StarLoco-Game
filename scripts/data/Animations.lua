@@ -1,3 +1,6 @@
+-- Layer2 object animations (Find/fix frame indices using o[1-7].swf)
+---@class AnimatedObjects
+AnimatedObjects = {}
 
 ---@class AnimStates
 ---@field READY string Ready/ Open

@@ -13,6 +13,7 @@ import org.starloco.locos.entity.monster.MobGroupDef;
 import org.starloco.locos.entity.monster.MonsterGrade;
 import org.starloco.locos.entity.monster.MonsterGroup;
 import org.starloco.locos.entity.npc.Npc;
+import org.starloco.locos.script.DataScriptVM;
 import org.starloco.locos.script.ScriptVM;
 import org.starloco.locos.script.types.MetaTables;
 
@@ -95,7 +96,10 @@ public class SMap extends DefaultUserdata<GameMap> {
     private static void setAnimationState(GameMap m, ArgumentIterator args) {
         int cellId = args.nextInt();
         String animName = args.nextString().toString();
+        Runnable r = Optional.ofNullable(args.nextOptionalFunction(null))
+            .map(fn -> (Runnable)(() -> DataScriptVM.getInstance().call(fn)))
+            .orElse(null);
 
-        m.setAnimationState(cellId, animName);
+        m.setAnimationState(cellId, animName, r);
     }
 }

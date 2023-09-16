@@ -252,6 +252,10 @@ function Player:startScenario(id, date, onEnd) end
 ---@param date string
 function Player:openDocument(id, date) end
 
+---@param actorID number
+---@param quantity number
+function Player:showReceivedItem(actorID, quantity) end
+
 --endregion
 
 ---@class MobGroupDef table<number, table<number,number[]>[]>
@@ -266,6 +270,10 @@ function Item:guid() end
 --- Returns the template id
 ---@return number
 function Item:id() end
+
+--- Returns the template type id
+---@return number
+function Item:type() end
 
 ---@param stat number
 ---@param val string
@@ -353,7 +361,8 @@ function Map:getAnimationState(cellId) end
 --- setAnimationState sets a cell animation state
 ---@param cellId number
 ---@param name string
-function Map:setAnimationState(cellId, name) end
+---@param cb function() (optional)
+function Map:setAnimationState(cellId, name, cb) end
 
 --- setCellData sets a cell data override field
 ---@param cellId number
@@ -365,7 +374,6 @@ function Map:setCellData(cellId, field, val) end
 ---@param cellId number
 ---@param field string
 function Map:resetCellData(cellId, field) end
-
 
 -- SubArea
 ---@class SubArea

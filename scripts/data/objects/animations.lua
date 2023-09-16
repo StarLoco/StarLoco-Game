@@ -1,7 +1,3 @@
--- Layer2 object animations (Find/fix frame indices using o[1-7].swf)
----@class AnimatedObjects
-AnimatedObjects = {}
-
 -- Returns a State Graph for a door/entrance behavior using frame 1,2,3,4
 local doorSG = function(inUseDuration, readyingDuration)
     return {

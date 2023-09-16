@@ -1331,8 +1331,8 @@ public class SocketManager {
         send(out, packet.toString());
     }
 
-    public static void GAME_SEND_IQ_PACKET(Player perso, int guid, int qua) {
-        String packet = "IQ" + guid + "|" + qua;
+    public static void GAME_SEND_IQ_PACKET(Player perso, int actorID, int qua) {
+        String packet = "IQ" + actorID + "|" + qua;
         send(perso, packet);
     }
 

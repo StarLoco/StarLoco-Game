@@ -1404,6 +1404,10 @@ public class Player implements Scripted<SPlayer>, Actor {
         SocketManager.GAME_SEND_DOCUMENT_CREATE_PACKET(getGameClient(), id, date);
     }
 
+    public void showReceivedItem(int actorID, int quantity) {
+        SocketManager.GAME_SEND_IQ_PACKET(this, actorID, quantity);
+    }
+
     public static class EnsureSpellLevelResult {
         public final boolean changed;
         public final int ptsDelta, oldLevel;

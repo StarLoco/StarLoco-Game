@@ -670,7 +670,7 @@ public class GameMap {
         }
 
         // Official servers don't send GDF after automated state transition (Opening -> Opened)
-        // This prevents them from change cell states after starting an animation.
+        // This prevents them from changing cell states after starting an animation.
         // For now, we just send that extra GDF to give us more possibilities.
         // It's usually invisible to the user.
         // If it becomes an issue, we can update the code to send GDC and GDF together

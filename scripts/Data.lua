@@ -13,6 +13,7 @@ requireReload("data/InteractiveObjects")
 requireReload("data/Jobs")
 requireReload("data/ObjectiveTypes")
 requireReload("data/AnimationStates")
+requireReload("data/Skills")
 
 -- Define classes
 requireReload("models/NPC")

@@ -45,7 +45,14 @@ end
 ---@field itemID:number (0 for kamas)
 ---@field quantity:number
 ItemStack = {}
-
+setmetatable(ItemStack, {
+    __call = function(cls, itemID, quantity)
+        local self = {}
+        self.itemID = itemID
+        self.quantity = quantity or 1
+        return self
+    end
+})
 -- Helper for sorting stacks
 ---@param other ItemStack
 ---@return boolean self < other
