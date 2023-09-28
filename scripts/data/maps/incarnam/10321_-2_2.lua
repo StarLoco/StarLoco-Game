@@ -12,8 +12,8 @@ local map = MapDef(
 
 map.positions = "fbfpfqfEfFfT|e0"
 map.capabilities = 111
-map.mobGroupsCount = 3
-map.mobGroupsMaxSize = 5
+map.mobGroupsCount = 0
+map.mobGroupsMaxSize = 1
 map.npcs = {
 	[876] = {277, 1},
 }
@@ -21,6 +21,14 @@ map.npcs = {
 
 map.onMovementEnd = {
 	[334] = moveEndTeleport(10273, 376),
+}
+
+local mobGroup =  {
+	{2785, {1} }
+}
+
+map.staticGroups = {
+	{308, mobGroup}
 }
 
 RegisterMapDef(map)
