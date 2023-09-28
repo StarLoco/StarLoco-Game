@@ -1,5 +1,6 @@
 package org.starloco.locos.client;
 
+import org.starloco.locos.area.Area;
 import org.starloco.locos.area.SubArea;
 import org.starloco.locos.area.map.Actor;
 import org.starloco.locos.area.map.GameCase;
@@ -70,6 +71,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static org.starloco.locos.kernel.Constant.INCARNAM_SUPERAREA;
 
 public class Player implements Scripted<SPlayer>, Actor {
     private final SPlayer scriptVal;
@@ -4856,11 +4859,25 @@ public class Player implements Scripted<SPlayer>, Actor {
         setSpeed(-40);
         this.regenRate = 0;
         SocketManager.send(this, "AR6bk");
-        SubArea subArea = this.getCurMap().getSubArea();
-        if (subArea != null) {
-            Constant.tpCim(subArea.getArea().getId(), this);
-            SocketManager.send(this, "IH" + (subArea.getArea().getSuperArea() == 3 ? "1;5" : Constant.ALL_PHOENIX));
+
+        Optional<SubArea> subArea = Optional.ofNullable(this.getCurMap()).map(GameMap::getSubArea);
+        if (!subArea.isPresent()) {
+            return;
         }
+
+        Constant.tpCim(this);
+
+        // TODO: Refactor that mess
+        String phoenixList = subArea
+            .map(SubArea::getArea)
+            .map(Area::getSuperArea)
+            .map(superArea -> {
+                if(superArea == INCARNAM_SUPERAREA) {
+                    return "1;5";
+                }
+                return null;
+            }).orElse(Constant.ALL_PHOENIX);
+        SocketManager.send(this, "IH" + phoenixList);
     }
 
     public void setAlive() {
