@@ -4865,8 +4865,6 @@ public class Player implements Scripted<SPlayer>, Actor {
             return;
         }
 
-        Constant.tpCim(this);
-
         // TODO: Refactor that mess
         String phoenixList = subArea
             .map(SubArea::getArea)
@@ -4878,6 +4876,8 @@ public class Player implements Scripted<SPlayer>, Actor {
                 return null;
             }).orElse(Constant.ALL_PHOENIX);
         SocketManager.send(this, "IH" + phoenixList);
+
+        Constant.tpCim(this);
     }
 
     public void setAlive() {
