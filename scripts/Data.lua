@@ -3,6 +3,7 @@
 -- Load constant data
 requireReload("./data/AdminCommands")
 requireReload("./data/AdminGroups")
+requireReload("./data/Breed")
 requireReload("./data/Experience")
 requireReload("./data/FightTypes")
 requireReload("./data/GearSlots")
