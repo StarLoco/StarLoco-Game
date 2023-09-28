@@ -12,7 +12,7 @@ requireReload("data/GearSlots")
 requireReload("data/InteractiveObjects")
 requireReload("data/Jobs")
 requireReload("data/ObjectiveTypes")
-requireReload("data/AnimationStates")
+requireReload("data/Animations")
 requireReload("data/Skills")
 
 -- Define classes

@@ -35,7 +35,6 @@ table.ifind = function(t, fn)
     end
 end
 
-
 function requireReload(path)
     package.loaded[path] = nil
     require(path)
