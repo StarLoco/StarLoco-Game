@@ -16,7 +16,6 @@ requireReload("./models/Quest")
 
 -- Load instances
 loadPack("./data/npcs")
-loadPack("./data/notloaded/npcs/untested")
 loadPack("./data/maps")
 loadPack("./data/quests")
 
