@@ -1474,7 +1474,7 @@ public class Fight {
                                                     }
                                                 } else {
                                                     if (player.isOnline()) {
-                                                        player.warpToSavePos();
+                                                        player.teleport(player.getSavePosition());
                                                     } else {
                                                         player.setNeededEndFightAction(this, new Action(1001, player.getSavePosition().toString(","), ""));
                                                     }

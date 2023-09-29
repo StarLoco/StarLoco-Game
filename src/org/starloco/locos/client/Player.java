@@ -553,18 +553,16 @@ public class Player implements Scripted<SPlayer>, Actor {
             return null;
         if (sexe < 0 || sexe > 1)
             return null;
-
-        int startMapID = Config.startMap > 0 ? (short) Config.startMap : Constant.getStartMap(classe);
-        int startCellID = Config.startCell > 0 ? (short) Config.startCell : Constant.getStartCell(classe);
-
         Player player = new Player(-1, name, -1, sexe, classe, color1, color2, color3, Config.startKamas, ((Config.startLevel - 1)), ((Config.startLevel - 1) * 5), 10000, Config.startLevel,
                 World.world.getExperiences().players.minXpAt(Config.startLevel), 100, Integer.parseInt(classe
                 + "" + sexe), (byte) 0, compte.getId(), new HashMap<>(), (byte) 1, (byte) 0, (byte) 0, "*#%!pi$:?",
-                (short)startMapID,
-                startCellID,
-                "", "", 100, Constant.getStartSorts(classe), Constant.getStartSortsPlaces(classe),
-                String.format("%d,%d", startMapID, startCellID),
-                "", 0, -1, 0, 0, 0, z, (byte) 0, 0, "0;0", "", (Config.allEmotes ? "0;1;2;3;4;5;6;7;8;9;10;11;12;13;14;15;16;17;18;19;20;21" : "0"), 0, true, "118,0;119,0;123,0;124,0;125,0;126,0", 0, false, "0,0,0,0", (byte) 0, 0);
+                (Config.startMap > 0 ? (short) Config.startMap : Constant.getStartMap(classe)),
+                (Config.startCell > 0 ? (short) Config.startCell : Constant.getStartCell(classe)),
+                //(short)6824,
+                //224,
+                "", "", 100, Constant.getStartSorts(classe), Constant.getStartSortsPlaces(classe), (Config.startMap != 0 ? (short) Config.startMap : Constant.getStartMap(classe))
+                + ","
+                + (Config.startCell > 0 ? (short) Config.startCell : Constant.getStartCell(classe)), "", 0, -1, 0, 0, 0, z, (byte) 0, 0, "0;0", "", (Config.allEmotes ? "0;1;2;3;4;5;6;7;8;9;10;11;12;13;14;15;16;17;18;19;20;21" : "0"), 0, true, "118,0;119,0;123,0;124,0;125,0;126,0", 0, false, "0,0,0,0", (byte) 0, 0);
 
         player.emotes.add(0);
         player.emotes.add(1);
@@ -573,12 +571,26 @@ public class Player implements Scripted<SPlayer>, Actor {
 
         if (!((PlayerData) DatabaseManager.get(PlayerData.class)).insert(player))
             return null;
+        if(Config.startMap != 0)
+            player.setSavePos(7411,311);
 
         SocketManager.GAME_SEND_WELCOME(player);
         World.world.sendMessageToAll("client.player.onjoingame.welcome", player.getName());
 
         World.world.addPlayer(player);
 
+        TimerWaiter.addNext(() -> {
+            for (ObjectTemplate template : World.world.getItemSet(5).getItemTemplates()){
+                if(template != null) {
+                    GameObject object = template.createNewItem(1, false);
+                    if(object != null) {
+                        if(player.addItem(object, true, false))
+                            World.world.addGameObject(object);
+                        player.send("Im021;1~" + template.getId());
+                    }
+                }
+            }
+        }, 5, TimeUnit.SECONDS);
         return player;
     }
 
