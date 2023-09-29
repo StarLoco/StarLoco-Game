@@ -18,7 +18,7 @@ map.mobGroupsMaxSize = 1
 -- '0;0;0;0;0;0;0' forbiddens -> capabilities ? Or script ?
 
 local mobGroup =  {
-	{2785, {1} }
+	{999, {1} }
 }
 
 map.staticGroups = {

@@ -24,7 +24,7 @@ map.onMovementEnd = {
 }
 
 local mobGroup =  {
-	{2785, {1} }
+	{999, {1} }
 }
 
 map.staticGroups = {
