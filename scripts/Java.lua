@@ -280,6 +280,9 @@ function Map:id() end
 ---@return MapDef
 function Map:def() end
 
+---@return Area
+function Map:area() end
+
 ---@return SubArea
 function Map:subArea() end
 
@@ -303,12 +306,22 @@ function Map:spawnGroupDef(def) end
 ---@param player Player
 function Map:updateNpcExtraForPlayer(npcDefId, player) end
 
+-- Area
+---@class Area
+local Area = {}
+
+---@return number
+function Area:id() end
+
 -- SubArea
 ---@class SubArea
 local SubArea = {}
 
 ---@return number
 function SubArea:id() end
+
+---@return Area
+function SubArea:area() end
 
 ---@return number
 function SubArea:faction() end

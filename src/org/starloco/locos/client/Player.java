@@ -3245,9 +3245,14 @@ public class Player implements Scripted<SPlayer>, Actor {
             }
         }
 
-        if (this.getInHouse() != null)
-            if (this.getInHouse().getMapId() == this.curMap.getId())
+        if (this.getInHouse() != null) {
+            if (this.getInHouse().getMapId() == this.curMap.getId()) {
                 this.setInHouse(null);
+            }
+        }
+
+        // We changed map. Call event handler
+        DataScriptVM.getInstance().handlers.onMapEnter(this);
     }
 
     public void teleport(GameMap map, int cell) {

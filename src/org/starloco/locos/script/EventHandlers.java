@@ -23,6 +23,10 @@ public class EventHandlers extends DefaultTable {
         return (LuaFunction<?,?,?,?,?>)mbFn;
     }
 
+    public void onMapEnter(Player player) {
+        vm.call(getHandler(players, "onMapEnter"), player.scripted());
+    }
+
     public void onFightEnd(Player player, int type, boolean isWinner, Table winners, Table losers) {
         vm.call(getHandler(players, "onFightEnd"), player.scripted(), type, isWinner, winners, losers);
     }

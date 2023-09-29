@@ -35,6 +35,11 @@ public class SMap extends DefaultUserdata<GameMap> {
     }
 
     @SuppressWarnings("unused")
+    private static SArea area(GameMap m) {
+        return m.getArea().scripted();
+    }
+
+    @SuppressWarnings("unused")
     private static SSubArea subArea(GameMap m) {
         return m.getSubArea().scripted();
     }

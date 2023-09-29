@@ -1,10 +1,14 @@
 package org.starloco.locos.area;
 
 import org.starloco.locos.area.map.GameMap;
+import org.starloco.locos.script.Scripted;
+import org.starloco.locos.script.proxy.SArea;
+import org.starloco.locos.script.proxy.SSubArea;
 
 import java.util.ArrayList;
 
-public class Area {
+public class Area implements Scripted<SArea> {
+    private final SArea scriptVal;
 
     public static int bontarians = 0, brakmarians = 0;
 
@@ -13,6 +17,7 @@ public class Area {
     private ArrayList<SubArea> subAreas = new ArrayList<>();
 
     public Area(int id, int superArea) {
+        this.scriptVal = new SArea(this);
         this.id = id;
         this.superArea = superArea;
     }
@@ -62,5 +67,10 @@ public class Area {
         for (SubArea subArea : this.subAreas)
             maps.addAll(subArea.getMaps());
         return maps;
+    }
+
+    @Override
+    public SArea scripted() {
+        return scriptVal;
     }
 }

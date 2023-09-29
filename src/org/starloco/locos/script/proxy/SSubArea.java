@@ -18,6 +18,9 @@ public class SSubArea extends DefaultUserdata<SubArea> {
     }
 
     @SuppressWarnings("unused")
+    private static SArea area(SubArea sa) { return sa.getArea().scripted(); }
+
+    @SuppressWarnings("unused")
     private static int faction(SubArea sa) {
         return sa.getAlignment();
     }

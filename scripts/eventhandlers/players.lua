@@ -1,13 +1,21 @@
 
 ---@param p Player
+local function tryCompleteDiscoverObjectives(p)
+    for _, qId in ipairs(p:_ongoingQuests()) do
+        local quest = QUESTS[qId]
+        if quest then
+            quest:onMapEnterCheck(p)
+        end
+    end
+end
+
+---@param p Player
 ---@param type number
 ---@param isWinner boolean
 ---@param losers Fighter[]
 local function tryCompleteKillQuestObjectives(p, type, isWinner, losers)
-    print("BLEH DEBUG")
     if not isWinner then return end
     if type ~= PVMFightType then return end
-
 
     for _, qId in ipairs(p:_ongoingQuests()) do
         local quest = QUESTS[qId]
@@ -15,6 +23,11 @@ local function tryCompleteKillQuestObjectives(p, type, isWinner, losers)
             quest:onEndFightCheck(p, losers)
         end
     end
+end
+
+---@param p Player
+Handlers.players.onMapEnter = function(p)
+    tryCompleteDiscoverObjectives(p)
 end
 
 ---@param p Player
