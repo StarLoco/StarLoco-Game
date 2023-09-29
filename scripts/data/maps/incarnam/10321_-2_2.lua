@@ -21,6 +21,7 @@ map.npcs = {
 
 map.onMovementEnd = {
 	[334] = moveEndTeleport(10273, 376),
+	[334] = moveEndTeleport(10321, 407),
 }
 
 local mobGroup =  {
