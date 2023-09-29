@@ -15,6 +15,7 @@ function npc:onTalk(p, answer)
             quest:startFor(p, self.id)
             p:ask(3771, {3398})
         end
+        return
     end
 
     if quest:ongoingFor(p) then
@@ -23,6 +24,7 @@ function npc:onTalk(p, answer)
         elseif answer == 3400 then
             p:endDialog()
         end
+        return
     end
 
     if quest:finishedBy(p) then
