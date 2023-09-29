@@ -36,8 +36,10 @@ function npc:onTalk(p, answer)
             finishQuest(5)
         elseif answer == 3251 then
             p:ask(3709, {3253})
-        elseif answer == 3252 or answer == 3253 then
+        elseif answer == 3252 then
             finishQuest(10)
+        elseif answer == 3253 then
+            finishQuest(20)
         end
         return
     end
