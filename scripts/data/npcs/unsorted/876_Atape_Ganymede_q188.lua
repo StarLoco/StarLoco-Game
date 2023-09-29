@@ -29,6 +29,7 @@ function npc:onTalk(p, answer)
 
     if quest:finishedBy(p) then
         p:ask(3773)
+        return
     end
 end
 
