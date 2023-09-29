@@ -304,8 +304,12 @@ public class SPlayer extends DefaultUserdata<Player> {
     private static void setSavedPosition(Player p, ArgumentIterator args) {
         int mapId = args.nextInt();
         int cellId = args.nextInt();
+        boolean sendIm = args.nextOptionalBoolean(true);
 
         p.setSavePos(mapId, cellId);
+        if(sendIm) {
+            SocketManager.GAME_SEND_Im_PACKET(p, "06");
+        }
     }
 
     @SuppressWarnings("unused")

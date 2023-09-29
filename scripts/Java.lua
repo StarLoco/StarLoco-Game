@@ -140,7 +140,8 @@ function Player:savedPosition() end
 
 ---@param mapId number
 ---@param cellId number
-function Player:setSavedPosition(mapId, cellId) end
+---@param sendIm boolean defaults to true
+function Player:setSavedPosition(mapId, cellId, sendIm) end
 
 ---@param emote number
 ---@return boolean

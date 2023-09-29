@@ -82,6 +82,19 @@ setmetatable(MapDef, {
 function MapDef:update(inst) end
 
 
+---@vararg fun(MapDef, Map, Player)
+---@return fun(MapDef, Map, Player)
+function moveEndSequence(...)
+    local arg={...}
+    ---@param p Player
+    return function(md, m, p)
+        for _, fn in ipairs(arg) do
+            fn(md, m, p)
+        end
+    end
+end
+
+
 ---@param mapId number
 ---@param cellId number
 ---@return fun(MapDef, Map, Player)
@@ -89,6 +102,27 @@ function moveEndTeleport(mapId, cellId)
     ---@param p Player
     return function(md, m, p)
         p:teleport(mapId, cellId)
+    end
+end
+
+---@param mapId number
+---@param cellId number
+---@return fun(MapDef, Map, Player)
+function moveEndSetSavedPosition(mapId, cellId)
+    ---@param p Player
+    return function(md, m, p)
+        p:setSavedPosition(mapId, cellId)
+    end
+end
+
+---@param mapId number
+---@param cellId number
+---@return fun(MapDef, Map, Player)
+function moveEndSetSavedPositionByClass(classPositions)
+    ---@param p Player
+    return function(md, m, p)
+        local pos = classPositions[p:breed()]
+        p:setSavedPosition(pos[1], pos[2])
     end
 end
 
