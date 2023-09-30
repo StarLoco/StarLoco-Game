@@ -527,7 +527,7 @@ public class GameObject {
             } else {
                 String jet = "0d0+" + entry.getValue();
                 stats.append(Integer.toHexString(statID)).append("#");
-                stats.append(Integer.toHexString(entry.getValue())).append("#0#0#").append(jet);
+                stats.append(Integer.toHexString(entry.getValue())).append("###").append(jet);
             }
             isFirst = false;
         }
