@@ -1744,6 +1744,7 @@ public class Player implements Scripted<SPlayer>, Actor {
     public void removeSpellShortcutAtPosition(int position) {
         _sorts.keySet().stream()
             .map(_sortsPlaces::get)
+            .filter(Objects::nonNull)
             .filter(p -> p == position)
             .forEach(_sortsPlaces::remove);
     }
