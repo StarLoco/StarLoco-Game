@@ -362,12 +362,6 @@ public class World implements Scripted<SWorld> {
         DatabaseManager.get(SubAreaData.class).loadFully();
         logger.debug("The dynamics sub-areas data were loaded successfully.");
 
-        DatabaseManager.get(InteractiveDoorData.class).loadFully();
-        logger.debug("The templates of interactive doors were loaded successfully.");
-
-        DatabaseManager.get(InteractiveObjectData.class).loadFully();
-        logger.debug("The templates of interactive objects were loaded successfully.");
-
         DatabaseManager.get(CraftData.class).loadFully();
         logger.debug("The crafts were loaded successfully.");
 

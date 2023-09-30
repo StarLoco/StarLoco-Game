@@ -21,7 +21,6 @@ import org.starloco.locos.area.Area;
 import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.area.map.entity.House;
-import org.starloco.locos.area.map.entity.InteractiveDoor;
 import org.starloco.locos.area.map.entity.InteractiveObject;
 import org.starloco.locos.area.map.entity.MountPark;
 import org.starloco.locos.area.map.entity.Trunk;

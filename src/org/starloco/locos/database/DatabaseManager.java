@@ -107,8 +107,6 @@ public class DatabaseManager {
         this.daos.add(new GiftData(this.game));
         this.daos.add(new HdvData(this.game));
         this.daos.add(new HouseData(this.game));
-        this.daos.add(new InteractiveDoorData(this.game));
-        this.daos.add(new InteractiveObjectData(this.game));
         this.daos.add(new ObjectTemplateData(this.game));
         this.daos.add(new ObjectSetData(this.game));
         this.daos.add(new JobData(this.game));
