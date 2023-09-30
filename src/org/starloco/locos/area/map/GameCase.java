@@ -38,7 +38,7 @@ public class GameCase {
     public int getId() { return cellId; }
 
     private <T extends Actor> List<T> getActorsOfType(Class<T> clz) {
-        return map.actors.getOrDefault(cellId, Collections.emptyList()).stream()
+        return map.actors.getOrDefault(cellId, Collections.emptySet()).stream()
             .filter(clz::isInstance)
             .map(clz::cast)
             .collect(Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList));
@@ -122,7 +122,7 @@ public class GameCase {
     }
 
     private <T extends Actor> void addActor(T actor) {
-        map.actors.computeIfAbsent(cellId, i -> new ArrayList<>()).add(actor);
+        map.addActor(cellId, actor);
     }
 
     public void addPlayer(Player player) {
@@ -132,7 +132,7 @@ public class GameCase {
     public void addFighter(Fighter init0) { addActor(init0); }
 
     private <T extends Actor> void removeActor(T actor) {
-        map.actors.getOrDefault(cellId, Collections.emptyList()).remove(actor);
+        map.actors.getOrDefault(cellId, Collections.emptySet()).remove(actor);
     }
 
     public void removePlayer(Player p) {

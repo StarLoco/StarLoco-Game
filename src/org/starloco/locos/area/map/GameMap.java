@@ -146,7 +146,7 @@ public class GameMap {
     private List<Fight> fights = new ArrayList<>();
 
     // Make those private once GameCase is gone
-    ConcurrentHashMap<Integer, List<Actor>> actors = new ConcurrentHashMap<>();
+    ConcurrentHashMap<Integer, Set<Actor>> actors = new ConcurrentHashMap<>();
     ConcurrentHashMap<Integer, GameObject> droppedItems = new ConcurrentHashMap<>();
 
     Map<Integer, InteractiveObject> interactiveObjects;
@@ -1460,6 +1460,12 @@ public class GameMap {
         return data.interactiveObjects().entrySet().stream()
             .filter(e -> ids.contains(e.getValue()))
             .map(Entry::getKey);
+    }
+
+    <T extends Actor> void addActor(int cellId, T actor) {
+        // Safety: remove actor from other cells
+        this.actors.values().forEach(l -> l.remove(actor));
+        this.actors.computeIfAbsent(cellId, i -> new HashSet<>()).add(actor);
     }
 
     public SMap scripted() { return scriptVal; }
