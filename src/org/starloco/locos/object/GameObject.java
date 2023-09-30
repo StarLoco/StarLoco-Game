@@ -507,7 +507,7 @@ public class GameObject {
             if (!isFirst)
                 stats.append(",");
             if(statID == 615) {
-                stats.append(Integer.toHexString(statID)).append("#0#0#").append(Integer.toHexString(entry.getValue()));
+                stats.append(Integer.toHexString(statID)).append("###").append(Integer.toHexString(entry.getValue()));
             } else
             if ((statID == 970) || (statID == 971) || (statID == 972)
                     || (statID == 973) || (statID == 974)) {
