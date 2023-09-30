@@ -9,9 +9,12 @@ import java.util.Map;
  */
 public enum  LangEnum {
 
-    FRENCH("fr"),
+    GERMAN("de"),
     ENGLISH("en"),
     SPANISH("es"),
+    FRENCH("fr"),
+    ITALIAN("it"),
+    NETHERLANDS("nl"),
     PORTUGUESE("pt");
 
     private final String flag;
