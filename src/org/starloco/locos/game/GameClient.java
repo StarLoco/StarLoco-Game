@@ -6896,7 +6896,10 @@ public class GameClient {
         String[] parts = packet.substring(2).split("\\|");
 
         int spellID = Integer.parseInt(parts[0]);
-        int position = Integer.parseInt(parts[1]); // May return -1
+        int position = -1;
+        if(parts.length > 1) {
+            position = Integer.parseInt(parts[1]); // May return -1
+        }
 
         Spell.SortStats spellStats = this.player.getSortStatBySortIfHas(spellID);
         if (spellStats != null) {
