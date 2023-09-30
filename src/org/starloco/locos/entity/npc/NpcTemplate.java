@@ -18,6 +18,7 @@ import org.starloco.locos.object.ObjectTemplate;
 import org.starloco.locos.other.Action;
 import org.starloco.locos.other.Dopeul;
 import org.starloco.locos.script.DataScriptVM;
+import org.starloco.locos.script.EventHandlers;
 import org.starloco.locos.script.ScriptVM;
 
 import java.util.*;
@@ -133,9 +134,8 @@ public class NpcTemplate {
             legacy.onDialog(this, player, question, response);
             return;
         }
-        Object onTalk = recursiveGet(scriptVal,"onTalk");
-        if(onTalk == null) return;
-        DataScriptVM.getInstance().call(onTalk, scriptVal, player.scripted(), response);
+
+        DataScriptVM.getInstance().handlers.onDialog(player, this.id, response);
     }
 
     public List<SaleOffer> salesList(Player player) {

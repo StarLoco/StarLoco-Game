@@ -22,6 +22,8 @@ public class Constant {
     public static int TIME_BY_TURN = 30000;
     //Phoenix
     public static final String ALL_PHOENIX = "-11;-54|2;-12|-41;-17|5;-9|25;-4|36;5|12;12|10;19|-10;13|-14;31|-43;0|-60;-3|-58;18|24;-43|27;-33";
+
+    public static final int INCARNAM_SUPERAREA = 3;
     //ETAT
     public static final int ETAT_NEUTRE = 0;
     public static final int ETAT_SAOUL = 1;
@@ -2504,12 +2506,16 @@ public class Constant {
 	 * Main.itemFeedMount) { if (type == feed) return true; } return false; }
 	 */
 
-    public static void tpCim(int idArea, Player perso) {
-        switch (idArea) {
-            case 45:
-                perso.teleport((short) 10342, 222);
-                break;
+    public static void tpCim(Player perso) {
+        int idSuperArea = perso.getCurMap().getArea().getSuperArea();
+        int idArea = perso.getCurMap().getArea().getId();
 
+        if(idSuperArea == INCARNAM_SUPERAREA) {
+            perso.teleport((short) 10342, 222);
+            return;
+        }
+
+        switch (idArea) {
             case 0:
             case 5:
             case 29:

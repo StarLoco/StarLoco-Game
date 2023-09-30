@@ -175,7 +175,8 @@ function Player:savedPosition() end
 
 ---@param mapId number
 ---@param cellId number
-function Player:setSavedPosition(mapId, cellId) end
+---@param sendIm boolean defaults to true
+function Player:setSavedPosition(mapId, cellId, sendIm) end
 
 ---@param emote number
 ---@return boolean
@@ -330,6 +331,9 @@ function Map:id() end
 ---@return MapDef
 function Map:def() end
 
+---@return Area
+function Map:area() end
+
 ---@return SubArea
 function Map:subArea() end
 
@@ -375,12 +379,22 @@ function Map:setCellData(cellId, field, val) end
 ---@param field string
 function Map:resetCellData(cellId, field) end
 
+-- Area
+---@class Area
+local Area = {}
+
+---@return number
+function Area:id() end
+
 -- SubArea
 ---@class SubArea
 local SubArea = {}
 
 ---@return number
 function SubArea:id() end
+
+---@return Area
+function SubArea:area() end
 
 ---@return number
 function SubArea:faction() end

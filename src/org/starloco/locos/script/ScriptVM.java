@@ -80,7 +80,7 @@ public class ScriptVM {
     }
 
     private void runPathStream(Stream<Path> paths) {
-        paths.parallel()
+        paths
             .filter(Files::isRegularFile)
             .filter(p -> p.toString().endsWith(".lua"))
             .forEach(p -> {

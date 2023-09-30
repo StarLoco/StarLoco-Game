@@ -1104,7 +1104,7 @@ public class GameClient {
     private void goToMap(String packet) {
         if (this.player.getGroup() == null)
             return;
-        if (this.player.getGroup().isPlayer() || this.player.getGroup().getId() > 3)
+        if (this.player.getGroup().isPlayer())
             return;
 
         String datas = packet.substring(3);
@@ -6833,6 +6833,9 @@ public class GameClient {
             case 'M':
                 moveSpell(packet);
                 break;
+            case 'R':
+                removeSpell(packet);
+                break;
         }
     }
 
@@ -6865,15 +6868,28 @@ public class GameClient {
         }
     }
 
+    private void removeSpell(String packet) {
+        int position = Integer.parseInt(packet.substring(2));
+        this.player.removeSpellShortcutAtPosition(position);
+        this.player.send("SR"+position);
+    }
+
     private void moveSpell(String packet) {
         String[] parts = packet.substring(2).split("\\|");
 
-        int SpellID = Integer.parseInt(parts[0]);
-        int position = Integer.parseInt(parts[1]); // May return -1
+        int spellID = Integer.parseInt(parts[0]);
+        int position = -1;
+        if(parts.length > 1) {
+            position = Integer.parseInt(parts[1]); // May return -1
+        }
 
-        Spell.SortStats spellStats = this.player.getSortStatBySortIfHas(SpellID);
+        Spell.SortStats spellStats = this.player.getSortStatBySortIfHas(spellID);
         if (spellStats != null) {
-            this.player.setSpellShortcuts(SpellID, position);
+            this.player.setSpellShortcuts(spellID, position);
+
+            // After 1.41, we need to send back the SM packet
+            this.player.send("SM"+spellID+"|"+position);
+            // Before 1.41, we only send BN
             SocketManager.GAME_SEND_BN(this);
         }
     }

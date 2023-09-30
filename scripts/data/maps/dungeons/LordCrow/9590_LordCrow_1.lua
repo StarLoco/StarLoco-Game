@@ -12,5 +12,3 @@ local map = MapDef(
 
 map.positions = "fbfqfGfTf8glgmgB|b9cKcNcQdMeoeGgd"
 map.capabilities = 46
-
-

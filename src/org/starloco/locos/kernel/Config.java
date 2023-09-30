@@ -55,7 +55,6 @@ public class Config {
         }
 
         int i = 5;
-
         try {
             Config.exchangeIp = properties.getProperty(Params.EXCHANGE_IP.toString()); i++;
             Config.exchangePort = Integer.parseInt(properties.getProperty(Params.EXCHANGE_PORT.toString())); i++;

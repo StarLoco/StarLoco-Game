@@ -93,6 +93,7 @@ local function groupHasBoss(fighters)
     return false
 end
 
+---@return number bossMapId
 local function respawnBoss()
     -- Pick the next map where we want the boss to spawn
     local respawnMapId = mapIds[math.random(#mapIds)]
@@ -100,6 +101,7 @@ local function respawnBoss()
     -- Add the boss group
     local actorId = World:map(respawnMapId):spawnGroupDef({-1, bossGroup})
     JLogF("LordCrow: Boss respawned on map #{} ({})", respawnMapId, actorId)
+    return respawnMapId
 end
 
 local function bossMapId(retried)
@@ -115,8 +117,7 @@ local function bossMapId(retried)
         return
     end
     JLogF("LordCrow: Failed to find boss, attempting to respawn")
-    respawnBoss()
-    return bossMapId(true)
+    return respawnBoss()
 end
 
 ---@param md MapDef

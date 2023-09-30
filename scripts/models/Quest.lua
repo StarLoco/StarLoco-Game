@@ -135,8 +135,21 @@ function Quest:uncompletedObjectives(p)
 end
 
 ---@param p Player
+function Quest:onMapEnterCheck(p)
+    local justCompleted = {}
+
+    for _, obj in ipairs(self:uncompletedObjectives(p)) do
+        if obj.onMapEnterCheck and obj:onMapEnterCheck(p) then
+            table.insert(justCompleted, obj.id)
+        end
+    end
+
+    if #justCompleted == 0 then return end
+    self:completeObjectives(p, justCompleted)
+end
+
+---@param p Player
 ---@param losers Fighter[]
----@return boolean true if should complete objective
 function Quest:onEndFightCheck(p, losers)
     local justCompleted = {}
 
@@ -172,6 +185,25 @@ function Quest:SequentialObjectives(objs)
         return objectives
     end
 end
+
+---@param p Player
+---@param npcID number
+---@return boolean true if success
+function Quest:tryCompleteBringItemObjectives(p, npcID)
+    local justCompleted = {}
+
+    for _, obj in ipairs(self:uncompletedObjectives(p)) do
+        if obj.onBringItemCheck and obj:onBringItemCheck(p, npcID) then
+            table.insert(justCompleted, obj.id)
+        end
+    end
+
+    if #justCompleted == 0 then return end
+    self:completeObjectives(p, justCompleted)
+
+    return true
+end
+
 
 ---@param minLevel number
 ---@param questFinished number
@@ -323,6 +355,16 @@ setmetatable(BringItemObjective, {
     end,
 })
 
+---@param p Player
+---@param npcID number
+---@return boolean true if should complete objective
+function BringItemObjective:onBringItemCheck(p, npcID)
+    if npcID ~= self.npcId then return false end
+
+    return p:consumeItem(self.itemId, self.quantity)
+end
+
+
 ---@class DiscoverMapObjective:QuestObjective
 ---@field mapId number
 DiscoverMapObjective = {}
@@ -339,6 +381,12 @@ setmetatable(DiscoverMapObjective, {
     end,
 })
 
+---@param p Player
+---@return boolean true if should complete objective
+function DiscoverMapObjective:onMapEnterCheck(p)
+    return p:mapID() == self.mapId
+end
+
 ---@class DiscoverAreaObjective:QuestObjective
 ---@field areaId number
 DiscoverAreaObjective = {}
@@ -354,6 +402,12 @@ setmetatable(DiscoverAreaObjective, {
         return self
     end,
 })
+
+---@param p Player
+---@return boolean true if should complete objective
+function DiscoverAreaObjective:onMapEnterCheck(p)
+    return p:map():area():id() == self.areaId
+end
 
 ---@class KillMonsterSingleFightObjective:QuestObjective
 ---@field monsterId number
@@ -394,6 +448,12 @@ setmetatable(KillMonsterObjective, {
         return self
     end,
 })
+
+---@param losers Fighter[]
+---@return boolean true if should complete objective
+function KillMonsterObjective:onEndFightCheck(losers)
+    return countFightersForMobId(losers, self.monsterId) >= self.amount
+end
 
 ---@class UseObjectObjective:QuestObjective
 ---@field objectId number

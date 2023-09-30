@@ -4,6 +4,7 @@ import org.starloco.locos.anims.Animation;
 import org.starloco.locos.anims.KeyFrame;
 import org.starloco.locos.area.Area;
 import org.starloco.locos.area.SubArea;
+import org.starloco.locos.area.map.entity.*;
 import org.starloco.locos.area.map.entity.InteractiveDoor;
 import org.starloco.locos.area.map.entity.InteractiveObject;
 import org.starloco.locos.area.map.entity.MountPark;
@@ -1553,6 +1554,12 @@ public class GameMap {
         return data.interactiveObjects().entrySet().stream()
             .filter(e -> ids.contains(e.getValue()))
             .map(Entry::getKey);
+    }
+
+    <T extends Actor> void addActor(int cellId, T actor) {
+        // Safety: remove actor from other cells
+        this.actors.values().forEach(l -> l.remove(actor));
+        this.actors.computeIfAbsent(cellId, i -> new HashSet<>()).add(actor);
     }
 
     public SMap scripted() { return scriptVal; }

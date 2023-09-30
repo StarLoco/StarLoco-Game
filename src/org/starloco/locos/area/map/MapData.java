@@ -40,6 +40,7 @@ public abstract class MapData implements CellsDataProvider {
     public final List<MonsterGrade> mobPossibles;
 
 
+
     protected MapData(int id, String date, String key, String data, int width, int height, int x, int y, int subAreaID, boolean noSellers, boolean noCollectors, boolean noPrisms, boolean noTp, boolean noDefy, boolean noAgro, boolean noCanal, int mobGroupsMaxCount, int mobGroupsMinSize, int mobGroupsMaxSize, List<MonsterGrade> mobPossibles, List<List<Integer>> places, Map<Integer,Animation> animations) {
         if(CryptManager.isMapCiphered(data)) {
             try {
@@ -53,7 +54,6 @@ public abstract class MapData implements CellsDataProvider {
         for (int i = 0; i < data.length(); i++) {
             dataBytes[i] = (byte) CryptManager.getIntByHashedValue(data.charAt(i));
         }
-
 
         this.id = id;
         this.date = date;

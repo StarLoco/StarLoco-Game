@@ -6,6 +6,7 @@ POST_INITS = {}
 -- Load constant data
 requireReload("data/AdminCommands")
 requireReload("data/AdminGroups")
+requireReload("./data/Breed")
 requireReload("data/Experience")
 requireReload("data/FightTypes")
 requireReload("data/GearSlots")
@@ -24,7 +25,6 @@ requireReload("models/InteractiveObjectDef")
 -- Load instances
 loadPack("data/objects")
 loadPack("data/npcs")
-loadPack("data/notloaded/npcs/untested")
 loadPack("data/maps")
 loadPack("data/quests")
 loadPack("data/skills")
@@ -39,6 +39,7 @@ for _, map in pairs(MAPS) do
     RegisterMapDef(map)
 end
 
+-- Run POST_INITS handlers
 for _, fn in ipairs(POST_INITS) do
     fn()
 end
