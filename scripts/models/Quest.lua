@@ -352,6 +352,12 @@ setmetatable(DiscoverMapObjective, {
     end,
 })
 
+---@param p Player
+---@return boolean true if should complete objective
+function DiscoverMapObjective:onMapEnterCheck(p)
+    return p:mapID() == self.mapId
+end
+
 ---@class DiscoverAreaObjective:QuestObjective
 ---@field areaId number
 DiscoverAreaObjective = {}
