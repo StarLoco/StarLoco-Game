@@ -6889,7 +6889,7 @@ public class GameClient {
     private void removeSpell(String packet) {
         int position = Integer.parseInt(packet.substring(2));
         this.player.removeSpellShortcutAtPosition(position);
-
+        this.player.send("SR"+position);
     }
 
     private void moveSpell(String packet) {
@@ -6902,6 +6902,9 @@ public class GameClient {
         if (spellStats != null) {
             this.player.setSpellShortcuts(spellID, position);
 
+            // After 1.41, we need to send back the SM packet
+            this.player.send("SM"+spellID+"|"+position);
+            // Before 1.41, we only send BN
             SocketManager.GAME_SEND_BN(this);
         }
     }
