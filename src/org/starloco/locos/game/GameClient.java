@@ -6851,6 +6851,9 @@ public class GameClient {
             case 'M':
                 moveSpell(packet);
                 break;
+            case 'R':
+                removeSpell(packet);
+                break;
         }
     }
 
@@ -6881,6 +6884,12 @@ public class GameClient {
             SocketManager.GAME_SEND_STATS_PACKET(this.player);
             this.player.setExchangeAction(null);
         }
+    }
+
+    private void removeSpell(String packet) {
+        int position = Integer.parseInt(packet.substring(2));
+        this.player.removeSpellShortcutAtPosition(position);
+
     }
 
     private void moveSpell(String packet) {

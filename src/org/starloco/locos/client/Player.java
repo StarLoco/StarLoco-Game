@@ -1741,11 +1741,11 @@ public class Player implements Scripted<SPlayer>, Actor {
         ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this);
     }
 
-    private void removeSpellShortcutAtPosition(int position) {
-        for (int key : _sorts.keySet())
-            if (_sortsPlaces.get(key) != null)
-                if (_sortsPlaces.get(key).equals(position))
-                    _sortsPlaces.remove(key);
+    public void removeSpellShortcutAtPosition(int position) {
+        _sorts.keySet().stream()
+            .map(_sortsPlaces::get)
+            .filter(p -> p == position)
+            .forEach(_sortsPlaces::remove);
     }
 
     public Spell.SortStats getSortStatBySortIfHas(int spellID) {
