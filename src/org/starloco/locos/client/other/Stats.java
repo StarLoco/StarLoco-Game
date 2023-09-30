@@ -114,7 +114,7 @@ public class Stats {
         return true;
     }
 
-    public String parseToItemSetStats() {
+    public String encodeItemSetStats() {
         StringBuilder str = new StringBuilder();
         if (this.effects.isEmpty())
             return "";

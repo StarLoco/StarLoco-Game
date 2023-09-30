@@ -1532,7 +1532,7 @@ public class SocketManager {
                         items.append(OT.getId());
                     }
                 }
-                packet.append(items).append("|").append(IS.getBonusStatByItemNumb(num).parseToItemSetStats());
+                packet.append(items).append("|").append(IS.getBonusStatByItemNumb(num).encodeItemSetStats());
             }
         }
         send(perso, packet.toString());
