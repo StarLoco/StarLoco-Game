@@ -4,4 +4,4 @@
 registerGatherSkill(102, function(p)
     -- 311: Water
     return {ItemStack(311, math.random(1, 10))}
-end, respawnBetweenMillis(300000, 600000))
+end, respawnBetweenMillis(180000, 720000))

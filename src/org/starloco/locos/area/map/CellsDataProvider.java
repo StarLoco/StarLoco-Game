@@ -246,6 +246,19 @@ public interface CellsDataProvider {
             return true;
         }
 
+        private boolean setInteractive(int cellId, int val) {
+            long[] ov = overrides.computeIfAbsent(cellId, (k) -> new long[2]);
+
+            if(object2InteractiveRaw(ov[0]) == val) return false;
+
+            apply(ov, ((long)(val & 0x1)) << 59 , 0x00800000000000000L);
+
+            // TODO Optimize: Detect when changing value to base value
+
+            overrides.put(cellId, ov);
+            return true;
+        }
+
         private boolean setMovement(int cellId, int val) {
             long[] ov = overrides.computeIfAbsent(cellId, (k) -> new long[2]);
 
@@ -279,6 +292,9 @@ public interface CellsDataProvider {
                 switch(e.getKey().toLowerCase()) {
                     case "active":
                         changed = setActive(cellId, e.getValue());
+                        break;
+                    case "interactive":
+                        changed = setInteractive(cellId, e.getValue());
                         break;
                     case "movement":
                         changed = setMovement(cellId, e.getValue());

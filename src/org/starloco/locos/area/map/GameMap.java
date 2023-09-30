@@ -4,8 +4,6 @@ import org.starloco.locos.anims.Animation;
 import org.starloco.locos.anims.KeyFrame;
 import org.starloco.locos.area.Area;
 import org.starloco.locos.area.SubArea;
-import org.starloco.locos.area.map.entity.*;
-import org.starloco.locos.area.map.entity.InteractiveDoor;
 import org.starloco.locos.area.map.entity.InteractiveObject;
 import org.starloco.locos.area.map.entity.MountPark;
 import org.starloco.locos.client.Player;
@@ -675,7 +673,7 @@ public class GameMap {
         // For now, we just send that extra GDF to give us more possibilities.
         // It's usually invisible to the user.
         // If it becomes an issue, we can update the code to send GDC and GDF together
-        SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(this, cellId, frame.frame);
+        SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(this, cellId, frame.frame, frame.isObjectInteractive());
 
 
         if(frame.hasDuration()) {
@@ -704,7 +702,7 @@ public class GameMap {
         SocketManager.GAME_SEND_GDF_PACKET(player,
             this.animationStates.entrySet()
                 .stream()
-                .map(e -> new Pair<>(e.getKey(), data.animations.get(e.getKey()).frames.get(e.getValue()).frame))
+                .map(e -> new Pair<>(e.getKey(), data.animations.get(e.getKey()).frames.get(e.getValue())))
         );
     }
 
@@ -943,9 +941,16 @@ public class GameMap {
 
     public String getObjectsGDsPackets() {
         StringBuilder packet = new StringBuilder("GDF");
-        this.cases.stream().filter(gameCase -> gameCase.getObject() != null)
-                .forEach(gameCase -> packet.append("|").append(gameCase.getId()).append(";").append(gameCase.getObject().getState())
-                        .append(";").append((gameCase.getObject().isInteractive() ? "1" : "0")));
+        this.animationStates.forEach((cellId, frameName) -> {
+            Animation anim = Objects.requireNonNull(data.animations.get(cellId));
+            KeyFrame frame = anim.getFrame(frameName);
+
+            packet.append("|")
+                .append(cellId).append(";")
+                .append(frame.frame).append(";")
+                .append(frame.isObjectInteractive() ? "1" : "0");
+        });
+
         return packet.toString();
     }
 
@@ -1502,7 +1507,6 @@ public class GameMap {
             }
         }
 
-        InteractiveDoor.check(player, this);
         this.data.onMoveEnd(player);
 
         if (data.places.size() < 2)

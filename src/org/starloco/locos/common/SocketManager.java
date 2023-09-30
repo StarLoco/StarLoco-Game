@@ -1,5 +1,6 @@
 package org.starloco.locos.common;
 
+import org.starloco.locos.anims.KeyFrame;
 import org.starloco.locos.area.map.CellsDataProvider;
 import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.area.map.GameMap;
@@ -1368,13 +1369,8 @@ public class SocketManager {
         GAME_SEND_GDF_PACKET_TO_MAP(map, cellID, object.getState(), object.isInteractive());
     }
 
-    public static void GAME_SEND_GDF_PACKET_TO_MAP(GameMap map, int cellID, int state) {
-        String packet = "GDF|" + cellID + ";" + state;
-        map.getPlayers().forEach(p -> send(p, packet));
-    }
-
-    public static void GAME_SEND_GDF_PACKET(Player player, Stream<Pair<Integer, Integer>> cellStates) {
-        String packet = "GDF" + cellStates.map(p -> "|"+p.first+";"+p.second).collect(Collectors.joining());
+    public static void GAME_SEND_GDF_PACKET(Player player, Stream<Pair<Integer, KeyFrame>> cellStates) {
+        String packet = "GDF" + cellStates.map(p -> "|"+p.first+";"+p.second.frame+";"+(p.second.isObjectInteractive()?"1":"0")).collect(Collectors.joining());
         send(player, packet);
     }
 

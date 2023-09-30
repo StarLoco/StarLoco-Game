@@ -13,14 +13,16 @@ public class KeyFrame {
     public final int frame;
     public final String nextFrame;
     private final int durationMillis;
+    private final boolean interactive;
     private final Map<String, Integer> cellOverrides;
 
-    private KeyFrame(int frame, int duration, String nextFrame, Map<String, Integer> cellOverrides) {
+    private KeyFrame(int frame, int duration, String nextFrame, boolean interactive, Map<String, Integer> cellOverrides) {
         if(duration > 0 && nextFrame.isEmpty()){
             throw new InvalidParameterException("nextFrame is mandatory when duration is set");
         }
         this.frame = frame;
         this.durationMillis = duration;
+        this.interactive = interactive;
         this.nextFrame = nextFrame;
         this.cellOverrides = Collections.unmodifiableMap(cellOverrides);
     }
@@ -29,6 +31,7 @@ public class KeyFrame {
         int frame = DataScriptVM.rawInt(t, "frame");
         int duration = DataScriptVM.rawOptionalInt(t, "duration", 0);
         String nextFrame = DataScriptVM.rawOptionalString(t, "next");
+        boolean interactive = DataScriptVM.rawOptional(t, "interactive").map(Boolean.class::cast).orElse(false);
 
         Map<String,Integer> cellOverrides = DataScriptVM.rawOptional(t, "overrides")
             .map(Table.class::cast)
@@ -39,12 +42,14 @@ public class KeyFrame {
         if(duration <0) throw new InvalidParameterException("duration must be strictly positive");
         if(duration !=0 && nextFrame.isEmpty()) throw new InvalidParameterException("nextFrame is required when duration >0");
 
-        return new KeyFrame(frame, duration, nextFrame, Collections.unmodifiableMap(cellOverrides));
+        return new KeyFrame(frame, duration, nextFrame, interactive, Collections.unmodifiableMap(cellOverrides));
     }
 
     public boolean hasDuration() { return durationMillis != 0; }
 
     public int durationMillis() { return this.durationMillis; }
+
+    public boolean isObjectInteractive() { return this.interactive; }
 
     public Map<String, Integer> getCellOverrides() {
         return cellOverrides;
