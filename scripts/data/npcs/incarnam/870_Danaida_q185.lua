@@ -21,9 +21,7 @@ function npc:onTalk(p, answer)
     end
 
     if quest:ongoingFor(p) then
-        -- If we have the required items, complete objective
-        if p:consumeItem(311, 4) then
-            quest:completeObjective(p, 758)
+        if quest:tryCompleteBringItemObjectives(p, self.id) then
             p:ask(3719)
             return
         end

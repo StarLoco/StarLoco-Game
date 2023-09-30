@@ -23,6 +23,10 @@ public class EventHandlers extends DefaultTable {
         return (LuaFunction<?,?,?,?,?>)mbFn;
     }
 
+    public void onDialog(Player player, int npcID, int answer) {
+        vm.call(getHandler(players, "onDialog"), player.scripted(), npcID, answer);
+    }
+
     public void onMapEnter(Player player) {
         vm.call(getHandler(players, "onMapEnter"), player.scripted());
     }

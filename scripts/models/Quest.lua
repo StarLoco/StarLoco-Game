@@ -186,6 +186,25 @@ function Quest:SequentialObjectives(objs)
     end
 end
 
+---@param p Player
+---@param npcID number
+---@return boolean true if success
+function Quest:tryCompleteBringItemObjectives(p, npcID)
+    local justCompleted = {}
+
+    for _, obj in ipairs(self:uncompletedObjectives(p)) do
+        if obj.onBringItemCheck and obj:onBringItemCheck(p, npcID) then
+            table.insert(justCompleted, obj.id)
+        end
+    end
+
+    if #justCompleted == 0 then return end
+    self:completeObjectives(p, justCompleted)
+
+    return true
+end
+
+
 ---@param minLevel number
 ---@param questFinished number
 ---@param reqBreed number[]|nil
@@ -335,6 +354,16 @@ setmetatable(BringItemObjective, {
         return self
     end,
 })
+
+---@param p Player
+---@param npcID number
+---@return boolean true if should complete objective
+function BringItemObjective:onBringItemCheck(p, npcID)
+    if npcID ~= self.npcId then return false end
+
+    return p:consumeItem(self.itemId, self.quantity)
+end
+
 
 ---@class DiscoverMapObjective:QuestObjective
 ---@field mapId number

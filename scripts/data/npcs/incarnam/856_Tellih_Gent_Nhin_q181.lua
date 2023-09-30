@@ -31,8 +31,13 @@ function npc:onTalk(p, answer)
         return
     end
 
-    if p:questOngoing(questID) then
+    if quest:ongoingFor(p) then
         p:ask(3644)
+        return
+    end
+
+    if quest:finishedBy(p) then
+        p:ask(3673)
         return
     end
 end

@@ -26,6 +26,15 @@ local function tryCompleteKillQuestObjectives(p, type, isWinner, losers)
 end
 
 ---@param p Player
+Handlers.players.onDialog = function(p, npcID, answer)
+    local npc = NPCS[npcID]
+
+    if npc and npc.onTalk then
+        npc:onTalk(p, answer)
+    end
+end
+
+---@param p Player
 Handlers.players.onMapEnter = function(p)
     tryCompleteDiscoverObjectives(p)
 end
