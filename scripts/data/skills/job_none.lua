@@ -29,13 +29,13 @@ registerGatherSkill(102, function(p)
     return {ItemStack(311, math.random(1, 10))}
 end, respawnBetweenMillis(120000, 420000))
 
+
 -- Use Zaap
 SKILLS[114] = function(p, _) p:openZaap() return true end
 
 
--- Use Zaap
+-- Use garbage bin
 SKILLS[153] = function(p, cellID)
-    print("DBG", p, cellID)
     p:openTrunk(cellID) return true end
 
 
