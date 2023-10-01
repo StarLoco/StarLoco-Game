@@ -5,7 +5,7 @@ require("data/objects/animations_jobs")
 
 Objects = {}
 
-Objects.Ash = RegisterIODef(1, ResourceObjectType, {6})
+Objects.Ash = RegisterIODef(1, ResourceObjectType, {6}, AnimatedObjects.Tree_Ash)
 Objects.Saw = RegisterIODef(2, JobToolsObjectType, {101})
 Objects.Oak = RegisterIODef(8, ResourceObjectType, {10}, AnimatedObjects.Tree_Oak)
 Objects.FabricationTable = RegisterIODef(11, JobToolsObjectType, {13,14})
@@ -28,7 +28,7 @@ Objects.Chestnut = RegisterIODef(33, ResourceObjectType, {39})
 Objects.Walnut = RegisterIODef(34, ResourceObjectType, {40})
 Objects.Cherry = RegisterIODef(35, ResourceObjectType, {41})
 Objects.Cobalt = RegisterIODef(37, ResourceObjectType, {28})
-Objects.Wheat = RegisterIODef(38, ResourceObjectType, {45})
+Objects.Wheat = RegisterIODef(38, ResourceObjectType, {45}, AnimatedObjects.Cereal_Wheat)
 Objects.Hop = RegisterIODef(39, ResourceObjectType, {46})
 Objects.Mill = RegisterIODef(40, JobToolsObjectType, {})
 Objects.Grind = RegisterIODef(41, JobToolsObjectType, {48})

@@ -5,7 +5,9 @@ local treeSG = {
     [AnimStates.NOT_READY] = {frame=3},
     [AnimStates.READYING] = {frame=4, duration=1033, next=AnimStates.READY}
 }
-AnimatedObjects.Tree_Oak = NewAnimation(7505, AnimStates.READY, treeSG)
+
+AnimatedObjects.Tree_Ash= NewAnimation(7500, AnimStates.READY, treeSG)
+AnimatedObjects.Tree_Oak = NewAnimation(7503, AnimStates.READY, treeSG)
 
 
 local cerealSG = {
