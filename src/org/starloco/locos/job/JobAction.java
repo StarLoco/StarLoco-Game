@@ -160,7 +160,7 @@ public class JobAction {
             return;
         if (!this.isCraft) {
             IO.setState(3);
-            IO.disable();
+            // IO.disable();
             SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(player.getCurMap(), cellId, IO);
             int qua = (this.max > this.min ? Formulas.getRandomValue(this.min, this.max) : this.min);
 

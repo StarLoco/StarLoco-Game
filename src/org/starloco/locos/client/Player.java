@@ -8,6 +8,7 @@ import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.area.map.entity.House;
 import org.starloco.locos.area.map.entity.InteractiveObject;
 import org.starloco.locos.area.map.entity.MountPark;
+import org.starloco.locos.area.map.entity.Trunk;
 import org.starloco.locos.client.other.Party;
 import org.starloco.locos.client.other.Stalk;
 import org.starloco.locos.client.other.Stats;
@@ -1398,6 +1399,7 @@ public class Player implements Scripted<SPlayer>, Actor {
     public void showReceivedItem(int actorID, int quantity) {
         SocketManager.GAME_SEND_IQ_PACKET(this, actorID, quantity);
     }
+
 
     public static class EnsureSpellLevelResult {
         public final boolean changed;
@@ -3105,6 +3107,10 @@ public class Player implements Scripted<SPlayer>, Actor {
         if (cellID == -1 || action == -1)
             return;
 
+        // Make sure this skill is available on this cell
+        InteractiveObject io = curMap.getInteractiveObject(cellID);
+
+
         DataScriptVM.getInstance().handlers.onSkillUse(this, cellID, action);
     }
 
@@ -3119,7 +3125,11 @@ public class Player implements Scripted<SPlayer>, Actor {
             return;
         GameCase cell = this.curMap.getCase(cellID);
         if(cell == null) return;
-        cell.finishAction(this, GA);
+
+        // TODO: Call Lua to finish gathering skills
+
+        // curMap.finishAction(cell,)
+        // cell.finishAction(this, GA);
     }
 
     public void teleportD(int newMapID, int newCellID) {
@@ -4237,6 +4247,17 @@ public class Player implements Scripted<SPlayer>, Actor {
             verifAndAddZaap(curMap.getId());
             SocketManager.GAME_SEND_WC_PACKET(this);
         }
+    }
+
+    public void openTrunk(int cellID) {
+        Trunk.getTrunkIdByCoord(curMap.getId(), cellID).ifPresent(trunk -> {
+            if (trunk.getPlayer() != null) {
+                this.send("Im120");
+                return;
+            }
+            this.setExchangeAction(new ExchangeAction<>(ExchangeAction.IN_TRUNK, trunk));
+            Trunk.open(this, "-", true);
+        });
     }
 
     public void verifAndAddZaap(int mapId) {

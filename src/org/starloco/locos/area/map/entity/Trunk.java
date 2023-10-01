@@ -16,6 +16,7 @@ import org.starloco.locos.object.GameObject;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 public class Trunk {
@@ -41,11 +42,11 @@ public class Trunk {
         SocketManager.GAME_SEND_KODE(P, "V");
     }
 
-    public static Trunk getTrunkIdByCoord(int map_id, int cell_id) {
+    public static Optional<Trunk> getTrunkIdByCoord(int map_id, int cell_id) {
         for (Entry<Integer, Trunk> trunk : World.world.getTrunks().entrySet())
             if (trunk.getValue().getMapId() == map_id && trunk.getValue().getCellId() == cell_id)
-                return trunk.getValue();
-        return null;
+                return Optional.ofNullable(trunk.getValue());
+        return Optional.empty();
     }
 
     public static void lock(Player P, String packet) {

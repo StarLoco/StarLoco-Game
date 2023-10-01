@@ -140,7 +140,6 @@ public abstract class MapData implements CellsDataProvider {
         return cellsData.overrideMask(cellID);
     }
 
-
     protected static List<List<Integer>> decodePositions(String strPlaces) {
         return Arrays.stream(strPlaces.split("\\|"))
             .filter(s -> !s.isEmpty())

@@ -91,7 +91,7 @@ public class Main {
 	        }
 
 	        final List<Updatable> updatables = Arrays.asList(
-	                WorldSave.instance, GameMap.updatable, InteractiveObject.updatable, Mount.updatable,
+	                WorldSave.instance, GameMap.updatable, Mount.updatable,
                     WorldPlayerOption.instance, WorldPub.instance,
                     AuctionManager.getInstance(), /*Tavernier.getInstance(),*/ EventManager.getInstance());
 

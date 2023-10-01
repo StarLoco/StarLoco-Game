@@ -1,41 +1,10 @@
 package org.starloco.locos.area.map.entity;
 
-import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.area.map.GameMap;
-import org.starloco.locos.client.Player;
-import org.starloco.locos.common.SocketManager;
-import org.starloco.locos.entity.monster.MonsterGroup;
-import org.starloco.locos.game.scheduler.Updatable;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.job.JobConstant;
-import org.starloco.locos.kernel.Constant;
-import org.starloco.locos.object.GameObject;
-import org.starloco.locos.other.Dopeul;
-
-import java.util.ArrayList;
 
 public class InteractiveObject {
-
-    public final static Updatable<ArrayList<InteractiveObject>> updatable = new Updatable<ArrayList<InteractiveObject>>(0) {
-        private final ArrayList<InteractiveObject> queue = new ArrayList<>();
-
-        @Override
-        public void update() {
-            if(this.queue.isEmpty()) return;
-            long time = System.currentTimeMillis();
-            new ArrayList<>(this.queue).stream().filter(interactiveObject -> interactiveObject.getTemplate() != null && time - interactiveObject.lastTime >
-                    interactiveObject.getTemplate().getRespawnTime()).forEach(interactiveObject -> {
-                interactiveObject.enable();
-                this.queue.remove(interactiveObject);
-            });
-        }
-
-        @Override
-        public ArrayList<InteractiveObject> get() {
-            return queue;
-        }
-    };
-
     private final int id;
     private final int cellId;
 
@@ -350,19 +319,19 @@ public class InteractiveObject {
         this.interactive = interactive;
     }
 
-    public int getUseDuration() {
-        int duration = 1500;
-        if (this.getTemplate() != null)
-            duration = this.getTemplate().getDuration();
-        return duration;
-    }
-
-    public int getUnknowValue() {
-        int unk = 4;
-        if (this.getTemplate() != null)
-            unk = this.getTemplate().getUnk();
-        return unk;
-    }
+//    public int getUseDuration() {
+//        int duration = 1500;
+//        if (this.getTemplate() != null)
+//            duration = this.getTemplate().getDuration();
+//        return duration;
+//    }
+//
+//    public int getUnknowValue() {
+//        int unk = 4;
+//        if (this.getTemplate() != null)
+//            unk = this.getTemplate().getUnk();
+//        return unk;
+//    }
 
     public boolean isWalkable() {
         return this.walkable;
@@ -372,22 +341,6 @@ public class InteractiveObject {
         return template;
     }
 
-    public void setTemplate(InteractiveObjectTemplate template) {
-        this.template = template;
-    }
-
-    private void enable() {
-        this.state = JobConstant.IOBJECT_STATE_FULLING;
-        this.interactive = true;
-        SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(this.map, this.cellId, this);
-        this.state = JobConstant.IOBJECT_STATE_FULL;
-    }
-
-    public void disable() {
-        this.lastTime = System.currentTimeMillis();
-        ArrayList<InteractiveObject> array = InteractiveObject.updatable.get();
-        array.add(this);
-    }
 
     public static class InteractiveObjectTemplate {
 

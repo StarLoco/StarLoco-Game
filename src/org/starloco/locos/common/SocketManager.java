@@ -1365,6 +1365,7 @@ public class SocketManager {
         send(player, packet);
     }
 
+    @Deprecated
     public static void GAME_SEND_GDF_PACKET_TO_MAP(GameMap map, int cellID, InteractiveObject object) {
         GAME_SEND_GDF_PACKET_TO_MAP(map, cellID, object.getState(), object.isInteractive());
     }
@@ -1374,6 +1375,7 @@ public class SocketManager {
         send(player, packet);
     }
 
+    @Deprecated
     public static void GAME_SEND_GDF_PACKET_TO_MAP(GameMap map, int cellID, int state, boolean isInteractive) {
         String packet = "GDF|" + cellID + ";" + state + ";"
                 + (isInteractive ? "1" : "0");

@@ -117,6 +117,10 @@ function Player:savePosition(mapId, cellId, sendInfoMsg) end
 ---@return void
 function Player:openZaap() end
 
+---@param cellID number
+---@return void
+function Player:openTrunk(cellID) end
+
 ---@param cellId number
 ---@param skillId number
 ---@return void

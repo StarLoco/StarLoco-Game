@@ -91,6 +91,12 @@ public class SPlayer extends DefaultUserdata<Player> {
     }
 
     @SuppressWarnings("unused")
+    private static void openTrunk(Player p, ArgumentIterator args) {
+        int cellID = args.nextInt();
+        p.openTrunk(cellID);
+    }
+
+    @SuppressWarnings("unused")
     private static void useCraftSkill(Player p, ArgumentIterator args) {
         int cellId = args.nextInt();
         int skillId = args.nextInt();

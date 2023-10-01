@@ -6869,7 +6869,12 @@ public class GameClient {
     }
 
     private void removeSpell(String packet) {
-        int position = Integer.parseInt(packet.substring(2));
+        packet = packet.substring(2);
+
+        // Can happen when client gets into a weird state
+        if(packet.equals("undefined")) return;
+
+        int position = Integer.parseInt(packet);
         this.player.removeSpellShortcutAtPosition(position);
         this.player.send("SR"+position);
     }
