@@ -42,3 +42,8 @@ SKILLS[179] = function(p, cellId)
         p:map():setAnimationState(cellId, AnimStates.IN_USE)
     end
 end
+
+-- Use Astrub Breed Statue
+SKILLS[183] = function(p, _)
+    teleportByBreed(p, INCARNAM_STATUES)
+end
