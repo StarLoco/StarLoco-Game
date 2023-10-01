@@ -1,6 +1,5 @@
 package org.starloco.locos.script.proxy;
 
-import com.singularsys.jep.functions.Arg;
 import org.classdump.luna.ByteString;
 import org.classdump.luna.Table;
 import org.classdump.luna.impl.DefaultUserdata;
@@ -17,6 +16,7 @@ import org.starloco.locos.fight.spells.Spell;
 import org.starloco.locos.game.action.ExchangeAction;
 import org.starloco.locos.game.action.type.NpcDialogActionData;
 import org.starloco.locos.game.world.World;
+import org.starloco.locos.job.Job;
 import org.starloco.locos.job.JobStat;
 import org.starloco.locos.kernel.Constant;
 import org.starloco.locos.object.GameObject;
@@ -490,12 +490,24 @@ public class SPlayer extends DefaultUserdata<Player> {
     //endregion
 
     //region Jobs
+    @SuppressWarnings("unused")
+    private static Table jobs(Player p, ArgumentIterator args) {
+        return ScriptVM.listOf(p.getMetiers().values().stream().map(JobStat::getTemplate).map(Job::getId));
+    }
 
     @SuppressWarnings("unused")
     private static boolean tryLearnJob(Player p, ArgumentIterator args) {
         int jobID = args.nextInt();
         return p.tryLearnJob(jobID);
     }
+
+    @SuppressWarnings("unused")
+    private static boolean canLearnJob(Player p, ArgumentIterator args) {
+        int jobID = args.nextInt();
+        boolean send = args.nextOptionalBoolean(false);
+        return p.canLearnJob(jobID, send);
+    }
+
     @SuppressWarnings("unused")
     private static int jobLevel(Player p, ArgumentIterator args) {
         int jobID = args.nextInt();

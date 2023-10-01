@@ -68,7 +68,8 @@ public class GameCase {
     }
     public boolean isWalkable(boolean useObject, boolean inFight, int targetCell) {
         InteractiveObject io = getObject();
-        if(useObject && targetCell != -1 && io != null && map.cellsData.movement(cellId) == 1) {
+        if(useObject && io != null) {
+            if(this.cellId == targetCell) return true;
             return false;
         }
 

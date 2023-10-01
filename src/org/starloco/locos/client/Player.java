@@ -78,6 +78,10 @@ import java.util.stream.Stream;
 import static org.starloco.locos.kernel.Constant.INCARNAM_SUPERAREA;
 
 public class Player implements Scripted<SPlayer>, Actor {
+    private static final int MAX_BASIC_JOBS = 3;
+    private static final int MIN_JOB_LVL_FOR_NEW_JOB = 30;
+    private static final int MIN_JOB_FOR_SPECIALTY = 65;
+
     private final SPlayer scriptVal;
 
     public Stats stats;
@@ -1333,43 +1337,56 @@ public class Player implements Scripted<SPlayer>, Actor {
         return _capital;
     }
 
-    public boolean tryLearnJob(int jobID) {
+    public boolean canLearnJob(int jobID, boolean sendIm) {
         Job job = World.world.getMetier(jobID);
         if(job == null) return false;
 
-        if(_metiers.get(jobID) != null) {
-            SocketManager.GAME_SEND_Im_PACKET(this, "111");
+
+        if(getMetierByID(jobID) != null) {
+            // Already known
+            if(sendIm) {
+                SocketManager.GAME_SEND_Im_PACKET(this, "111");
+            }
             return false;
         }
 
-        // Common Precondition: Less than 3 basic jobs
-        if(totalJobBasic()>2) {
-            SocketManager.GAME_SEND_Im_PACKET(this, "19");
+        if(totalJobBasic()>=MAX_BASIC_JOBS) {
+            if(sendIm) {
+                SocketManager.GAME_SEND_Im_PACKET(this, "19");
+            }
             return false;
         }
 
         // Common Precondition: All current jobs > 30
         int min = _metiers.values().stream().mapToInt(JobStat::get_lvl).min().orElse(100);// 100 is the max level, so that's sure to be enough
-        if(min < 30) {
-            // Offi serveur don't send Im in this case
-            return false;
-        }
+        if(min < MIN_JOB_LVL_FOR_NEW_JOB) return false;
 
-        // If we're trying to learn magus job, check base job level
         if(job.isMaging()) {
             // Magus Precondition: Less than 3 magus jobs
-            if(totalJobFM()>2) {
-                SocketManager.GAME_SEND_Im_PACKET(this, "19");
+            if (totalJobFM() > 2) {
+                if(sendIm) {
+                    SocketManager.GAME_SEND_Im_PACKET(this, "19");
+                }
                 return false;
             }
 
             JobStat baseJobStats = _metiers.get(World.world.getMetierByMaging(jobID));
-            if(baseJobStats == null || baseJobStats.get_lvl() < 65) {
-                SocketManager.GAME_SEND_Im_PACKET(this, "111");
+            if(baseJobStats == null || baseJobStats.get_lvl() < MIN_JOB_FOR_SPECIALTY) {
+                if(sendIm) {
+                    SocketManager.GAME_SEND_Im_PACKET(this, "111");
+                }
                 return false;
             }
         }
 
+        return true;
+    }
+
+    public boolean tryLearnJob(int jobID) {
+        Job job = World.world.getMetier(jobID);
+        if(job == null) return false;
+
+        if(!canLearnJob(jobID, true)) return false;
         learnJob(job);
         return true;
     }

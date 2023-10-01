@@ -201,9 +201,16 @@ function Player:sendAction(id,type, val) end
 ---@return void
 function Player:sendInfoMsg(type, id) end
 
+---@return number[] job IDs
+function Player:jobs() end
+
 ---@param job number
 ---@return number -- 0 if not known
 function Player:jobLevel(job) end
+
+---@param job number
+---@return boolean worked
+function Player:canLearnJob(job) end
 
 ---@param job number
 ---@return boolean worked
