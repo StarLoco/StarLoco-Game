@@ -1,5 +1,7 @@
 local npc = Npc(525, 40)
 
+npc.gender = 0
+npc.colors = {5658198, 12676893, -1}
 npc.accessories = {0, 6863, 6886, 0, 7069}
 
 ---@param p Player

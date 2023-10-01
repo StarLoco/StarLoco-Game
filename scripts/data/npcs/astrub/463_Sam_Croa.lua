@@ -1,5 +1,8 @@
 local npc = Npc(463, 9030)
 
+npc.gender = 0
+npc.colors = {-1, 16777215, 0}
+
 npc.sales = {
     {item=286},
     {item=492}
