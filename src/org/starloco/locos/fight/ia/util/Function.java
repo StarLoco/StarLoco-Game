@@ -1894,7 +1894,7 @@ public class Function {
         if(fight == null) return cells;
 
         for (char dir : dirs) {
-            GameCase cell = fight.getMap().getCase(PathFinding.GetCaseIDFromDirrection(launch.getId(), dir, fight.getMap(), true));
+            GameCase cell = fight.getMap().getCase(PathFinding.GetCaseIDFromDirection(launch.getId(), dir, fight.getMap(), true));
             if (cell != null && cell.isWalkable(true, true, -1))
                 available.add(cell);
         }
@@ -1917,7 +1917,7 @@ public class Function {
         if(map == null) return available;
 
         for (char dir : dirs) {
-            GameCase cell = map.getCase(PathFinding.GetCaseIDFromDirrection(launch.getId(), dir, map, true));
+            GameCase cell = map.getCase(PathFinding.GetCaseIDFromDirection(launch.getId(), dir, map, true));
             if (once || (cell != null && cellAvailable(fight, cell))) available.add(cell);
             if(!once) cells.add(cell);
         }
@@ -1925,7 +1925,7 @@ public class Function {
             for (GameCase c : cells) {
                 if(c == null) continue;
                 for (char dir : dirs) {
-                    GameCase cell = map.getCase(PathFinding.GetCaseIDFromDirrection(c.getId(), dir, map, true));
+                    GameCase cell = map.getCase(PathFinding.GetCaseIDFromDirection(c.getId(), dir, map, true));
                     if (cell != null && cellAvailable(fight, cell))
                         available.add(cell);
                 }

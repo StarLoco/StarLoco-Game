@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.starloco.locos.common.CryptManager;
 import org.starloco.locos.entity.exchange.NpcExchange;
 import org.starloco.locos.game.action.type.BigStoreActionData;
 import org.starloco.locos.game.action.type.NpcDialogActionData;
@@ -4584,7 +4585,7 @@ public class GameClient {
 
                         //On d?finie la case et on ajoute le personnage sur la case
                         this.player.setCurCell(nextCell);
-                        this.player.set_orientation(World.world.getCryptManager().getIntByHashedValue(path.charAt(path.length() - 3)));
+                        this.player.set_orientation(CryptManager.getIntByHashedValue(path.charAt(path.length() - 3)));
                         this.player.getCurCell().addPlayer(this.player);
                         if (!this.player.isGhost())
                             this.player.setAway(false);

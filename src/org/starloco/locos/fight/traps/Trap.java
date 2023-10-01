@@ -115,7 +115,7 @@ public class Trap {
             for (GameCase aCell : new ArrayList<>(cells)) {
                 if(aCell == null) continue;
                 for (char d : dirs) {
-                    GameCase cell = this.fight.getMap().getCase(PathFinding.GetCaseIDFromDirrection(aCell.getId(), d, this.fight.getMap(), true));
+                    GameCase cell = this.fight.getMap().getCase(PathFinding.GetCaseIDFromDirection(aCell.getId(), d, this.fight.getMap(), true));
                     if (cell != null && !cells.contains(cell))
                         cells.add(cell);
                 }

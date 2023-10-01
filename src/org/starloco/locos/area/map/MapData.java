@@ -127,7 +127,6 @@ public abstract class MapData implements CellsDataProvider {
         return width * height + (width-1) * (height-1);
     }
     public Map<Integer, Integer> interactiveObjects() { return interactiveObjects; }
-    public Map<Integer, Animation> animations() { return animations; }
 
     public long cellData(int cellID) {
         return cellsData.cellData(cellID);

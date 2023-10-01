@@ -84,7 +84,7 @@ public class PathFinding {
         if(map == null) return enemy;
 
         for (char dir : dirs) {
-            GameCase cell = map.getCase((short) GetCaseIDFromDirrection(cellID, dir, map, false));
+            GameCase cell = map.getCase((short) GetCaseIDFromDirection(cellID, dir, map, false));
             if(cell != null) {
                 Fighter f = cell.getFirstFighter();
                 if (f != null) {
@@ -130,7 +130,7 @@ public class PathFinding {
         int lastPos = CurrentPos, oldPos = CurrentPos;
 
         for (nSteps.set(1); nSteps.get() <= 64; nSteps.set(nSteps.get() + 1)) {
-            if (GetCaseIDFromDirrection(lastPos, dir, map, fight != null) == dirCaseID) {
+            if (GetCaseIDFromDirection(lastPos, dir, map, fight != null) == dirCaseID) {
                 if (fight != null && fight.isOccuped(dirCaseID))
                     return "stop:" + lastPos;
                 GameCase cell = map.getCase(dirCaseID);
@@ -147,7 +147,7 @@ public class PathFinding {
                     return ("stop:" + lastPos);
                 }
             } else {
-                lastPos = GetCaseIDFromDirrection(lastPos, dir, map, fight != null);
+                lastPos = GetCaseIDFromDirection(lastPos, dir, map, fight != null);
             }
 
             if (fight == null) {
@@ -204,15 +204,15 @@ public class PathFinding {
         char[] dir = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
         int _c = -1;
         for (char d : dir) {
-            _c = GetCaseIDFromDirrection(caseId, d, map, false);
+            _c = GetCaseIDFromDirection(caseId, d, map, false);
             if (_c > 0)
                 list.add(_c);
         }
         return list;
     }
 
-    public static int GetCaseIDFromDirrection(int cellId, char dir,
-                                              GameMap map, boolean fight) {
+    public static int GetCaseIDFromDirection(int cellId, char dir,
+                                             GameMap map, boolean fight) {
         if (map == null)
             return -1;
         int cell = -1;
@@ -261,7 +261,7 @@ public class PathFinding {
     public static Fighter getEnemyAround(int cellId, GameMap map, Fight fight) {
         char[] dirs = {'b', 'd', 'f', 'h'};
         for (char dir : dirs) {
-            GameCase cell = map.getCase(GetCaseIDFromDirrection(cellId, dir, map, false));
+            GameCase cell = map.getCase(GetCaseIDFromDirection(cellId, dir, map, false));
             if (cell == null)
                 continue;
             Fighter f = cell.getFirstFighter();
@@ -277,7 +277,7 @@ public class PathFinding {
     public static List<Fighter> getEnemiesAround(int cellId, GameMap map, Fight fight) {
         final List<Fighter> array = new ArrayList<>();
         for (char dir : new char[] {'b', 'd', 'f', 'h'}) {
-            GameCase cell = map.getCase(GetCaseIDFromDirrection(cellId, dir, map, false));
+            GameCase cell = map.getCase(GetCaseIDFromDirection(cellId, dir, map, false));
             if (cell != null) {
                 Fighter f = cell.getFirstFighter();
                 if (f != null)
@@ -303,7 +303,7 @@ public class PathFinding {
         }
         boolean b = false;
         for (int a = 0; a < value; a++) {
-            int nextCase = GetCaseIDFromDirrection(id, c, map, true);
+            int nextCase = GetCaseIDFromDirection(id, c, map, true);
 
             if (map.getCase(nextCase) != null && map.getCase(nextCase).isWalkableFight() && map.getCase(nextCase).getFirstFighter() == null)
                 id = nextCase;
@@ -314,7 +314,7 @@ public class PathFinding {
                 GameCase trapCell = trap.getCell(), nextCell = map.getCase(nextCase);
                 if (getDistanceBetween(map, trapCell.getId(), nextCell.getId()) <= trap.getSize()) {
                     if(!casesAreInSameLine(map, trapCell.getId(), nextCell.getId(), 'z', 15))
-                        id = GetCaseIDFromDirrection(nextCase, c, map, true);
+                        id = GetCaseIDFromDirection(nextCase, c, map, true);
                     b = true;
                 }
             }
@@ -342,7 +342,7 @@ public class PathFinding {
 
         boolean b = false;
         for (int a = 0; a < value; a++) {
-            nextCase = GetCaseIDFromDirrection(id, dir, map, true);
+            nextCase = GetCaseIDFromDirection(id, dir, map, true);
 
             if (map.getCase(nextCase) != null && map.getCase(nextCase).isWalkableFight() && map.getCase(nextCase).getFighters().isEmpty())
                 id = nextCase;
@@ -353,7 +353,7 @@ public class PathFinding {
                 GameCase trapCell = trap.getCell(), nextCell = map.getCase(nextCase);
                 if (getDistanceBetween(map, trapCell.getId(), nextCell.getId()) <= trap.getSize()) {
                     if(!casesAreInSameLine(map, trapCell.getId(), nextCell.getId(), 'z', 15))
-                        id = GetCaseIDFromDirrection(nextCase, dir, map, true);
+                        id = GetCaseIDFromDirection(nextCase, dir, map, true);
                     b = true;
                     break;
                 }
@@ -378,7 +378,7 @@ public class PathFinding {
         char c = getDirBetweenTwoCase(c1.getId(), c2.getId(), map, true);
 
         while (map != null && c2 != map.getCase(id)) {
-            id = GetCaseIDFromDirrection(id, c, map, true);
+            id = GetCaseIDFromDirection(id, c, map, true);
             if (map.getCase(id) == null) {
                 return dist;
             }
@@ -423,28 +423,28 @@ public class PathFinding {
         {
             if(d == 'b')//En Haut à Droite.
             {
-                int c = PathFinding.GetCaseIDFromDirrection(startCell, d, map, true);
+                int c = PathFinding.GetCaseIDFromDirection(startCell, d, map, true);
                 if (map.getCase(c) == null)
                     continue;
                 hd = map.getCase(c);
             }
             else if(d == 'f')//En Bas à Gauche.
             {
-                int c = PathFinding.GetCaseIDFromDirrection(startCell, d, map, true);
+                int c = PathFinding.GetCaseIDFromDirection(startCell, d, map, true);
                 if (map.getCase(c) == null)
                     continue;
                 bg = map.getCase(c);
             }
             else if(d == 'd')//En Haut à Gauche.
             {
-                int c = PathFinding.GetCaseIDFromDirrection(startCell, d, map, true);
+                int c = PathFinding.GetCaseIDFromDirection(startCell, d, map, true);
                 if (map.getCase(c) == null)
                     continue;
                 hg = map.getCase(c);
             }
             else if(d == 'h')//En Bas à Droite.
             {
-                int c = PathFinding.GetCaseIDFromDirrection(startCell, d, map, true);
+                int c = PathFinding.GetCaseIDFromDirection(startCell, d, map, true);
                 if (map.getCase(c) == null)
                     continue;
                 bd = map.getCase(c);
@@ -540,7 +540,7 @@ public class PathFinding {
         char[] dirs = {'f', 'd', 'b', 'h'};
         for (char dir : dirs)
         {
-            int id = GetCaseIDFromDirrection(cellId, dir, map, false);
+            int id = GetCaseIDFromDirection(cellId, dir, map, false);
             GameCase cell = map.getCase(id);
             if (cell == null)
                 continue;
@@ -557,7 +557,7 @@ public class PathFinding {
         char[] dirs = {'f', 'd', 'b', 'h'};
 
         for (char dir : Formulas.shuffleCharArray(dirs)) {
-            int id = GetCaseIDFromDirrection(cellId, dir, fight.getMap(), false);
+            int id = GetCaseIDFromDirection(cellId, dir, fight.getMap(), false);
             GameCase cell = fight.getMap().getCase(id);
 
             if (cell != null) {
@@ -588,7 +588,7 @@ public class PathFinding {
         for (char d : dirs)
         {
 
-            int c = PathFinding.GetCaseIDFromDirrection(startCell, d, map, true);
+            int c = PathFinding.GetCaseIDFromDirection(startCell, d, map, true);
             if (map.getCase(c) == null)
                 continue;
             int dis = PathFinding.getDistanceBetween(map, endCell, c);
@@ -634,7 +634,7 @@ public class PathFinding {
             boolean ok = false;
             while(!ok)
             {
-                int h = PathFinding.GetCaseIDFromDirrection(c, d, map, true);
+                int h = PathFinding.GetCaseIDFromDirection(c, d, map, true);
                 if (map.getCase(h) == null)
                     ok = true;
                 dis = PathFinding.getDistanceBetween(map, endCell, c);
@@ -695,7 +695,7 @@ public class PathFinding {
         char[] dirs = {'b', 'd', 'f', 'h'};
         char perso = ' ';
         for (char d : dirs) {
-            int c = PathFinding.GetCaseIDFromDirrection(startCell, d, map, true);
+            int c = PathFinding.GetCaseIDFromDirection(startCell, d, map, true);
             if (map.getCase(c) == null)
                 continue;
             if(map.getCase(c) == F.getCell())
@@ -704,7 +704,7 @@ public class PathFinding {
         
         for (char d : dirs) {
             if(getOpositeDirection(perso) == d) {
-                int c = PathFinding.GetCaseIDFromDirrection(startCell, d, map, true);
+                int c = PathFinding.GetCaseIDFromDirection(startCell, d, map, true);
                 if (map.getCase(c) == null) continue;
                 if(!map.getCase(c).isWalkableFight() || map.getCase(c).getFirstFighter() != null) {
                     int dis = PathFinding.getDistanceBetween(map, endCell, map.getCase(c).getId());
@@ -739,28 +739,28 @@ public class PathFinding {
         {
             if(d == 'b')//En Haut à Droite.
             {
-                int c = PathFinding.GetCaseIDFromDirrection(startCell, d, map, true);
+                int c = PathFinding.GetCaseIDFromDirection(startCell, d, map, true);
                 if (map.getCase(c) == null)
                     continue;
                 hd = map.getCase(c);
             }
             else if(d == 'f')//En Bas à Gauche.
             {
-                int c = PathFinding.GetCaseIDFromDirrection(startCell, d, map, true);
+                int c = PathFinding.GetCaseIDFromDirection(startCell, d, map, true);
                 if (map.getCase(c) == null)
                     continue;
                 bg = map.getCase(c);
             }
             else if(d == 'd')//En Haut à Gauche.
             {
-                int c = PathFinding.GetCaseIDFromDirrection(startCell, d, map, true);
+                int c = PathFinding.GetCaseIDFromDirection(startCell, d, map, true);
                 if (map.getCase(c) == null)
                     continue;
                 hg = map.getCase(c);
             }
             else if(d == 'h')//En Bas à Droite.
             {
-                int c = PathFinding.GetCaseIDFromDirrection(startCell, d, map, true);
+                int c = PathFinding.GetCaseIDFromDirection(startCell, d, map, true);
                 if (map.getCase(c) == null)
                     continue;
                 bd = map.getCase(c);
@@ -776,7 +776,7 @@ public class PathFinding {
             {
                 if(hd.getFirstFighter() == null && hd.blockLoS() == true)
                 {
-                    int p = PathFinding.GetCaseIDFromDirrection(c.getId(), 'b', map, true);
+                    int p = PathFinding.GetCaseIDFromDirection(c.getId(), 'b', map, true);
                     if (map.getCase(p) == null)
                         continue;
                     // On cherche la distance entre
@@ -794,7 +794,7 @@ public class PathFinding {
                         cellID = p;
                     }
                 }
-                int p = PathFinding.GetCaseIDFromDirrection(c.getId(), 'h', map, true);
+                int p = PathFinding.GetCaseIDFromDirection(c.getId(), 'h', map, true);
                 if (map.getCase(p) == null)
                     continue;
                 // On cherche la distance entre
@@ -812,7 +812,7 @@ public class PathFinding {
                     cellID = p;
                 }
 
-                int m = PathFinding.GetCaseIDFromDirrection(c.getId(), 'd', map, true);
+                int m = PathFinding.GetCaseIDFromDirection(c.getId(), 'd', map, true);
                 if (map.getCase(m) == null)
                     continue;
                 // On cherche la distance entre
@@ -834,7 +834,7 @@ public class PathFinding {
             {
                 if(bg.getFirstFighter() == null && bg.blockLoS() == true)
                 {
-                    int p = PathFinding.GetCaseIDFromDirrection(c.getId(), 'f', map, true);
+                    int p = PathFinding.GetCaseIDFromDirection(c.getId(), 'f', map, true);
                     if (map.getCase(p) == null)
                         continue;
                     // On cherche la distance entre
@@ -852,7 +852,7 @@ public class PathFinding {
                         cellID = p;
                     }
                 }
-                int p = PathFinding.GetCaseIDFromDirrection(c.getId(), 'h', map, true);
+                int p = PathFinding.GetCaseIDFromDirection(c.getId(), 'h', map, true);
                 if (map.getCase(p) == null)
                     continue;
                 // On cherche la distance entre
@@ -870,7 +870,7 @@ public class PathFinding {
                     cellID = p;
                 }
 
-                int m = PathFinding.GetCaseIDFromDirrection(c.getId(), 'd', map, true);
+                int m = PathFinding.GetCaseIDFromDirection(c.getId(), 'd', map, true);
                 if (map.getCase(m) == null)
                     continue;
                 // On cherche la distance entre
@@ -892,7 +892,7 @@ public class PathFinding {
             {
                 if(hg.getFirstFighter() == null && hg.blockLoS() == true)
                 {
-                    int p = PathFinding.GetCaseIDFromDirrection(c.getId(), 'd', map, true);
+                    int p = PathFinding.GetCaseIDFromDirection(c.getId(), 'd', map, true);
                     if (map.getCase(p) == null)
                         continue;
                     // On cherche la distance entre
@@ -915,7 +915,7 @@ public class PathFinding {
             {
                 if(bd.getFirstFighter() == null && bd.blockLoS() == true)
                 {
-                    int p = PathFinding.GetCaseIDFromDirrection(c.getId(), 'h', map, true);
+                    int p = PathFinding.GetCaseIDFromDirection(c.getId(), 'h', map, true);
                     if (map.getCase(p) == null)
                         continue;
                     // On cherche la distance entre
@@ -944,13 +944,13 @@ public class PathFinding {
         if(dir != 0) {
             GameCase c = c1;
             for (int a = 0; a < max; a++) {
-                if (GetCaseIDFromDirrection(c.getId(), dir, map, true) == c2.getId())
+                if (GetCaseIDFromDirection(c.getId(), dir, map, true) == c2.getId())
                     return true;
-                if (GetCaseIDFromDirrection(c.getId(), dir, map, true) == -1)
+                if (GetCaseIDFromDirection(c.getId(), dir, map, true) == -1)
                     break;
                 if(!c.isWalkableFight() || c.getFirstFighter() != null)
                     break;
-                c = map.getCase(GetCaseIDFromDirrection(c.getId(), dir, map, true));
+                c = map.getCase(GetCaseIDFromDirection(c.getId(), dir, map, true));
             }
         }
         return false;
@@ -963,11 +963,11 @@ public class PathFinding {
         if (dir != 'z')//Si la direction est d�finie
         {
             for (int a = 0; a < max; a++) {
-                if (GetCaseIDFromDirrection(c1, dir, map, true) == c2)
+                if (GetCaseIDFromDirection(c1, dir, map, true) == c2)
                     return true;
-                if (GetCaseIDFromDirrection(c1, dir, map, true) == -1)
+                if (GetCaseIDFromDirection(c1, dir, map, true) == -1)
                     break;
-                c1 = GetCaseIDFromDirrection(c1, dir, map, true);
+                c1 = GetCaseIDFromDirection(c1, dir, map, true);
             }
         } else
         //Si on doit chercher dans toutes les directions
@@ -976,9 +976,9 @@ public class PathFinding {
             for (char d : dirs) {
                 int c = c1;
                 for (int a = 0; a < max; a++) {
-                    if (GetCaseIDFromDirrection(c, d, map, true) == c2)
+                    if (GetCaseIDFromDirection(c, d, map, true) == c2)
                         return true;
-                    c = GetCaseIDFromDirrection(c, d, map, true);
+                    c = GetCaseIDFromDirection(c, d, map, true);
                 }
             }
         }
@@ -1048,12 +1048,12 @@ public class PathFinding {
         if (c == (char) ('a' - 1))
             c = 'h';
         if (c == (char) ('h' + 1)) c = 'a';
-        GameCase cell = map.getCase(GetCaseIDFromDirrection(id, c, map, false));
+        GameCase cell = map.getCase(GetCaseIDFromDirection(id, c, map, false));
         return cell != null ? cell.getFirstFighter() : null;
     }
 
     private static Fighter getFighter2CellBefore(int CellID, char c, GameMap map) {
-        int new2CellID = GetCaseIDFromDirrection(GetCaseIDFromDirrection(CellID, c, map, false), c, map, false);
+        int new2CellID = GetCaseIDFromDirection(GetCaseIDFromDirection(CellID, c, map, false), c, map, false);
         GameCase cell = map != null ? map.getCase(new2CellID) : null;
         return cell != null ? cell.getFirstFighter() : null;
     }
@@ -1074,9 +1074,9 @@ public class PathFinding {
         for (char c : dirs) {
             int cell = cell1ID;
             for (int i = 0; i <= 64; i++) {
-                if (GetCaseIDFromDirrection(cell, c, map, Combat) == cell2ID)
+                if (GetCaseIDFromDirection(cell, c, map, Combat) == cell2ID)
                     return c;
-                cell = GetCaseIDFromDirrection(cell, c, map, Combat);
+                cell = GetCaseIDFromDirection(cell, c, map, Combat);
             }
         }
         return 0;
@@ -1086,7 +1086,7 @@ public class PathFinding {
         ArrayList<GameCase> path = new AStarPathFinding(map, cell1, cell2).getShortestPath();
         if(path == null || path.isEmpty()) return path != null;
         char dir = getDirBetweenTwoCase(cell2, path.get(path.size() - 1).getId(), map, true);
-        GameCase id = map.getCase(GetCaseIDFromDirrection(cell2, dir, map, true));
+        GameCase id = map.getCase(GetCaseIDFromDirection(cell2, dir, map, true));
 
         return path.contains(id);
     }
@@ -1113,7 +1113,7 @@ public class PathFinding {
                     for (GameCase aCell : cases2) {
                         if(aCell == null) continue;
                         for (char d : dirs) {
-                            GameCase cell = map.getCase(PathFinding.GetCaseIDFromDirrection(aCell.getId(), d, map, true));
+                            GameCase cell = map.getCase(PathFinding.GetCaseIDFromDirection(aCell.getId(), d, map, true));
                             if (cell == null)
                                 continue;
                             if (!cases.contains(cell))
@@ -1128,8 +1128,8 @@ public class PathFinding {
                 for (char d : dirs) {
                     int cID = cellID;
                     for (int a = 0; a < size; a++) {
-                        cases.add(map.getCase(GetCaseIDFromDirrection(cID, d, map, true)));
-                        cID = GetCaseIDFromDirrection(cID, d, map, true);
+                        cases.add(map.getCase(GetCaseIDFromDirection(cID, d, map, true)));
+                        cID = GetCaseIDFromDirection(cID, d, map, true);
                     }
                 }
                 break;
@@ -1137,8 +1137,8 @@ public class PathFinding {
             case 'L':// Ligne
                 char dir = PathFinding.getDirBetweenTwoCase(castCellID, cellID, map, true);
                 for (int a = 0; a < size; a++) {
-                    cases.add(map.getCase(GetCaseIDFromDirrection(cellID, dir, map, true)));
-                    cellID = GetCaseIDFromDirrection(cellID, dir, map, true);
+                    cases.add(map.getCase(GetCaseIDFromDirection(cellID, dir, map, true)));
+                    cellID = GetCaseIDFromDirection(cellID, dir, map, true);
                 }
                 break;
 
@@ -1206,7 +1206,7 @@ public class PathFinding {
         int dist = 1000, cellId = startCell;
 
         for (char d : new char[] {'b', 'd', 'f', 'h'}) {
-            int newCellId = PathFinding.GetCaseIDFromDirrection(startCell, d, map, true);
+            int newCellId = PathFinding.GetCaseIDFromDirection(startCell, d, map, true);
             GameCase cell = map.getCase(newCellId);
 
             if (cell != null) {
@@ -1231,7 +1231,7 @@ public class PathFinding {
             forbidens = new ArrayList<>();
         char[] dirs = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
         for (char d : dirs) {
-            int c = PathFinding.GetCaseIDFromDirrection(startCell, d, map, true);
+            int c = PathFinding.GetCaseIDFromDirection(startCell, d, map, true);
             int dis = PathFinding.getDistanceBetween(map, endCell, c);
             if (map.getCase(c) == null)
                 continue;
@@ -1404,8 +1404,8 @@ public class PathFinding {
                     dir = 'f';
                 else
                     dir = 'b';
-                consideredCell1 = GetCaseIDFromDirrection(consideredCell1, dir, map, Combat); // on avance le chemin d'obstacles possibles
-                consideredCell2 = GetCaseIDFromDirrection(consideredCell2, getOpositeDirection(dir), map, Combat); // des deux c�t�s
+                consideredCell1 = GetCaseIDFromDirection(consideredCell1, dir, map, Combat); // on avance le chemin d'obstacles possibles
+                consideredCell2 = GetCaseIDFromDirection(consideredCell2, getOpositeDirection(dir), map, Combat); // des deux c�t�s
                 toReturn.add(consideredCell1); // la liste des cases potentiellement obstacles
                 toReturn.add(consideredCell2); // la liste des cases potentiellement obstacles
             } else if (Math.abs(diffX) < Math.abs(diffY)) { // si il y a une plus grand diff�rence pour la seconde
@@ -1413,8 +1413,8 @@ public class PathFinding {
                     dir = 'h';
                 else
                     dir = 'd';
-                consideredCell1 = GetCaseIDFromDirrection(consideredCell1, dir, map, Combat); // on avance le chemin d'obstacles possibles
-                consideredCell2 = GetCaseIDFromDirrection(consideredCell2, getOpositeDirection(dir), map, Combat); // des deux c�t�s
+                consideredCell1 = GetCaseIDFromDirection(consideredCell1, dir, map, Combat); // on avance le chemin d'obstacles possibles
+                consideredCell2 = GetCaseIDFromDirection(consideredCell2, getOpositeDirection(dir), map, Combat); // des deux c�t�s
                 toReturn.add(consideredCell1); // la liste des cases potentiellement obstacles
                 toReturn.add(consideredCell2); // la liste des cases potentiellement obstacles
             } else {
@@ -1430,8 +1430,8 @@ public class PathFinding {
                         dir = 'f';
                     else
                         dir = 'b';
-                consideredCell1 = GetCaseIDFromDirrection(consideredCell1, dir, map, Combat); // on avance le chemin d'obstacles possibles
-                consideredCell2 = GetCaseIDFromDirrection(consideredCell2, getOpositeDirection(dir), map, Combat); // des deux c�t�s
+                consideredCell1 = GetCaseIDFromDirection(consideredCell1, dir, map, Combat); // on avance le chemin d'obstacles possibles
+                consideredCell2 = GetCaseIDFromDirection(consideredCell2, getOpositeDirection(dir), map, Combat); // des deux c�t�s
                 toReturn.add(consideredCell1); // la liste des cases potentiellement obstacles
                 toReturn.add(consideredCell2); // la liste des cases potentiellement obstacles
             }
@@ -1454,7 +1454,7 @@ public class PathFinding {
                 else
                     dir = 'b';
             if (dir != 0)
-                toReturn.add(GetCaseIDFromDirrection(consideredCell1, dir, map, Combat));
+                toReturn.add(GetCaseIDFromDirection(consideredCell1, dir, map, Combat));
         }
         return toReturn;
     }
@@ -1473,7 +1473,7 @@ public class PathFinding {
             dir = 'c';
         int consideredCell = cellID1, compteur = 0;
         while (consideredCell != -1 && compteur < 100) {
-            consideredCell = GetCaseIDFromDirrection(consideredCell, dir, map, false);
+            consideredCell = GetCaseIDFromDirection(consideredCell, dir, map, false);
             if (consideredCell == cellID2)
                 return toReturn;
             toReturn.add(consideredCell);
@@ -1487,7 +1487,7 @@ public class PathFinding {
         ArrayList<Fighter> fighters = new ArrayList<>();
 
         for (char dir : dirs) {
-            GameCase gameCase = map.getCase(GetCaseIDFromDirrection(cellID, dir, map, false));
+            GameCase gameCase = map.getCase(GetCaseIDFromDirection(cellID, dir, map, false));
             if(gameCase == null) continue;
             Fighter f = gameCase.getFirstFighter();
             if (f != null)
@@ -1588,7 +1588,7 @@ public class PathFinding {
         ArrayList<Integer> Cases = new ArrayList<>();
 
         for (char dir : dirs) {
-            int caseID = PathFinding.GetCaseIDFromDirrection(cell, dir, fight.getMap(), true);
+            int caseID = PathFinding.GetCaseIDFromDirection(cell, dir, fight.getMap(), true);
             Cases.add(caseID);
         }
         int ha = 0;
@@ -1604,7 +1604,7 @@ public class PathFinding {
     public static List<GameCase> getCellsByDir(Fight fight, int startCell, char dir, int limit) {
         List<GameCase> cells = new ArrayList<>();
         for(int i = 0; i < limit; i++) {
-            int id = GetCaseIDFromDirrection(startCell, dir, fight.getMap(), true);
+            int id = GetCaseIDFromDirection(startCell, dir, fight.getMap(), true);
             if(!haveFighterOnThisCell(id, fight, false)) {
                 cells.add(fight.getMap().getCase(id));
             }
@@ -1618,7 +1618,7 @@ public class PathFinding {
         int endCell = fighter.getCell().getId();
 
         for (char d : dirs) {
-            int id = PathFinding.GetCaseIDFromDirrection(startCell, d, map, true);
+            int id = PathFinding.GetCaseIDFromDirection(startCell, d, map, true);
             GameCase cell = map.getCase(id);
             if (cell == null)
                 continue;
@@ -1632,7 +1632,7 @@ public class PathFinding {
 
             boolean ok = false;
             while(!ok) {
-                int h = PathFinding.GetCaseIDFromDirrection(cell.getId(), d, map, true);
+                int h = PathFinding.GetCaseIDFromDirection(cell.getId(), d, map, true);
                 if (map.getCase(h) != null) {
                     distance = PathFinding.getDistanceBetween(map, endCell, h);
                     // Si la distance est strictement inférieur à 1000 et que la case est marchable et que personne ne se trouve dessus et que la case n'est pas interdite

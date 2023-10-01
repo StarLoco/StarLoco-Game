@@ -1,6 +1,5 @@
 package org.starloco.locos.fight.spells;
 
-import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.common.Formulas;
@@ -935,7 +934,7 @@ public class SpellEffect implements Cloneable {
 					newCellId = PathFinding.newCaseAfterPush(fight, launchCell, target.getCell(), a, spell == 73);
 
 					char dir = PathFinding.getDirBetweenTwoCase(cell.getId(), target.getCell().getId(), fight.getMap(), true);
-					GameCase nextCase = fight.getMap().getCase(PathFinding.GetCaseIDFromDirrection(target.getCell().getId(), dir, fight.getMap(), true));
+					GameCase nextCase = fight.getMap().getCase(PathFinding.GetCaseIDFromDirection(target.getCell().getId(), dir, fight.getMap(), true));
 
 					if (nextCase != null && nextCase.getFirstFighter() != null) {
 						Fighter wallTarget = nextCase.getFirstFighter();
@@ -4327,7 +4326,7 @@ public class SpellEffect implements Cloneable {
 	private void applyEffect_783(Fight fight) {
 		GameCase casterCell = caster.getCell();
 		char dir = PathFinding.getDirBetweenTwoCase(casterCell.getId(), cell.getId(), fight.getMap(), true);
-		int targetCellId = PathFinding.GetCaseIDFromDirrection(casterCell.getId(), dir, fight.getMap(), true);
+		int targetCellId = PathFinding.GetCaseIDFromDirection(casterCell.getId(), dir, fight.getMap(), true);
 		GameCase targetCell = fight.getMap().getCase(targetCellId);
 
 		if (targetCell == null || targetCell.getFighters().isEmpty())
@@ -4343,10 +4342,10 @@ public class SpellEffect implements Cloneable {
 					return;
 
 		int limit = 0;
-		while (PathFinding.GetCaseIDFromDirrection(targetCellId, dir, fight.getMap(), true) != cell.getId()) {
-			if (PathFinding.GetCaseIDFromDirrection(targetCellId, dir, fight.getMap(), true) == -1)
+		while (PathFinding.GetCaseIDFromDirection(targetCellId, dir, fight.getMap(), true) != cell.getId()) {
+			if (PathFinding.GetCaseIDFromDirection(targetCellId, dir, fight.getMap(), true) == -1)
 				return;
-			targetCellId = PathFinding.GetCaseIDFromDirrection(targetCellId, dir, fight.getMap(), true);
+			targetCellId = PathFinding.GetCaseIDFromDirection(targetCellId, dir, fight.getMap(), true);
 			limit++;
 			if (limit > 50)
 				return;

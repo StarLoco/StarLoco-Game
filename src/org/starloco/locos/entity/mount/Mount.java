@@ -654,7 +654,7 @@ public class Mount {
 		int cellTest = this.cellId;
 		for(int i = 0; i < cellules; i++) 
 		{
-			cellTest = PathFinding.GetCaseIDFromDirrection(cellTest, dir, map, false);
+			cellTest = PathFinding.GetCaseIDFromDirection(cellTest, dir, map, false);
 			if(map.getCase(cellTest) == null)
 				return;
             if(MP.getCellAndObject().containsKey(cellTest) && (this.fatigue >= 240 || this.isFecund() == 10))

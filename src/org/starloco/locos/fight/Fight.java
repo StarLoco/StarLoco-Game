@@ -2857,7 +2857,7 @@ public class Fight {
         char dir = PathFinding.getDirBetweenTwoCase(casterCell, cell.getId(), getMap(), true);
 
         if (spell.getSpellID() == 67) {
-            if (!PathFinding.checkLoS(getMap(), PathFinding.GetCaseIDFromDirrection(casterCell, dir, getMap(), true), cell.getId(), null, true)) {
+            if (!PathFinding.checkLoS(getMap(), PathFinding.GetCaseIDFromDirection(casterCell, dir, getMap(), true), cell.getId(), null, true)) {
                 if (player != null)
                     SocketManager.GAME_SEND_Im_PACKET(player, "1174");
                 return false;
