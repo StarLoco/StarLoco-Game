@@ -10,8 +10,7 @@ function npc:onTalk(p, answer)
     elseif answer == 338 then
         p:ask(418)
     elseif answer == 3373 then
-        local dst = ASTRUB_STATUES[p:breed()]
-        p:teleport(dst[1], dst[2])
+        teleportByBreed(p, ASTRUB_STATUES)
         p:endDialog()
     end
 end

@@ -40,3 +40,10 @@ ASTRUB_STATUES = {
     [SacrierBreed] = {7336, 198},
     [PandawaBreed] = {8035, 384}
 }
+
+---@param p Player
+---@param destinations table < number, number[2] >
+function teleportByBreed (p, destinations)
+    local dst = destinations[p:breed()]
+    p:teleport(dst[1], dst[2])
+end
