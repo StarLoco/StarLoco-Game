@@ -26,6 +26,8 @@ AnimatedObjects.MinosMazeYellowSwitch = NewAnimation(7044, AnimStates.READY, {[A
 
 --- Sliding rock cave entrance
 AnimatedObjects.SlidingRock = NewAnimation(6550, AnimStates.NOT_READY, doorSG(3700, 4700))
+AnimatedObjects.SlidingRockIncarnam = NewAnimation(6571, AnimStates.NOT_READY, doorSG(3700, 3333))
+
 --- Sliding mine cart
 AnimatedObjects.SlidingMineCart = NewAnimation(6553, AnimStates.NOT_READY, doorSG(8050, 666))
 

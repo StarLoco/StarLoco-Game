@@ -158,20 +158,22 @@ function fightEndTeleportWinnerPlayer(mapId, cellId)
     end
 end
 
-function openAndCloseAfterMillis(_, cellId, delayMs)
-    ---@param md MapDef
-    ---@param m Map
+---@param mapID number
+---@param cellID number
+---@param delayMs number
+function openAndCloseAfterMillis(mapID, cellID, delayMs)
     ---@param p Player
-    return function(md, m, p)
-        if m:getAnimationState(cellId) ~= AnimStates.NOT_READY  then
+    return function(_, _, p)
+        local m = World:map(mapID)
+        if m:getAnimationState(cellID) ~= AnimStates.NOT_READY  then
             -- Not closed
             return
         end
 
-        JLogF("{} is opening door #{} for {} ms", p:name(), cellId, delayMs)
-        m:setAnimationState(cellId, AnimStates.READYING)
+        JLogF("{} is opening door #{} for {} ms", p:name(), cellID, delayMs)
+        m:setAnimationState(cellID, AnimStates.READYING)
         World:delayForMs(delayMs, function()
-            m:setAnimationState(cellId, AnimStates.IN_USE)
+            m:setAnimationState(cellID, AnimStates.IN_USE)
         end)
     end
 end

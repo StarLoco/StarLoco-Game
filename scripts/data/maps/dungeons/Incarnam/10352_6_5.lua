@@ -19,8 +19,39 @@ map.npcs = {
 }
 -- '0;0;0;0;0;0;0' forbiddens -> capabilities ? Or script ?
 
+
 map.onMovementEnd = {
 	[84] = moveEndTeleport(10359, 277),
-	[98] = moveEndTeleport(10359, 294),
 	[108] = moveEndTeleport(10335, 226),
+}
+
+-- Support opening door
+local doorCellID = 98
+local slabCells = {299, 327, 355}
+local requiredPlayers = 1
+
+local openDoorFn = openAndCloseAfterMillis(10352, doorCellID, 30000)
+
+---@param md MapDef
+---@param m Map
+local checkOpenDoor = function(md, m, p)
+	local count = 0
+
+	for _, cID in ipairs(slabCells) do
+		if #(m:cellPlayers(cID)) > 0 then
+			count = count + 1
+		end
+	end
+
+	if count >= requiredPlayers then
+		openDoorFn(md, m, p)
+	end
+end
+
+for _, cID in ipairs(slabCells) do
+	map.onMovementEnd[cID] = checkOpenDoor
+end
+
+map.animations = {
+	[doorCellID] = AnimatedObjects.SlidingRockIncarnam,
 }
