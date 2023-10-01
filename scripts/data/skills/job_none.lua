@@ -17,7 +17,6 @@ SKILLS[0] = function(p, cellID)
     return handler(p)
 end
 
-
 -- Save Zaap
 SKILLS[44] = function(p, _)
     local md = p:map():def()

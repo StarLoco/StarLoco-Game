@@ -11,6 +11,10 @@ function npc:onTalk(p, answer)
         p:ask(418)
     elseif answer == 3373 then
         local dst = ASTRUB_STATUES[p:breed()]
+
+        p:setSavedPosition(dst[1], dst[2])
+        p:sendAction(-1, 2, "7")
+
         p:teleport(dst[1], dst[2])
         p:endDialog()
     end
