@@ -1387,42 +1387,42 @@ public class SocketManager {
         for (GameCase cell : collection) {
             if (cell.getObject() == null)
                 continue;
-            if (cell.getObject().getTemplate() == null)
-                continue;
-
-            switch (cell.getObject().getTemplate().getId()) {
-                case 7515:
-                case 7511:
-                case 7517:
-                case 7512:
-                case 7513:
-                case 7516:
-                case 7550:
-                case 7518:
-                case 7534:
-                case 7535:
-                case 7533:
-                case 7551:
-                case 7500:
-                case 7536:
-                case 7501:
-                case 7502:
-                case 7503:
-                case 7542:
-                case 7541:
-                case 7504:
-                case 7553:
-                case 7505:
-                case 7506:
-                case 7507:
-                case 7557:
-                case 7554:
-                case 7508:
-                case 7509:
-                case 7552:
-                    packet.append(cell.getId()).append(";1;0|");
-                    break;
-            }
+//            if (cell.getObject().getTemplate() == null)
+//                continue;
+//
+//            switch (cell.getObject().getTemplate().getId()) {
+//                case 7515:
+//                case 7511:
+//                case 7517:
+//                case 7512:
+//                case 7513:
+//                case 7516:
+//                case 7550:
+//                case 7518:
+//                case 7534:
+//                case 7535:
+//                case 7533:
+//                case 7551:
+//                case 7500:
+//                case 7536:
+//                case 7501:
+//                case 7502:
+//                case 7503:
+//                case 7542:
+//                case 7541:
+//                case 7504:
+//                case 7553:
+//                case 7505:
+//                case 7506:
+//                case 7507:
+//                case 7557:
+//                case 7554:
+//                case 7508:
+//                case 7509:
+//                case 7552:
+//                    packet.append(cell.getId()).append(";1;0|");
+//                    break;
+//            }
         }
         send(player, packet.toString());
     }

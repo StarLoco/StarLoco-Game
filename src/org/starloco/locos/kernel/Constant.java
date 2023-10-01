@@ -3737,7 +3737,7 @@ public class Constant {
 
         for (int available : cells) {
             GameCase c = map.getCase(available);
-            if (c != null && c.getDroppedItem(false) == null && c.getPlayers().isEmpty() && c.isWalkable(false, false) && c.getObject() == null) {
+            if (c != null && c.getDroppedItem(false) == null && c.getPlayers().isEmpty() && c.isWalkable(player.getFight()!=null) && c.getObject() == null) {
                 return available;
             }
         }

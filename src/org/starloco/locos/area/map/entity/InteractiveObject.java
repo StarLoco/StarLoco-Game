@@ -1,7 +1,6 @@
 package org.starloco.locos.area.map.entity;
 
 import org.starloco.locos.area.map.GameMap;
-import org.starloco.locos.game.world.World;
 import org.starloco.locos.job.JobConstant;
 
 public class InteractiveObject {
@@ -12,17 +11,13 @@ public class InteractiveObject {
     private final GameMap map;
     // private final GameCase cell;
     private boolean interactive = true;
-    private final boolean walkable;
     private long lastTime = 0;
-    private InteractiveObjectTemplate template;
 
     public InteractiveObject(int id, final GameMap iMap, int cellId) {
         this.id = id;
         this.map = iMap;
         this.cellId = cellId;
         this.state = JobConstant.IOBJECT_STATE_FULL;
-        this.template = World.world.getIOTemplate(this.id);
-        this.walkable = this.getTemplate() != null && this.getTemplate().isWalkable() && this.state == JobConstant.IOBJECT_STATE_FULL;
     }
 
 //    public static void getActionIO(final Player player, GameCase cell, int id) {
@@ -333,15 +328,6 @@ public class InteractiveObject {
 //        return unk;
 //    }
 
-    public boolean isWalkable() {
-        return this.walkable;
-    }
-
-    public InteractiveObjectTemplate getTemplate() {
-        return template;
-    }
-
-
     public static class InteractiveObjectTemplate {
 
         private final int id;
@@ -364,18 +350,6 @@ public class InteractiveObject {
 
         public boolean isWalkable() {
             return walkable;
-        }
-
-        int getRespawnTime() {
-            return respawnTime;
-        }
-
-        int getDuration() {
-            return duration;
-        }
-
-        int getUnk() {
-            return unk;
         }
     }
 }

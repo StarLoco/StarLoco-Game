@@ -1,25 +1,9 @@
 package org.starloco.locos.area.map;
 
-import org.starloco.locos.area.map.entity.House;
 import org.starloco.locos.area.map.entity.InteractiveObject;
-import org.starloco.locos.area.map.entity.MountPark;
-import org.starloco.locos.area.map.entity.Trunk;
 import org.starloco.locos.client.Player;
-import org.starloco.locos.common.Formulas;
-import org.starloco.locos.common.SocketManager;
-import org.starloco.locos.database.DatabaseManager;
-import org.starloco.locos.database.data.game.TrunkData;
-import org.starloco.locos.database.data.login.BaseTrunkData;
 import org.starloco.locos.fight.Fighter;
-import org.starloco.locos.game.action.ExchangeAction;
-import org.starloco.locos.game.action.GameAction;
-import org.starloco.locos.game.action.type.EmptyActionData;
-import org.starloco.locos.game.world.World;
-import org.starloco.locos.job.JobConstant;
-import org.starloco.locos.job.maging.BreakingObject;
-import org.starloco.locos.kernel.Constant;
 import org.starloco.locos.object.GameObject;
-import org.starloco.locos.util.TimerWaiter;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -66,7 +50,7 @@ public class GameCase {
         return map.interactiveObjects.get(cellId);
     }
 
-    private boolean _isWalkable(boolean inFight) {
+    public boolean isWalkable(boolean inFight) {
         if(!map.cellsData.active(cellId)) return false;
         switch (map.cellsData.movement(cellId)) {
             case 0:
@@ -79,45 +63,16 @@ public class GameCase {
         }
     }
 
-    public boolean isWalkable(boolean useObject, boolean inFight) {
-        if (useObject && getObject() != null)
-            return this._isWalkable(inFight) && getObject().isWalkable();
-        return this._isWalkable(inFight);
-    }
-
     public boolean isWalkableFight() {
-        return this._isWalkable(true);
+        return this.isWalkable(true);
     }
     public boolean isWalkable(boolean useObject, boolean inFight, int targetCell) {
-        InteractiveObject object = map.interactiveObjects.get(cellId);
-
-        if(object != null && useObject) {
-            if((inFight || this.getId() != targetCell) && object.getTemplate() != null) {
-                switch(object.getTemplate().getId()) {
-                    case 7515:
-                    case 7511:
-                    case 7517:
-                    case 7512:
-                    case 7513:
-                    case 7516:
-                    case 7550:
-                    case 7518:
-                    case 7534:
-                    case 7535:
-                    case 7533:
-                    case 7551:
-                    case 7514:
-                        return this._isWalkable(inFight);
-                    case 6763:
-                    case 6766:
-                    case 6767:
-                    case 6772:
-                        return false;
-                }
-            }
-            return this._isWalkable(inFight) && object.isWalkable();
+        InteractiveObject io = getObject();
+        if(useObject && targetCell != -1 && io != null && map.cellsData.movement(cellId) == 1) {
+            return false;
         }
-        return this._isWalkable(inFight);
+
+        return this.isWalkable(inFight);
     }
 
     private <T extends Actor> void addActor(T actor) {

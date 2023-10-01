@@ -73,7 +73,6 @@ public class World implements Scripted<SWorld> {
     private final Map<Integer, NpcTemplate> npcsTemplate = new HashMap<>();
     private final Map<Integer, NpcQuestion> questions = new HashMap<>();
     private final Map<Integer, NpcAnswer> answers = new HashMap<>();
-    private final Map<Integer, InteractiveObjectTemplate> IOTemplate = new HashMap<>();
     private final Map<Integer, Mount> Dragodindes = new HashMap<>();
     private final Map<Integer, Area> areas = new HashMap<>();
     private final Map<Integer, SubArea> subAreas = new HashMap<>();
@@ -783,11 +782,6 @@ public class World implements Scripted<SWorld> {
             return " Aucune milice est actuellement en minorité, je peux donc te proposer de rejoindre aléatoirement une milice ?";
     }
 
-
-    public void addIOTemplate(InteractiveObjectTemplate IOT) {
-        IOTemplate.put(IOT.getId(), IOT);
-    }
-
     public Mount getMountById(int id) {
 
         Mount mount = Dragodindes.get(id);
@@ -804,10 +798,6 @@ public class World implements Scripted<SWorld> {
 
     public void removeMount(int id) {
         Dragodindes.remove(id);
-    }
-
-    public InteractiveObjectTemplate getIOTemplate(int id) {
-        return IOTemplate.get(id);
     }
 
     public Collection<Job> getJobs() {

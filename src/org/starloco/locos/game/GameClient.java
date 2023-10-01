@@ -2987,20 +2987,20 @@ public class GameClient {
 
                     for (GameCase cell : this.player.getCurMap().getCases()) {
                         if (cell.getObject() != null) {
-                            if (cell.getObject().getTemplate() != null) {
-                                int io = cell.getObject().getTemplate().getId();
-                                ArrayList<Integer> skills = job.getSkills().get(io);
-
-                                if (skills != null) {
-                                    for (int arg : skills) {
-                                        if (arg == skill
-                                                && PathFinding.getDistanceBetween(player.getCurMap(), player.getCurCell().getId(), cell.getId()) < 4) {
-                                            ok = true;
-                                            break;
-                                        }
-                                    }
-                                }
-                            }
+//                            if (cell.getObject().getTemplate() != null) {
+//                                int io = cell.getObject().getTemplate().getId();
+//                                ArrayList<Integer> skills = job.getSkills().get(io);
+//
+//                                if (skills != null) {
+//                                    for (int arg : skills) {
+//                                        if (arg == skill
+//                                                && PathFinding.getDistanceBetween(player.getCurMap(), player.getCurCell().getId(), cell.getId()) < 4) {
+//                                            ok = true;
+//                                            break;
+//                                        }
+//                                    }
+//                                }
+//                            }
                         }
                     }
 
@@ -3060,23 +3060,23 @@ public class GameClient {
 
                 for (Job job : jobs) {
                     if (job.getSkills().isEmpty() || !job.isValidTool(object.getTemplate().getId())) continue;
-                    for (GameCase cell : this.player.getCurMap().getCases()) {
-                        if (cell.getObject() != null) {
-                            if (cell.getObject().getTemplate() != null) {
-                                int io = cell.getObject().getTemplate().getId();
-                                ArrayList<Integer> skills = job.getSkills().get(io);
-
-                                if (skills != null) {
-                                    for (int arg : skills) {
-                                        if (arg == skill && PathFinding.getDistanceBetween(this.player.getCurMap(), this.player.getCurCell().getId(), cell.getId()) < 4) {
-                                            ok = true;
-                                            break;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
+//                    for (GameCase cell : this.player.getCurMap().getCases()) {
+//                        if (cell.getObject() != null) {
+//                            if (cell.getObject().getTemplate() != null) {
+//                                int io = cell.getObject().getTemplate().getId();
+//                                ArrayList<Integer> skills = job.getSkills().get(io);
+//
+//                                if (skills != null) {
+//                                    for (int arg : skills) {
+//                                        if (arg == skill && PathFinding.getDistanceBetween(this.player.getCurMap(), this.player.getCurCell().getId(), cell.getId()) < 4) {
+//                                            ok = true;
+//                                            break;
+//                                        }
+//                                    }
+//                                }
+//                            }
+//                        }
+//                    }
                     if (ok) break;
                 }
 
@@ -4023,7 +4023,7 @@ public class GameClient {
             //Si d?placement inutile
             GameCase targetCell = this.player.getCurMap().getCase(World.world.getCryptManager().cellCode_To_ID(path.substring(path.length() - 2)));
 
-            if (targetCell == null || !targetCell.isWalkable(false,false)) {
+            if (targetCell == null || !targetCell.isWalkable(false)) {
                 SocketManager.GAME_SEND_GA_PACKET(this, "", "0", "", "");
                 removeAction(GA);
                 return;

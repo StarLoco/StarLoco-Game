@@ -1,4 +1,4 @@
---FIXME timing
+--FIXME timing / Reward
 
 local lumberjackRequirements = {
     jobID = 2,
