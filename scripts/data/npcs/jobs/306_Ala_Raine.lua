@@ -10,7 +10,7 @@ function npc:onTalk(p, answer)
     if answer == 0 then p:ask(1180, {850})
     elseif answer == 850 then p:ask(1181, {851})
     elseif answer == 851 then
-        if p:tryLearnJob(Butcher) then
+        if p:tryLearnJob(ButcherJob) then
             p:ask(1182)
         else
             p:ask(1486)

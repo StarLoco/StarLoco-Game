@@ -21,7 +21,7 @@ function npc:onTalk(p, answer)
     elseif answer == 144 then p:ask(170)
     elseif answer == 357 then p:ask(432, {358})
     elseif answer == 358 then
-        if p:tryLearnJob(Baker) then
+        if p:tryLearnJob(BakerJob) then
             p:ask(335)
         else
             p:ask(336)

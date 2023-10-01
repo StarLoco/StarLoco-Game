@@ -18,23 +18,30 @@ local function checkRequirements(p, requirements)
         jobLvl = p:jobLevel(requirements.jobID)
         -- Doesn't know the job
         -- TODO: Chat message ?
-        if jobLvl == 0 then return false end
+        if jobLvl == 0 then
+            print("PLAYER DOESN'T KNOW JOB")
+            return false end
     end
 
     if requirements.jobLvl and jobLvl < requirements.jobLvl then
+        print("PLAYER TOO LOW LEVEL AT JOB")
         -- Not high level enough
         -- TODO: Chat message ?
         return false
     end
 
     local tool = p:gearAt(WeaponSlot)
+    print("DBG TOOL FOR JOB", tool:id())
     if requirements.toolID and tool:id() ~= requirements.toolID then
+        print("WRONG TOOL FOR JOB")
         -- Wrong tool
         -- TODO: Chat message ?
         return false
     end
 
+    print("DBG TOOL TYPE FOR JOB", tool:type())
     if requirements.toolType and tool:type() ~= requirements.toolType then
+        print("WRONG TOOL TYPE FOR JOB")
         -- Wrong tool
         -- TODO: Chat message ?
         return false
@@ -81,10 +88,12 @@ function registerGatherSkill(skillId, rewardFn, respawnIntervalFn, requirements)
 
         local map = p:map()
         if map:getAnimationState(cellId) ~= AnimStates.READY then
+            print("OBJECT NOT READY")
             -- TODO: Chat message ?
             return
         end
 
+        -- TODO: This needs to run later, after job level specific duration
         map:setAnimationState(cellId, AnimStates.IN_USE, function()
             local rewards = rewardFn(p)
             for _, reward in ipairs(rewards) do

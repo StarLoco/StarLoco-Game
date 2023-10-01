@@ -498,7 +498,12 @@ public class SPlayer extends DefaultUserdata<Player> {
     @SuppressWarnings("unused")
     private static int jobLevel(Player p, ArgumentIterator args) {
         int jobID = args.nextInt();
-        return Optional.ofNullable(p.getMetiers().get(jobID)).map(JobStat::get_lvl).orElse(0);
+
+        return p.getMetiers().values().stream()
+            .filter(j -> j.getTemplate().getId() == jobID)
+            .findFirst()
+            .map(JobStat::get_lvl)
+            .orElse(0);
     }
 
     @SuppressWarnings("unused")

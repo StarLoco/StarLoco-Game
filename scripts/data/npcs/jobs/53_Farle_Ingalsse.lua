@@ -6,7 +6,7 @@ npc.barters = {
     }}
 }
 
-local jobId = Farmer
+local jobId = FarmerJob
 
 ---@param p Player
 ---@param answer number

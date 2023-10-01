@@ -6,7 +6,7 @@ npc.sales = {
     {item = 497}
 }
 
-local jobId = Miner
+local jobId = MinerJob
 ---@param p Player
 ---@param answer number
 function npc:onTalk(p, answer)

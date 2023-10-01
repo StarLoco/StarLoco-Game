@@ -20,7 +20,7 @@ function npc:onTalk(p, answer)
     elseif answer == 82 then p:ask(86)
     elseif answer == 326 then p:ask(408, {327, 328})
     elseif answer == 327 then
-        if p:tryLearnJob(Shoemaker) then
+        if p:tryLearnJob(ShoemakerJob) then
             p:ask(335)
         else
             p:ask(336)

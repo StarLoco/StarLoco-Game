@@ -8,7 +8,6 @@ local doorSG = function(inUseDuration, readyingDuration)
     }
 end
 
----@field Well Animation
 --- Well
 AnimatedObjects.Well = NewAnimation(7519, AnimStates.READY, {
     [AnimStates.READY] = {frame=1, interactive=true},

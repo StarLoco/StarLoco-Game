@@ -13,21 +13,21 @@ function npc:onTalk(p, answer)
     elseif answer == 275 then p:ask(341, {350, 351, 352})
     elseif answer == 350 then p:ask(426, {353})
     elseif answer == 353 then
-        if p:tryLearnJob(WandCarver) then
+        if p:tryLearnJob(WandCarverJob) then
             p:ask(335)
         else
             p:ask(336)
         end
     elseif answer == 351 then p:ask(427, {354})
     elseif answer == 354 then
-        if p:tryLearnJob(BowCarver) then
+        if p:tryLearnJob(BowCarverJob) then
             p:ask(335)
         else
             p:ask(336)
         end
     elseif answer == 352 then p:ask(428, {355})
     elseif answer == 355 then
-        if p:tryLearnJob(StaffCarver) then
+        if p:tryLearnJob(StaffCarverJob) then
             p:ask(335)
         else
             p:ask(336)
