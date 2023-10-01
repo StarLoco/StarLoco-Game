@@ -1,6 +1,7 @@
 local npc = Npc(462, 9033)
 --TODO: Lié à la quête 5
 npc.gender = 1
+npc.colors = {-1, -1, -1}
 
 npc.sales = {
     {item=491}

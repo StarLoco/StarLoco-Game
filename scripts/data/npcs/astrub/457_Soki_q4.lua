@@ -1,5 +1,8 @@
 local npc = Npc(457, 9001)
 --TODO: Lié à la quête 4
+npc.gender = 0
+npc.colors = {-1, -1, -1}
+
 ---@param p Player
 ---@param answer number
 function npc:onTalk(p, answer)
