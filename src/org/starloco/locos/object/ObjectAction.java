@@ -357,9 +357,6 @@ public class ObjectAction {
                         }
 
                         player.unlearnJob(jobStats.getId());
-                        SocketManager.GAME_SEND_STATS_PACKET(player);
-                        ((PlayerData) DatabaseManager.get(PlayerData.class)).update(player);
-                        player.send("JR" + job);
                         break;
 
                     case 10://EPO.

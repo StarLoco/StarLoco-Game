@@ -502,6 +502,12 @@ public class SPlayer extends DefaultUserdata<Player> {
     }
 
     @SuppressWarnings("unused")
+    private static boolean tryUnlearnJob(Player p, ArgumentIterator args) {
+        int jobID = args.nextInt();
+        return p.unlearnJob(jobID);
+    }
+
+    @SuppressWarnings("unused")
     private static boolean canLearnJob(Player p, ArgumentIterator args) {
         int jobID = args.nextInt();
         boolean send = args.nextOptionalBoolean(false);

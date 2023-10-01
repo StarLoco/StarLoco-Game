@@ -859,8 +859,6 @@ public class Action {
                 if (m2 == null)
                     return true;
                 player.unlearnJob(m2.getId());
-                SocketManager.GAME_SEND_STATS_PACKET(player);
-                ((PlayerData) DatabaseManager.get(PlayerData.class)).update(player);
                 break;
 
             case 24://Morph

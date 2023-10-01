@@ -3009,8 +3009,21 @@ public class Player implements Scripted<SPlayer>, Actor {
         return pos;
     }
 
-    public void unlearnJob(int m) {
-        _metiers.remove(Integer.valueOf(m));
+    public boolean unlearnJob(int jobID) {
+        Optional<Integer> key = _metiers.entrySet().stream()
+            .filter(e -> e.getValue().getTemplate().getId() == jobID)
+            .findFirst()
+            .map(Entry::getKey);
+
+        if(!key.isPresent()) return false;
+        _metiers.remove(key.get());
+
+        DatabaseManager.get(PlayerData.class).update(this);
+        if(isOnline) {
+            SocketManager.GAME_SEND_STATS_PACKET(this);
+            send("JR" + jobID);
+        }
+        return true;
     }
 
     public void unequipedObjet(GameObject o) {
