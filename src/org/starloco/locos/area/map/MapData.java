@@ -14,6 +14,7 @@ import org.starloco.locos.script.DataScriptVM;
 import org.starloco.locos.util.Pair;
 
 
+import javax.swing.text.html.Option;
 import javax.xml.crypto.Data;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -91,7 +92,11 @@ public abstract class MapData implements CellsDataProvider {
             interactiveObjects.put(cellId, objectID);
 
             // Add animation for object
-            animations.put(cellId, World.world.getAnimation(objectID));
+            Optional<Animation> anim = World.world.getAnimation(objectID);
+            if(anim.isPresent()) {
+                animations.put(cellId, anim.get());
+            }
+
         }
         this.interactiveObjects = Collections.unmodifiableMap(interactiveObjects);
         this.animations = Collections.unmodifiableMap(animations);

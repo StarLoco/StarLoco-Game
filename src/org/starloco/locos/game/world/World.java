@@ -1100,8 +1100,8 @@ public class World implements Scripted<SWorld> {
         girl.setBlockMovement(false);
     }
 
-    public Animation getAnimation(int AnimationId) {
-        return animations.get(AnimationId);
+    public Optional<Animation> getAnimation(int AnimationId) {
+        return Optional.ofNullable(animations.get(AnimationId));
     }
 
     public void addAnimation(Animation animation) {
