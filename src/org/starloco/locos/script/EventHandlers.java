@@ -31,6 +31,10 @@ public class EventHandlers extends DefaultTable {
         vm.call(getHandler(players, "onMapEnter"), player.scripted());
     }
 
+    public void onSkillUse(Player player, int cellID, int skillID) {
+        vm.call(getHandler(players, "onSkillUse"), player.scripted(), cellID, skillID);
+    }
+
     public void onFightEnd(Player player, int type, boolean isWinner, Table winners, Table losers) {
         vm.call(getHandler(players, "onFightEnd"), player.scripted(), type, isWinner, winners, losers);
     }

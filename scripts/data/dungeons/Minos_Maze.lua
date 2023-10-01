@@ -129,7 +129,7 @@ local addLever = function(map, cellId, dir)
     if dir == 2 or dir == 4 then
         anim = AnimatedObjects.MinosMazeYellowSwitch
     end
-    map.objects[cellId] = Objects.Switch
+    map.onObjectUse[cellId] = Objects.Switch
     map.animations[cellId] = anim
     map.switches[cellId] = onSwitchActivation(dir)
 end

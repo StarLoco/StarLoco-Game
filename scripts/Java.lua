@@ -52,11 +52,11 @@ function RegisterSubArea(id, areaId, neighbors) end
 
 ---@class Animation Java object holder for animation data. Lua should not need to access it
 
----@param id number
+---@param spriteID number
 ---@param default string
 ---@param keyFrames table<string, KeyFrame>
 ---@return Animation
-function NewAnimation(id, default, keyFrames)  end
+function NewAnimation(spriteID, default, keyFrames)  end
 
 ---@class Player
 local Player = {}

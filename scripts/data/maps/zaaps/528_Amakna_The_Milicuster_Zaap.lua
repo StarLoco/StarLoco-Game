@@ -22,8 +22,6 @@ map.onMovementEnd = {
     [289] = moveEndTeleport(527, 262)
 }
 
-map:addObject(171, Objects.Zaap)
-
 map.zaapCell = 156
 
 

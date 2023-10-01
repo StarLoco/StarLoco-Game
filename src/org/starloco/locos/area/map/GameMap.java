@@ -1478,10 +1478,6 @@ public class GameMap {
         return null;
     }
 
-    public void onPlayerUseObject(Player player, int cellId, int skillId) {
-        this.data.onUseObject(player, cellId, skillId);
-    }
-
     public void onPlayerArriveOnCell(Player player, int id) {
         final GameCase cell = this.getCase(id);
 

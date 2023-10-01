@@ -3,6 +3,7 @@ package org.starloco.locos.game.world;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import org.slf4j.LoggerFactory;
+import org.starloco.locos.anims.Animation;
 import org.starloco.locos.area.Area;
 import org.starloco.locos.area.SubArea;
 import org.starloco.locos.area.map.GameMap;
@@ -82,7 +83,7 @@ public class World implements Scripted<SWorld> {
     private final Map<Integer, Guild> Guildes = new HashMap<>();
     private final Map<Integer, BigStore> Hdvs = new HashMap<>();
     private final Map<Integer, Map<Integer, List<BigStoreListing>>> hdvsItems = new HashMap<>();
-    private final Map<Integer, Animation> Animations = new HashMap<>();
+    private final Map<Integer, Animation> animations = new HashMap<>();
     private final Map<Integer, org.starloco.locos.area.map.entity.MountPark> MountPark = new HashMap<>();
     private final Map<Integer, Trunk> Trunks = new HashMap<>();
     private final Map<Integer, Collector> collectors = new HashMap<>();
@@ -387,9 +388,6 @@ public class World implements Scripted<SWorld> {
         logger.debug("The drops were loaded successfully.");
 
         logger.debug("The mounts were loaded successfully.");
-
-        DatabaseManager.get(AnimationData.class).loadFully();
-        logger.debug("The animations were loaded successfully.");
 
         DatabaseManager.get(GuildMemberData.class).loadFully();
         logger.debug("The guilds and guild members were loaded successfully.");
@@ -1103,11 +1101,11 @@ public class World implements Scripted<SWorld> {
     }
 
     public Animation getAnimation(int AnimationId) {
-        return Animations.get(AnimationId);
+        return animations.get(AnimationId);
     }
 
     public void addAnimation(Animation animation) {
-        Animations.put(animation.getId(), animation);
+        animations.put(animation.id, animation);
     }
 
     public void addHouse(House house) {

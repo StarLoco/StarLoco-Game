@@ -114,13 +114,6 @@ public class ScriptMapData extends MapData {
     }
 
     @Override
-    public void onUseObject(Player p, int cellId, int skillId) {
-        Object onObjectUse = recursiveGet(scriptVal,"onObjectUse");
-        if(onObjectUse == null) return;
-        DataScriptVM.getInstance().call(onObjectUse, scriptVal, p.scripted(), cellId, skillId);
-    }
-
-    @Override
     public void onMoveEnd(Player p) {
         Object tmp = recursiveGet(scriptVal,"onMovementEnd");
         if(!(tmp instanceof Table)) return;

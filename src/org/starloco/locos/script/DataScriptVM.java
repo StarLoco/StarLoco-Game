@@ -178,7 +178,7 @@ public final class DataScriptVM extends ScriptVM {
         }
         @Override
         public void invoke(ExecutionContext context, ArgumentIterator  args) {
-            int tileId = args.nextInt();
+            int spriteID = args.nextInt();
             String defaultFrame = args.nextString().toString();
             Table tKeyFrames = args.nextTable();
 
@@ -191,7 +191,8 @@ public final class DataScriptVM extends ScriptVM {
                 throw new IllegalArgumentException("default frame is not a key frame");
             }
 
-            Animation anim = new org.starloco.locos.anims.Animation(tileId, defaultFrame, keyFrames);
+            Animation anim = new org.starloco.locos.anims.Animation(spriteID, defaultFrame, keyFrames);
+            World.world.addAnimation(anim);
             context.getReturnBuffer().setTo(anim);
         }
     }

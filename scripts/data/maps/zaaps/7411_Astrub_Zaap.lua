@@ -27,11 +27,9 @@ map.onMovementEnd = {
     [247] = moveEndTeleport(7395, 245),
 }
 
-map.objects = {
+map.onObjectUse = {
     [230] = onObjectUseOpenDocument(139, "0612131303"),
 }
-
-map:addObject(297, Objects.Zaap)
 
 map.zaapCell = 311
 

@@ -10,9 +10,11 @@ import org.starloco.locos.entity.monster.MonsterGrade;
 import org.starloco.locos.fight.Fight;
 import org.starloco.locos.fight.Fighter;
 import org.starloco.locos.game.world.World;
+import org.starloco.locos.script.DataScriptVM;
 import org.starloco.locos.util.Pair;
 
 
+import javax.xml.crypto.Data;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -82,9 +84,14 @@ public abstract class MapData implements CellsDataProvider {
         }
 
         HashMap<Integer,Integer> interactiveObjects = new HashMap<>();
-        for(int cellId=0;cellId<cellsData.cellCount();cellId++) {
+        for(int cellId=0; cellId<cellsData.cellCount(); cellId++) {
             if(!cellsData.object2Interactive(cellId)) continue;
-            interactiveObjects.put(cellId, cellsData.object2(cellId));
+
+            int objectID = cellsData.object2(cellId);
+            interactiveObjects.put(cellId, objectID);
+
+            // Add animation for object
+            animations.put(cellId, World.world.getAnimation(objectID));
         }
         this.interactiveObjects = Collections.unmodifiableMap(interactiveObjects);
         this.animations = Collections.unmodifiableMap(animations);
@@ -106,8 +113,6 @@ public abstract class MapData implements CellsDataProvider {
     public abstract List<MobGroupDef> getStaticGroups();
 
     public abstract void onMoveEnd(Player p);
-
-    public abstract void onUseObject(Player p, int cellId, int skillId);
 
     public abstract boolean cellHasMoveEndActions(int cellId);
 

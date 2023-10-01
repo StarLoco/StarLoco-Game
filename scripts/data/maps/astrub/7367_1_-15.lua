@@ -57,5 +57,3 @@ map.onMovementEnd = {
 	[289] = moveEndTeleport(7383, 291),
 	[457] = moveEndTeleport(7368, 36),
 }
-
-map:addObject(224, Objects.Well)

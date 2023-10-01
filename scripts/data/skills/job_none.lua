@@ -1,11 +1,34 @@
 -- SKILLS NOT LINKED TO A JOB
 
+-- No skill object use
+SKILLS[0] = function(p, cellID)
+    print("SKILL 0 USED")
+    -- Use map object without skill
+    local mapDef = p:map():def()
+    local handler = mapDef.onObjectUse[cellID]
+    if not handler then
+        print("NO HANDLER FOR CELL", mapDef.id, cellID)
+        return false
+    end
+
+    if type(handler) ~= "function" then
+        error("Non-skill map object use handler must be functions")
+    end
+    return handler(p)
+end
+
+
 -- Save Zaap
 SKILLS[44] = function(p, _)
     local md = p:map():def()
     p:savePosition(md.id, md.zaapCell)
-    return true
 end
+
+-- Draw water from well
+registerGatherSkill(102, function(p)
+    -- 311: Water
+    return {ItemStack(311, math.random(1, 10))}
+end, respawnBetweenMillis(120000, 420000))
 
 -- Use Zaap
 SKILLS[114] = function(p, _) p:openZaap() return true end

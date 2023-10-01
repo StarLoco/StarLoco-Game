@@ -1,7 +1,6 @@
 package org.starloco.locos.other;
 
 import org.starloco.locos.area.map.GameMap;
-import org.starloco.locos.area.map.entity.Animation;
 import org.starloco.locos.area.map.entity.House;
 import org.starloco.locos.area.map.entity.MountPark;
 import org.starloco.locos.client.Player;
@@ -1899,20 +1898,20 @@ public class Action {
                 }
                 break;
 
-            case 228://Faire animation Hors Combat
-                try {
-                    int AnimationId = Integer.parseInt(args);
-                    Animation animation = World.world.getAnimation(AnimationId);
-                    if (player.getFight() != null)
-                        return true;
-                    player.changeOrientation(1);
-                    SocketManager.GAME_SEND_GA_PACKET_TO_MAP(player.getCurMap(), "0", 228, player.getId()
-                            + ";" + cellid + "," + animation.prepareToGA(), "");
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    GameServer.a();
-                }
-                break;
+//            case 228://Faire animation Hors Combat
+//                try {
+//                    int AnimationId = Integer.parseInt(args);
+//                    Animation animation = World.world.getAnimation(AnimationId);
+//                    if (player.getFight() != null)
+//                        return true;
+//                    player.changeOrientation(1);
+//                    SocketManager.GAME_SEND_GA_PACKET_TO_MAP(player.getCurMap(), "0", 228, player.getId()
+//                            + ";" + cellid + "," + animation.prepareToGA(), "");
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                    GameServer.a();
+//                }
+//                break;
 
             case 229://Animation d'incarnam � astrub
                 mapId = Constant.getClassStatueMap(player.getClasse());

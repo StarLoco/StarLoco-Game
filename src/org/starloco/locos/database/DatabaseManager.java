@@ -95,7 +95,6 @@ public class DatabaseManager {
         this.daos.add(new CollectorData(this.game));
         this.daos.add(new PrismData(this.game));
         this.daos.add(new SubAreaData(this.game));
-        this.daos.add(new AnimationData(this.game));
         this.daos.add(new AreaData(this.game));
         this.daos.add(new ChallengeData(this.game));
         this.daos.add(new TrunkData(this.game));

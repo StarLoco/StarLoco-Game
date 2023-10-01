@@ -49,6 +49,14 @@ Handlers.players.onFightEnd = function(p, type, isWinner, winners, losers)
 
 end
 
+---@param p Player
+---@param cellID number
+---@param skillID number
+Handlers.players.onSkillUse = function(p, cellID, skillID)
+    return SKILLS[skillID](p, cellID)
+end
+
+
 ---@param player Player
 ---@param questId number
 ---@param stepId number

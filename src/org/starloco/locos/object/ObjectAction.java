@@ -3,7 +3,6 @@ package org.starloco.locos.object;
 import org.starloco.locos.area.Area;
 import org.starloco.locos.area.SubArea;
 import org.starloco.locos.area.map.GameMap;
-import org.starloco.locos.area.map.entity.Animation;
 import org.starloco.locos.area.map.entity.House;
 import org.starloco.locos.area.map.entity.MountPark;
 import org.starloco.locos.client.Player;
@@ -248,24 +247,24 @@ public class ObjectAction {
                         SocketManager.GAME_SEND_STATS_PACKET(player);
                         break;
 
-                    case 5://F�e d'artifice.
-                        if (player0.getFight() != null) {
-                            isOk = false;
-                            return;
-                        }
-                        int id0 = Integer.parseInt(arg);
-                        Animation anim = World.world.getAnimation(id0);
-                        if (player.getFight() != null) {
-                            isOk = false;
-                            return;
-                        }
-                        player.changeOrientation(1);
-                        SocketManager.GAME_SEND_GA_PACKET_TO_MAP(player.getCurMap(), "0", 228, player.getId() + ";" + cellid + "," + anim.prepareToGA(), "");
-                        break;
+//                    case 5://F�e d'artifice.
+//                        if (player0.getFight() != null) {
+//                            isOk = false;
+//                            return;
+//                        }
+//                        int id0 = Integer.parseInt(arg);
+//                        Animation anim = World.world.getAnimation(id0);
+//                        if (player.getFight() != null) {
+//                            isOk = false;
+//                            return;
+//                        }
+//                        player.changeOrientation(1);
+//                        SocketManager.GAME_SEND_GA_PACKET_TO_MAP(player.getCurMap(), "0", 228, player.getId() + ";" + cellid + "," + anim.prepareToGA(), "");
+//                        break;
 
                     case 6://Apprendre un sort.
                         if (player0.getFight() != null) return;
-                        id0 = Integer.parseInt(arg);
+                        int id0 = Integer.parseInt(arg);
                         if (World.world.getSort(id0) == null) {
                             isOk = false;
                             return;

@@ -23,7 +23,7 @@
 ---@field onFightInit table<number, fun(md:MapDef, m:Map,team1:Fighter[], team2:Fighter[])> K: fight type, V: Handler function
 ---@field onFightStart table<number, fun(md:MapDef, m:Map,team1:Fighter[], team2:Fighter[])> K: fight type, V: Handler function
 ---@field onFightEnd table<number, fun(md:MapDef, m:Map, winners:Fighter[], losers:Fighter[])> K: fight type, V: Handler function
----@field objects table<number, InteractiveObjectDef|fun(p:Player, skillId:number):boolean> K: cellId, V: InteractiveObjectDef or handler function
+---@field onObjectUse table<number, InteractiveObjectDef|fun(p:Player, skillId:number):boolean> K: cellId, V: InteractiveObjectDef or handler function
 ---@field animations table<number, Animation>
 ---@field switches table<number, fun(md:MapDef, p:Player)>
 ---
@@ -70,7 +70,7 @@ setmetatable(MapDef, {
         self.onFightInit = {}
         self.onFightStart = {}
         self.onFightEnd = {}
-        self.objects = {}
+        self.onObjectUse = {}
         self.switches = {}
         self.animations = {}
         self.zaapCell = nil
@@ -83,34 +83,6 @@ setmetatable(MapDef, {
         return self
     end,
 })
-
---- addObject should only be used in the map script
----before RegiserMapDef is called
----@param cellId number
----@param object InteractiveObjectDef
-function MapDef:addObject(cellId, object)
-    self.objects[cellId] = object
-    if object.anim then
-        self.animations[cellId] = object.anim
-    end
-end
-
-
----@param p Player
----@param cellId number
----@param skillId number
----@return boolean worked
-function MapDef:onObjectUse(p, cellId, skillId)
-    local object = self.objects[cellId]
-
-    if not object then return false end
-
-    if type(object) == "function" then
-        return object(p, skillId)
-    end
-
-    return object:onUseSkill(p, cellId, skillId)
-end
 
 ---@param docId number
 ---@param docDate string

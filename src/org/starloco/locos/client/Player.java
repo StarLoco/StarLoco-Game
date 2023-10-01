@@ -3105,11 +3105,7 @@ public class Player implements Scripted<SPlayer>, Actor {
         if (cellID == -1 || action == -1)
             return;
 
-        this.curMap.onPlayerUseObject(this, cellID, action);
-
-//        if (!this.curMap.getCase(cellID).canDoAction(action))
-//            return;
-//        this.curMap.getCase(cellID).startAction(this, GA);
+        DataScriptVM.getInstance().handlers.onSkillUse(this, cellID, action);
     }
 
     public void finishActionOnCell(GameAction GA) {
