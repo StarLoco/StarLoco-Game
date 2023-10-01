@@ -1447,7 +1447,7 @@ public class SocketManager {
         send(perso, packet);
     }
 
-    public static void GAME_SEND_JX_PACKET(Player perso, ArrayList<JobStat> SMs) {
+    public static void GAME_SEND_JX_PACKET(Player perso, List<JobStat> SMs) {
         StringBuilder packet = new StringBuilder();
         packet.append("JX");
         for (JobStat sm : SMs)
@@ -1456,7 +1456,7 @@ public class SocketManager {
     }
 
     public static void GAME_SEND_JO_PACKET(Player perso,
-                                           ArrayList<JobStat> JobStats) {
+                                           List<JobStat> JobStats) {
         for (JobStat SM : JobStats) {
             String packet = "JO" + SM.getPosition() + "|" + SM.getOptBinValue()
                     + "|" + SM.getSlotsPublic();
@@ -1470,7 +1470,7 @@ public class SocketManager {
         send(perso, packet);
     }
 
-    public static void GAME_SEND_JS_PACKET(Player perso, ArrayList<JobStat> SMs) {
+    public static void GAME_SEND_JS_PACKET(Player perso, List<JobStat> SMs) {
         StringBuilder packet = new StringBuilder("JS");
         for (JobStat sm : SMs) {
             packet.append(sm.parseJS());

@@ -10,6 +10,8 @@ import org.starloco.locos.game.action.GameAction;
 import org.starloco.locos.game.world.World;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class JobStat {
 
@@ -122,8 +124,7 @@ public class JobStat {
 
         if (send) {
             //on creer la listes des JobStats a envoyer (Seulement celle ci)
-            ArrayList<JobStat> list = new ArrayList<>();
-            list.add(this);
+            List<JobStat> list = Collections.singletonList(this);
             SocketManager.GAME_SEND_JS_PACKET(P, list);
             SocketManager.GAME_SEND_STATS_PACKET(P);
             SocketManager.GAME_SEND_Ow_PACKET(P);

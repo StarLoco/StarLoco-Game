@@ -27,6 +27,7 @@ import org.starloco.locos.script.ScriptVM;
 import org.starloco.locos.script.types.MetaTables;
 import org.starloco.locos.util.Pair;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -499,9 +500,7 @@ public class SPlayer extends DefaultUserdata<Player> {
     private static int jobLevel(Player p, ArgumentIterator args) {
         int jobID = args.nextInt();
 
-        return p.getMetiers().values().stream()
-            .filter(j -> j.getTemplate().getId() == jobID)
-            .findFirst()
+        return Optional.ofNullable(p.getMetierByID(jobID))
             .map(JobStat::get_lvl)
             .orElse(0);
     }
@@ -510,12 +509,15 @@ public class SPlayer extends DefaultUserdata<Player> {
     private static boolean addJobXP(Player p, ArgumentIterator args) {
         int jobID = args.nextInt();
         int xpDelta = args.nextInt();
+        boolean send = args.nextOptionalBoolean(true);
 
         if(xpDelta<0) return false; // Not supported
 
-        JobStat js = p.getMetiers().get(jobID);
+        JobStat js = p.getMetierByID(jobID);
         if(js == null) return false;
         js.addXp(p, xpDelta);
+
+        SocketManager.GAME_SEND_JX_PACKET(p, Collections.singletonList(js));
         return true;
     }
     //endregion
