@@ -15,13 +15,13 @@ map.capabilities = 111
 map.mobGroupsCount = 0
 map.mobGroupsMaxSize = 1
 map.npcs = {
-	[876] = {277, 1},
+	[876] = {316, 1},
 }
 -- '0;0;0;0;0;0;0' forbiddens -> capabilities ? Or script ?
 
 map.onMovementEnd = {
 	[334] = moveEndTeleport(10273, 376),
-	[334] = moveEndTeleport(10321, 407),
+	[434] = moveEndTeleport(10279, 407),
 }
 
 local mobGroup =  {
@@ -31,5 +31,3 @@ local mobGroup =  {
 map.staticGroups = {
 	{308, mobGroup}
 }
-
-

@@ -17,7 +17,6 @@ SKILLS[0] = function(p, cellID)
     return handler(p)
 end
 
-
 -- Save Zaap
 SKILLS[44] = function(p, _)
     local md = p:map():def()
@@ -42,4 +41,9 @@ SKILLS[179] = function(p, cellId)
     if switchHandler(p) then
         p:map():setAnimationState(cellId, AnimStates.IN_USE)
     end
+end
+
+-- Use Astrub Breed Statue
+SKILLS[183] = function(p, _)
+    teleportByBreed(p, INCARNAM_STATUES)
 end
