@@ -3,12 +3,15 @@ local npc = Npc(872, 1207)
 ---@param p Player
 ---@param answer number
 function npc:onTalk(p, answer)
-    if answer == 0 then p:ask(3731, {3277, 3352, 3279, 327})
+    if answer == 0 then p:ask(3731, {3352, 3279, 3278})
     elseif answer == 3352 then p:ask(3821)
-    elseif answer == 3277 then p:ask(3733, {3281, 328})
-    elseif answer == 3281 then p:endDialog()
-    elseif answer == 328 then p:ask(409)
     elseif answer == 3279 then p:ask(3735)
+    elseif answer == 3278 then p:ask(3734, {3280, 3287})
+    elseif answer == 3280 then p:ask(3736, {3286})
+    elseif answer == 3286 then
+        p:endDialog()
+        p:teleport(10302, 296)
+    elseif answer == 3287 then p:endDialog()
     end
 end
 
