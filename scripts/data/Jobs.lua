@@ -31,3 +31,13 @@ ShoemagusJob = 62
 JewelmagusJob = 63
 CostumagusJob = 64
 HandymanJob = 65
+
+--@param p Player
+--function learnJob (p, jobID, itemID)
+--    if not p:tryLearnJob(jobID) then
+--        error("Failed to Learn Job")
+--        p:endDialog()
+--        return
+--    end
+--    p:addItem(itemID)
+--end
