@@ -21,4 +21,10 @@ map.onMovementEnd = {
 	[182] = moveEndTeleport(10354, 123),
 }
 
+local mobGroup =  {
+	{475, {3} }
+}
 
+map.staticGroups = {
+	{312, mobGroup}
+}

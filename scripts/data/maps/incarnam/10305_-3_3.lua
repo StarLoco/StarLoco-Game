@@ -31,5 +31,3 @@ local mobGroup =  {
 map.staticGroups = {
 	{308, mobGroup}
 }
-
-
