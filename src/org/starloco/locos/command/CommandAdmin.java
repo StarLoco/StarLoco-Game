@@ -1804,13 +1804,6 @@ public class CommandAdmin extends AdminUser {
                     DatabaseManager.get(ObjectTemplateData.class).loadFully();
                     DatabaseManager.get(ObjectActionData.class).loadFully();
                     break;
-                case "NPCS":
-                    DatabaseManager.get(NpcTemplateData.class).loadFully();
-                    World.world.getNpcQuestions().clear();
-                    DatabaseManager.get(NpcQuestionData.class).loadFully();
-                    World.world.getNpcAnswers().clear();
-                    DatabaseManager.get(NpcAnswerData.class).loadFully();
-                    break;
                 case "SCRIPTS":
                     // Reload lua
                     DataScriptVM.getInstance().safeLoadData();

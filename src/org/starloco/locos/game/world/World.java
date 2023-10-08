@@ -25,8 +25,6 @@ import org.starloco.locos.entity.Collector;
 import org.starloco.locos.entity.Prism;
 import org.starloco.locos.entity.monster.Monster;
 import org.starloco.locos.entity.mount.Mount;
-import org.starloco.locos.entity.npc.NpcAnswer;
-import org.starloco.locos.entity.npc.NpcQuestion;
 import org.starloco.locos.entity.npc.NpcTemplate;
 import org.starloco.locos.entity.pet.Pet;
 import org.starloco.locos.entity.pet.PetEntry;
@@ -71,8 +69,6 @@ public class World implements Scripted<SWorld> {
     private final Map<Integer, ObjectTemplate> ObjTemplates = new HashMap<>();
     private final Map<Integer, Monster> MobTemplates = new HashMap<>();
     private final Map<Integer, NpcTemplate> npcsTemplate = new HashMap<>();
-    private final Map<Integer, NpcQuestion> questions = new HashMap<>();
-    private final Map<Integer, NpcAnswer> answers = new HashMap<>();
     private final Map<Integer, Mount> Dragodindes = new HashMap<>();
     private final Map<Integer, Area> areas = new HashMap<>();
     private final Map<Integer, SubArea> subAreas = new HashMap<>();
@@ -257,10 +253,6 @@ public class World implements Scripted<SWorld> {
         return ObjTemplates;
     }
 
-    public Map<Integer, NpcAnswer> getNpcAnswers() {
-        return answers;
-    }
-
     public Map<Integer, Mount> getMounts() {
         return Dragodindes;
     }
@@ -336,18 +328,6 @@ public class World implements Scripted<SWorld> {
 
         DatabaseManager.get(ObjectTemplateData.class).loadFully();
         logger.debug("The template objects were loaded successfully.");
-
-        //DatabaseManager.get(ObjectData.class).loadFully();
-        //logger.debug("The objects were loaded successfully.");
-
-        DatabaseManager.get(NpcTemplateData.class).loadFully();
-        logger.debug("The non-player characters were loaded successfully.");
-
-        DatabaseManager.get(NpcQuestionData.class).loadFully();
-        logger.debug("The n-p-c questions were loaded successfully.");
-
-        DatabaseManager.get(NpcAnswerData.class).loadFully();
-        logger.debug("The n-p-c answers were loaded successfully.");
 
         DatabaseManager.get(PrismData.class).loadFully();
         logger.debug("The prisms were loaded successfully.");
@@ -617,14 +597,6 @@ public class World implements Scripted<SWorld> {
         return str;
     }
 
-    public void addNpcAnswer(NpcAnswer rep) {
-        answers.put(rep.getId(), rep);
-    }
-
-    public NpcAnswer getNpcAnswer(int guid) {
-        return answers.get(guid);
-    }
-
     public double getBalanceArea(Area area, int alignement) {
         int cant = 0;
         for (SubArea subarea : subAreas.values()) {
@@ -662,18 +634,6 @@ public class World implements Scripted<SWorld> {
 
     public void setExperiences(ExperienceTables t) {
         this.experiences = t;
-    }
-
-    public void addNPCQuestion(NpcQuestion quest) {
-        questions.put(quest.getId(), quest);
-    }
-
-    public Map<Integer, NpcQuestion> getNpcQuestions() {
-        return questions;
-    }
-
-    public NpcQuestion getNPCQuestion(int guid) {
-        return questions.get(guid);
     }
 
     public NpcTemplate getNPCTemplate(int guid) {

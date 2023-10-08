@@ -274,7 +274,8 @@ function Player:showReceivedItem(actorID, quantity) end
 
 --endregion
 
----@class MobGroupDef table<number, table<number,number[]>[]>
+---@class MobGroupDef table<number,number[]> K: MobID, V: grades
+---@class MobGroupSpawnDef table<number, MobGroupDef[]> K: CellID, V: group
 
 ---@class Item
 local Item = {}

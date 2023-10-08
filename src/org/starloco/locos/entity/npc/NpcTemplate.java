@@ -130,11 +130,7 @@ public class NpcTemplate {
         this.onDialog(player,  0,0);
     }
     public void onDialog(Player player, int question, int response) {
-        if(scriptVal == null) {
-            legacy.onDialog(this, player, question, response);
-            return;
-        }
-
+        Objects.requireNonNull(scriptVal);
         DataScriptVM.getInstance().handlers.onDialog(player, this.id, response);
     }
 
@@ -215,7 +211,7 @@ public class NpcTemplate {
 
     public static class LegacyData {
         private final String path;
-        private final Map<Integer,Integer> initQuestions = new HashMap<>();
+        private final Map<Integer, Integer> initQuestions = new HashMap<>();
         private final List<SaleOffer> sales = new ArrayList<>();
         private List<Couple<ArrayList<Couple<Integer, Integer>>, ArrayList<Couple<Integer, Integer>>>> exchanges;
 
@@ -249,27 +245,27 @@ public class NpcTemplate {
                 }
             }
 
-            if(!exchanges.equals("")) {
-                try	{
+            if (!exchanges.equals("")) {
+                try {
                     this.exchanges = new ArrayList<>();
-                    for(String data : exchanges.split("\\~")) {
+                    for (String data : exchanges.split("\\~")) {
                         ArrayList<Couple<Integer, Integer>> gives = new ArrayList<>(), gets = new ArrayList<>();
 
                         String[] split = data.split("\\|");
                         String give = split[1], get = split[0];
 
-                        for(String obj : give.split("\\,")) {
+                        for (String obj : give.split("\\,")) {
                             split = obj.split("\\:");
                             gives.add(new Couple<>(Integer.parseInt(split[0]), Integer.parseInt(split[1])));
                         }
 
-                        for(String obj : get.split("\\,")) {
+                        for (String obj : get.split("\\,")) {
                             split = obj.split("\\:");
                             gets.add(new Couple<>(Integer.parseInt(split[0]), Integer.parseInt(split[1])));
                         }
                         this.exchanges.add(new Couple<>(gets, gives));
                     }
-                } catch(Exception e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                     World.world.logger.error("#3# Erreur sur l'exchanges sur le PNJ d'id : " + npcID);
                 }
@@ -304,22 +300,22 @@ public class NpcTemplate {
         }
 
 
-        public ArrayList<Couple<Integer,Integer>> checkGetObjects(List<Couple<Integer,Integer>> objects) {
-            if(this.exchanges == null) return null;
+        public ArrayList<Couple<Integer, Integer>> checkGetObjects(List<Couple<Integer, Integer>> objects) {
+            if (this.exchanges == null) return null;
             boolean ok;
             int multiple = 0, newMultiple = 0;
 
-            for(Couple<ArrayList<Couple<Integer, Integer>>, ArrayList<Couple<Integer, Integer>>> entry0 : this.exchanges) {
+            for (Couple<ArrayList<Couple<Integer, Integer>>, ArrayList<Couple<Integer, Integer>>> entry0 : this.exchanges) {
                 ok = true;
-                for(Couple<Integer, Integer> entry1 : entry0.first) {
+                for (Couple<Integer, Integer> entry1 : entry0.first) {
                     boolean ok1 = false;
 
-                    for(Couple<Integer, Integer> entry2 : objects) {
+                    for (Couple<Integer, Integer> entry2 : objects) {
                         if (Objects.equals(entry1.first, entry2.first) && (int) (entry2.second) % entry1.second == 0) {
                             ok1 = true;
                             newMultiple = entry2.second / entry1.second;
 
-                            if(multiple == 0 || newMultiple == multiple) {
+                            if (multiple == 0 || newMultiple == multiple) {
                                 multiple = newMultiple;
                             } else {
                                 ok1 = false;
@@ -327,7 +323,7 @@ public class NpcTemplate {
                         }
                     }
 
-                    if(!ok1) {
+                    if (!ok1) {
                         ok = false;
                         break;
                     }
@@ -335,7 +331,7 @@ public class NpcTemplate {
 
                 final int fMultiple = multiple;
 
-                if(ok && objects.size() == entry0.first.size()) {
+                if (ok && objects.size() == entry0.first.size()) {
                     if (fMultiple != 1) {
                         return entry0.second.stream().map(give -> new Couple<>(give.first, give.second * fMultiple))
                                 .collect(Collectors.toCollection(ArrayList::new));
@@ -347,130 +343,6 @@ public class NpcTemplate {
                 }
             }
             return null;
-        }
-
-        public void onDialog(NpcTemplate template, Player player, int question, int response) {
-            try {
-                if(response == 0)legacyCreateDialog(template, player);
-                else legacyDialogResponse(template, player, question, response);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        private void legacyDialogResponse(NpcTemplate template, Player player, int questionID, int answerId) {
-            NpcQuestion question = World.world.getNPCQuestion(questionID);
-            NpcAnswer answer = World.world.getNpcAnswer(answerId);
-
-            if (question == null || answer == null) {
-                SocketManager.GAME_SEND_END_DIALOG_PACKET(player.getGameClient());
-                return;
-            }
-
-            if (answerId == 6604 || answerId == 6605) {
-                String stats = "", statsReplace = "";
-                if (player.hasItemTemplate(10207, 1, false))
-                    stats = player.getItemTemplate(10207).getTxtStat().get(Constant.STATS_NAME_DJ);
-                try {
-                    for(String answer0 : question.getAnwsers().split(";")) {
-                        for (Action action : World.world.getNpcAnswer(Integer.parseInt(answer0)).getActions()) {
-                            if ((action.getId() == 15 || action.getId() == 16) && player.hasItemTemplate(10207, 1, false)) {
-                                for (String i : stats.split(",")) {
-                                    GameMap map = player.getCurMap();
-                                    if (map != null) {
-                                        Npc npc0 = map.getNpc((Integer) player.getExchangeAction().getValue());
-                                        if (npc0 != null && npc0.getTemplate() != null && Dopeul.parseConditionTrousseau(i.replace(" ", ""), npc0.getTemplate().getId(), map.getId())) {
-                                            player.teleport(Short.parseShort(action.getArgs().split(",")[0]), Integer.parseInt(action.getArgs().split(",")[1]));
-                                            switch(map.getId()) {
-                                                case 9397:case 9538:
-                                                    break;
-                                                default:
-                                                    statsReplace = i;
-                                                    break;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                } catch(Exception e) {
-                    e.printStackTrace();
-                }
-
-                GameObject object = player.getItemTemplate(10207);
-                if (answerId == 6605 && !statsReplace.isEmpty()) {
-                    String newStats = "";
-                    for (String i : stats.split(","))
-                        if (!i.equals(statsReplace))
-                            newStats += (newStats.isEmpty() ? i : "," + i);
-
-                    object.getTxtStat().remove(Constant.STATS_NAME_DJ);
-                    object.getTxtStat().put(Constant.STATS_NAME_DJ, newStats);
-                }
-                SocketManager.GAME_SEND_UPDATE_ITEM(player, object);
-            } else if (answerId == 4628) {
-                if (player.hasItemTemplate(9487, 1, false)) {
-                    String date = player.getItemTemplate(9487, 1).getTxtStat().get(Constant.STATS_DATE);
-                    long timeStamp = Long.parseLong(date);
-                    if (System.currentTimeMillis() - timeStamp <= 1209600000) {
-                        new Action(1, "5522", "").apply(player, null, -1, -1, World.world.getMap( 10255));
-                        return;
-                    }
-                }
-                new Action(1, "5521", "").apply(player, null, -1, -1, World.world.getMap( 10255));
-                return;
-            }
-
-            boolean leave = answer.apply(player);
-
-            if (!answer.isAnotherDialog()) {
-                if (leave) {
-                    SocketManager.GAME_SEND_END_DIALOG_PACKET(player.getGameClient());
-                    if (player.getExchangeAction() != null && player.getExchangeAction().getType() == ExchangeAction.TALKING_WITH)
-                        player.setExchangeAction(null);
-                }
-            }
-        }
-        private void legacyCreateDialog(NpcTemplate template, Player player) {
-            int questionId = getInitQuestionId(player.getCurMap().getId());
-            NpcQuestion question = World.world.getNPCQuestion(questionId);
-
-            if (question == null) {
-                SocketManager.GAME_SEND_END_DIALOG_PACKET(player.getGameClient());
-                return;
-            }
-            if (template.id == 577 && player.getCurMap().getId() == (short) 7596) {
-                if (player.hasItemTemplate(2106, 1, false))
-                    question = World.world.getNPCQuestion(2407);
-            } else if (template.id == 1041 && player.getCurMap().getId() == (short) 10255 && questionId == 5516) {
-                if (player.getAlignment() == 1) {// bontarien
-                    if (player.getSexe() == 0)
-                        question = World.world.getNPCQuestion(5519);
-                    else
-                        question = World.world.getNPCQuestion(5520);
-                } else if (player.getAlignment() == 2) {// brakmarien
-                    if (player.getSexe() == 0)
-                        question = World.world.getNPCQuestion(5517);
-                    else
-                        question = World.world.getNPCQuestion(5518);
-                } else { // Neutre ou mercenaire
-                    question = World.world.getNPCQuestion(5516);
-                }
-            }
-
-            NpcDialogActionData data = new NpcDialogActionData(template, questionId);
-            ExchangeAction<NpcDialogActionData> exchangeAction = new ExchangeAction<>(ExchangeAction.TALKING_WITH, data);
-            player.setExchangeAction(exchangeAction);
-
-            String packet = question.parse(player);
-
-            String[] split = packet.split("\\|");
-            if(split.length > 1) {
-                data.setAnswers(Arrays.stream(split[1].split(";")).map(Integer::parseInt).collect(Collectors.toList()));
-            }
-
-            SocketManager.GAME_SEND_QUESTION_PACKET(player.getGameClient(), packet);
         }
     }
 }

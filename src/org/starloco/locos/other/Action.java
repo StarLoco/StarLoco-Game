@@ -12,12 +12,10 @@ import org.starloco.locos.database.DatabaseManager;
 import org.starloco.locos.database.data.login.PlayerData;
 import org.starloco.locos.entity.monster.MonsterGroup;
 import org.starloco.locos.entity.npc.Npc;
-import org.starloco.locos.entity.npc.NpcQuestion;
 import org.starloco.locos.entity.pet.PetEntry;
 import org.starloco.locos.game.GameClient;
 import org.starloco.locos.game.GameServer;
 import org.starloco.locos.game.action.ExchangeAction;
-import org.starloco.locos.game.action.type.NpcDialogActionData;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.game.world.World.Couple;
 import org.starloco.locos.job.Job;
@@ -30,7 +28,6 @@ import org.starloco.locos.object.entity.SoulStone;
 
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 public class Action {
 
@@ -280,35 +277,6 @@ public class Action {
                     // Pas ok, mais il y a trop de dialogue de PNJ bugg� pour laisser cette erreur flood.
                     // e.printStackTrace();
                     return true;
-                }
-                break;
-
-            case 1://Discours NPC
-                if(client == null) return true;
-                if (args.equalsIgnoreCase("DV")) {
-                    SocketManager.GAME_SEND_END_DIALOG_PACKET(client);
-                    player.setExchangeAction(null);
-                } else {
-                    int qID = -1;
-                    try {
-                        qID = Integer.parseInt(args);
-                    } catch (NumberFormatException e) {
-                        e.printStackTrace();
-                    }
-                    NpcQuestion quest = World.world.getNPCQuestion(qID);
-                    if (quest == null) {
-                        SocketManager.GAME_SEND_END_DIALOG_PACKET(client);
-                        player.setExchangeAction(null);
-                        return true;
-                    }
-                    NpcDialogActionData data = (NpcDialogActionData) player.getExchangeAction().getValue();
-                    data.setQuestionId(qID);
-                    data.setAnswers(Arrays.stream(quest.getAnwsers().split(";")).map(Integer::parseInt).collect(Collectors.toList()));
-                    try {
-                        SocketManager.GAME_SEND_QUESTION_PACKET(client, quest.parse(player));
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
                 }
                 break;
 
@@ -2307,52 +2275,6 @@ public class Action {
                 }
                 break;
 
-            case 456: //Obtention du masque kanniboul : fonctionnel
-                if (player.hasItemTemplate(1014, 1, false)
-                        && player.hasItemTemplate(1015, 1, false)
-                        && player.hasItemTemplate(1016, 1, false)
-                        && player.hasItemTemplate(1017, 1, false)
-                        && player.hasItemTemplate(1086, 1, false)
-                        && player.getCurMap().getId() == 425) {
-                    player.removeItemByTemplateId(1014, 1, false);
-                    SocketManager.GAME_SEND_Im_PACKET(player, "022;" + 1 + "~"
-                            + 1014);
-                    player.removeItemByTemplateId(1015, 1, false);
-                    SocketManager.GAME_SEND_Im_PACKET(player, "022;" + 1 + "~"
-                            + 1015);
-                    player.removeItemByTemplateId(1016, 1, false);
-                    SocketManager.GAME_SEND_Im_PACKET(player, "022;" + 1 + "~"
-                            + 1016);
-                    player.removeItemByTemplateId(1017, 1, false);
-                    SocketManager.GAME_SEND_Im_PACKET(player, "022;" + 1 + "~"
-                            + 1017);
-                    player.removeItemByTemplateId(1086, 1, false);
-                    SocketManager.GAME_SEND_Im_PACKET(player, "022;" + 1 + "~"
-                            + 1086);
-                    GameObject newObjAdded = World.world.getObjTemplate(1088).createNewItem(1, false);
-                    if (!player.addObjetSimiler(newObjAdded, true, -1)) {
-                        World.world.addGameObject(newObjAdded);
-                        player.addItem(newObjAdded, true);
-                    }
-                    SocketManager.GAME_SEND_Im_PACKET(player, "021;" + 1 + "~"
-                            + 1088);
-
-                    NpcQuestion quest = World.world.getNPCQuestion(577);
-                    if (quest == null) {
-                        SocketManager.GAME_SEND_END_DIALOG_PACKET(player.getGameClient());
-                        player.setExchangeAction(null);
-                        return true;
-                    }
-                    try {
-                        SocketManager.GAME_SEND_QUESTION_PACKET(player.getGameClient(), quest.parse(player));
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    SocketManager.GAME_SEND_Im_PACKET(player, "14|43");
-                }
-                break;
-
             case 457://Vente ticket �le moon
                 if (player.getKamas() >= 1000
                         && player.getCurMap().getId() == 1014) {
@@ -2896,29 +2818,6 @@ public class Action {
                 player.teleport((short) 8467, 227);
                 break;
 
-            case 523://Cawotte vs spell
-                if (player.getCurMap().getId() != 1779)
-                    return true;
-                if(client == null) return true;
-
-                if (player.hasItemTemplate(361, 100, false)) {
-                    player.removeItemByTemplateId(361, 100, false);
-                    player.send("Im022;100~361");
-                    player.learnSpell(367, 1, true, true, true);
-
-                    NpcQuestion quest = World.world.getNPCQuestion(473);
-                    if (quest == null) {
-                        SocketManager.GAME_SEND_END_DIALOG_PACKET(client);
-                        player.setExchangeAction(null);
-                        return true;
-                    }
-                    SocketManager.GAME_SEND_QUESTION_PACKET(client, quest.parse(player));
-                    return false;
-                } else {
-                    player.send("Im14");
-                }
-                break;
-
 //            case 524://R�ponse Maitre corbac
 //                if(client == null) return true;
 //                int qID = MonsterGroup.MAITRE_CORBAC.check();
@@ -2968,238 +2867,6 @@ public class Action {
 
                 player.addStaticEmote(19);
                 player.teleport((short) 10155, 210);
-                break;
-
-            case 964://Signer le registre
-                if(client == null) return true;
-                if (player.getCurMap().getId() != 10255)
-                    return true;
-                if (player.getAlignment() != 1 && player.getAlignment() != 2)
-                    return true;
-                if (player.hasItemTemplate(9487, 1, false)) {
-                    String date = player.getItemTemplate(9487, 1).getTxtStat().get(Constant.STATS_DATE);
-                    long timeStamp = Long.parseLong(date);
-                    if (System.currentTimeMillis() - timeStamp <= 1209600000) // 14 jours
-                    {
-                        return true;
-                    } else {
-                        player.removeItemByTemplateId(9487, 1, false);
-                        SocketManager.GAME_SEND_Im_PACKET(player, "022;" + 1 + "~" + 9487);
-                    }
-                }
-
-                if (player.hasItemTemplate(9811, 1, false)) // Formulaire de neutralit�
-                {
-                    player.removeItemByTemplateId(9811, 1, false);
-                    SocketManager.GAME_SEND_Im_PACKET(player, "022;" + 1 + "~" + 9811);
-                    player.modifAlignement(0);
-                } else if (player.hasItemTemplate(9812, 1, false)) // Formulaire de d�sertion
-                {
-                    if (player.hasItemTemplate(9488, 1, false)) {
-                        player.removeItemByTemplateId(9488, 1, false);
-                        SocketManager.GAME_SEND_Im_PACKET(player, "022;" + 1 + "~" + 9488);
-                        player.modifAlignement(1);
-                    } else if (player.hasItemTemplate(9489, 1, false)) {
-                        player.removeItemByTemplateId(9489, 1, false);
-                        SocketManager.GAME_SEND_Im_PACKET(player, "022;" + 1 + "~" + 9489);
-                        player.modifAlignement(2);
-                    }
-                    player.removeItemByTemplateId(9812, 1, false);
-                    SocketManager.GAME_SEND_Im_PACKET(player, "022;" + 1 + "~" + 9812);
-                }
-
-                ObjectTemplate t2 = World.world.getObjTemplate(9487);
-                GameObject obj2 = t2.createNewItem(1, false);
-                obj2.refreshStatsObjet("325#0#0#"
-                        + System.currentTimeMillis());
-                if (player.addItem(obj2, false, false)) {
-                    SocketManager.GAME_SEND_Im_PACKET(player, "021;" + 1
-                            + "~" + obj2.getTemplate().getId());
-                    World.world.addGameObject(obj2);
-                }
-
-                NpcQuestion quest = World.world.getNPCQuestion(Integer.parseInt(this.args));
-                if (quest == null) {
-                    SocketManager.GAME_SEND_END_DIALOG_PACKET(client);
-                    player.setExchangeAction(null);
-                    return true;
-                }
-                try {
-                    SocketManager.GAME_SEND_QUESTION_PACKET(client, quest.parse(player));
-                    return false;
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                break;
-
-            case 965://Signer le document officiel
-                if(client == null) return true;
-                if (player.getCurMap().getId() != 10255)
-                    return true;
-                if (player.getAlignment() != 1 && player.getAlignment() != 2)
-                    return true;
-                if (player.hasItemTemplate(9487, 1, false)) {
-                    String date = player.getItemTemplate(9487, 1).getTxtStat().get(Constant.STATS_DATE);
-                    long timeStamp = Long.parseLong(date);
-                    if (System.currentTimeMillis() - timeStamp <= 1209600000) // 14 jours
-                    {
-                        return true;
-                    }
-                }
-
-                boolean next = false;
-                if (player.hasItemTemplate(9811, 1, false)) // Formulaire de neutralit�
-                {
-                    next = true;
-                } else if (player.hasItemTemplate(9812, 1, false)) // Formulaire de d�sertion
-                {
-                    int idTemp = -1;
-                    if (player.getAlignment() == 2) // Brak, donc passer bont
-                        idTemp = 9488;
-                    else
-                        idTemp = 9489;
-
-                    ObjectTemplate t = World.world.getObjTemplate(idTemp);
-                    GameObject obj = t.createNewItem(1, false);
-                    obj.refreshStatsObjet("325#0#0#"
-                            + System.currentTimeMillis());
-                    if (player.addItem(obj, false, false)) {
-                        SocketManager.GAME_SEND_Im_PACKET(player, "021;" + 1
-                                + "~" + obj.getTemplate().getId());
-                        World.world.addGameObject(obj);
-                    }
-                    next = true;
-                }
-
-                if (next) {
-                    quest = World.world.getNPCQuestion(Integer.parseInt(this.args));
-                    if (quest == null) {
-                        SocketManager.GAME_SEND_END_DIALOG_PACKET(client);
-                        player.setExchangeAction(null);
-                        return true;
-                    }
-                    try {
-                        SocketManager.GAME_SEND_QUESTION_PACKET(client, quest.parse(player));
-                        return false;
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-                break;
-
-            case 963://Formulaire de d�sertion
-                if(client == null) return true;
-                if (player.getCurMap().getId() != 10255)
-                    return true;
-                if (player.getAlignment() != 1 && player.getAlignment() != 2)
-                    return true;
-                if (player.hasItemTemplate(9487, 1, false)) {
-                    String date = player.getItemTemplate(9487, 1).getTxtStat().get(Constant.STATS_DATE);
-                    long timeStamp = Long.parseLong(date);
-                    if (System.currentTimeMillis() - timeStamp <= 1209600000) // 14 jours
-                    {
-                        return true;
-                    }
-                }
-
-                t2 = World.world.getObjTemplate(9812);
-                obj2 = t2.createNewItem(1, false);
-                obj2.refreshStatsObjet("325#0#0#"
-                        + System.currentTimeMillis());
-                if (player.addItem(obj2, false, false)) {
-                    SocketManager.GAME_SEND_Im_PACKET(player, "021;" + 1
-                            + "~" + obj2.getTemplate().getId());
-                    World.world.addGameObject(obj2);
-                }
-
-                quest = World.world.getNPCQuestion(Integer.parseInt(this.args));
-                if (quest == null) {
-                    SocketManager.GAME_SEND_END_DIALOG_PACKET(client);
-                    player.setExchangeAction(null);
-                    return true;
-                }
-                try {
-                    SocketManager.GAME_SEND_QUESTION_PACKET(client, quest.parse(player));
-                    return false;
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                break;
-
-            case 966://Formulaire de neutralit�
-                if(client == null) return true;
-                if (player.getCurMap().getId() != 10255)
-                    return true;
-                if (player.getAlignment() != 1 && player.getAlignment() != 2)
-                    return true;
-                if (player.hasItemTemplate(9487, 1, false)) {
-                    String date = player.getItemTemplate(9487, 1).getTxtStat().get(Constant.STATS_DATE);
-                    long timeStamp = Long.parseLong(date);
-                    if (System.currentTimeMillis() - timeStamp <= 1209600000) // 14 jours
-                    {
-                        return true;
-                    }
-                }
-
-                int kamas = 256000;
-                if (player.getALvl() <= 10)
-                    kamas = 500;
-                else if (player.getALvl() <= 20)
-                    kamas = 1000;
-                else if (player.getALvl() <= 30)
-                    kamas = 2000;
-                else if (player.getALvl() <= 40)
-                    kamas = 4000;
-                else if (player.getALvl() <= 50)
-                    kamas = 8000;
-                else if (player.getALvl() <= 60)
-                    kamas = 16000;
-                else if (player.getALvl() <= 70)
-                    kamas = 32000;
-                else if (player.getALvl() <= 80)
-                    kamas = 64000;
-                else if (player.getALvl() <= 90)
-                    kamas = 128000;
-                else if (player.getALvl() <= 100)
-                    kamas = 256000;
-
-                if (player.getKamas() < kamas) {
-                    SocketManager.GAME_SEND_MESSAGE_SERVER(player, "10|" + kamas);
-                    return true;
-                } else {
-                    player.setKamas(player.getKamas() - kamas);
-                    SocketManager.GAME_SEND_STATS_PACKET(player);
-                    SocketManager.GAME_SEND_Im_PACKET(player, "046;" + kamas);
-
-                    if (player.hasItemTemplate(9811, 1, false)) {
-                        player.removeItemByTemplateId(9811, 1, false);
-                        SocketManager.GAME_SEND_Im_PACKET(player, "022;" + 1
-                                + "~" + 9811);
-                    }
-
-                    ObjectTemplate t = World.world.getObjTemplate(9811);
-                    GameObject obj = t.createNewItem(1, false);
-                    obj.refreshStatsObjet("325#0#0#"
-                            + System.currentTimeMillis());
-                    if (player.addItem(obj, false, false)) {
-                        SocketManager.GAME_SEND_Im_PACKET(player, "021;" + 1
-                                + "~" + obj.getTemplate().getId());
-                        World.world.addGameObject(obj);
-                    }
-
-                    quest = World.world.getNPCQuestion(Integer.parseInt(this.args));
-                    if (quest == null) {
-                        SocketManager.GAME_SEND_END_DIALOG_PACKET(client);
-                        player.setExchangeAction(null);
-                        return true;
-                    }
-                    try {
-                        SocketManager.GAME_SEND_QUESTION_PACKET(client, quest.parse(player));
-                        return false;
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
                 break;
 
             case 967://Apprendre bricoleur
@@ -3834,59 +3501,6 @@ public class Action {
                 }
                 break;
 
-            case 988: // devenir p�cheur
-                if(client == null) return true;
-                try {
-                    if (player.hasItemTemplate(2107, 1, false)) {
-                        long timeStamp = Long.parseLong(player.getItemTemplate(2107, 1).getTxtStat().get(Constant.STATS_DATE));
-                        boolean success = (System.currentTimeMillis()
-                                - timeStamp <= 2 * 60 * 1000);
-                        NpcQuestion qQuest = World.world.getNPCQuestion(success ? 1171 : 1172);
-
-                        SocketManager.GAME_SEND_Im_PACKET(player, "022;" + 1
-                                + "~" + 2107);
-                        player.removeItemByTemplateId(2107, 1, false);
-
-                        if (qQuest == null) {
-                            SocketManager.GAME_SEND_END_DIALOG_PACKET(client);
-                            player.setExchangeAction(null);
-                            return true;
-                        }
-
-                        if (success) {
-                            Job metierArgs = World.world.getMetier(36);
-                            if (metierArgs == null)
-                                return true; // Si le m�tier n'existe pas
-                            if (player.getMetierByID(36) != null) {
-                                SocketManager.GAME_SEND_END_DIALOG_PACKET(client);
-                                player.setExchangeAction(null);
-                                SocketManager.GAME_SEND_Im_PACKET(player, "111");
-                                return true; // Si on a d�j� le m�tier
-                            }
-
-                            for (Entry<Integer, JobStat> entry : player.getMetiers().entrySet()) {
-                                if (entry.getValue().get_lvl() < 30
-                                        && !entry.getValue().getTemplate().isMaging()) {
-                                    SocketManager.GAME_SEND_END_DIALOG_PACKET(client);
-                                    player.setExchangeAction(null);
-                                    SocketManager.GAME_SEND_Im_PACKET(player, "18;30");
-                                    return true;
-                                }
-                            }
-
-                            player.learnJob(World.world.getMetier(36));
-                            ((PlayerData) DatabaseManager.get(PlayerData.class)).update(player);
-                            SocketManager.GAME_SEND_Ow_PACKET(player);
-                        }
-
-                        SocketManager.GAME_SEND_QUESTION_PACKET(client, qQuest.parse(player));
-                        return false;
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                break;
-
             case 989:
                 if(client == null) return true;
                 try {
@@ -3920,67 +3534,6 @@ public class Action {
                                 SocketManager.GAME_SEND_Ow_PACKET(player);
                                 return false;
                             }
-                        }
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                break;
-
-            case 990:
-                if(client == null) return true;
-                try {
-                    if (player.getCurMap().getId() == (short) 7388) {
-                        if (player.hasItemTemplate(2039, 1, false)
-                                && player.hasItemTemplate(2041, 1, false)) {
-                            long timeStamp = Long.parseLong(player.getItemTemplate(2039, 1).getTxtStat().get(Constant.STATS_DATE));
-                            boolean success = (System.currentTimeMillis()
-                                    - timeStamp <= 2 * 60 * 1000);
-                            NpcQuestion qQuest = World.world.getNPCQuestion(success ? 2364 : 1175);
-
-                            SocketManager.GAME_SEND_Im_PACKET(player, "022;" + 1
-                                    + "~" + 2039);
-                            player.removeItemByTemplateId(2039, 1, false);
-                            SocketManager.GAME_SEND_Im_PACKET(player, "022;" + 1
-                                    + "~" + 2041);
-                            player.removeItemByTemplateId(2041, 1, false);
-
-                            if (qQuest == null) {
-                                SocketManager.GAME_SEND_END_DIALOG_PACKET(client);
-                                player.setExchangeAction(null);
-                                return true;
-                            }
-
-                            if (success) {
-                                Job metierArgs = World.world.getMetier(41);
-                                if (metierArgs == null)
-                                    return true; // Si le m�tier n'existe pas
-                                if (player.getMetierByID(41) != null) {
-                                    SocketManager.GAME_SEND_END_DIALOG_PACKET(client);
-                                    player.setExchangeAction(null);
-                                    SocketManager.GAME_SEND_Im_PACKET(player, "111");
-                                    return true; // Si on a d�j� le m�tier
-                                }
-
-                                for (Entry<Integer, JobStat> entry : player.getMetiers().entrySet()) {
-                                    if (entry.getValue().get_lvl() < 30
-                                            && !entry.getValue().getTemplate().isMaging()) {
-                                        SocketManager.GAME_SEND_END_DIALOG_PACKET(client);
-                                        player.setExchangeAction(null);
-                                        SocketManager.GAME_SEND_Im_PACKET(player, "18;30");
-                                        return true;
-                                    }
-                                }
-
-                                player.learnJob(World.world.getMetier(41));
-                                ((PlayerData) DatabaseManager.get(PlayerData.class)).update(player);
-                                SocketManager.GAME_SEND_Ow_PACKET(player);
-                            }
-
-                            SocketManager.GAME_SEND_QUESTION_PACKET(client, qQuest.parse(player));
-                            return false;
-                        } else {
-                            player.send("Im14");
                         }
                     }
                 } catch (Exception e) {
