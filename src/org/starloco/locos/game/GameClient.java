@@ -3787,7 +3787,7 @@ public class GameClient {
         switch (c) {
             case 'A':
                 if (this.player != null)
-                    sendActions(packet);
+                    parseAction(packet);
                 break;
             case 'C':
                 if (this.player != null)
@@ -3834,7 +3834,7 @@ public class GameClient {
         }
     }
 
-    private synchronized void sendActions(String packet) {
+    private synchronized void parseAction(String packet) {
         if (this.player.getDoAction()) {
             SocketManager.GAME_SEND_GA_PACKET(this, "", "0", "", "");
             return;

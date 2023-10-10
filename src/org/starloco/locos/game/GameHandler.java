@@ -44,8 +44,9 @@ public class GameHandler implements IoHandler {
                 }
 
                 client.parsePacket(p);
-                if (Config.debug)
+                if (Config.debug) {
                     World.world.logger.trace((client.getPlayer() == null ? "" : client.getPlayer().getName()) + " <-- " + p);
+                }
                 i++;
             } while (i == s.length - 1);
         }
