@@ -132,7 +132,8 @@ public class World implements Scripted<SWorld> {
     public Account ensureAccountLoaded(int id) {
         Account account = accounts.get(id);
         if (account == null) {
-            ((AccountData) DatabaseManager.get(AccountData.class)).load(id);
+            logger.info("Loading account #{}", id);
+            DatabaseManager.get(AccountData.class).load(id);
         }
         return accounts.get(id);
     }

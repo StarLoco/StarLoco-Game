@@ -11,6 +11,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -28,16 +29,17 @@ public class QuestProgressData extends FunctionDAO<QuestProgress> {
     @Override
     public QuestProgress load(int accountId) {
         Account account = World.world.getAccount(accountId);
+        Objects.requireNonNull(account);
+
         try {
             getData("SELECT * FROM " + getTableName() + " WHERE `account_id` = " + accountId + ";", result -> {
                 while (result.next()) {
                     int pId = result.getInt("player_id");
                     int qId = result.getInt("quest_id");
                     int sId = result.getInt("current_step");
-                    Set<Integer> completedObjectives = Arrays.stream(result.getString("completed_objectives").split("\\|")).filter(s->s.length()!=0).map(Integer::parseInt).collect(Collectors.toSet());
+                    Set<Integer> completedObjectives = Arrays.stream(result.getString("completed_objectives").split("\\|")).filter(s-> !s.isEmpty()).map(Integer::parseInt).collect(Collectors.toSet());
                     boolean finished = result.getBoolean("finished");
 
-                    // new PlayerQuestProgress(result.getInt("id"), result.getInt("quest"), result.getInt("finish") == 1, result.getInt("player"), result.getString("stepsValidation"))
                     QuestProgress qp = new QuestProgress(accountId, pId, qId, sId, completedObjectives, finished);
                     account.addQuestProgression(qp);
                 }
