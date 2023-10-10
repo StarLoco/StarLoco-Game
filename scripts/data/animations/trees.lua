@@ -21,13 +21,3 @@ AnimatedObjects.Tree_Kaliptus = NewAnimation(7557, AnimStates.READY, treeSG)
 AnimatedObjects.Tree_Bamboo = NewAnimation(7553, AnimStates.READY, treeSG)
 AnimatedObjects.Tree_DarkBamboo = NewAnimation(7554, AnimStates.READY, treeSG)
 AnimatedObjects.Tree_HolyBamboo = NewAnimation(7552, AnimStates.READY, treeSG)
-
-
-local cerealSG = {
-    [AnimStates.READY] = {frame=1, interactive=true},
-    [AnimStates.IN_USE]= {frame=2, duration=633, next=AnimStates.NOT_READY},
-    [AnimStates.NOT_READY] = {frame=3},
-    [AnimStates.READYING] = {frame=5, duration=1000, next=AnimStates.READY}
-}
-
-AnimatedObjects.Cereal_Wheat = NewAnimation(7511, AnimStates.READY, cerealSG)

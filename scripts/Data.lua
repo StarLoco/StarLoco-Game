@@ -6,14 +6,14 @@ POST_INITS = {}
 -- Load constant data
 requireReload("data/AdminCommands")
 requireReload("data/AdminGroups")
-requireReload("./data/Breed")
+requireReload("data/Breed")
 requireReload("data/Experience")
 requireReload("data/FightTypes")
 requireReload("data/GearSlots")
+requireReload("data/Animations")
 requireReload("data/InteractiveObjects")
 requireReload("data/Jobs")
 requireReload("data/ObjectiveTypes")
-requireReload("data/Animations")
 requireReload("data/Skills")
 
 -- Define classes
@@ -23,7 +23,8 @@ requireReload("models/Quest")
 requireReload("models/InteractiveObjectDef")
 
 -- Load instances
-loadPack("data/objects")
+loadPack("data/animations")
+loadPack("data/objects") -- Always load after animations
 loadPack("data/npcs")
 loadPack("data/maps")
 loadPack("data/quests")

@@ -1,5 +1,3 @@
-require("data/objects/animations")
-
 local map = MapDef(
 	8538,
 	"0706131721",

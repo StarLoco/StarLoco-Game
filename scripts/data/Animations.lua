@@ -4,6 +4,7 @@ AnimatedObjects = {}
 
 ---@class AnimStates
 ---@field READY string Ready/ Open
+---
 ---@field IN_USE string Being harvested / Closing
 ---@field NOT_READY string Not ready / Closed
 ---@field READYING string Regrowing / Opening

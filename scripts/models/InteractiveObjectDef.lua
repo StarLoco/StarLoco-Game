@@ -10,16 +10,19 @@ IO_DEFS = {}
 
 ---@param id number
 ---@param type number
----@param anim Animation
+---@param skills number[] defaults to empty
+---@param anim Animation defaults to nil
+---@param walkable boolean defaults to false
 ---@return InteractiveObjectDef
-function RegisterIODef(id, type, skills, anim)
+function RegisterIODef(id, type, skills, anim, walkable)
     local self = setmetatable({}, {
         __index = InteractiveObjectDef,
     })
     self.id = id
     self.type = type
-    self.skills = skills
+    self.skills = skills or {}
     self.anim = anim
+    self.walkable = walkable or false
 
     if IO_DEFS[id] then
         error(string.format("InteractiveObject #%d already registered", self.id))

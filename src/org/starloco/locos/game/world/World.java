@@ -10,7 +10,6 @@ import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.area.map.MapData;
 import org.starloco.locos.area.map.ScriptMapData;
 import org.starloco.locos.area.map.entity.*;
-import org.starloco.locos.area.map.entity.InteractiveObject.InteractiveObjectTemplate;
 import org.starloco.locos.client.Account;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.client.other.Stats;
@@ -93,6 +92,8 @@ public class World implements Scripted<SWorld> {
     private final Map<Integer, Map<String, Map<String, Integer>>> extraMonstre = new HashMap<>();
     private final Map<Integer, GameMap> extraMonstreOnMap = new HashMap<>();
     private final Map<Integer, Long> delayCollectors = new HashMap<>();
+
+    private final Map<Integer,Integer> spriteToObject = new HashMap<>();
 
     // Single threaded executor to avoid concurrency issues. Will be optimized once we refactor threads
     public final ScheduledThreadPoolExecutor scheduler = new ScheduledThreadPoolExecutor(1);
@@ -626,6 +627,19 @@ public class World implements Scripted<SWorld> {
         final double factor = 1 + (getBalanceWorld(player.getAlignment()) * Math.rint((player.getGrade() / 2.5) + 1)) / 100;
         if (factor < 1) return 1;
         return factor;
+    }
+
+    public void setObjectForSprites(Map<Integer, Integer> map) {
+        synchronized (this.spriteToObject){
+            this.spriteToObject.clear();
+            this.spriteToObject.putAll(map);
+        }
+    }
+
+    public int getObjectForSprite(int spriteID) {
+        synchronized (this.spriteToObject){
+            return this.spriteToObject.get(spriteID);
+        }
     }
 
     public ExperienceTables getExperiences() {
@@ -1643,7 +1657,6 @@ public class World implements Scripted<SWorld> {
     public Account getAccount(int id) {
         return accounts.get(id);
     }
-
 
     public static class Drop {
         private final int objectId;

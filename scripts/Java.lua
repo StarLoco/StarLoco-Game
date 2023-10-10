@@ -40,6 +40,9 @@ function RegisterExpTables(players, guilds, jobs, mounts, pvp, livitinems, torme
 ---@param neighbors number[]
 function RegisterSubArea(id, areaId, neighbors) end
 
+---@param t table<number, number>
+function RegisterObjectForSprites(t)  end
+
 ---@class CellOverrides
 ---@field movement number
 

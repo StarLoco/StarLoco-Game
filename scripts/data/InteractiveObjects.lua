@@ -15,8 +15,7 @@ SwitchObjectType = 14
 ClassStatueObjectType = 15
 Unk1ObjectType = 16  -- Only one (id=131) which allow to use/leave/[ref Maison]/[ref CoffreMaison] whatever that is
 
--- Do we actually need that ?
-GfxToObjectId = {
+local GfxToObjectId = {
     [7500] = 1,
     [7003] = 2,
     [7503] = 8,
@@ -210,3 +209,4 @@ GfxToObjectId = {
     [6631] = 130,
     [6632] = 131
 }
+RegisterObjectForSprites(GfxToObjectId)

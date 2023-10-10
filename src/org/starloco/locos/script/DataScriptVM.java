@@ -23,8 +23,6 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
 import java.util.Collections;
 import java.util.Map;
 
@@ -58,6 +56,7 @@ public final class DataScriptVM extends ScriptVM {
         this.env.rawset("RegisterExpTables", new RegisterExpTables());
         this.env.rawset("RegisterMapDef", new RegisterMapTemplate());
         this.env.rawset("NewAnimation", new NewAnimation());
+        this.env.rawset("RegisterObjectForSprites", new RegisterObjectForSprites());
         this.env.rawset("Handlers", handlers);
     }
 
@@ -194,6 +193,25 @@ public final class DataScriptVM extends ScriptVM {
             Animation anim = new org.starloco.locos.anims.Animation(spriteID, defaultFrame, keyFrames);
             World.world.addAnimation(anim);
             context.getReturnBuffer().setTo(anim);
+        }
+    }
+
+    static class RegisterObjectForSprites extends AbstractLibFunction {
+        @Override
+        protected String name() {
+            return "RegisterObjectForSprites";
+        }
+
+        @Override
+        public void invoke(ExecutionContext context, ArgumentIterator  args) {
+            Map<Integer,Integer> map = DataScriptVM.mapFromScript(args.nextTable(),
+                k -> ((Long)k).intValue(),
+                v -> ((Long)v).intValue()
+            );
+
+            World.world.setObjectForSprites(map);
+
+            context.getReturnBuffer().setTo();
         }
     }
 
