@@ -632,7 +632,8 @@ public class GameMap {
     }
 
     public String getAnimationState(int cellId) {
-        Animation anim = Objects.requireNonNull(data.animations.get(cellId));
+        Animation anim = data.animations.get(cellId);
+        if(anim == null) return null;
         return animationStates.getOrDefault(cellId, anim.defaultState);
     }
 

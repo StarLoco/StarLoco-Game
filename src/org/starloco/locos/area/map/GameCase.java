@@ -80,7 +80,7 @@ public class GameCase {
 
         // Cells with objects:
         if(checkObject && ioDef.isPresent()) {
-            boolean isReady = this.map.getAnimationState(cellId).equals("ready");
+            boolean isReady = this.map.getAnimationState(cellId) == null || this.map.getAnimationState(cellId).equals("ready");
             // -> Cannot stop on cell if object is ready to harvest
             if (this.cellId == targetCell && isReady) return false;
             // -> Cannot go through non-walkable objects
