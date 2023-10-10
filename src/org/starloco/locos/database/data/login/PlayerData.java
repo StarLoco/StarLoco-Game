@@ -266,7 +266,7 @@ public class PlayerData extends FunctionDAO<Player> {
                         player.setLastFightForEndFightAction(p.getLastFight());
                     player.VerifAndChangeItemPlace();
 
-                    DatabaseManager.get(QuestProgressData.class).load(player.getId());
+                    DatabaseManager.get(QuestProgressData.class).load(id);
                     // Find player's guild
                     World.world.getGuilds().values().stream().map(g -> g.getMember(player.getId())).filter(Objects::nonNull).findFirst().ifPresent(player::setGuildMember);
 
