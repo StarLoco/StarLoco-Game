@@ -16,6 +16,7 @@ import org.starloco.locos.area.map.ScriptMapData;
 import org.starloco.locos.command.administration.Command;
 import org.starloco.locos.command.administration.Group;
 import org.starloco.locos.database.data.game.ExperienceTables;
+import org.starloco.locos.entity.map.InteractiveObjectTemplate;
 import org.starloco.locos.entity.npc.NpcTemplate;
 import org.starloco.locos.game.world.World;
 
@@ -24,6 +25,7 @@ import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 public final class DataScriptVM extends ScriptVM {
@@ -57,6 +59,7 @@ public final class DataScriptVM extends ScriptVM {
         this.env.rawset("RegisterMapDef", new RegisterMapTemplate());
         this.env.rawset("NewAnimation", new NewAnimation());
         this.env.rawset("RegisterObjectForSprites", new RegisterObjectForSprites());
+        this.env.rawset("RegisterObjectDef", new RegisterObjectDef());
         this.env.rawset("Handlers", handlers);
     }
 
@@ -214,5 +217,21 @@ public final class DataScriptVM extends ScriptVM {
             context.getReturnBuffer().setTo();
         }
     }
+    static class RegisterObjectDef extends AbstractLibFunction {
+        @Override
+        protected String name() {
+            return "RegisterObjectDef";
+        }
 
+        @Override
+        public void invoke(ExecutionContext context, ArgumentIterator  args) {
+            int id = args.nextInt();
+            List<Integer> skills = DataScriptVM.intsFromLuaTable(args.nextOptionalTable(null));
+            boolean walkable = args.nextOptionalBoolean(false);
+
+            World.world.registerObjectTemplate(new InteractiveObjectTemplate(id, skills, walkable));
+
+            context.getReturnBuffer().setTo();
+        }
+    }
 }

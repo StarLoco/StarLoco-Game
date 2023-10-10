@@ -7,7 +7,7 @@ import org.classdump.luna.impl.ImmutableTable;
 import org.classdump.luna.lib.ArgumentIterator;
 import org.classdump.luna.runtime.LuaFunction;
 import org.starloco.locos.area.map.GameMap;
-import org.starloco.locos.area.map.entity.InteractiveObject;
+import org.starloco.locos.entity.map.InteractiveObject;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.entity.monster.MobGroupDef;

@@ -3,7 +3,7 @@ package org.starloco.locos.database.data.login;
 import com.mysql.jdbc.Statement;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.lang.NotImplementedException;
-import org.starloco.locos.area.map.entity.Trunk;
+import org.starloco.locos.entity.map.Trunk;
 import org.starloco.locos.database.DatabaseManager;
 import org.starloco.locos.database.data.FunctionDAO;
 import org.starloco.locos.database.data.game.TrunkData;

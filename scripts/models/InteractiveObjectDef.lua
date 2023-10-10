@@ -29,6 +29,8 @@ function RegisterIODef(id, type, skills, anim, walkable)
     end
 
     IO_DEFS[id] = self
+
+    RegisterObjectDef(self.id, self.skills, self.walkable)
     return self
 end
 

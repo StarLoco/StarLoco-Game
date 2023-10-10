@@ -40,6 +40,11 @@ function RegisterExpTables(players, guilds, jobs, mounts, pvp, livitinems, torme
 ---@param neighbors number[]
 function RegisterSubArea(id, areaId, neighbors) end
 
+---@param id number
+---@param skills number[] defaults to {}
+---@param walkable boolean defaults to false
+function RegisterObjectDef(id, skills, walkable)  end
+
 ---@param t table<number, number>
 function RegisterObjectForSprites(t)  end
 

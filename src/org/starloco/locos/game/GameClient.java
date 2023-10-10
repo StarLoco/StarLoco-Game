@@ -21,10 +21,9 @@ import org.apache.mina.core.session.IoSession;
 import org.starloco.locos.area.Area;
 import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.area.map.GameMap;
-import org.starloco.locos.area.map.entity.House;
-import org.starloco.locos.area.map.entity.InteractiveObject;
-import org.starloco.locos.area.map.entity.MountPark;
-import org.starloco.locos.area.map.entity.Trunk;
+import org.starloco.locos.entity.map.House;
+import org.starloco.locos.entity.map.MountPark;
+import org.starloco.locos.entity.map.Trunk;
 import org.starloco.locos.auction.AuctionManager;
 import org.starloco.locos.client.Account;
 import org.starloco.locos.client.Player;
@@ -2986,7 +2985,7 @@ public class GameClient {
                         continue;
 
                     for (GameCase cell : this.player.getCurMap().getCases()) {
-                        if (cell.getObject() != null) {
+//                        if (cell.getObject() != null) {
 //                            if (cell.getObject().getTemplate() != null) {
 //                                int io = cell.getObject().getTemplate().getId();
 //                                ArrayList<Integer> skills = job.getSkills().get(io);
@@ -3001,7 +3000,7 @@ public class GameClient {
 //                                    }
 //                                }
 //                            }
-                        }
+//                        }
                     }
 
                     if (ok)

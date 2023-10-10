@@ -2,7 +2,7 @@ package org.starloco.locos.database.data.game;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.lang.NotImplementedException;
-import org.starloco.locos.area.map.entity.MountPark;
+import org.starloco.locos.entity.map.MountPark;
 import org.starloco.locos.database.data.FunctionDAO;
 import org.starloco.locos.game.world.World;
 

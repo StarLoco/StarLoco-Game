@@ -9,7 +9,7 @@ import org.starloco.locos.area.SubArea;
 import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.area.map.MapData;
 import org.starloco.locos.area.map.ScriptMapData;
-import org.starloco.locos.area.map.entity.*;
+import org.starloco.locos.entity.map.*;
 import org.starloco.locos.client.Account;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.client.other.Stats;
@@ -78,7 +78,7 @@ public class World implements Scripted<SWorld> {
     private final Map<Integer, BigStore> Hdvs = new HashMap<>();
     private final Map<Integer, Map<Integer, List<BigStoreListing>>> hdvsItems = new HashMap<>();
     private final Map<Integer, Animation> animations = new HashMap<>();
-    private final Map<Integer, org.starloco.locos.area.map.entity.MountPark> MountPark = new HashMap<>();
+    private final Map<Integer, org.starloco.locos.entity.map.MountPark> MountPark = new HashMap<>();
     private final Map<Integer, Trunk> Trunks = new HashMap<>();
     private final Map<Integer, Collector> collectors = new HashMap<>();
     private final Map<Integer, House> Houses = new HashMap<>();
@@ -92,7 +92,7 @@ public class World implements Scripted<SWorld> {
     private final Map<Integer, Map<String, Map<String, Integer>>> extraMonstre = new HashMap<>();
     private final Map<Integer, GameMap> extraMonstreOnMap = new HashMap<>();
     private final Map<Integer, Long> delayCollectors = new HashMap<>();
-
+    private final Map<Integer, InteractiveObjectTemplate> interactiveObjects = new HashMap<>();
     private final Map<Integer,Integer> spriteToObject = new HashMap<>();
 
     // Single threaded executor to avoid concurrency issues. Will be optimized once we refactor threads
@@ -629,6 +629,12 @@ public class World implements Scripted<SWorld> {
         return factor;
     }
 
+    public void registerObjectTemplate(InteractiveObjectTemplate t) {
+        synchronized (this.interactiveObjects) {
+            this.interactiveObjects.put(t.getId(), t);
+        }
+    }
+
     public void setObjectForSprites(Map<Integer, Integer> map) {
         synchronized (this.spriteToObject){
             this.spriteToObject.clear();
@@ -636,10 +642,20 @@ public class World implements Scripted<SWorld> {
         }
     }
 
-    public int getObjectForSprite(int spriteID) {
+    public Optional<Integer> getObjectIDForSprite(int spriteID) {
         synchronized (this.spriteToObject){
-            return this.spriteToObject.get(spriteID);
+            return Optional.ofNullable(this.spriteToObject.get(spriteID));
         }
+    }
+
+    public Optional<InteractiveObjectTemplate> getObject(int objectID) {
+        synchronized (interactiveObjects){
+            return Optional.ofNullable(interactiveObjects.get(objectID));
+        }
+    }
+
+    public Optional<InteractiveObjectTemplate> getObjectBySprite(int spriteID) {
+        return getObjectIDForSprite(spriteID).flatMap(this::getObject);
     }
 
     public ExperienceTables getExperiences() {
@@ -1657,6 +1673,7 @@ public class World implements Scripted<SWorld> {
     public Account getAccount(int id) {
         return accounts.get(id);
     }
+
 
     public static class Drop {
         private final int objectId;

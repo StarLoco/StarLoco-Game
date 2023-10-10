@@ -1,8 +1,10 @@
 package org.starloco.locos.area.map;
 
-import org.starloco.locos.area.map.entity.InteractiveObject;
+import org.starloco.locos.entity.map.InteractiveObject;
 import org.starloco.locos.client.Player;
+import org.starloco.locos.entity.map.InteractiveObjectTemplate;
 import org.starloco.locos.fight.Fighter;
+import org.starloco.locos.game.world.World;
 import org.starloco.locos.object.GameObject;
 
 import java.util.*;
@@ -66,14 +68,16 @@ public class GameCase {
     public boolean isWalkableFight() {
         return this.isWalkable(true);
     }
-    public boolean isWalkable(boolean useObject, boolean inFight, int targetCell) {
-        InteractiveObject io = getObject();
-        if(useObject && io != null) {
-            if(this.cellId == targetCell) return true;
-            return false;
+    public boolean isWalkable(boolean checkObject, boolean inFight, int targetCell) {
+        boolean ioWalkable = true;
+
+        if(checkObject && this.cellId == targetCell) {
+            ioWalkable = World.world.getObjectBySprite(this.map.cellsData.object2(cellId))
+                .map(InteractiveObjectTemplate::isWalkable)
+                .orElse(true);
         }
 
-        return this.isWalkable(inFight);
+        return ioWalkable && this.isWalkable(inFight);
     }
 
     private <T extends Actor> void addActor(T actor) {

@@ -1,4 +1,4 @@
-package org.starloco.locos.area.map.entity;
+package org.starloco.locos.entity.map;
 
 import org.starloco.locos.common.Formulas;
 import org.starloco.locos.entity.mount.Mount;

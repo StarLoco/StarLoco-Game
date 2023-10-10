@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
-import org.starloco.locos.area.map.entity.House;
+import org.starloco.locos.entity.map.House;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.database.DatabaseManager;
 import org.starloco.locos.database.data.game.GuildMemberData;

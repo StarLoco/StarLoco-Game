@@ -1,4 +1,4 @@
-package org.starloco.locos.area.map.entity;
+package org.starloco.locos.entity.map;
 
 import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.job.JobConstant;
@@ -328,28 +328,5 @@ public class InteractiveObject {
 //        return unk;
 //    }
 
-    public static class InteractiveObjectTemplate {
 
-        private final int id;
-        private final int respawnTime;
-        private final int duration;
-        private final int unk;
-        private final boolean walkable;
-
-        public InteractiveObjectTemplate(int id, int respawnTime, int duration, int unk, boolean walkable) {
-            this.id = id;
-            this.respawnTime = respawnTime;
-            this.duration = duration;
-            this.unk = unk;
-            this.walkable = walkable;
-        }
-
-        public int getId() {
-            return id;
-        }
-
-        public boolean isWalkable() {
-            return walkable;
-        }
-    }
 }

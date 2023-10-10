@@ -5,10 +5,10 @@ import org.starloco.locos.area.SubArea;
 import org.starloco.locos.area.map.Actor;
 import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.area.map.GameMap;
-import org.starloco.locos.area.map.entity.House;
-import org.starloco.locos.area.map.entity.InteractiveObject;
-import org.starloco.locos.area.map.entity.MountPark;
-import org.starloco.locos.area.map.entity.Trunk;
+import org.starloco.locos.entity.map.House;
+import org.starloco.locos.entity.map.InteractiveObject;
+import org.starloco.locos.entity.map.MountPark;
+import org.starloco.locos.entity.map.Trunk;
 import org.starloco.locos.client.other.Party;
 import org.starloco.locos.client.other.Stalk;
 import org.starloco.locos.client.other.Stats;
@@ -44,7 +44,6 @@ import org.starloco.locos.job.Job;
 import org.starloco.locos.job.JobAction;
 import org.starloco.locos.job.JobConstant;
 import org.starloco.locos.job.JobStat;
-import org.starloco.locos.job.maging.BreakingObject;
 import org.starloco.locos.kernel.Config;
 import org.starloco.locos.kernel.Constant;
 import org.starloco.locos.kernel.Main;
@@ -3126,22 +3125,29 @@ public class Player implements Scripted<SPlayer>, Actor {
     }
 
     public void startActionOnCell(GameAction GA) {
-        int cellID = -1;
-        int action = -1;
+        int cellID;
+        int skillID;
         try {
             cellID = Integer.parseInt(GA.args.split(";")[0]);
-            action = Integer.parseInt(GA.args.split(";")[1]);
+            skillID = Integer.parseInt(GA.args.split(";")[1]);
         } catch (Exception e) {
             e.printStackTrace();
+            return;
         }
-        if (cellID == -1 || action == -1)
+        if (cellID == -1 || skillID == -1)
             return;
 
-        // Make sure this skill is available on this cell
-        InteractiveObject io = curMap.getInteractiveObject(cellID);
+        boolean allowed = World.world
+            .getObjectBySprite(curMap.cellsData.object2(cellID))
+            .map(o -> o.allowSkill(skillID))
+            .orElse(false);
 
+        if(!allowed) {
+            // TODO: Cheat attempt
+            return;
+        }
 
-        DataScriptVM.getInstance().handlers.onSkillUse(this, cellID, action);
+        DataScriptVM.getInstance().handlers.onSkillUse(this, cellID, skillID);
     }
 
     public void finishActionOnCell(GameAction GA) {

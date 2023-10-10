@@ -1,8 +1,8 @@
 package org.starloco.locos.other;
 
 import org.starloco.locos.area.map.GameMap;
-import org.starloco.locos.area.map.entity.House;
-import org.starloco.locos.area.map.entity.MountPark;
+import org.starloco.locos.entity.map.House;
+import org.starloco.locos.entity.map.MountPark;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.client.other.Stalk;
 import org.starloco.locos.client.other.Stats;

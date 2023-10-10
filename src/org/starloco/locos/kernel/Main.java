@@ -5,7 +5,6 @@ import ch.qos.logback.classic.Logger;
 import org.fusesource.jansi.AnsiConsole;
 import org.slf4j.LoggerFactory;
 import org.starloco.locos.area.map.GameMap;
-import org.starloco.locos.area.map.entity.InteractiveObject;
 import org.starloco.locos.auction.AuctionManager;
 import org.starloco.locos.database.DatabaseManager;
 import org.starloco.locos.database.data.game.HeroicMobsGroupsData;

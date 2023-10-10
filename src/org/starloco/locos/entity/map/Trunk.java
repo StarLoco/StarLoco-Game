@@ -1,5 +1,5 @@
 
-package org.starloco.locos.area.map.entity;
+package org.starloco.locos.entity.map;
 
 import org.starloco.locos.client.Account;
 import org.starloco.locos.client.Player;

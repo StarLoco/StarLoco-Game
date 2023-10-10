@@ -1,8 +1,6 @@
 package org.starloco.locos.job;
 
-import org.starloco.locos.area.map.GameMap;
-import org.starloco.locos.area.map.GameCase;
-import org.starloco.locos.area.map.entity.InteractiveObject;
+import org.starloco.locos.entity.map.InteractiveObject;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.common.Formulas;
 import org.starloco.locos.common.PathFinding;

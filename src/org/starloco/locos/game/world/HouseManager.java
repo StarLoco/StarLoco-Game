@@ -1,7 +1,7 @@
 package org.starloco.locos.game.world;
 
-import org.starloco.locos.area.map.entity.House;
-import org.starloco.locos.area.map.entity.Trunk;
+import org.starloco.locos.entity.map.House;
+import org.starloco.locos.entity.map.Trunk;
 import org.starloco.locos.client.Account;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.common.SocketManager;

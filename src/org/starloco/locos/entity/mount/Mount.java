@@ -1,7 +1,7 @@
 package org.starloco.locos.entity.mount;
 
 import org.starloco.locos.area.map.GameMap;
-import org.starloco.locos.area.map.entity.MountPark;
+import org.starloco.locos.entity.map.MountPark;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.client.other.Stats;
 import org.starloco.locos.common.Formulas;
