@@ -7,6 +7,7 @@ import org.starloco.locos.fight.Fighter;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.object.GameObject;
 
+import javax.swing.text.html.Option;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -69,15 +70,23 @@ public class GameCase {
         return this.isWalkable(true);
     }
     public boolean isWalkable(boolean checkObject, boolean inFight, int targetCell) {
-        boolean ioWalkable = true;
+        // Official servers:
+        // Cells without objects: depends on walkable field
+        // Cells with objects:
+        // -> Cannot stop on cell if object is ready to harvest
+        // -> Can always go through walkable objects
 
-        if(checkObject && this.cellId == targetCell) {
-            ioWalkable = World.world.getObjectBySprite(this.map.cellsData.object2(cellId))
-                .map(InteractiveObjectTemplate::isWalkable)
-                .orElse(true);
+        Optional<InteractiveObjectTemplate> ioDef = World.world.getObjectBySprite(this.map.cellsData.object2(cellId));
+
+        // Cells with objects:
+        if(checkObject && ioDef.isPresent()) {
+            boolean isReady = this.map.getAnimationState(cellId).equals("ready");
+            // -> Cannot stop on cell if object is ready to harvest
+            if (this.cellId == targetCell && isReady) return false;
+            // -> Cannot go through non-walkable objects
+            if (!ioDef.get().isWalkable()) return false;
         }
-
-        return ioWalkable && this.isWalkable(inFight);
+        return this.isWalkable(inFight);
     }
 
     private <T extends Actor> void addActor(T actor) {
