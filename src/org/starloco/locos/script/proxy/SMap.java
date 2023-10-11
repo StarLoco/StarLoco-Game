@@ -29,12 +29,6 @@ public class SMap extends DefaultUserdata<GameMap> {
         return m.getId();
     }
 
-    private static Table def(GameMap m) {
-        if(!(m.data instanceof ScriptMapData)) return null;
-        ScriptMapData smd = (ScriptMapData)m.data;
-        return smd.scripted();
-    }
-
     @SuppressWarnings("unused")
     private static SArea area(GameMap m) {
         return m.getArea().scripted();
@@ -101,10 +95,24 @@ public class SMap extends DefaultUserdata<GameMap> {
     private static void setAnimationState(GameMap m, ArgumentIterator args) {
         int cellId = args.nextInt();
         String animName = args.nextString().toString();
-        Runnable r = Optional.ofNullable(args.nextOptionalFunction(null))
-            .map(fn -> (Runnable)(() -> DataScriptVM.getInstance().call(fn)))
-            .orElse(null);
+//        Runnable r = Optional.ofNullable(args.nextOptionalFunction(null))
+//            .map(fn -> (Runnable)(() -> DataScriptVM.getInstance().call(fn)))
+//            .orElse(null);
 
-        m.setAnimationState(cellId, animName, r);
+        m.setAnimationState(cellId, animName);
     }
+
+    @SuppressWarnings("unused")
+    private static void sendAction(GameMap m, ArgumentIterator args) {
+        Player p = args.nextUserdata("SPlayer", SPlayer.class).getUserValue();
+        int actionID = args.nextInt();
+        int actionType = args.nextInt();
+        String actionValue = args.nextString().toString();
+
+        String actionIDStr = "";
+        if(actionID != -1) actionIDStr = String.valueOf(actionID);
+
+        SocketManager.GAME_SEND_GA_PACKET_TO_MAP(m, actionIDStr, actionType, p.getId(), actionValue);
+    }
+
 }

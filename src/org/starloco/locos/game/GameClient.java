@@ -4080,7 +4080,7 @@ public class GameClient {
                 removeAction(GA);
                 return;
             } else {
-                SocketManager.GAME_SEND_GA_PACKET_TO_MAP(this.player.getCurMap(), "" + GA.id, 1, this.player.getId() + "", "a" + World.world.getCryptManager().cellID_To_Code(this.player.getCurCell().getId()) + path);
+                SocketManager.GAME_SEND_GA_PACKET_TO_MAP(this.player.getCurMap(), "" + GA.id, 1, this.player.getId(), "a" + World.world.getCryptManager().cellID_To_Code(this.player.getCurCell().getId()) + path);
             }
 
             this.addAction(GA);
@@ -4195,7 +4195,7 @@ public class GameClient {
 
                     this.clearAllPanels(this.player);
                     this.clearAllPanels(target);
-                    SocketManager.GAME_SEND_GA_PACKET_TO_MAP(this.player.getCurMap(), "", 906, this.player.getId() + "", target.getId() + "");
+                    SocketManager.GAME_SEND_GA_PACKET_TO_MAP(this.player.getCurMap(), "", 906, this.player.getId(), target.getId() + "");
                     this.player.getCurMap().newFight(this.player, target, Constant.FIGHT_TYPE_AGRESSION);
                     return;
                 }
@@ -4366,7 +4366,7 @@ public class GameClient {
             this.clearAllPanels(target);
             if(!this.player.is_showWings())
                 this.player.toggleWings('+');
-            SocketManager.GAME_SEND_GA_PACKET_TO_MAP(this.player.getCurMap(), "", 906, this.player.getId() + "", target.getId() + "");
+            SocketManager.GAME_SEND_GA_PACKET_TO_MAP(this.player.getCurMap(), "", 906, this.player.getId(), target.getId() + "");
             this.player.getCurMap().newFight(this.player, target, Constant.FIGHT_TYPE_AGRESSION);
         } catch (Exception e) {
             e.printStackTrace();
@@ -4395,7 +4395,7 @@ public class GameClient {
             }
 
             this.clearAllPanels(null);
-            SocketManager.GAME_SEND_GA_PACKET_TO_MAP(this.player.getCurMap(), "", 909, this.player.getId() + "", id + "");
+            SocketManager.GAME_SEND_GA_PACKET_TO_MAP(this.player.getCurMap(), "", 909, this.player.getId(), id + "");
             this.player.getCurMap().startFightVersusPercepteur(this.player, target);
         } catch (Exception e) {
             e.printStackTrace();

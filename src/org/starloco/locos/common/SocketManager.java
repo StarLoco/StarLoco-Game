@@ -1428,8 +1428,8 @@ public class SocketManager {
     }
 
     public static void GAME_SEND_GA_PACKET_TO_MAP(GameMap map, String gameActionID,
-                                                  int actionID, String s1, String s2) {
-        String packet = "GA" + gameActionID + ";" + actionID + ";" + s1;
+                                                  int actionID, int actorID, String s2) {
+        String packet = "GA" + gameActionID + ";" + actionID + ";" + actorID;
         if (!s2.equals(""))
             packet += ";" + s2;
 

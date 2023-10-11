@@ -1,3 +1,6 @@
+---@alias ObjectRespawnFn fun():number in Milliseconds
+
+
 ResourceObjectType = 1 -- Trees, Ores, plants, etc
 JobToolsObjectType = 2 -- Fabrication Table, workshop, cauldron, etc
 ZaapObjectType = 3

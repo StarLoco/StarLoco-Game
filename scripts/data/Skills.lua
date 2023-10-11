@@ -1,3 +1,5 @@
+local GATHER_SKILL_BASE_DURATION = 12000
+
 ---@type table<number, fun(p:Player, cellId:number)>
 SKILLS = {}
 
@@ -6,6 +8,14 @@ SKILLS = {}
 ---@field jobLvl number
 ---@field toolID number
 ---@field toolType number
+
+---@class GatherJobSkillDef
+---@field id number
+---@field obj InteractiveObjectDef
+---@field minLvl number
+---@field itemID number
+---@field xp number
+---@field respawn number[2]
 
 ---@param p Player
 ---@param requirements SkillRequirements
@@ -50,7 +60,8 @@ local function checkRequirements(p, requirements)
     return true
 end
 
----@alias GatherRewardFn fun(p:Player):ItemStack[]
+---@alias GatherRewardFn fun(p:Player)
+---@alias GatherDurationFn fun(p:Player):number
 
 ---@param skillId number
 ---@param requirements SkillRequirements
@@ -78,10 +89,11 @@ function respawnBetweenMillis(minTime, maxTime)
 end
 
 ---@param skillId number
+---@param durationFn GatherDurationFn
 ---@param rewardFn GatherRewardFn
 ---@param respawnIntervalFn fun():number
 ---@param requirements SkillRequirements
-function registerGatherSkill(skillId, rewardFn, respawnIntervalFn, requirements)
+function registerGatherSkill(skillId, actorAnimID, durationFn, rewardFn, respawnIntervalFn, requirements)
     ---@param p Player
     SKILLS[skillId] = function(p, cellId)
         if not checkRequirements(p, requirements) then return end
@@ -93,14 +105,25 @@ function registerGatherSkill(skillId, rewardFn, respawnIntervalFn, requirements)
             return
         end
 
-        -- TODO: This needs to run later, after job level specific duration
-        map:setAnimationState(cellId, AnimStates.IN_USE, function()
-            local rewards = rewardFn(p)
-            for _, reward in ipairs(rewards) do
-                p:addItem(reward.itemID, reward.quantity)
-                p:showReceivedItem(p:id(), reward.quantity)
-            end
+        map:setAnimationState(cellId, AnimStates.LOCKED)
 
+        local duration = durationFn(p)
+
+        -- Actor animation
+        local actionParams = tostring(cellId)..","..tostring(duration)
+        if actorAnimID then
+            actionParams = actionParams .. "," .. tostring(actorAnimID)
+        end
+        p:map():sendAction(p, 0, 501, actionParams)
+
+        World:delayForMs(duration, function()
+            -- Done Gathering, reward
+            rewardFn(p)
+
+            -- animate object
+            map:setAnimationState(cellId, AnimStates.IN_USE)
+
+            -- Respawn
             if not respawnIntervalFn then return end
 
             local respawnDelay = respawnIntervalFn()
@@ -110,5 +133,44 @@ function registerGatherSkill(skillId, rewardFn, respawnIntervalFn, requirements)
                 map:setAnimationState(cellId, AnimStates.READYING)
             end)
         end)
+    end
+end
+
+---@param p Player
+---@param itemID number
+---@param quantity number
+function gatherSkillAddItem(p, itemID, quantity)
+    p:addItem(itemID, quantity)
+    p:showReceivedItem(p:id(), quantity)
+end
+
+---@param jobID number
+---@param toolType number
+---@param skills GatherJobSkillDef[]
+function registerGatherJobSkills(jobID, toolType, skills)
+    local durationForPlayer = function(p)
+        return GATHER_SKILL_BASE_DURATION - 100 * p:jobLevel(jobID)
+    end
+
+    for _, sk in pairs(skills) do
+        ---@param p Player
+        ---@return ItemStack
+        local rewardFn = function(p)
+            local lvlDiff = p:jobLevel(jobID) - sk.minLvl
+            local quantity = math.random(1, 2 + math.floor(lvlDiff / 5))
+
+            gatherSkillAddItem(p, sk.itemID, quantity)
+            p:addJobXP(jobID, sk.xp)
+        end
+
+
+        registerGatherSkill(
+            sk.id,
+            nil,
+            durationForPlayer,
+            rewardFn,
+            respawnBetweenMillis(sk.respawn[1], sk.respawn[2]),
+            {jobID = jobID, toolType = toolType, jobLvl = sk.minLvl}
+        )
     end
 end

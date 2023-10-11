@@ -246,7 +246,7 @@ public class EventSmiley extends Event {
 
         if(path != null) {
             this.animator.setCellId(cellId);
-            SocketManager.GAME_SEND_GA_PACKET_TO_MAP(this.map, "0", 1, String.valueOf(this.animator.getId()), path);
+            SocketManager.GAME_SEND_GA_PACKET_TO_MAP(this.map, "0", 1, this.animator.getId(), path);
         }
     }
 }
