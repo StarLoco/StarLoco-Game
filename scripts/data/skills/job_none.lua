@@ -24,10 +24,15 @@ SKILLS[44] = function(p, _)
 end
 
 -- Draw water from well
-registerGatherSkill(102, function(p)
-    -- 311: Water
-    return {ItemStack(311, math.random(1, 10))}
-end, respawnBetweenMillis(120000, 420000))
+registerGatherSkill(102,
+    4,
+    function(_) return 1500 end,
+    function(p)
+        -- 311: Water
+        gatherSkillAddItem(p, 311, math.random(1, 10))
+    end,
+    respawnBetweenMillis(120000, 420000)
+)
 
 
 -- Use Zaap

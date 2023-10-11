@@ -97,7 +97,7 @@ public class Party {
                                     follower.getCurCell().removePlayer(follower);
                                     follower.setCurCell(lastCell);
                                     follower.getCurCell().addPlayer(follower);
-                                    SocketManager.GAME_SEND_GA_PACKET_TO_MAP(follower.getCurMap(), "0", 1, String.valueOf(follower.getId()), path);
+                                    SocketManager.GAME_SEND_GA_PACKET_TO_MAP(follower.getCurMap(), "0", 1, follower.getId(), path);
                                 }
                             }
                         }

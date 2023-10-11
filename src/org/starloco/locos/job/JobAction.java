@@ -114,10 +114,10 @@ public class JobAction {
             P.getGameClient().action = System.currentTimeMillis();
             SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(P.getCurMap(), cellId, io);
             if(P.walkFast) {
-                TimerWaiter.addNext(() -> SocketManager.GAME_SEND_GA_PACKET_TO_MAP(P.getCurMap(), "" + actionId, 501, P.getId() + "", cellId + "," + this.time), 500);
+                TimerWaiter.addNext(() -> SocketManager.GAME_SEND_GA_PACKET_TO_MAP(P.getCurMap(), "" + actionId, 501, P.getId(), cellId + "," + this.time), 500);
                 P.getLang().trans("jobaction.disable.walkfast");
             } else {
-                SocketManager.GAME_SEND_GA_PACKET_TO_MAP(P.getCurMap(), "" + actionId, 501, P.getId() + "", cellId + "," + this.time);
+                SocketManager.GAME_SEND_GA_PACKET_TO_MAP(P.getCurMap(), "" + actionId, 501, P.getId(), cellId + "," + this.time);
             }
         } else {
             P.setAway(true);

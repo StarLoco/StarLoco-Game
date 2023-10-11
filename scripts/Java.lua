@@ -389,8 +389,7 @@ function Map:getAnimationState(cellId) end
 --- setAnimationState sets a cell animation state
 ---@param cellId number
 ---@param name string
----@param cb function() (optional)
-function Map:setAnimationState(cellId, name, cb) end
+function Map:setAnimationState(cellId, name) end
 
 --- setCellData sets a cell data override field
 ---@param cellId number
@@ -402,6 +401,12 @@ function Map:setCellData(cellId, field, val) end
 ---@param cellId number
 ---@param field string
 function Map:resetCellData(cellId, field) end
+
+---@param p Player
+---@param id number
+---@param type number
+---@param val string
+function Map:sendAction(p, id, type, val) end
 
 -- Area
 ---@class Area

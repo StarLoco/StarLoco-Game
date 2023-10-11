@@ -155,6 +155,7 @@ public class SPlayer extends DefaultUserdata<Player> {
 
         SocketManager.GAME_SEND_GA_PACKET(p.getGameClient(), actionIDStr, String.valueOf(actionType),  String.valueOf(p.getId()), actionValue.toString());
     }
+
     @SuppressWarnings("unused")
     private static void sendInfoMsg(Player p, ArgumentIterator args) {
         int type = args.nextInt();

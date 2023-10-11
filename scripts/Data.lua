@@ -25,10 +25,10 @@ requireReload("models/InteractiveObjectDef")
 -- Load instances
 loadPack("data/animations")
 loadPack("data/objects") -- Always load after animations
+loadPack("data/skills") -- Always load after objects
 loadPack("data/npcs")
 loadPack("data/maps")
 loadPack("data/quests")
-loadPack("data/skills")
 loadPack("data/dungeons") -- Always load after maps
 
 -- Load event handlers

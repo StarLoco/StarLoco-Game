@@ -1,30 +1,16 @@
 --FIXME timing / Reward
+--FIXME Reward special cereals sometimes
 
-local farmerRequirements = function(minLvl)
-    return  {
-        jobID = FarmerJob,
-        toolType = 22,
-        jobLvl = minLvl
-    }
-end
+local skills = {
+    {id=45,  obj=Objects.Wheat,  minLvl=1,   itemID=289,  xp=10, respawn={6000, 10000} },
+    {id=53,  obj=Objects.Barley, minLvl=10,  itemID=400,  xp=15, respawn={6000, 10000} },
+    {id=57,  obj=Objects.Oats,   minLvl=20,  itemID=533,  xp=20, respawn={6000, 10000} },
+    {id=46,  obj=Objects.Hop,    minLvl=30,  itemID=401,  xp=25, respawn={6000, 10000} },
+    {id=50,  obj=Objects.Flax,   minLvl=40,  itemID=423,  xp=30, respawn={6000, 10000} },
+    {id=159, obj=Objects.Rice,   minLvl=50,  itemID=7018, xp=35, respawn={6000, 10000} },
+    {id=52,  obj=Objects.Rye,    minLvl=50,  itemID=532,  xp=35, respawn={6000, 10000} },
+    {id=58,  obj=Objects.Malt,   minLvl=50,  itemID=405,  xp=40, respawn={6000, 10000} },
+    {id=54,  obj=Objects.Hemp,   minLvl=50,  itemID=425,  xp=45, respawn={6000, 10000} },
+}
 
-local cerealRespawnFn = respawnBetweenMillis(5000, 10000)
-
----@field maxCount number
-local tempReward = function(itemID, maxCount)
-    if maxCount <= 0 then error("wtf") end
-
-    return function()
-        return {ItemStack(itemID, math.random(1, maxCount))}
-    end
-end
-
-registerGatherSkill(45, tempReward(289, 5), cerealRespawnFn, farmerRequirements(1))
-registerGatherSkill(46, tempReward(401, 5), cerealRespawnFn, farmerRequirements(1))
-registerGatherSkill(50, tempReward(423, 5), cerealRespawnFn, farmerRequirements(1))
-registerGatherSkill(52, tempReward(532, 5), cerealRespawnFn, farmerRequirements(1))
-registerGatherSkill(53, tempReward(400, 5), cerealRespawnFn, farmerRequirements(1))
-registerGatherSkill(54, tempReward(425, 5), cerealRespawnFn, farmerRequirements(1))
-registerGatherSkill(57, tempReward(533, 5), cerealRespawnFn, farmerRequirements(1))
-registerGatherSkill(58, tempReward(405, 5), cerealRespawnFn, farmerRequirements(1))
-registerGatherSkill(159, tempReward( 7018, 5), cerealRespawnFn, farmerRequirements(1))
+registerGatherJobSkills(FarmerJob, 22, skills)
