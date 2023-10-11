@@ -86,5 +86,3 @@ map.onMovementEnd = {
 	[160] = moveEndTeleport(7777, 187),
 	[456] = moveEndTeleport(9663, 35),
 }
-
-
