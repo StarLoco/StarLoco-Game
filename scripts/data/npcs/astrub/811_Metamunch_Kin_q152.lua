@@ -1,7 +1,7 @@
 local npc = Npc(811, 9045)
 --TODO: Lié à la quête 152
-npc.scaleX = 140
-npc.scaleY = 140
+npc.scaleX = 120
+npc.scaleY = 120
 npc.colors = {6908265, 3412229, 15922849}
 npc.accessories = {7192, 6813, 772, 0, 7082}
 
