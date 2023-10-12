@@ -49,18 +49,6 @@ Handlers.players.onFightEnd = function(p, type, isWinner, winners, losers)
 
 end
 
----@param p Player
----@param cellID number
----@param skillID number
-Handlers.players.onSkillUse = function(p, cellID, skillID)
-    if not SKILLS[skillID] then
-        JLogF("unknown skill {}", skillID)
-        return
-    end
-    return SKILLS[skillID](p, cellID)
-end
-
-
 ---@param player Player
 ---@param questId number
 ---@param stepId number

@@ -3390,7 +3390,6 @@ public class GameClient {
             case ExchangeAction.CRAFTING:
                 player.send("EV");
                 player.setDoAction(false);
-                ((JobAction) exchangeAction.getValue()).resetCraft();
                 break;
 
             case ExchangeAction.BREAKING_OBJECTS:
@@ -7036,7 +7035,7 @@ public class GameClient {
         if (GA.actionId == 1)
             walk = false;
         if (Config.debug)
-            World.world.logger.error("Game >  Delete action id : " + GA.id);
+            World.world.logger.debug("Game >  Delete action id : " + GA.id);
         actions.remove(GA.id);
 
         if (actions.get(-1) != null && GA.actionId == 1)//Si la queue est pas vide
