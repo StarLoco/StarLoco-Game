@@ -12,7 +12,7 @@ local map = MapDef(
 
 map.positions = "cNcPc1c4dVdYd-ea|bAbBb3eifqfJfLfUgb"
 map.mobGroupsCount = 3
-map.mobGroupsMinSize = 8
+map.mobGroupsMaxSize = 8
 map.npcs = {
 	[88] = {306, 1},
 }

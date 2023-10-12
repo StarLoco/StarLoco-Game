@@ -12,7 +12,7 @@ local map = MapDef(
 
 map.positions = "fxfyfZf0f1gqgrgs|b4b5b6cvcwcxcYcZ"
 map.mobGroupsCount = 3
-map.mobGroupsMinSize = 8
+map.mobGroupsMaxSize = 8
 map.allowedMobGrades = {
 	{31, 1},
 	{31, 2},
@@ -73,5 +73,3 @@ map.onMovementEnd = {
 	[454] = moveEndTeleport(524, 50),
 	[421] = moveEndTeleport(486, 448),
 }
-
-

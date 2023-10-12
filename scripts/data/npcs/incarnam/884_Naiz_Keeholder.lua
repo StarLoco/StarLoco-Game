@@ -6,6 +6,7 @@ npc.gender = 1
 npc.colors = {-1, 13885285, -1}
 npc.accessories = {0, 0x1ecf, 0x1ecc, 0x1fd7, 0}
 npc.quests = {questID}
+npc.customArtwork = 9091
 
 ---@param p Player
 local function startFight(p)

@@ -12,7 +12,7 @@ local map = MapDef(
 
 map.positions = "cMcOc4dweqfkfMfZ|dbd6fmfrgIgPhihl"
 map.mobGroupsCount = 3
-map.mobGroupsMinSize = 8
+map.mobGroupsMaxSize = 8
 
 
 local startId = 310
