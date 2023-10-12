@@ -17,6 +17,11 @@ map.mobGroupsMaxSize = 1
 
 -- '0;0;0;0;0;0;0' forbiddens -> capabilities ? Or script ?
 
+map.onMovementEnd = {
+	[289] = moveEndTeleport(10284, 291),
+	[334] = moveEndTeleport(10273, 376),
+}
+
 local mobGroup =  {
 	{999, {1} }
 }
@@ -24,5 +29,3 @@ local mobGroup =  {
 map.staticGroups = {
 	{308, mobGroup}
 }
-
-
