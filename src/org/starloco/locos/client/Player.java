@@ -3866,7 +3866,6 @@ public class Player implements Scripted<SPlayer>, Actor {
         } else {
             SM.startAction(skillId, this, actionId, cellId, io);
         }
-        SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(curMap, cellId, io);
     }
 
     public void finishJobAction(int actionID, InteractiveObject object,

@@ -112,7 +112,7 @@ public class JobAction {
         }
         if (!this.isCraft) {
             P.getGameClient().action = System.currentTimeMillis();
-            SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(P.getCurMap(), cellId, io);
+            // SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(P.getCurMap(), cellId, io);
             if(P.walkFast) {
                 TimerWaiter.addNext(() -> SocketManager.GAME_SEND_GA_PACKET_TO_MAP(P.getCurMap(), "" + actionId, 501, P.getId(), cellId + "," + this.time), 500);
                 P.getLang().trans("jobaction.disable.walkfast");
@@ -123,7 +123,6 @@ public class JobAction {
             P.setAway(true);
             P.setExchangeAction(new ExchangeAction<>(ExchangeAction.CRAFTING, this));
             SocketManager.GAME_SEND_ECK_PACKET(P, 3, this.min + ";" + this.id);
-            SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(P.getCurMap(), cellId, io);
         }
     }
 
@@ -157,9 +156,7 @@ public class JobAction {
         if (IO == null)
             return;
         if (!this.isCraft) {
-            IO.setState(3);
-            // IO.disable();
-            SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(player.getCurMap(), cellId, IO);
+
             int qua = (this.max > this.min ? Formulas.getRandomValue(this.min, this.max) : this.min);
 
             if (SM.getTemplate().getId() == 36) {

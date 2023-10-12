@@ -1365,17 +1365,11 @@ public class SocketManager {
         send(player, packet);
     }
 
-    @Deprecated
-    public static void GAME_SEND_GDF_PACKET_TO_MAP(GameMap map, int cellID, InteractiveObject object) {
-        GAME_SEND_GDF_PACKET_TO_MAP(map, cellID, object.getState(), object.isInteractive());
-    }
-
     public static void GAME_SEND_GDF_PACKET(Player player, Stream<Pair<Integer, KeyFrame>> cellStates) {
         String packet = "GDF" + cellStates.map(p -> "|"+p.first+";"+p.second.frame+";"+(p.second.isObjectInteractive()?"1":"0")).collect(Collectors.joining());
         send(player, packet);
     }
 
-    @Deprecated
     public static void GAME_SEND_GDF_PACKET_TO_MAP(GameMap map, int cellID, int state, boolean isInteractive) {
         String packet = "GDF|" + cellID + ";" + state + ";"
                 + (isInteractive ? "1" : "0");

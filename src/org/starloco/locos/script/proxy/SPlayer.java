@@ -99,8 +99,8 @@ public class SPlayer extends DefaultUserdata<Player> {
 
     @SuppressWarnings("unused")
     private static void useCraftSkill(Player p, ArgumentIterator args) {
-        int cellId = args.nextInt();
         int skillId = args.nextInt();
+        int cellId = args.nextInt();
         InteractiveObject io = p.getCurMap().getInteractiveObject(cellId);
         p.doJobAction(skillId, 0, cellId, io);
     }
