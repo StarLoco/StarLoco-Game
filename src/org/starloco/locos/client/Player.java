@@ -3844,36 +3844,11 @@ public class Player implements Scripted<SPlayer>, Actor {
         return _metiers;
     }
 
-    public void doJobAction(int skillId, int actionId, int cellId, InteractiveObject io) {
-        JobStat SM = getMetierBySkill(skillId);
-        if (SM == null) {
-            switch (skillId) {
-                case 151:
-                    new JobAction(151, 4, 0, true, 100, 0).startAction(this);
-                    return;
-                case 121:
-                    new JobAction(121, 8, 0, true, 100, 0).startAction(this);
-                    return;
-                case 110:
-                    new JobAction(110, 2, 0, true, 100, 0).startAction(this);
-                    return;
-                case 22:
-                    new JobAction(22, 1, 0, true, 100, 0).startAction(this);
-                    return;
-                default:
-                    return;
-            }
-        } else {
-            SM.startAction(skillId, this, actionId, cellId, io);
-        }
-    }
+    public void useCraftSkill(int skillId, int ingredientsCount) {
+        setAway(true);
+        setExchangeAction(new ExchangeAction<>(ExchangeAction.CRAFTING, this));
 
-    public void finishJobAction(int actionID, InteractiveObject object,
-                                GameAction GA, int cellId) {
-        JobStat SM = getMetierBySkill(actionID);
-        if (SM == null)
-            return;
-        SM.endAction(this, object, GA, cellId);
+        SocketManager.GAME_SEND_ECK_PACKET(this, 3, ingredientsCount + ";" + skillId);
     }
 
     public String parseJobData() {

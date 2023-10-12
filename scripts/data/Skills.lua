@@ -41,7 +41,6 @@ local function checkRequirements(p, requirements)
     end
 
     local tool = p:gearAt(WeaponSlot)
-    print("DBG TOOL FOR JOB", tool:id())
     if requirements.toolID and tool:id() ~= requirements.toolID then
         print("WRONG TOOL FOR JOB")
         -- Wrong tool
@@ -49,7 +48,6 @@ local function checkRequirements(p, requirements)
         return false
     end
 
-    print("DBG TOOL TYPE FOR JOB", tool:type())
     if requirements.toolType and tool:type() ~= requirements.toolType then
         print("WRONG TOOL TYPE FOR JOB")
         -- Wrong tool
@@ -65,7 +63,8 @@ end
 
 ---@param skillId number
 ---@param requirements SkillRequirements
-function registerCraftSkill(skillId, requirements)
+---@param ingredientCountFn fun(p:Player):number
+function registerCraftSkill(skillId,  requirements, ingredientCountFn)
     SKILLS[skillId] = function(p, cellId)
         if not checkRequirements(p, requirements) then return end
 
@@ -83,7 +82,7 @@ function registerCraftSkill(skillId, requirements)
             end)
         end
 
-        return p:useCraftSkill(skillId, cellId)
+        return p:useCraftSkill(skillId, ingredientCountFn(p))
     end
 end
 
@@ -180,5 +179,28 @@ function registerGatherJobSkills(jobID, toolType, skills)
             respawnBetweenMillis(sk.respawn[1], sk.respawn[2]),
             {jobID = jobID, toolType = toolType, jobLvl = sk.minLvl}
         )
+    end
+end
+
+---@param jobID number
+function ingredientsForCraftJob(jobID)
+    ---@param p Player
+    return function(p)
+        local lvl = p:jobLevel(jobID)
+
+        if lvl == 100 then return 9
+        elseif lvl < 10 then return 2
+        else return lvl/20 + 4 end
+    end
+end
+
+function successRateForCraftJob(jobID)
+    ---@param p Player
+    return function(p)
+        local lvl = p:jobLevel(jobID)
+
+        if lvl == 100 then  return 99
+        elseif lvl < 10 then return 50
+        else return 54 + ((lvl / 10) - 1) * 5 end
     end
 end

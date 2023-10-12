@@ -16,8 +16,10 @@ local gatherSkills = {
     {id=54,  obj=Objects.Hemp,   minLvl=50,  itemID=425,  xp=45, respawn={6000, 10000} },
 }
 
+local requirements = {jobID = jobID, toolType = toolType}
+
 registerGatherJobSkills(jobID, toolType, gatherSkills)
 
 
-registerCraftSkill(47, {jobID = jobID, toolType = toolType})
-registerCraftSkill(122, {jobID = jobID, toolType = toolType})
+registerCraftSkill(47, requirements, ingredientsForCraftJob(jobID))
+registerCraftSkill(122, requirements, ingredientsForCraftJob(jobID))

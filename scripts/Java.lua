@@ -129,10 +129,10 @@ function Player:openZaap() end
 ---@return void
 function Player:openTrunk(cellID) end
 
----@param cellId number
 ---@param skillId number
+---@param ingredientsCount number
 ---@return void
-function Player:useCraftSkill(cellId, skillId) end
+function Player:useCraftSkill(skillId, ingredientsCount) end
 
 ---@param template number
 ---@param quantity number
