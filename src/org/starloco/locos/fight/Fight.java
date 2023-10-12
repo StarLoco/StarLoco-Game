@@ -4594,6 +4594,7 @@ public class Fight {
                     if (challenge.getWin()) challengeFactor += challenge.getDrop();
             if (challengeFactor < 1) challengeFactor = 1;
             challengeFactor = 1 + challengeFactor / 100;
+            totalProspecting = (int)(totalProspecting * challengeFactor);
 
             ArrayList<Drop> dropsPlayers = new ArrayList<>(), dropsMeats = new ArrayList<>();
             Collection<GameObject> dropsCollector = null;
@@ -4860,8 +4861,8 @@ public class Fight {
                             if (prospecting < 1) prospecting = 1;
 
 
-                            final double jet = Double.parseDouble(formatter.format(Math.random() * 100).replace(',', '.')),
-                                    chance = Double.parseDouble(formatter.format(drop.getLocalPercent() * prospecting * World.world.getConquestBonus(player) * challengeFactor * starFactor * Config.rateDrop).replace(',', '.'));
+                            final double jet = Math.random() * 100;
+                            final double chance = drop.getLocalPercent() * prospecting * World.world.getConquestBonus(player) * challengeFactor * starFactor * Config.rateDrop;
                             boolean ok = false;
 
                             switch (drop.getAction()) {
