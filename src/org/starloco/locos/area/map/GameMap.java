@@ -137,7 +137,7 @@ public class GameMap {
 
     private final SMap scriptVal;
 
-    public final MapData data;
+    public final ScriptMapData data;
 
     public int nextObjectId = -1;
 
@@ -162,7 +162,7 @@ public class GameMap {
 
     private final Map<Integer, String> animationStates = new ConcurrentHashMap<>();
 
-    public GameMap(MapData data) {
+    public GameMap(ScriptMapData data) {
         Objects.requireNonNull(data);
         this.scriptVal = new SMap(this);
         this.data = data;

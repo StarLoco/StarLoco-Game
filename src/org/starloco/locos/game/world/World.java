@@ -59,7 +59,7 @@ public class World implements Scripted<SWorld> {
     private final Map<Integer, Account> accounts = new HashMap<>();
     private final Map<Integer, Player> players = new HashMap<>();
     private final Map<Integer, GameMap> maps = new ConcurrentHashMap<>();
-    private final Map<Integer, MapData> mapsData = new ConcurrentHashMap<>();
+    private final Map<Integer, ScriptMapData> mapsData = new ConcurrentHashMap<>();
     private final Map<Integer, GameObject> objects = new ConcurrentHashMap<>();
 
     private volatile ExperienceTables experiences;
@@ -187,32 +187,30 @@ public class World implements Scripted<SWorld> {
         return maps.values();
     }
 
-    public void addMapData(MapData map) {
+    public void addMapData(ScriptMapData map) {
         mapsData.put(map.id, map);
 
         // Update zaap list
-        if (map instanceof ScriptMapData) {
-            Integer c = ((ScriptMapData) map).zaapCell;
+        Integer c = map.zaapCell;
 
-            if (c == null || c < 0) {
-                Constant.ZAAPS.remove(map.id);
-            } else {
-                Constant.ZAAPS.put(map.id, c);
-            }
+        if (c == null || c < 0) {
+            Constant.ZAAPS.remove(map.id);
+        } else {
+            Constant.ZAAPS.put(map.id, c);
         }
 
         // Make sure the subArea knows of that map
         Optional.ofNullable(subAreas.get(map.subAreaID)).ifPresent(s -> s.addMapID(map.id));
     }
 
-    public Optional<MapData> getMapData(int id) {
+    public Optional<ScriptMapData> getMapData(int id) {
         return Optional.ofNullable(mapsData.get(id));
     }
 
     public GameMap getMap(int id) {
         // Atomically get or load map
         return maps.computeIfAbsent(id, mapID -> {
-            Optional<MapData> data = getMapData(mapID);
+            Optional<ScriptMapData> data = getMapData(mapID);
             if(!data.isPresent()) throw new IllegalStateException(String.format("no data found for map #%d", mapID));
             return new GameMap(mapsData.get(mapID));
         });

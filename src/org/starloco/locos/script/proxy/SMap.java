@@ -13,7 +13,6 @@ import org.starloco.locos.entity.monster.MobGroupDef;
 import org.starloco.locos.entity.monster.MonsterGrade;
 import org.starloco.locos.entity.monster.MonsterGroup;
 import org.starloco.locos.entity.npc.Npc;
-import org.starloco.locos.script.DataScriptVM;
 import org.starloco.locos.script.ScriptVM;
 import org.starloco.locos.script.types.MetaTables;
 
@@ -27,6 +26,11 @@ public class SMap extends DefaultUserdata<GameMap> {
     @SuppressWarnings("unused")
     private static int id(GameMap m) {
         return m.getId();
+    }
+
+    @SuppressWarnings("unused")
+    private static Table def(GameMap m) {
+        return m.data.scripted();
     }
 
     @SuppressWarnings("unused")

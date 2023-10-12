@@ -2,6 +2,7 @@ package org.starloco.locos.database.data.game;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.starloco.locos.area.map.MapData;
+import org.starloco.locos.area.map.ScriptMapData;
 import org.starloco.locos.util.Pair;
 import org.apache.commons.lang.NotImplementedException;
 import org.starloco.locos.database.data.FunctionDAO;
@@ -23,7 +24,7 @@ public class NpcData extends FunctionDAO<Pair<Npc, Integer>> {
             getData("SELECT * FROM " + getTableName() + ";", result -> {
                 while (result.next()) {
                     int mapID = result.getInt("mapid");
-                    MapData md = World.world.getMapData(mapID).orElseThrow(() -> new IllegalArgumentException(String.format("unknown map #%d", mapID)));
+                    ScriptMapData md = World.world.getMapData(mapID).orElseThrow(() -> new IllegalArgumentException(String.format("unknown map #%d", mapID)));
 
                     int id = result.getInt("npcid");
                     if (!Config.modeChristmas && id == 795) // PNJ Noel
