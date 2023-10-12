@@ -53,6 +53,10 @@ end
 ---@param cellID number
 ---@param skillID number
 Handlers.players.onSkillUse = function(p, cellID, skillID)
+    if not SKILLS[skillID] then
+        JLogF("unknown skill {}", skillID)
+        return
+    end
     return SKILLS[skillID](p, cellID)
 end
 

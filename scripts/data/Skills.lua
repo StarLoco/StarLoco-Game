@@ -71,8 +71,16 @@ function registerCraftSkill(skillId, requirements)
 
         -- Animation
         local map = p:map()
-        if map:getAnimationState(cellId) ~= AnimStates.IN_USE then
+
+        if map:getAnimationState(cellId) == AnimStates.READY then
+            -- Official: sends LOCKED(F=2) then IN_USE (F=3) in the same packet
+            -- Official: sends READYING(F=5) after ~55 seconds
+
+            -- map:setAnimationState(cellId, AnimStates.LOCKED)
             map:setAnimationState(cellId, AnimStates.IN_USE)
+            World:delayForMs(55000, function()
+                map:setAnimationState(cellId, AnimStates.READYING)
+            end)
         end
 
         return p:useCraftSkill(skillId, cellId)

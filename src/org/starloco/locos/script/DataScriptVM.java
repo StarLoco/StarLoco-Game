@@ -57,7 +57,7 @@ public final class DataScriptVM extends ScriptVM {
         this.env.rawset("RegisterAdminGroup", new RegisterAdminGroup());
         this.env.rawset("RegisterExpTables", new RegisterExpTables());
         this.env.rawset("RegisterMapDef", new RegisterMapTemplate());
-        this.env.rawset("NewAnimation", new NewAnimation());
+        this.env.rawset("RegisterAnimation", new RegisterAnimation());
         this.env.rawset("RegisterObjectForSprites", new RegisterObjectForSprites());
         this.env.rawset("RegisterObjectDef", new RegisterObjectDef());
         this.env.rawset("Handlers", handlers);
@@ -173,10 +173,10 @@ public final class DataScriptVM extends ScriptVM {
         }
     }
 
-    static class NewAnimation extends AbstractLibFunction {
+    static class RegisterAnimation extends AbstractLibFunction {
         @Override
         protected String name() {
-            return "NewAnimation";
+            return "RegisterAnimation";
         }
         @Override
         public void invoke(ExecutionContext context, ArgumentIterator  args) {

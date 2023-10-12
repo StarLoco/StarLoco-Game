@@ -2,6 +2,7 @@
 local doorSG = function(inUseDuration, readyingDuration)
     return {
         [AnimStates.NOT_READY] = {frame=1},
+        -- TODO: double check that we don't have a LOCKED state for doors
         [AnimStates.READYING] = {frame=2, duration=readyingDuration, next=AnimStates.READY},
         [AnimStates.READY] = {frame=3, overrides = {movement= 4}},
         [AnimStates.IN_USE]= {frame=4, duration=inUseDuration, next=AnimStates.NOT_READY}
@@ -9,12 +10,12 @@ local doorSG = function(inUseDuration, readyingDuration)
 end
 
 --- Minos Maze doors / levers
-AnimatedObjects.MinosMazeBlueDoor = NewAnimation(6570, AnimStates.NOT_READY, doorSG(600, 600))
-AnimatedObjects.MinosMazeYellowDoor = NewAnimation(6574, AnimStates.NOT_READY, doorSG(600, 600))
+RegisterAnimation(6570, AnimStates.NOT_READY, doorSG(600, 600))
+RegisterAnimation(6574, AnimStates.NOT_READY, doorSG(600, 600))
 
 --- Sliding rock cave entrance
-AnimatedObjects.SlidingRock = NewAnimation(6550, AnimStates.NOT_READY, doorSG(3700, 4700))
-AnimatedObjects.SlidingRockIncarnam = NewAnimation(6571, AnimStates.NOT_READY, doorSG(3700, 3333))
+RegisterAnimation(6550, AnimStates.NOT_READY, doorSG(3700, 4700))
+RegisterAnimation(6571, AnimStates.NOT_READY, doorSG(3700, 3333))
 
 --- Sliding mine cart
-AnimatedObjects.SlidingMineCart = NewAnimation(6553, AnimStates.NOT_READY, doorSG(8050, 666))
+RegisterAnimation(6553, AnimStates.NOT_READY, doorSG(8050, 666))

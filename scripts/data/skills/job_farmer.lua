@@ -1,7 +1,10 @@
+local jobID = FarmerJob
+local toolType = 22
+
+
 --FIXME timing / Reward
 --FIXME Reward special cereals sometimes
-
-local skills = {
+local gatherSkills = {
     {id=45,  obj=Objects.Wheat,  minLvl=1,   itemID=289,  xp=10, respawn={6000, 10000} },
     {id=53,  obj=Objects.Barley, minLvl=10,  itemID=400,  xp=15, respawn={6000, 10000} },
     {id=57,  obj=Objects.Oats,   minLvl=20,  itemID=533,  xp=20, respawn={6000, 10000} },
@@ -13,4 +16,8 @@ local skills = {
     {id=54,  obj=Objects.Hemp,   minLvl=50,  itemID=425,  xp=45, respawn={6000, 10000} },
 }
 
-registerGatherJobSkills(FarmerJob, 22, skills)
+registerGatherJobSkills(jobID, toolType, gatherSkills)
+
+
+registerCraftSkill(47, {jobID = jobID, toolType = toolType})
+registerCraftSkill(122, {jobID = jobID, toolType = toolType})

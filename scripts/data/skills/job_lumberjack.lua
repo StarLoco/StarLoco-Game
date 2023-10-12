@@ -1,6 +1,8 @@
--- TODO: Fix respawn timers
+local jobID = LumberjackJob
+local toolType = 19
 
-local skills = {
+-- TODO: Fix respawn timers
+local gatherSkills = {
     {id=6,   obj=Objects.Ash,        minLvl=1,   itemID=303,  xp=10, respawn={6000, 10000} },
     {id=39,  obj=Objects.Chestnut,   minLvl=10,  itemID=473,  xp=15, respawn={6000, 10000} },
     {id=40,  obj=Objects.Walnut,     minLvl=20,  itemID=476,  xp=20, respawn={6000, 10000} },
@@ -19,4 +21,6 @@ local skills = {
     {id=158, obj=Objects.HolyBamboo, minLvl=100, itemID=7014, xp=75, respawn={6000, 10000} },
 }
 
-registerGatherJobSkills(LumberjackJob, 19, skills)
+registerGatherJobSkills(jobID, toolType, gatherSkills)
+
+registerCraftSkill(101, {jobID = jobID, toolType = toolType})

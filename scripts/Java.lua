@@ -64,7 +64,7 @@ function RegisterObjectForSprites(t)  end
 ---@param default string
 ---@param keyFrames table<string, KeyFrame>
 ---@return Animation
-function NewAnimation(spriteID, default, keyFrames)  end
+function RegisterAnimation(spriteID, default, keyFrames)  end
 
 ---@class Player
 local Player = {}
