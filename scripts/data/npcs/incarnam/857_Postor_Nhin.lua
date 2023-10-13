@@ -51,9 +51,9 @@ function npc:onTalk(p, answer)
     if recipeQuest:finishedBy(p) then
         if answer == 0 then
             p:ask(3660, {3228; 3227})
-        elseif answer == 3227 then
-            p:endDialog()
         elseif answer == 3228 then
+            p:endDialog()
+        elseif answer == 3227 then
             p:ask(3661, {3229})
         elseif answer == 3229 then
             p:ask(3662, {3230})
@@ -61,6 +61,7 @@ function npc:onTalk(p, answer)
             p:ask(3663, {3231})
         elseif answer == 3231 then
             p:ask(3664)
+			p:addItem(8529)
             zaapQuest:startFor(p, self.id)
 
         end
