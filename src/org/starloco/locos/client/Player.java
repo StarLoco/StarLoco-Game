@@ -1966,8 +1966,6 @@ public class Player implements Scripted<SPlayer>, Actor {
         if(manager.getCurrentEvent() != null && manager.getState() == EventManager.State.PROCESSED)
             this.sendMessage(this.getLang().trans("client.player.event.start.join", manager.getCurrentEvent().getEventName()));
 
-        this.checkVote();
-
         World.world.logger.info("The player " + this.getName() + " come to connect.");
 
         if(this.isMorph())
@@ -1976,24 +1974,6 @@ public class Player implements Scripted<SPlayer>, Actor {
             this.setGhost();
         if (this.fight != null) SocketManager.send(this, "ILF0");
         else SocketManager.send(this, "ILS2000");
-    }
-
-    public void checkVote() {
-        String IP = this.getAccount().getLastIP();
-        long now = System.currentTimeMillis() / 1000;
-        boolean vote = true;
-        for (Account account : World.world.getAccounts()) {
-            if (account != null && getAccount().getLastVoteIP() != null && !getAccount().getLastVoteIP().equalsIgnoreCase("")) {
-                if (getAccount().getLastVoteIP().equalsIgnoreCase(IP)) {
-                    if ((getAccount().getHeureVote() + 3600 * 3) > now) {
-                        vote = false;
-                        break;
-                    }
-                }
-            }
-        }
-
-        if (vote) this.send("Im116;<b>Server</b>~" + this.getLang().trans("command.commandplayer.vote.ok"));
     }
 
     public void SetSeeFriendOnline(boolean bool) {
@@ -2010,7 +1990,7 @@ public class Player implements Scripted<SPlayer>, Actor {
         GameClient client = getAccount().getGameClient();
         SocketManager.GAME_SEND_GAME_CREATE(client, this.getName());
         SocketManager.GAME_SEND_STATS_PACKET(this);
-        ((PlayerData) DatabaseManager.get(PlayerData.class)).updateLogged(this.id, 1);
+        DatabaseManager.get(PlayerData.class).updateLogged(this.id, 1);
         this.verifEquiped();
 
         if (this.getLastFight() == null) {

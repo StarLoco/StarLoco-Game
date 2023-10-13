@@ -15,7 +15,6 @@ import org.starloco.locos.event.EventManager;
 import org.starloco.locos.exchange.ExchangeClient;
 import org.starloco.locos.game.GameServer;
 import org.starloco.locos.game.scheduler.Updatable;
-import org.starloco.locos.game.scheduler.entity.WorldPlayerOption;
 import org.starloco.locos.game.scheduler.entity.WorldPub;
 import org.starloco.locos.game.scheduler.entity.WorldSave;
 import org.starloco.locos.game.world.World;
@@ -91,7 +90,7 @@ public class Main {
 
 	        final List<Updatable> updatables = Arrays.asList(
 	                WorldSave.instance, GameMap.updatable, Mount.updatable,
-                    WorldPlayerOption.instance, WorldPub.instance,
+                    WorldPub.instance,
                     AuctionManager.getInstance(), /*Tavernier.getInstance(),*/ EventManager.getInstance());
 
             while (Config.isRunning) {
