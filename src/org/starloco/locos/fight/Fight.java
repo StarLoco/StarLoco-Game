@@ -4594,6 +4594,7 @@ public class Fight {
                     if (challenge.getWin()) challengeFactor += challenge.getDrop();
             if (challengeFactor < 1) challengeFactor = 1;
             challengeFactor = 1 + challengeFactor / 100;
+
             totalProspecting = (int)(totalProspecting * challengeFactor);
 
             ArrayList<Drop> dropsPlayers = new ArrayList<>(), dropsMeats = new ArrayList<>();
@@ -4619,7 +4620,7 @@ public class Fight {
                                     dropsMeats.add(drop);
                                     break;
                                 default:
-                                    if (drop1.getCeil() <= totalProspecting && fighter.getMob() != null) {
+                                    if (drop1.getCeil() * Config.rateProspectThreshold <= totalProspecting && fighter.getMob() != null) {
                                         drop = drop1.copy(fighter.getMob().getGrade());
                                         if (drop == null) break;
                                         dropsPlayers.add(drop);
