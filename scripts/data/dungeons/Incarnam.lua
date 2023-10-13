@@ -37,6 +37,7 @@ local group4 = {
 
 local mapInfos = {
     [10360] = {groupCell = 238, group = group1, winDest = {10361, 379}},
+
     [10361] = {groupCell = 256, group = group2, winDest = {10362, 320}},
     [10362] = {groupCell = 373, group = group3, winDest = {10363, 305}},
     [10363] = {groupCell = 213, group = group4, winDest = {10364, 305}}

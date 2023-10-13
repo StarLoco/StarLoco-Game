@@ -5,6 +5,7 @@ npc.gender = 1
 local questID = 185
 ---@param p Player
 function npc:onTalk(p, answer)
+    local quest = QUESTS[questID]
     if p:questAvailable(questID) and answer == 0 then
         p:ask(3718, {3258, 3257})
     elseif answer == 3258 then
@@ -12,7 +13,7 @@ function npc:onTalk(p, answer)
         p:endDialog()
     elseif p:questOngoing(questID) then
         -- If we have the required items, complete objective
-        if p:consumeItem(311, 4) and p:completeObjective(questID, 758) then
+        if p:consumeItem(311, 4) and quest:completeObjective(p, 758) then
             p:endDialog()
             return
         end

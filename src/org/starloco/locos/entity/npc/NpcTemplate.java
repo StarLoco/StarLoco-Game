@@ -36,23 +36,6 @@ public class NpcTemplate {
 
     public final LegacyData legacy;
 
-    public NpcTemplate(int id, int bonus, int gfxId, int scaleX, int scaleY, int sex, int color1, int color2, int color3, String accessories, int customArtWork, String questions,
-                       String sales, String quest, String exchanges, String path, byte flags) {
-        this.scriptVal = null;
-        this.legacy = new LegacyData(id, questions, sales, exchanges, path);
-        this.id = id;
-        this.gfxId = gfxId;
-        this.scaleX = scaleX;
-        this.scaleY = scaleY;
-        this.sex = sex;
-        this.color1 = color1;
-        this.color2 = color2;
-        this.color3 = color3;
-        this.accessories = Arrays.stream(accessories.split(",")).mapToInt(s -> Integer.parseInt(s, 16)).toArray();
-        this.customArtWork = customArtWork;
-        this.flags = flags;
-    }
-
     public NpcTemplate(Table val) {
         this.scriptVal = val;
         this.legacy = null;
