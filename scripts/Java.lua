@@ -280,6 +280,25 @@ function Player:openDocument(id, date) end
 ---@param quantity number
 function Player:showReceivedItem(actorID, quantity) end
 
+---@param actorID number
+---@param quantity number
+function Player:showReceivedItem(actorID, quantity) end
+
+---@param actorID number
+---@param quantity number
+function Player:showReceivedItem(actorID, quantity) end
+
+---@param effectID number
+---@return number
+function Player:baseStat(effectID) end
+
+---@param effectID number
+---@param value number
+---@return number -- new value
+function Player:modBaseStat(effectID, value) end
+
+function Player:resetStats() end
+
 --endregion
 
 ---@class MobGroupDef table<number,number[]> K: MobID, V: grades

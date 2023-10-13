@@ -1416,6 +1416,19 @@ public class Player implements Scripted<SPlayer>, Actor {
         SocketManager.GAME_SEND_IQ_PACKET(this, actorID, quantity);
     }
 
+    public void resetStats() {
+        stats.addOneStat(125, -stats.getEffect(125));
+        stats.addOneStat(124, -stats.getEffect(124));
+        stats.addOneStat(118, -stats.getEffect(118));
+        stats.addOneStat(123, -stats.getEffect(123));
+        stats.addOneStat(119, -stats.getEffect(119));
+        stats.addOneStat(126, -stats.getEffect(126));
+
+        addCapital((getLevel() - 1) * 5 - getCapital());
+
+        if(isOnline)SocketManager.GAME_SEND_STATS_PACKET(this);
+    }
+
 
     public static class EnsureSpellLevelResult {
         public final boolean changed;

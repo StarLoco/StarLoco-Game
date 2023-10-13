@@ -577,6 +577,27 @@ public class SPlayer extends DefaultUserdata<Player> {
     }
     //endregion
 
+    //region Stats
+    @SuppressWarnings("unused")
+    private static int baseStat(Player p, ArgumentIterator args) {
+        int statID = args.nextInt();
+                return p.getStats().getEffect(statID);
+    }
+
+    @SuppressWarnings("unused")
+    private static int modBaseStat(Player p, ArgumentIterator args) {
+        int statID = args.nextInt();
+        int val = args.nextInt();
+
+        return p.getStats().addOneStat(statID, val);
+    }
+
+    @SuppressWarnings("unused")
+    private static void resetStats(Player p) {
+        p.resetStats();
+    }
+    //endregion
+
     //region Other
     @SuppressWarnings("unused")
     private static void forceFight(Player player, ArgumentIterator args) {

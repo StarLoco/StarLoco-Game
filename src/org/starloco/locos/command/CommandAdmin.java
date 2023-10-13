@@ -2323,6 +2323,7 @@ public class CommandAdmin extends AdminUser {
                 this.sendMessage(mess);
                 return;
             }
+            perso.resetStats();
             perso.getStats().addOneStat(125, -perso.getStats().getEffect(125));
             perso.getStats().addOneStat(124, -perso.getStats().getEffect(124));
             perso.getStats().addOneStat(118, -perso.getStats().getEffect(118));
