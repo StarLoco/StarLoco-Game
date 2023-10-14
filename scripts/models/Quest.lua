@@ -29,7 +29,7 @@ setmetatable(Quest, {
 })
 
 ---@param sId number
----@return number,QuestStep
+---@return number,QuestStep -- Index,QuestStep
 function Quest:step(sId)
     for i, s in ipairs(self.steps) do
         if s.id == sId then
@@ -52,7 +52,9 @@ end
 ---@return QuestStep
 function Quest:currentStepFor(p)
     local sId = p:_currentStep(self.id)
-    return sId and self:step(sId)
+    if not sId then return nil end
+    local _, step = self:step(sId)
+    return step
 end
 
 ---@param p Player
