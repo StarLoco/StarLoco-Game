@@ -3,7 +3,7 @@ local mapId = 10282
 
 local qs349 = QuestStep(349, 3710)
 qs349.objectives = {
-    BringItemObjective(757, npcId, 289, 6)
+    BringItemObjective(757, npcId, 289, 6),
     BringItemObjective(785, npcId, 421, 6)
 }
 qs349.rewardFn = function(p)
