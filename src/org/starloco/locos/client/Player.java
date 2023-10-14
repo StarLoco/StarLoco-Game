@@ -1431,8 +1431,8 @@ public class Player implements Scripted<SPlayer>, Actor {
     }
 
     public void spellResetPanel() {
-        // TODO: Set exchangeaction/player state
-
+        // TODO: Check if player is in another ExchangeAction
+        exchangeAction = new ExchangeAction<>(ExchangeAction.FORGETTING_SPELL, 0);
         SocketManager.GAME_SEND_FORGETSPELL_INTERFACE('+', this);
     }
 
