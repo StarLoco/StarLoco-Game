@@ -143,15 +143,15 @@ public class Main {
         Logging.getInstance().write("Error", reason);
 
         GameServer.setState(0);
-        ((HeroicMobsGroupsData) DatabaseManager.get(HeroicMobsGroupsData.class)).deleteAll();
-        ((HeroicMobsGroupsData) DatabaseManager.get(HeroicMobsGroupsData.class)).deleteAllFix();
+        DatabaseManager.get(HeroicMobsGroupsData.class).deleteAll();
+        DatabaseManager.get(HeroicMobsGroupsData.class).deleteAllFix();
 
         for (GameMap map : World.world.getMaps()) {
             for (MonsterGroup group : map.getMobGroups().values()) {
                 if (!group.isFix())
-                    ((HeroicMobsGroupsData) DatabaseManager.get(HeroicMobsGroupsData.class)).insert(map.getId(), group);
+                    DatabaseManager.get(HeroicMobsGroupsData.class).insert(map.getId(), group);
                 else
-                    ((HeroicMobsGroupsData) DatabaseManager.get(HeroicMobsGroupsData.class)).insertFix(map.getId(), group);
+                    DatabaseManager.get(HeroicMobsGroupsData.class).insertFix(map.getId(), group);
             }
         }
 
