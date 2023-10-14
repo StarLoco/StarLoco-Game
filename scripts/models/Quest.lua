@@ -59,6 +59,7 @@ end
 
 ---@param p Player
 ---@param npcId number
+---@return boolean worked
 function Quest:startFor(p, npcId)
     if not self:availableTo(p) then return false end
     if p:_startQuest(self.id, self.steps[1].id, self.isAccountBound) then
@@ -234,7 +235,7 @@ function questRequirements(minLevel, questFinished, reqBreed)
             return false
         end
 
-        if questFinished ~= 0 and not p:_questFinished(questFinished) then
+        if questFinished and not p:_questFinished(questFinished) then
             return false
         end
 
@@ -248,7 +249,7 @@ end
 
 ---@class QuestStep
 ---@field id number
----@field questionId number
+---@field questionId number defaults to nil
 ---@field objectives QuestObjective[]|fun(p:Player):QuestObjective[]
 ---@field rewardFn fun(p:Player)
 QuestStep = {}
@@ -258,7 +259,8 @@ setmetatable(QuestStep, {
     __call = function(_, id, questionId)
         local self = setmetatable({}, QuestStep)
         self.id = id
-        self.questionId = questionId
+        self.questionId = questionId or nil
+        self.objectives = {}
 
         QUEST_STEPS[id] = self
         return self
