@@ -555,6 +555,10 @@ public class Account {
 
     public void delQuestProgress(QuestProgress qProgress) {
         questsProgression.computeIfAbsent(qProgress.playerId, k -> new HashMap<>()).remove(qProgress.questId, qProgress);
+
+        // Update DB
+        QuestProgressData dao = Objects.requireNonNull(DatabaseManager.get(QuestProgressData.class));
+        dao.delete(qProgress);
     }
 
     public QuestProgress getQuestProgress(int playerId, int questId) {

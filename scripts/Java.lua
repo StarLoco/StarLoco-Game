@@ -332,6 +332,10 @@ function Item:hasTxtStat(stat, val) end
 ---@return boolean
 function Item:consumeTxtStat(stat, val) end
 
+---@param stat number
+---@return number timestamp millis
+function Item:dateStatTS(stat) end
+
 ---@class Account
 local Account = {}
 
@@ -345,7 +349,10 @@ function Account:friends() end
 local World = {}
 
 ---@return {day:number, month:number,year:number,hour:number,min:number,sec:number}
-function World:time() end
+function World:datetime() end
+
+---@return number timestamp millis
+function World:clock() end
 
 ---@param nameOrId string|number
 ---@return Account

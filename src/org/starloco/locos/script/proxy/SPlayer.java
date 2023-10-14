@@ -319,10 +319,11 @@ public class SPlayer extends DefaultUserdata<Player> {
         SocketManager.GAME_SEND_Im_PACKET(p, "056;" + qID);
         if(remove) {
             p.delQuestProgress(qp);
-        }else {
-            qp.markFinished();
+            return true;
         }
+        qp.markFinished();
         p.saveQuestProgress();
+
         return true;
     }
 

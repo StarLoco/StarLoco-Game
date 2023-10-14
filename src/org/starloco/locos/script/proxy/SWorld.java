@@ -27,7 +27,7 @@ public class SWorld extends DefaultUserdata<World> {
     }
 
     @SuppressWarnings("unused")
-    private static Table time(World world) {
+    private static Table datetime(World world) {
         ZonedDateTime zdt = ZonedDateTime.now();
         DefaultTable out = new DefaultTable();
 
@@ -39,6 +39,11 @@ public class SWorld extends DefaultUserdata<World> {
         out.rawset("sec", zdt.getSecond());
 
         return out;
+    }
+
+    @SuppressWarnings("unused")
+    private static long clock(World world) {
+        return System.currentTimeMillis();
     }
 
     @SuppressWarnings("unused")

@@ -1,6 +1,8 @@
 local classBangQuestID = 470
 local requiredLevel = 9
+local dateStatID = 805 -- Move to stat.lua whenever
 local questIntervalMs = 82800000 -- 23 Hours
+
 local rewardInitID = 7106 -- Used on init after killing objective is finished
 local busyInitID = 1834 -- Used when player cannot start new dopple fight
 
@@ -251,6 +253,28 @@ end
 
 --region Quest
 
+---@param q Quest
+---@param p Player
+local questAvailableTo = function(info)
+    return function(q, p)
+        -- dateStatID
+        if not p:_questAvailable(q.id) then return false end
+        if p:level() < requiredLevel then return false end
+
+        local item = p:getItem(info.certificate, 1)
+
+        -- No certificate, quest is available
+        if not item then return true end
+
+        local lastKill = item:dateStatTS(dateStatID)
+        if not lastKill or lastKill == 0 then error("dopple certificate doesn't have a date") end
+
+        local diff = World:clock() - lastKill
+
+        return diff > questIntervalMs
+    end
+end
+
 local createQuest = function(info)
     -- Add dopple as objective for Class Bang quest
     table.insert(defeatAllStep.objectives, KillMonsterSingleFightObjective(info.quest.bangObjective, info.mob, 1))
@@ -260,7 +284,7 @@ local createQuest = function(info)
 
     --Create quest for killing a single dopple
     local defeatSingleQuest = Quest(info.quest.id, {defeatSingleStep})
-    defeatSingleQuest.availableTo = questRequirements(requiredLevel) -- TODO: Check certificate date ?
+    defeatSingleQuest.availableTo = questAvailableTo(info)
     defeatSingleQuest.isRepeatable = true
 
     -- Step objectives
