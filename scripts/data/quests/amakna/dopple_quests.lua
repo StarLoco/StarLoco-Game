@@ -1,6 +1,6 @@
 local requiredLevel = 9
 
--- TODO: Killing a dopple of the player's breed reward more XP
+-- TODO: Killing a dopple of the player's breed reward more XP. Probably directly in fight
 
 -- K: Grade V: {Kamas, XP}
 local rewardsPerGrade = {
@@ -11,7 +11,7 @@ local rewardsPerGrade = {
     {500,  45000},
     {600,  60000},
     {700,  85000},
-    {800,   130000},
+    {800,  130000},
     {900,  170000},
     {1000, 185000},
 }
@@ -41,7 +41,7 @@ q470.isRepeatable = true
 
 local doppleInfo = {
     -- Panda
-    {bangObjectiveID=3188, mobID=2691, questID=466, doploonID=10309, certificateID=10296 },
+    {bangObjectiveID=3188, mobID=2691, questID=466, stepID=991, objectiveID=3178, doploonID=10309, certificateID=10296 },
     -- Enu
     {bangObjectiveID=3189, mobID=162,  questID=464, doploonID=10305, certificateID=10292 },
     -- Eca
