@@ -192,16 +192,28 @@ end
 ---@param npcID number
 ---@return boolean true if success
 function Quest:tryCompleteBringItemObjectives(p, npcID)
-    local justCompleted = {}
-
+    -- Make sure we can complete all objectives
     for _, obj in ipairs(self:uncompletedObjectives(p)) do
-        if obj.onBringItemCheck and obj:onBringItemCheck(p, npcID) then
-            table.insert(justCompleted, obj.id)
+        if obj.canBringItemCheck then
+            if not obj:canBringItemCheck(p, npcID) then
+                return false
+            end
         end
     end
 
-    if #justCompleted == 0 then return end
-    self:completeObjectives(p, justCompleted)
+    -- Consume everything
+    local canComplete = {}
+    for _, obj in ipairs(self:uncompletedObjectives(p)) do
+        if not obj:onBringItemCheck(p, npcID) then
+            error("race condition (SHOULD NEVER HAPPEN)")
+        else
+            table.insert(canComplete, obj.id)
+        end
+    end
+
+    if #canComplete == 0 then return false end
+
+    self:completeObjectives(p, canComplete)
 
     return true
 end
@@ -356,6 +368,15 @@ setmetatable(BringItemObjective, {
         return self
     end,
 })
+
+---@param p Player
+---@param npcID number
+---@return boolean true if should complete objective
+function BringItemObjective:canBringItemCheck(p, npcID)
+    if npcID ~= self.npcId then return false end
+
+    return p:getItem(self.itemId, self.quantity) ~= nil
+end
 
 ---@param p Player
 ---@param npcID number
