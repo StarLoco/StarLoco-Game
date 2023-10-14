@@ -59,6 +59,7 @@ function onTalkDoppleMaster(npcInfo)
             p:endDialog()
             classBangQuest:startFor(p, self.id)
         elseif answer == npcInfo.train then
+            -- TODO: add intermediary dialog
             if not doppleQuest:startFightFor(p, self.id) then
                 error("cheat attempt")
             end

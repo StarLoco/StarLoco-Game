@@ -31,9 +31,12 @@ loadPack("data/maps")
 loadPack("data/quests")
 loadPack("data/dungeons") -- Always load after maps
 
+-- Load Dopples Quests/NPCs
+requireReload("data/Dopples")
+
+
 -- Load event handlers
 loadPack("eventhandlers")
-
 
 -- Register Maps to Java
 for _, map in pairs(MAPS) do
