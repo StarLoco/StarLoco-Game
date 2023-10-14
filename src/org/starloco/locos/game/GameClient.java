@@ -414,7 +414,7 @@ public class GameClient {
 
     private void addCharacter(String packet) {
         String[] infos = packet.substring(2).split("\\|");
-        if (((PlayerData) DatabaseManager.get(PlayerData.class)).exist(infos[0])) {
+        if (DatabaseManager.get(PlayerData.class).exist(infos[0])) {
             SocketManager.GAME_SEND_NAME_ALREADY_EXIST(this);
             return;
         }
@@ -525,7 +525,7 @@ public class GameClient {
         }
         if(this.language == null) this.language = LangEnum.ENGLISH;
 
-        String gifts = ((GiftData) DatabaseManager.get(GiftData.class)).load(this.account.getId()).second;
+        String gifts = DatabaseManager.get(GiftData.class).load(this.account.getId()).second;
         if (gifts == null)
             return;
         if (!gifts.isEmpty()) {
@@ -559,7 +559,7 @@ public class GameClient {
         if (player == null)
             return;
 
-        String gifts = ((GiftData) DatabaseManager.get(GiftData.class)).load(this.account.getId()).getSecond();
+        String gifts = DatabaseManager.get(GiftData.class).load(this.account.getId()).getSecond();
 
         if (gifts.isEmpty())
             return;
@@ -599,11 +599,11 @@ public class GameClient {
 
                     gifts = gifts.replace(str2, cstr2).replace(str3, cstr3).replace(str1, cstr1);
                 }
-                ((GiftData) DatabaseManager.get(GiftData.class)).update(new Pair<>(this.account, gifts));
+                DatabaseManager.get(GiftData.class).update(new Pair<>(this.account, gifts));
             }
         }
 
-        ((PlayerData) DatabaseManager.get(PlayerData.class)).update(player);
+        DatabaseManager.get(PlayerData.class).update(player);
 
         if (gifts.isEmpty())
             player.send("AG");
@@ -687,7 +687,7 @@ public class GameClient {
 
                 this.account.setGameClient(this);
                 this.account.setCurrentIp(ip);
-                ((AccountData) DatabaseManager.get(AccountData.class)).setLogged(this.account.getId(), 1);
+                DatabaseManager.get(AccountData.class).setLogged(this.account.getId(), 1);
 
                 if (Logging.USE_LOG) Logging.getInstance().write("AccountIpConnect", this.account.getName() + " > " + ip);
 
@@ -1274,7 +1274,7 @@ public class GameClient {
                 this.player.removeChanel(chan);
                 break;
         }
-        ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this.player);
+        DatabaseManager.get(PlayerData.class).update(this.player);
     }
 
     /** Fin Chat Packet **/
@@ -1545,7 +1545,7 @@ public class GameClient {
                     this.player.addKamas(-price);
                     //add seller kamas
                     seller.addKamas(price);
-                    ((PlayerData) DatabaseManager.get(PlayerData.class)).update(seller);
+                    DatabaseManager.get(PlayerData.class).update(seller);
                     //send packets
                     SocketManager.GAME_SEND_STATS_PACKET(this.player);
                     SocketManager.GAME_SEND_ITEM_LIST_PACKET_SELLER(seller, this.player);
@@ -1648,7 +1648,7 @@ public class GameClient {
                         + "~"
                         + obj.getTemplate().getId()
                         + "~" + obj.getTemplate().getId() + "~1");
-                    ((PlayerData) DatabaseManager.get(PlayerData.class)).update(p);
+                    DatabaseManager.get(PlayerData.class).update(p);
                 });
 
                 Optional<BigStore.CheapestListings> updated = bigStore.getCheapestListings(exchangeAction.getCategoryId(), exchangeAction.getTemplateId(), ligneID);
@@ -1753,7 +1753,7 @@ public class GameClient {
                                     if (Formulas.getRandomValue(1, 100) <= chance)
                                         fragment.addRune(rune.getId());
                                 } else {
-                                    double val = (double) rune.getBonus();
+                                    double val = rune.getBonus();
                                     if (rune.getId() == 7451 || rune.getId() == 10662) val *= 3.0;
 
                                     double tauxGetMin = World.world.getTauxObtentionIntermediaire(val, true, (val != 30)), tauxGetMax = (tauxGetMin / (2.0 / 3.0)) / 0.9;
@@ -1924,7 +1924,7 @@ public class GameClient {
                         }
                         break;
                 }
-                ((GuildData) DatabaseManager.get(GuildData.class)).update(this.player.getGuild());
+                DatabaseManager.get(GuildData.class).update(this.player.getGuild());
                 break;
             case ExchangeAction.BREAKING_OBJECTS:
                 final BreakingObject breakingObject = ((BreakingObject) this.player.getExchangeAction().getValue());
@@ -2344,7 +2344,7 @@ public class GameClient {
                         }
                         SocketManager.GAME_SEND_EXCHANGE_OTHER_MOVE_OK(this, '+', "", toAdd.parseToEmK()); //Envoie un packet pour ajthiser l'item dans la fenetre de l'HDV du client
                         SocketManager.GAME_SEND_HDVITEM_SELLING(this.player, toAdd.getHdvId());
-                        ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this.player);
+                        DatabaseManager.get(PlayerData.class).update(this.player);
                         break;
                 }
                 break;
@@ -2517,7 +2517,7 @@ public class GameClient {
                                 player.getExchangeAction().getType() == ExchangeAction.IN_TRUNK &&
                                 ((Trunk) this.player.getExchangeAction().getValue()).getId() == ((Trunk) player.getExchangeAction().getValue()).getId())
                                 .forEach(P -> SocketManager.GAME_SEND_EsK_PACKET(P, "G" + t.getKamas()));
-                        ((TrunkData) DatabaseManager.get(TrunkData.class)).update(t);
+                        DatabaseManager.get(TrunkData.class).update(t);
                         break;
 
                     case 'O'://Objet
@@ -2773,8 +2773,8 @@ public class GameClient {
 
                     SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(this.player, object.getGuid());
 
-                    ((MountData) DatabaseManager.get(MountData.class)).update(mount);
-                    ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this.player);
+                    DatabaseManager.get(MountData.class).update(mount);
+                    DatabaseManager.get(PlayerData.class).update(this.player);
                     SocketManager.GAME_SEND_Ee_PACKET(this.player, mount.getSize() == 50 ? '~' : '+', mount.parse());
                     break;
 
@@ -2794,8 +2794,8 @@ public class GameClient {
                     this.player.addItem(object, true);
 
                     SocketManager.GAME_SEND_Ee_PACKET(this.player, '-', mount.getId() + "");
-                    ((MountData) DatabaseManager.get(MountData.class)).update(mount);
-                    ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this.player);
+                    DatabaseManager.get(MountData.class).update(mount);
+                    DatabaseManager.get(PlayerData.class).update(this.player);
                     break;
 
                 case 'g':// Equiper une dinde
@@ -2821,8 +2821,8 @@ public class GameClient {
                     SocketManager.GAME_SEND_Re_PACKET(this.player, "+", mount);
                     SocketManager.GAME_SEND_Ee_PACKET(this.player, '-', mount.getId() + "");
                     SocketManager.GAME_SEND_Rx_PACKET(this.player);
-                    ((MountData) DatabaseManager.get(MountData.class)).update(mount);
-                    ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this.player);
+                    DatabaseManager.get(MountData.class).update(mount);
+                    DatabaseManager.get(PlayerData.class).update(this.player);
                     break;
 
                 case 'p':// Equipe -> Etable
@@ -2843,19 +2843,19 @@ public class GameClient {
                             mount.setOwner(this.player.getId());
                             this.player.setMount(null);
 
-                            ((MountData) DatabaseManager.get(MountData.class)).update(mount);
+                            DatabaseManager.get(MountData.class).update(mount);
                             SocketManager.GAME_SEND_Ee_PACKET(this.player, mount.getSize() == 50 ? '~' : '+', mount.parse());
                             SocketManager.GAME_SEND_Re_PACKET(this.player, "-", null);
                             SocketManager.GAME_SEND_Rx_PACKET(this.player);
                         } else {
                             SocketManager.GAME_SEND_Im_PACKET(this.player, "1106");
                         }
-                        ((MountData) DatabaseManager.get(MountData.class)).update(mount);
-                        ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this.player);
+                        DatabaseManager.get(MountData.class).update(mount);
+                        DatabaseManager.get(PlayerData.class).update(this.player);
                     }
                     break;
             }
-            ((BaseMountParkData) DatabaseManager.get(BaseMountParkData.class)).update(park);
+            DatabaseManager.get(BaseMountParkData.class).update(park);
         }
     }
 
@@ -2889,8 +2889,8 @@ public class GameClient {
                         mount.setMapId((short) -1);
                         mount.setCellId(-1);
 
-                        ((MountData) DatabaseManager.get(MountData.class)).update(mount);
-                        ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this.player);
+                        DatabaseManager.get(MountData.class).update(mount);
+                        DatabaseManager.get(PlayerData.class).update(this.player);
                     } else return;
                     break;
 
@@ -2929,12 +2929,12 @@ public class GameClient {
                         SocketManager.GAME_SEND_Ee_PACKET(this.player, '-', mount.getId() + "");
                         SocketManager.GAME_SEND_GM_MOUNT_TO_MAP(map, mount);
 
-                        ((MountData) DatabaseManager.get(MountData.class)).update(mount);
-                        ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this.player);
+                        DatabaseManager.get(MountData.class).update(mount);
+                        DatabaseManager.get(PlayerData.class).update(this.player);
                     } else return;
                     break;
             }
-            ((BaseMountParkData) DatabaseManager.get(BaseMountParkData.class)).update(park);
+            DatabaseManager.get(BaseMountParkData.class).update(park);
         }
     }
 
@@ -3449,7 +3449,7 @@ public class GameClient {
                 collector.reloadTimer();
                 collector.delCollector(collector.getId());
                 player.send("EV");
-                ((CollectorData) DatabaseManager.get(CollectorData.class)).delete(collector);
+                DatabaseManager.get(CollectorData.class).delete(collector);
                 break;
 
             default:
@@ -3460,7 +3460,7 @@ public class GameClient {
 
 
         player.setExchangeAction(null);
-        ((PlayerData) DatabaseManager.get(PlayerData.class)).update(player);
+        DatabaseManager.get(PlayerData.class).update(player);
     }
 
     /** Fin Exchange Packet **/
@@ -4786,7 +4786,7 @@ public class GameClient {
                 G.setNbCollectors(G.getNbCollectors() + 1);
                 break;
         }
-        ((GuildData) DatabaseManager.get(GuildData.class)).update(G);
+        DatabaseManager.get(GuildData.class).update(G);
         SocketManager.GAME_SEND_gIB_PACKET(this.player, this.player.getGuild().parseCollectorToGuild());
     }
 
@@ -4802,7 +4802,7 @@ public class GameClient {
                 return;
             G2.setCapital(G2.getCapital() - 5);
             G2.boostSpell(spellID);
-            ((GuildData) DatabaseManager.get(GuildData.class)).update(G2);
+            DatabaseManager.get(GuildData.class).update(G2);
             SocketManager.GAME_SEND_gIB_PACKET(this.player, this.player.getGuild().parseCollectorToGuild());
         } else {
             GameServer.a();
@@ -4892,7 +4892,7 @@ public class GameClient {
             gm.setAllRights(1, (byte) 0, 1, this.player);//1 => Meneur (Tous droits)
             this.player.setGuildMember(gm);//On ajthise le meneur
             World.world.addGuild(G);
-            ((GuildMemberData) DatabaseManager.get(GuildMemberData.class)).update(this.player);
+            DatabaseManager.get(GuildMemberData.class).update(this.player);
             //Packets
             SocketManager.GAME_SEND_gS_PACKET(this.player, gm);
             SocketManager.GAME_SEND_gC_PACKET(this.player, "K");
@@ -4937,7 +4937,7 @@ public class GameClient {
             return;
         collector.reloadTimer();
         SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(this.player.getCurMap(), idCollector);
-        ((CollectorData) DatabaseManager.get(CollectorData.class)).delete(collector);
+        DatabaseManager.get(CollectorData.class).delete(collector);
         collector.delCollector(collector.getId());
         for (Player z : this.player.getGuild().getPlayers()) {
             if (z.isOnline()) {
@@ -5042,7 +5042,7 @@ public class GameClient {
 
         short n1 = (short) (Formulas.getRandomValue(1, 129)), n2 = (short) (Formulas.getRandomValue(1, 227));
         Collector collector = new Collector(-1, map.getId(), this.player.getCurCell().getId(), (byte) 3, guild.getId(), n1, n2, this.player, System.currentTimeMillis(), "", 0, 0);
-        ((CollectorData) DatabaseManager.get(CollectorData.class)).insert(collector);
+        DatabaseManager.get(CollectorData.class).insert(collector);
         World.world.addCollector(collector);
         SocketManager.GAME_SEND_ADD_PERCO_TO_MAP(map);
         SocketManager.GAME_SEND_STATS_PACKET(this.player);
@@ -5139,7 +5139,7 @@ public class GameClient {
                         return;//Pas cens? arriver
                     Guild G = p.getGuild();
                     GuildMember GM = G.addNewMember(this.player);
-                    ((GuildMemberData) DatabaseManager.get(GuildMemberData.class)).update(this.player);
+                    DatabaseManager.get(GuildMemberData.class).update(this.player);
                     this.player.setGuildMember(GM);
                     this.player.setInvitation(-1);
                     p.setInvitation(-1);
@@ -5160,7 +5160,7 @@ public class GameClient {
         Guild toRemGuild;
         GuildMember toRemMember;
         if (P == null) {
-            int infos[] = ((GuildMemberData) DatabaseManager.get(GuildMemberData.class)).isPersoInGuild(name);
+            int infos[] = DatabaseManager.get(GuildMemberData.class).isPersoInGuild(name);
             guid = infos[0];
             guildId = infos[1];
             if (guildId < 0 || guid < 0)
@@ -5243,7 +5243,7 @@ public class GameClient {
         //R?cup?ration du this.playernnage ? changer, et verification de quelques conditions de base
         if (p == null) //Arrive lorsque le this.playernnage n'est pas charg? dans la m?moire
         {
-            int guildId = ((GuildMemberData) DatabaseManager.get(GuildMemberData.class)).isPersoInGuild(guid); //R?cup?re l'id de la guilde du this.playernnage qui n'est pas dans la m?moire
+            int guildId = DatabaseManager.get(GuildMemberData.class).isPersoInGuild(guid); //R?cup?re l'id de la guilde du this.playernnage qui n'est pas dans la m?moire
 
             if (guildId < 0)
                 return; //Si le this.playernnage ? qui les droits doivent ?tre modifi? n'existe pas ou n'a pas de guilde
@@ -5648,7 +5648,7 @@ public class GameClient {
             if (newQua <= 0) {
                 this.player.removeItem(guid);
                 World.world.removeGameObject(guid);
-                ((ObjectData) DatabaseManager.get(ObjectData.class)).delete(obj);
+                DatabaseManager.get(ObjectData.class).delete(obj);
                 SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(this.player, guid);
             } else {
                 obj.setQuantity(newQua);
@@ -5897,10 +5897,10 @@ public class GameClient {
                         return;
                     }
                     exObj.setObvijevanPos(object.getObvijevanPos()); // L'objet qui ?tait en place a maintenant un obvi
-                    ((ObvijevanData) DatabaseManager.get(ObvijevanData.class)).insert(new Pair<>(exObj.getGuid(), object.getTemplate().getId()));
+                    DatabaseManager.get(ObvijevanData.class).insert(new Pair<>(exObj.getGuid(), object.getTemplate().getId()));
                     this.player.removeItem(object.getGuid(), 1, false, false); // on enl?ve l'existance de l'obvi en lui-m?me
                     SocketManager.send(this.player, "OR" + object.getGuid()); // on le pr?cise au client.
-                    ((ObjectData) DatabaseManager.get(ObjectData.class)).delete(object);
+                    DatabaseManager.get(ObjectData.class).delete(object);
 
                     exObj.refreshStatsObjet(object.parseStatsStringSansUserObvi() + ",3ca#" + Integer.toHexString(objGUID) + "#0#0#0d0+" + objGUID);
 
@@ -5923,7 +5923,7 @@ public class GameClient {
                     } else {
                         World.world.removeGameObject(object.getGuid());
                     }
-                    ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this.player);
+                    DatabaseManager.get(PlayerData.class).update(this.player);
                     return; // on s'arr?te l? pour l'obvi
                 } // FIN DU CODE OBVI
 
@@ -6152,7 +6152,7 @@ public class GameClient {
             }
 
             this.player.verifEquiped();
-            ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this.player);
+            DatabaseManager.get(PlayerData.class).update(this.player);
         } catch (Exception e) {
             e.printStackTrace();
             SocketManager.GAME_SEND_DELETE_OBJECT_FAILED_PACKET(this);
@@ -6248,10 +6248,10 @@ public class GameClient {
         if ((guid == -1) || (!this.player.hasItemGuid(guid)))
             return;
         GameObject obj = this.player.getItems().get(guid);
-        int idOBVI = ((ObvijevanData) DatabaseManager.get(ObvijevanData.class)).load(obj.getGuid()).getFirst();
+        int idOBVI = DatabaseManager.get(ObvijevanData.class).load(obj.getGuid()).getFirst();
 
         if (idOBVI == -1) {
-            ((ObvijevanData) DatabaseManager.get(ObvijevanData.class)).delete(new Pair<>(obj.getGuid(), obj.getGuid()));
+            DatabaseManager.get(ObvijevanData.class).delete(new Pair<>(obj.getGuid(), obj.getGuid()));
             switch (obj.getTemplate().getType()) {
                 case 1:
                     idOBVI = 9255;
@@ -6285,7 +6285,7 @@ public class GameClient {
         obj.removeAllObvijevanStats();
         SocketManager.send(this.player, obj.obvijevanOCO_Packet(pos));
         SocketManager.GAME_SEND_ON_EQUIP_ITEM(this.player.getCurMap(), this.player);
-        ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this.player);
+        DatabaseManager.get(PlayerData.class).update(this.player);
     }
 
     private void feedObvi(String packet) {
@@ -6316,7 +6316,7 @@ public class GameClient {
             SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(this.player, objVictime);
         }
         SocketManager.send(this.player, obj.obvijevanOCO_Packet(pos));
-        ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this.player);
+        DatabaseManager.get(PlayerData.class).update(this.player);
     }
 
     private void setSkinObvi(String packet) {
@@ -6663,8 +6663,8 @@ public class GameClient {
         MP.setPrice(0);//On vide le prix
         MP.setOwner(this.player.getId());
         MP.setGuild(this.player.getGuild());
-        ((MountParkData) DatabaseManager.get(MountParkData.class)).update(MP);
-        ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this.player);
+        DatabaseManager.get(MountParkData.class).update(MP);
+        DatabaseManager.get(PlayerData.class).update(this.player);
         //On rafraichit l'enclo
         for (Player z : this.player.getCurMap().getPlayers()) {
             SocketManager.GAME_SEND_Rp_PACKET(z, MP);
@@ -6692,7 +6692,7 @@ public class GameClient {
         if (this.player.getMount() != null && this.player.isOnMount())
             this.player.toogleOnMount();
         SocketManager.GAME_SEND_Re_PACKET(this.player, "-", this.player.getMount());
-        ((MountData) DatabaseManager.get(MountData.class)).delete(this.player.getMount());
+        DatabaseManager.get(MountData.class).delete(this.player.getMount());
         World.world.removeMount(this.player.getMount().getId());
         this.player.setMount(null);
     }
@@ -6701,7 +6701,7 @@ public class GameClient {
         if (this.player.getMount() == null)
             return;
         this.player.getMount().setName(name);
-        ((MountData) DatabaseManager.get(MountData.class)).update(this.player.getMount());
+        DatabaseManager.get(MountData.class).update(this.player.getMount());
         SocketManager.GAME_SEND_Rn_PACKET(this.player, name);
     }
 
@@ -6731,8 +6731,8 @@ public class GameClient {
             return;
         }
         MP1.setPrice(price);
-        ((MountParkData) DatabaseManager.get(MountParkData.class)).update(MP1);
-        ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this.player);
+        DatabaseManager.get(MountParkData.class).update(MP1);
+        DatabaseManager.get(PlayerData.class).update(this.player);
         //On rafraichit l'enclo
         for (Player z : this.player.getCurMap().getPlayers()) {
             SocketManager.GAME_SEND_Rp_PACKET(z, MP1);
@@ -7053,7 +7053,7 @@ public class GameClient {
             }
 
             //cellID == this.player.getCurCell().getId()
-            if ((list != null && list.contains((int) this.player.getCurCell().getId())) || distPecheur())// et on verrifie si le joueur = cellI
+            if ((list != null && list.contains(this.player.getCurCell().getId())) || distPecheur())// et on verrifie si le joueur = cellI
                 this.player.getGameClient().gameAction(actions.get(-1));// On renvois comme demande
                 //Risqu? mais bon pas le choix si on veut pas ?tre emmerder avec les bl?s. Parser le bon type ?
                 //this.player.getGameClient().gameAction(actions.getWaitingAccount(-1));// On renvois comme demande
@@ -7121,7 +7121,7 @@ public class GameClient {
             }
         }
 
-        if(((PlayerData) DatabaseManager.get(PlayerData.class)).exist(name) || !isValid) {
+        if(DatabaseManager.get(PlayerData.class).exist(name) || !isValid) {
             this.player.send("AlEs");
             return;
         }

@@ -1794,9 +1794,6 @@ public class CommandAdmin extends AdminUser {
                     DatabaseManager.get(BaseHouseData.class).loadFully();
                     DatabaseManager.get(HouseData.class).loadFully();
                     break;
-                case "SHOP":
-                    DatabaseManager.get(ShopObjectData.class).loadFully();
-                    break;
                 case "DROPS":
                     DatabaseManager.get(DropData.class).loadFully();
                     break;

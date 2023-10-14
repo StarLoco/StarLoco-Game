@@ -382,22 +382,6 @@ public class PlayerData extends FunctionDAO<Player> {
         }
     }
 
-    public void updateAllLogged(int guid, int logged) {
-        PreparedStatement p = null;
-        try {
-            p = getPreparedStatement("UPDATE " + getTableName() + " SET `logged` = ? WHERE `account` = ?");
-            if(p != null) {
-                p.setInt(1, logged);
-                p.setInt(2, guid);
-                execute(p);
-            }
-        } catch (SQLException e) {
-            super.sendError(e);
-        } finally {
-            if(p != null) close(p);
-        }
-    }
-
     public boolean exist(String name) {
         try {
             return getData("SELECT COUNT(*) AS exist FROM " + getTableName() + " WHERE name LIKE '" + name + "';", result -> {

@@ -77,6 +77,9 @@ public class Main {
             // Script engine
             World.world.loadScripts();
 
+            World.world.loadExtraMonster();
+            logger.debug("The adding of extra-monsters on the maps were done successfully.");
+
             new GameServer().initialize();
             new ExchangeClient().initialize();
 

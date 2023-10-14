@@ -75,8 +75,8 @@ class ExchangePacketHandler {
                                 break;
                             case 'K': //Kick
                                 id = Integer.parseInt(packet.substring(2));
-                                ((PlayerData) DatabaseManager.get(PlayerData.class)).updateAllLogged(id, 0);
-                                ((AccountData) DatabaseManager.get(AccountData.class)).setLogged(id, 0);
+                                DatabaseManager.get(PlayerData.class).updateLogged(id, 0);
+                                DatabaseManager.get(AccountData.class).setLogged(id, 0);
                                 account = World.world.ensureAccountLoaded(id);
 
                                 if (account != null) {

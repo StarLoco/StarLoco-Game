@@ -413,9 +413,6 @@ public class World implements Scripted<SWorld> {
         DatabaseManager.get(RuneData.class).loadFully();
         logger.debug("The runes were loaded successfully.");
 
-//        loadExtraMonster();
-//        logger.debug("The adding of extra-monsters on the maps were done successfully.");
-
 //        loadMonsterOnMap();
 //        logger.debug("The adding of mobs groups on the maps were done successfully.");
 
@@ -430,9 +427,6 @@ public class World implements Scripted<SWorld> {
         // Load auction
         DatabaseManager.get(AuctionData.class).loadFully();
         logger.debug("Initialization and loading auction : ok.");
-
-        DatabaseManager.get(ShopObjectData.class).loadFully();
-        logger.debug("Initialization and loading shop objects : ok.");
 
         ((ServerData) DatabaseManager.get(ServerData.class)).update(time);
         logger.info("All data was loaded successfully at "

@@ -479,7 +479,8 @@ public class Account {
     }
 
     public void disconnect(Player player) {
-        DatabaseManager.get(PlayerData.class).updateAllLogged(this.getId(), 0);
+        DatabaseManager.get(PlayerData.class).updateLogged(player.getId(), 0);
+        DatabaseManager.get(AccountData.class).setLogged(this.id, 0);
 
         if (player.getExchangeAction() != null)
             GameClient.leaveExchange(player);
