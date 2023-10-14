@@ -35,8 +35,8 @@ function npc:onTalk(p, answer)
         p:endDialog()
     -- Reset Spell
     elseif answer == 7491 then
-        p:spellResetPanel()
         p:endDialog()
+        p:spellResetPanel()
     end
 end
 
