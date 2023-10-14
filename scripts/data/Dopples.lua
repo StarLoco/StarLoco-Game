@@ -88,7 +88,7 @@ local dopples = {
     -- Osa
     {
         mob = 161,
-        npc = {id=436, gfx=20, accessories = {0, 2411, 2411, 0, 0}},
+        npc = {id=436, gfx=20, accessories = {0, 2411, 2414, 0, 0}},
         quest = {id=461, step=984, bangObjective=3192, fightObjective=3164, npcObjective=3165 },
         dialog = {init=1766, info=1418, train=1485, trade=6755, classBang=6777},
         doploon = 10308,
@@ -239,7 +239,7 @@ local createNPC = function(info)
     local npc = Npc(info.npc.id, info.npc.gfx)
 
     if info.colors then npc.colors = info.colors end
-    if info.accessories then npc.accessories = info.accessories end
+    if info.npc.accessories then npc.accessories = info.npc.accessories end
 
     npc.onTalk = onTalkDoppleMaster(info)
     npc.quests = {info.quest.id}
