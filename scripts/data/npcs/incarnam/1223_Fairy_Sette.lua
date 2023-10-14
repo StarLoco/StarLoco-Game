@@ -30,7 +30,7 @@ function npc:onTalk(p, answer)
     -- second power confirmation
     elseif answer == 7262 then p:ask(7469, {7264})
     -- second power use
-    elseif answer == 7469 then
+    elseif answer == 7264 then
         p:resetStats(false)
         p:endDialog()
     -- Reset Spell
