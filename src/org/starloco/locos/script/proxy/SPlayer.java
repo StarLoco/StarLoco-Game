@@ -7,7 +7,6 @@ import org.classdump.luna.impl.ImmutableTable;
 import org.classdump.luna.lib.ArgumentIterator;
 import org.classdump.luna.runtime.LuaFunction;
 import org.starloco.locos.area.map.GameMap;
-import org.starloco.locos.entity.map.InteractiveObject;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.entity.monster.MobGroupDef;
@@ -558,6 +557,12 @@ public class SPlayer extends DefaultUserdata<Player> {
 
         return p.ensureSpellLevel(spellID, level, modPoints, false);
     }
+
+    @SuppressWarnings("unused")
+    private static void spellResetPanel(Player p) {
+        p.spellResetPanel();
+    }
+
     //endregion
 
     //region Factions
@@ -585,16 +590,18 @@ public class SPlayer extends DefaultUserdata<Player> {
     }
 
     @SuppressWarnings("unused")
-    private static int modBaseStat(Player p, ArgumentIterator args) {
+    private static int modScrollStat(Player p, ArgumentIterator args) {
         int statID = args.nextInt();
         int val = args.nextInt();
 
-        return p.getStats().addOneStat(statID, val);
+        return p.getStatsParcho().addOneStat(statID, val);
     }
 
     @SuppressWarnings("unused")
-    private static void resetStats(Player p) {
-        p.resetStats();
+    private static void resetStats(Player p, ArgumentIterator args) {
+        boolean includeScrolls = args.nextOptionalBoolean(false);
+
+        p.resetStats(includeScrolls);
     }
     //endregion
 

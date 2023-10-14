@@ -2323,31 +2323,13 @@ public class CommandAdmin extends AdminUser {
                 this.sendMessage(mess);
                 return;
             }
-            perso.resetStats();
-            perso.getStats().addOneStat(125, -perso.getStats().getEffect(125));
-            perso.getStats().addOneStat(124, -perso.getStats().getEffect(124));
-            perso.getStats().addOneStat(118, -perso.getStats().getEffect(118));
-            perso.getStats().addOneStat(123, -perso.getStats().getEffect(123));
-            perso.getStats().addOneStat(119, -perso.getStats().getEffect(119));
-            perso.getStats().addOneStat(126, -perso.getStats().getEffect(126));
-            perso.getStatsParcho().getEffects().clear();
-            perso.addCapital((perso.getLevel() - 1) * 5 - perso.getCapital());
-            SocketManager.GAME_SEND_STATS_PACKET(perso);
+            perso.resetStats(true);
             this.sendMessage("Vous avez restat "
                     + perso.getName() + ".");
             return;
         }else if (command.equalsIgnoreCase("RESETALL")) {
             for (Player perso: World.world.getPlayers()) {
-                perso.getStats().addOneStat(125, -perso.getStats().getEffect(125));
-                perso.getStats().addOneStat(124, -perso.getStats().getEffect(124));
-                perso.getStats().addOneStat(118, -perso.getStats().getEffect(118));
-                perso.getStats().addOneStat(123, -perso.getStats().getEffect(123));
-                perso.getStats().addOneStat(119, -perso.getStats().getEffect(119));
-                perso.getStats().addOneStat(126, -perso.getStats().getEffect(126));
-                perso.getStatsParcho().getEffects().clear();
-                perso.addCapital((perso.getLevel() - 1) * 5 - perso.getCapital());
-                SocketManager.GAME_SEND_STATS_PACKET(perso);
-
+                perso.resetStats(true);
             }
             this.sendMessage("Vous avez restat tout le monde");
             return;

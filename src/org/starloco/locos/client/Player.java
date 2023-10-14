@@ -6,7 +6,6 @@ import org.starloco.locos.area.map.Actor;
 import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.entity.map.House;
-import org.starloco.locos.entity.map.InteractiveObject;
 import org.starloco.locos.entity.map.MountPark;
 import org.starloco.locos.entity.map.Trunk;
 import org.starloco.locos.client.other.Party;
@@ -1416,7 +1415,7 @@ public class Player implements Scripted<SPlayer>, Actor {
         SocketManager.GAME_SEND_IQ_PACKET(this, actorID, quantity);
     }
 
-    public void resetStats() {
+    public void resetStats(boolean includeScrolls) {
         stats.addOneStat(125, -stats.getEffect(125));
         stats.addOneStat(124, -stats.getEffect(124));
         stats.addOneStat(118, -stats.getEffect(118));
@@ -1424,9 +1423,17 @@ public class Player implements Scripted<SPlayer>, Actor {
         stats.addOneStat(119, -stats.getEffect(119));
         stats.addOneStat(126, -stats.getEffect(126));
 
-        addCapital((getLevel() - 1) * 5 - getCapital());
+        if(includeScrolls) statsParcho.getEffects().clear();
+
+        this.addCapital((getLevel() - 1) * 5 - getCapital());
 
         if(isOnline)SocketManager.GAME_SEND_STATS_PACKET(this);
+    }
+
+    public void spellResetPanel() {
+        // TODO: Set exchangeaction/player state
+
+        SocketManager.GAME_SEND_FORGETSPELL_INTERFACE('+', this);
     }
 
 

@@ -243,6 +243,8 @@ function Player:spellLevel(spell) end
 ---@return boolean true if player's spell is at the expected level after the call
 function Player:setSpellLevel(spell, level, modPoints) end
 
+function Player:spellResetPanel() end
+
 ---@param faction number
 ---@param replace boolean defaults to false
 ---@return boolean true if player's faction has the expected value after the call
@@ -295,9 +297,10 @@ function Player:baseStat(effectID) end
 ---@param effectID number
 ---@param value number
 ---@return number -- new value
-function Player:modBaseStat(effectID, value) end
+function Player:modScrollStat(effectID, value) end
 
-function Player:resetStats() end
+---@param includeScrolls boolean defaults to false
+function Player:resetStats(includeScrolls) end
 
 --endregion
 
