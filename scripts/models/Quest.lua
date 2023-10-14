@@ -234,7 +234,7 @@ end
 
 ---@class QuestStep
 ---@field id number
----@field questionId number
+---@field questionId number defaults to nil
 ---@field objectives QuestObjective[]|fun(p:Player):QuestObjective[]
 ---@field rewardFn fun(p:Player)
 QuestStep = {}
@@ -244,7 +244,8 @@ setmetatable(QuestStep, {
     __call = function(_, id, questionId)
         local self = setmetatable({}, QuestStep)
         self.id = id
-        self.questionId = questionId
+        self.questionId = questionId or nil
+        self.objectives = {}
 
         QUEST_STEPS[id] = self
         return self
