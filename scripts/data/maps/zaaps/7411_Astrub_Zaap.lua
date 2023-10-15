@@ -13,7 +13,8 @@ local map = MapDef(
 map.positions = "dEdTd7eiejekexey|fMfNf0f1f2gdgrgG"
 map.capabilities = 98
 map.npcs = {
-    [537] = {350, 1}
+    [537] = {350, 1},
+    [558] = {265, 1} -- Ajout du PNJ 558 temporaire pour la vente de pain
 }
 
 -- '1;1;1;0;0;0;0' forbiddens -> capabilities ? Or script ?

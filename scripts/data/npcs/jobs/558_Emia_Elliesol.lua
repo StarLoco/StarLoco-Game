@@ -3,7 +3,10 @@ local npc = Npc(558, 9032)
 npc.gender = 1
 
 npc.sales = {
-    {item = 577}
+    {item = 577},
+    {item = 468},  -- Vente temporaire de pain
+    {item = 1737}, -- Vente temporaire de pain
+    {item = 1738}  -- Vente temporaire de pain
 }
 
 ---@param p Player
