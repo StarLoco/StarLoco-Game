@@ -56,8 +56,12 @@ map.onMovementEnd = {
 	[22] = moveEndTeleport(742, 441),
 	[209] = moveEndTeleport(2017, 387),
 	[231] = moveEndTeleport(2058, 204),
+	[260]  = openAndCloseAfterMillis(736, 224, 50000),
 	[392] = moveEndTeleport(733, 390),
 	[458] = moveEndTeleport(735, 39),
 }
 
+map.animations = {
+	[224] = AnimatedObjects.SlidingRock,
+}
 
