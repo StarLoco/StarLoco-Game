@@ -145,7 +145,7 @@ local dopples = {
     --Sacri
     {
         mob = 455,
-        npc = {id=443, gfx=110, accessories = {0, 6449, 2074, 0, 0}},
+        npc = {id=443, gfx=110, colors= {0x62827d, 0xae0404, -1}, accessories = {0, 0, 6449, 2074, 0}},
         quest = {id=463, step=986, bangObjective=3194, fightObjective=3168, npcObjective=3169 },
         dialog = {init=1799, info=1519, train=1520, trade=6758, classBang=6779},
         doploon = 10310,
@@ -281,7 +281,7 @@ end
 local createNPC = function(info)
     local npc = Npc(info.npc.id, info.npc.gfx)
 
-    if info.colors then npc.colors = info.colors end
+    if info.npc.colors then npc.colors = info.npc.colors end
     if info.npc.accessories then npc.accessories = info.npc.accessories end
 
     npc.onTalk = onTalkDoppleMaster(info)
