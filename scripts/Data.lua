@@ -20,6 +20,7 @@ requireReload("data/Skills")
 requireReload("models/NPC")
 requireReload("models/MapDef")
 requireReload("models/Quest")
+requireReload("models/QuestObjectives")
 requireReload("models/InteractiveObjectDef")
 
 -- Load instances

@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.file.*;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -133,6 +134,46 @@ public class ScriptVM {
                 return this.executor.call(this.state, fn);
             } catch (Exception e) {
                 throw new RuntimeException(e);
+            }
+        }
+    }
+
+    public Object[] run(String code, Consumer<String> cbPrint) {
+        synchronized (_vmLock) {
+            Object origPrint = env.rawget("print");
+
+            AbstractLibFunction customPrint = new AbstractLibFunction() {
+
+                @Override
+                protected String name() {
+                    return "print";
+                }
+
+                @Override
+                protected void invoke(ExecutionContext context, ArgumentIterator args) {
+                    StringJoiner sj = new StringJoiner(" ");
+
+                    args.forEachRemaining(o -> {
+                        sj.add(o.toString());
+                    });
+
+                    cbPrint.accept(sj.toString());
+
+                    context.getReturnBuffer().setTo();
+                }
+            };
+
+            try {
+                env.rawset("print", customPrint);
+
+                LuaFunction<?, ?, ?, ?, ?> fn = loader.loadTextChunk(new Variable(env), "command", code); // May need to UTF-8 decode
+
+
+                return this.executor.call(this.state, fn);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            } finally {
+                env.rawset("print", origPrint);
             }
         }
     }
