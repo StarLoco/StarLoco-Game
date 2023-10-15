@@ -138,7 +138,7 @@ local dopples = {
         mob = 166,
         npc = {id=435, gfx=70, colors = {0xd0000, 0xbb8162, -1}, accessories = {0, 0, 6449, 0, 0}},
         quest = {id=462, step=985, bangObjective=3193, fightObjective=3166, npcObjective=3167 },
-        dialog = {init=1768, info=1535, train=1559, trade=6747, classBang=6773},
+        dialog = {init=1768, info=1535, train=1559, trade=6751, classBang=6773},
         doploon = 10304,
         certificate = 10291,
     },
