@@ -3846,7 +3846,7 @@ public class Player implements Scripted<SPlayer>, Actor {
 
     public void useCraftSkill(int skillId, int ingredientsCount) {
         setAway(true);
-        setExchangeAction(new ExchangeAction<>(ExchangeAction.CRAFTING, this));
+        setExchangeAction(new ExchangeAction<>(ExchangeAction.CRAFTING, skillId));
 
         SocketManager.GAME_SEND_ECK_PACKET(this, 3, ingredientsCount + ";" + skillId);
     }

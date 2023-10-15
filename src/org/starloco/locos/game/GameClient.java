@@ -1707,6 +1707,7 @@ public class GameClient {
             if (((JobAction) value).isCraft()) {
                 ((JobAction) value).startCraft(this.player);
             }
+            return;
         }
 
         if (exchangeAction.getType() == ExchangeAction.TRADING_WITH_NPC_EXCHANGE && value instanceof NpcExchange)

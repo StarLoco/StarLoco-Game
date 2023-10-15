@@ -73,6 +73,7 @@ public class CommandAdmin extends AdminUser {
 
             this.command(command, infos, msg);
         } catch (Exception e) {
+            this.getPlayer().sendMessage("Error: "+e.getMessage());
             Main.logger.error("Command error: {}", command, e);
         }
     }
@@ -3069,6 +3070,7 @@ public class CommandAdmin extends AdminUser {
         }  else if (command.equalsIgnoreCase("DLUA")) {
             String code = String.join(" ", Arrays.copyOfRange(infos, 1, infos.length));
             Object[] ret = DataScriptVM.getInstance().run(code);
+
             this.sendMessage(Arrays.stream(ret).map(Object::toString).collect(Collectors.joining(" ")));
         } else {
             this.sendMessage("Commande invalide !");

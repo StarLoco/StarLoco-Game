@@ -67,27 +67,6 @@ public class JobStat {
         return null;
     }
 
-    public void startAction(int id, Player P, int actionId, int cellId, InteractiveObject io) {
-        for (JobAction JA : this.posActions) {
-            if (JA.getId() == id) {
-                this.curAction = JA;
-                JA.startAction(P, actionId, cellId, this, io);
-                return;
-            }
-        }
-    }
-
-    public void endAction(Player P, InteractiveObject IO, GameAction GA, int cellId) {
-        if (this.curAction == null)
-            return;
-
-        this.curAction.endAction(P, IO, GA, cellId);
-        this.curAction = null;
-        ArrayList<JobStat> list = new ArrayList<>();
-        list.add(this);
-        SocketManager.GAME_SEND_JX_PACKET(P, list);
-    }
-
     public void addXp(Player P, long xp) {
         if(xp<0) throw new IllegalArgumentException("xp must be positive");
         if (this.lvl > 99)
