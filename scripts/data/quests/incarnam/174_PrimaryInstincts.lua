@@ -1,5 +1,4 @@
 local npcId = 847
---local mapId = 10295
 
 local qs333 = QuestStep(333, 3573)
 qs333.objectives = {
