@@ -21,6 +21,6 @@ local gatherSkills = {
     {id=158, obj=Objects.HolyBamboo, minLvl=100, itemID=7014, xp=75, respawn={6000, 10000} },
 }
 
-registerGatherJobSkills(jobID, toolType, gatherSkills)
+registerGatherJobSkills(jobID, {toolType=toolType}, gatherSkills)
 
 registerCraftSkill(101, {jobID = jobID, toolType = toolType}, ingredientsForCraftJob(jobID))

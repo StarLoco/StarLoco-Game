@@ -17,7 +17,7 @@ local gatherSkills = {
     {id=161, obj=Objects.Dolomite,  minLvl=100, itemID=7033, xp=50, respawn={6000, 10000} },
 }
 
-registerGatherJobSkills(jobID, toolType, gatherSkills)
+registerGatherJobSkills(jobID, {toolType=toolType}, gatherSkills)
 
 registerCraftSkill(47, {jobID = jobID, toolType = toolType})
 registerCraftSkill(122, {jobID = jobID, toolType = toolType})

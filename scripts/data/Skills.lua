@@ -6,7 +6,7 @@ SKILLS = {}
 ---@class SkillRequirements
 ---@field jobID number
 ---@field jobLvl number
----@field toolID number
+---@field toolIDs number[]
 ---@field toolType number
 
 ---@class GatherJobSkillDef
@@ -41,7 +41,7 @@ local function checkRequirements(p, requirements)
     end
 
     local tool = p:gearAt(WeaponSlot)
-    if requirements.toolID and tool:id() ~= requirements.toolID then
+    if requirements.toolIDs and table.contains(requirements.toolIDs, tool:id()) then
         print("WRONG TOOL FOR JOB")
         -- Wrong tool
         -- TODO: Chat message ?
@@ -152,9 +152,9 @@ function gatherSkillAddItem(p, itemID, quantity)
 end
 
 ---@param jobID number
----@param toolType number
+---@param toolInfo table<>
 ---@param skills GatherJobSkillDef[]
-function registerGatherJobSkills(jobID, toolType, skills)
+function registerGatherJobSkills(jobID, toolInfo, skills)
     local durationForPlayer = function(p)
         return GATHER_SKILL_BASE_DURATION - 100 * p:jobLevel(jobID)
     end
@@ -171,13 +171,17 @@ function registerGatherJobSkills(jobID, toolType, skills)
         end
 
 
+        local req = {jobID = jobID, jobLvl =  sk.minLvl}
+        if toolInfo.toolType then req.toolType = toolInfo.toolType end
+        if toolInfo.toolID then req.toolID = toolInfo.toolID end
+
         registerGatherSkill(
             sk.id,
             nil,
             durationForPlayer,
             rewardFn,
             respawnBetweenMillis(sk.respawn[1], sk.respawn[2]),
-            {jobID = jobID, toolType = toolType, jobLvl = sk.minLvl}
+            req
         )
     end
 end

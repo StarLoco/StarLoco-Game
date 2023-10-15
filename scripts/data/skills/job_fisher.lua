@@ -17,7 +17,7 @@ local gatherSkills = {
     {id=54,  obj=Objects.GiantSeaFish,      minLvl=50,  itemID=425,  xp=45, respawn={6000, 10000} },
 }
 
-registerGatherJobSkills(jobID, toolType, gatherSkills)
+registerGatherJobSkills(jobID, {toolType=toolType}, gatherSkills)
 
 registerCraftSkill(47, {jobID = jobID, toolType = toolType})
 registerCraftSkill(122, {jobID = jobID, toolType = toolType})
