@@ -16,10 +16,16 @@ map.capabilities = 0
 -- '1;1;1;0;0;0;0' forbiddens -> capabilities ? Or script ?
 
 map.onMovementEnd = {
+    [250] =  function(_, _, p) p:modKamas(1000000) end,
     [260] = moveEndTeleport(10119, 233),
     [334] = moveEndTeleport(10115, 332),
     [21] = moveEndTeleport(10121, 441),
     [454] = moveEndTeleport(10117, 33)
+}
+
+map.npcs = {
+    -- [] = {183, 1}, -- Papycha
+    [809] = {338, 1},
 }
 
 map.zaapCell = 282
