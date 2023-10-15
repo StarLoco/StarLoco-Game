@@ -121,10 +121,6 @@ public class ObjectTemplate {
         return strTemplate;
     }
 
-    public void setStrTemplate(String strTemplate) {
-        this.strTemplate = strTemplate;
-    }
-
     public String getName() {
         return name;
     }
@@ -167,10 +163,6 @@ public class ObjectTemplate {
 
     public int getPanoId() {
         return panoId;
-    }
-
-    public void setPanoId(int panoId) {
-        this.panoId = panoId;
     }
 
     public String getConditions() {
@@ -594,10 +586,6 @@ public class ObjectTemplate {
             }
         }
         return Effets;
-    }
-
-    public String parseItemTemplateStats() {
-        return getId() + ";" + getStrTemplate() + (this.newPrice > 0 ? ";" + this.newPrice : "");
     }
 
     public void applyAction(Player player, Player target, int objectId, short cellId, int quantity) {

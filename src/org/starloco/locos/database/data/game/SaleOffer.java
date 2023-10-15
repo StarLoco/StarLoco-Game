@@ -3,6 +3,8 @@ package org.starloco.locos.database.data.game;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.object.ObjectTemplate;
 
+import java.util.StringJoiner;
+
 public final class SaleOffer {
     public final long unitPrice;
     public final ObjectTemplate itemTemplate;
@@ -20,6 +22,19 @@ public final class SaleOffer {
         this.itemTemplate = itemTemplate;
         this.unitPrice = unitPrice;
         this.currency = currency;
+    }
+
+    public String encode() {
+        // [itemID];[stats];[currency];[price];;
+        StringJoiner sj = new StringJoiner(";");
+        sj.add(String.valueOf(itemTemplate.getId()));
+        sj.add(itemTemplate.getStrTemplate());
+        sj.add(currency.isItem()?String.valueOf(currency.item().getId()):"");
+        sj.add(Long.toString(unitPrice));
+        sj.add(""); // Unknown
+        sj.add(""); // Unknown
+
+        return sj.toString();
     }
 
     public static final class Currency {

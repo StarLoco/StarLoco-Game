@@ -34,15 +34,12 @@ registerGatherSkill(102,
     respawnBetweenMillis(120000, 420000)
 )
 
-
 -- Use Zaap
 SKILLS[114] = function(p, _) p:openZaap() return true end
-
 
 -- Use garbage bin
 SKILLS[153] = function(p, cellID)
     p:openTrunk(cellID) return true end
-
 
 -- Use Switch
 SKILLS[179] = function(p, cellId)

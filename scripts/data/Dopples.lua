@@ -5,19 +5,56 @@ local questIntervalMs = 82800000 -- 23 Hours
 
 local rewardInitID = 7106 -- Used on init after killing objective is finished
 local busyInitID = 1834 -- Used when player cannot start new dopple fight
+local tooLowID = 1784 -- Used when the player doesn't have the level
+
 
 -- K: Grade V: {Kamas, XPSingle, XPClassBang}
 local rewardsPerGrade = {
-    {100,  1300,   7000},
-    {200,  8000,   40000},
-    {300,  18000,  90000},
-    {400,  30000,  150000},
-    {500,  45000,  240000},
+    {100,  1300,   3000},
+    {200,  8000,   25000},
+    {300,  18000,  50000},
+    {400,  30000,  75000},
+    {500,  45000,  125000},
     {600,  60000,  300000},
-    {700,  85000,  450000},
-    {800,  130000, 700000},
-    {900,  170000, 900000},
+    {700,  85000,  300000},
+    {800,  130000, 500000},
+    {900,  170000, 750000},
     {1000, 185000, 1000000},
+}
+
+---@type table<SaleOffer>
+local doploonSales = {
+    -- Small scrolls
+    {item=683, price=7}, -- STR
+    {item=686, price=7}, -- INT
+    {item=798, price=7}, -- AGI
+    {item=802, price=7}, -- WIS
+    {item=806, price=7}, -- VIT
+    {item=809, price=7}, -- CHA
+
+    -- Normal scrolls
+    {item=795, price=14}, -- STR
+    {item=815, price=14}, -- INT
+    {item=799, price=14}, -- AGI
+    {item=803, price=14}, -- WIS
+    {item=807, price=14}, -- VIT
+    {item=811, price=14}, -- CHA
+
+    -- Big scrolls
+    {item=796, price=28}, -- STR
+    {item=816, price=28}, -- INT
+    {item=800, price=28}, -- AGI
+    {item=804, price=28}, -- WIS
+    {item=808, price=28}, -- VIT
+    {item=812, price=28}, -- CHA
+
+    -- Powerful scrolls
+    {item=797, price=70}, -- STR
+    {item=817, price=70}, -- INT
+    {item=801, price=70}, -- AGI
+    {item=805, price=70}, -- WIS
+    {item=810, price=70}, -- VIT
+    {item=814, price=70}, -- CHA
 }
 
 ---@param p Player
@@ -101,7 +138,7 @@ local dopples = {
         mob = 166,
         npc = {id=435, gfx=70, colors = {0xd0000, 0xbb8162, -1}, accessories = {0, 0, 6449, 0, 0}},
         quest = {id=462, step=985, bangObjective=3193, fightObjective=3166, npcObjective=3167 },
-        dialog = {init=1768, info=1535, train=1559, trade=6747, classBang=6773},
+        dialog = {init=1768, info=1535, train=1559, trade=6751, classBang=6773},
         doploon = 10304,
         certificate = 10291,
     },
@@ -199,6 +236,10 @@ local onTalkDoppleMaster = function(info)
         local classBangQuest = QUESTS[classBangQuestID]
 
         if answer == 0 then
+            if p:level() < requiredLevel then
+                p:ask(tooLowID)
+                return
+            end
             -- Player already finished this dopple quest too recently
             if not doppleQuest:availableTo(p) and not doppleQuest:ongoingFor(p) then
                 p:ask(busyInitID, {info.dialog.trade})
@@ -245,6 +286,11 @@ local createNPC = function(info)
 
     npc.onTalk = onTalkDoppleMaster(info)
     npc.quests = {info.quest.id}
+    npc.sales = {}
+
+    for _, s in ipairs(doploonSales) do
+        table.insert(npc.sales, {item=s.item, price=s.price, currency=info.doploon})
+    end
 
     RegisterNPCDef(npc)
 end
