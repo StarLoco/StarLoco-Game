@@ -39,6 +39,9 @@ public class SItem  extends DefaultUserdata<GameObject> {
 
         String val = item.getTxtStat().get(statID);
         if(val == null) return -1;
+        if (val.contains("#")) {
+            val = val.split("#")[3];
+        }
         return Long.parseLong(val);
     }
 
