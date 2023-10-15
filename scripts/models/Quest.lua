@@ -148,6 +148,13 @@ function Quest:uncompletedObjectiveIDs(p)
 end
 
 ---@param p Player
+---@param id number objectiveID
+---@return boolean
+function Quest:canCompleteObjective(p, id)
+    return table.contains(self:uncompletedObjectiveIDs(p), id)
+end
+
+---@param p Player
 function Quest:onMapEnterCheck(p)
     local justCompleted = {}
 
