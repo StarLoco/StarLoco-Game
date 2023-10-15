@@ -57,7 +57,7 @@ public class JobConstant {
             {133},
             //Rivi�re
             {124, 1782, 1844, 603},  // Petit poissons (riv)
-            {125, 1844, 603, 1847, 1794}, // Poisson (mer)
+            {125, 1844, 603, 1847, 1794}, // Poisson (riv)
             {126, 603, 1847, 1794, 1779}, // Gros poisson (riv)
             {127, 1847, 1794, 1779, 1801}, // Poisson g�ant (riv)
             //Mer

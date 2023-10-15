@@ -7,6 +7,7 @@ POST_INITS = {}
 requireReload("data/AdminCommands")
 requireReload("data/AdminGroups")
 requireReload("data/Breed")
+requireReload("data/ExchangeActions")
 requireReload("data/Experience")
 requireReload("data/FightTypes")
 requireReload("data/GearSlots")

@@ -1804,7 +1804,11 @@ public class CommandAdmin extends AdminUser {
                     break;
                 case "SCRIPTS":
                     // Reload lua
-                    DataScriptVM.getInstance().safeLoadData();
+                    World.world.scheduler.execute(() -> {
+                        DataScriptVM.getInstance().safeLoadData();
+                        this.sendSuccessMessage("You've successfully reload the data type 'scripts' !");
+                    });
+                    return;
                 case "ADMIN":
                     // FIXME Scripts
                     //  Command.reload();

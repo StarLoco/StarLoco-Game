@@ -97,6 +97,30 @@ public class SPlayer extends DefaultUserdata<Player> {
     }
 
     @SuppressWarnings("unused")
+    private static boolean setExchangeAction(Player p, ArgumentIterator args) {
+        if(p.getExchangeAction() != null) return false;
+
+        int t = args.nextInt();
+        Object v = args.nextOptionalAny(null);
+
+        p.setExchangeAction(new ExchangeAction<>((byte) t, v));
+        return true;
+    }
+
+    @SuppressWarnings("unused")
+    private static boolean clearExchangeAction(Player p, ArgumentIterator args) {
+        int t = args.nextInt();
+
+        ExchangeAction<?> a = p.getExchangeAction();
+        if(a.getType() != t) {
+            return false;
+        }
+
+        p.setExchangeAction(null);
+        return true;
+    }
+
+    @SuppressWarnings("unused")
     private static void useCraftSkill(Player p, ArgumentIterator args) {
         int skillId = args.nextInt();
         int ingredientsCount = args.nextInt();

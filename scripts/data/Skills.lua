@@ -14,6 +14,7 @@ SKILLS = {}
 ---@field obj InteractiveObjectDef
 ---@field minLvl number
 ---@field itemID number
+---@field rewardFn fun(p):table{number, ItemStack}
 ---@field xp number
 ---@field respawn number[2]
 
@@ -41,7 +42,7 @@ local function checkRequirements(p, requirements)
     end
 
     local tool = p:gearAt(WeaponSlot)
-    if requirements.toolIDs and table.contains(requirements.toolIDs, tool:id()) then
+    if requirements.toolIDs and not table.contains(requirements.toolIDs, tool:id()) then
         print("WRONG TOOL FOR JOB")
         -- Wrong tool
         -- TODO: Chat message ?
@@ -113,6 +114,7 @@ function registerGatherSkill(skillId, actorAnimID, durationFn, rewardFn, respawn
         end
 
         map:setAnimationState(cellId, AnimStates.LOCKED)
+        p:setExchangeAction(UsingObjectAction)
 
         local duration = durationFn(p)
 
@@ -130,6 +132,7 @@ function registerGatherSkill(skillId, actorAnimID, durationFn, rewardFn, respawn
             -- animate object
             map:setAnimationState(cellId, AnimStates.IN_USE)
 
+            p:clearExchangeAction(UsingObjectAction)
             -- Respawn
             if not respawnIntervalFn then return end
 
@@ -155,19 +158,28 @@ end
 ---@param toolInfo table<>
 ---@param skills GatherJobSkillDef[]
 function registerGatherJobSkills(jobID, toolInfo, skills)
-    local durationForPlayer = function(p)
-        return GATHER_SKILL_BASE_DURATION - 100 * p:jobLevel(jobID)
-    end
-
     for _, sk in pairs(skills) do
+        local durationForPlayer = function(p)
+            local lvlDiff = p:jobLevel(jobID) - sk.minLvl
+            return GATHER_SKILL_BASE_DURATION - 100 * lvlDiff
+        end
+
         ---@param p Player
-        ---@return ItemStack
         local rewardFn = function(p)
             local lvlDiff = p:jobLevel(jobID) - sk.minLvl
             local quantity = math.random(1, 2 + math.floor(lvlDiff / 5))
 
-            gatherSkillAddItem(p, sk.itemID, quantity)
-            p:addJobXP(jobID, sk.xp)
+            local itemID = sk.itemID
+            local xp = sk.xp
+            if sk.rewardFn then
+                local rXp, rStack = sk:rewardFn(p)
+                xp = rXp
+                itemID = rStack.itemID
+                quantity = rStack.quantity
+            end
+
+            gatherSkillAddItem(p, itemID, quantity)
+            if xp >0 then p:addJobXP(jobID, xp) end
         end
 
 

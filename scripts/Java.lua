@@ -129,6 +129,14 @@ function Player:openZaap() end
 ---@return void
 function Player:openTrunk(cellID) end
 
+---@param typeID number
+---@return boolean worked
+function Player:setExchangeAction(typeID) end
+
+---@param typeID number -- expected typeID
+---@return boolean worked
+function Player:clearExchangeAction(typeID) end
+
 ---@param skillId number
 ---@param ingredientsCount number
 ---@return void

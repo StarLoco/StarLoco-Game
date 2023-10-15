@@ -4,7 +4,7 @@ local toolType = 21
 
 --FIXME timing / Reward
 local gatherSkills = {
-    {id=24,  obj=Objects.Iron,      minLvl=1,   itemID=312,  xp=10, respawn={6000, 10000} },
+    {id=24,  obj=Objects.Iron,      minLvl=0,   itemID=312,  xp=10, respawn={6000, 10000} },
     {id=29,  obj=Objects.Copper,    minLvl=10,  itemID=441,  xp=15, respawn={6000, 10000} },
     {id=30,  obj=Objects.Bronze,    minLvl=20,  itemID=442,  xp=20, respawn={6000, 10000} },
     {id=28,  obj=Objects.Cobalt,    minLvl=30,  itemID=443,  xp=25, respawn={6000, 10000} },
@@ -19,5 +19,5 @@ local gatherSkills = {
 
 registerGatherJobSkills(jobID, {toolType=toolType}, gatherSkills)
 
-registerCraftSkill(47, {jobID = jobID, toolType = toolType})
-registerCraftSkill(122, {jobID = jobID, toolType = toolType})
+registerCraftSkill(32, {jobID = jobID, toolType = toolType})
+registerCraftSkill(48, {jobID = jobID, toolType = toolType})

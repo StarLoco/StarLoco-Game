@@ -3,7 +3,7 @@ local toolType = 19
 
 -- TODO: Fix respawn timers
 local gatherSkills = {
-    {id=6,   obj=Objects.Ash,        minLvl=1,   itemID=303,  xp=10, respawn={6000, 10000} },
+    {id=6,   obj=Objects.Ash,        minLvl=0,   itemID=303,  xp=10, respawn={6000, 10000} },
     {id=39,  obj=Objects.Chestnut,   minLvl=10,  itemID=473,  xp=15, respawn={6000, 10000} },
     {id=40,  obj=Objects.Walnut,     minLvl=20,  itemID=476,  xp=20, respawn={6000, 10000} },
     {id=10,  obj=Objects.Oak,        minLvl=30,  itemID=460,  xp=25, respawn={6000, 10000} },

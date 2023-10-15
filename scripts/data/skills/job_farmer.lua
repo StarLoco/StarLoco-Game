@@ -5,7 +5,7 @@ local toolType = 22
 --FIXME timing / Reward
 --FIXME Reward special cereals sometimes
 local gatherSkills = {
-    {id=45,  obj=Objects.Wheat,  minLvl=1,   itemID=289,  xp=10, respawn={6000, 10000} },
+    {id=45,  obj=Objects.Wheat,  minLvl=0,   itemID=289,  xp=10, respawn={6000, 10000} },
     {id=53,  obj=Objects.Barley, minLvl=10,  itemID=400,  xp=15, respawn={6000, 10000} },
     {id=57,  obj=Objects.Oats,   minLvl=20,  itemID=533,  xp=20, respawn={6000, 10000} },
     {id=46,  obj=Objects.Hop,    minLvl=30,  itemID=401,  xp=25, respawn={6000, 10000} },
