@@ -5,6 +5,8 @@ local questIntervalMs = 82800000 -- 23 Hours
 
 local rewardInitID = 7106 -- Used on init after killing objective is finished
 local busyInitID = 1834 -- Used when player cannot start new dopple fight
+local tooLowID = 1784 -- Used when the player doesn't have the level
+
 
 -- K: Grade V: {Kamas, XPSingle, XPClassBang}
 local rewardsPerGrade = {
@@ -234,6 +236,10 @@ local onTalkDoppleMaster = function(info)
         local classBangQuest = QUESTS[classBangQuestID]
 
         if answer == 0 then
+            if p:level() < requiredLevel then
+                p:ask(tooLowID)
+                return
+            end
             -- Player already finished this dopple quest too recently
             if not doppleQuest:availableTo(p) and not doppleQuest:ongoingFor(p) then
                 p:ask(busyInitID, {info.dialog.trade})
