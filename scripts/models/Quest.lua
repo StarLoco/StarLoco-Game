@@ -138,6 +138,16 @@ function Quest:uncompletedObjectives(p)
 end
 
 ---@param p Player
+---@return number[]
+function Quest:uncompletedObjectiveIDs(p)
+    local uncompleted = {}
+    for _, obj in ipairs(self:uncompletedObjectives(p)) do
+        table.insert(uncompleted, obj.id)
+    end
+    return uncompleted
+end
+
+---@param p Player
 function Quest:onMapEnterCheck(p)
     local justCompleted = {}
 

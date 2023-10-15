@@ -428,6 +428,12 @@ public class World implements Scripted<SWorld> {
         DatabaseManager.get(AuctionData.class).loadFully();
         logger.debug("Initialization and loading auction : ok.");
 
+        // Script engine
+        World.world.loadScripts();
+
+        World.world.loadExtraMonster();
+        logger.debug("The adding of extra-monsters on the maps were done successfully.");
+
         ((ServerData) DatabaseManager.get(ServerData.class)).update(time);
         logger.info("All data was loaded successfully at "
                 + new SimpleDateFormat("dd/MM/yyyy - HH:mm:ss", Locale.FRANCE).format(new Date()) + " in "

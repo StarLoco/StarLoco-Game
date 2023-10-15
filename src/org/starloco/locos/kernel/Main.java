@@ -74,11 +74,6 @@ public class Main {
         if(DatabaseManager.getInstance().isConnected()) {
             Config.isRunning = true;
 	        World.world.createWorld();
-            // Script engine
-            World.world.loadScripts();
-
-            World.world.loadExtraMonster();
-            logger.debug("The adding of extra-monsters on the maps were done successfully.");
 
             new GameServer().initialize();
             new ExchangeClient().initialize();
