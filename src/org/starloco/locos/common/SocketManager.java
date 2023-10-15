@@ -1052,7 +1052,9 @@ public class SocketManager {
     }
 
     public static void GAME_SEND_ITEM_VENDOR_LIST_PACKET(GameClient out, List<SaleOffer> offers) {
-        String packet = "EL" + offers.stream().map(o -> o.itemTemplate.parseItemTemplateStats()).collect(Collectors.joining("|"));
+        String packet = offers.stream()
+            .map(SaleOffer::encode)
+            .collect(Collectors.joining("|", "EL", ""));
         send(out, packet);
     }
 

@@ -20,6 +20,41 @@ local rewardsPerGrade = {
     {1000, 185000, 1000000},
 }
 
+---@type table<SaleOffer>
+local doploonSales = {
+    -- Small scrolls
+    {item=683, price=7}, -- STR
+    {item=686, price=7}, -- INT
+    {item=798, price=7}, -- AGI
+    {item=802, price=7}, -- WIS
+    {item=806, price=7}, -- VIT
+    {item=809, price=7}, -- CHA
+
+    -- Normal scrolls
+    {item=795, price=14}, -- STR
+    {item=815, price=14}, -- INT
+    {item=799, price=14}, -- AGI
+    {item=803, price=14}, -- WIS
+    {item=807, price=14}, -- VIT
+    {item=811, price=14}, -- CHA
+
+    -- Big scrolls
+    {item=796, price=28}, -- STR
+    {item=816, price=28}, -- INT
+    {item=800, price=28}, -- AGI
+    {item=804, price=28}, -- WIS
+    {item=808, price=28}, -- VIT
+    {item=812, price=28}, -- CHA
+
+    -- Powerful scrolls
+    {item=797, price=70}, -- STR
+    {item=817, price=70}, -- INT
+    {item=801, price=70}, -- AGI
+    {item=805, price=70}, -- WIS
+    {item=810, price=70}, -- VIT
+    {item=814, price=70}, -- CHA
+}
+
 ---@param p Player
 ---@return number
 local gradeForPlayer = function(p)
@@ -245,6 +280,11 @@ local createNPC = function(info)
 
     npc.onTalk = onTalkDoppleMaster(info)
     npc.quests = {info.quest.id}
+    npc.sales = {}
+
+    for _, s in ipairs(doploonSales) do
+        table.insert(npc.sales, {item=s.item, price=s.price, currency=info.doploon})
+    end
 
     RegisterNPCDef(npc)
 end
