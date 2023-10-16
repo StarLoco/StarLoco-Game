@@ -5,7 +5,7 @@ local questIntervalMs = 82800000 -- 23 Hours
 
 local rewardInitID = 7106 -- Used on init after killing objective is finished
 local busyInitID = 1834 -- Used when player cannot start new dopple fight
-local tooLowID = 1784 -- Used when the player doesn't have the level
+local tooLowInitID = 1784 -- Used when the player doesn't have the level
 
 
 -- K: Grade V: {Kamas, XPSingle, XPClassBang}
@@ -199,23 +199,41 @@ local dopples = {
 }
 
 --region NPC
+
+--- Doploon trade menu
 ---@return boolean true if matching
 local function makeTradeMenu(info)
+    -- Official servers duplicate dialogs/responses a lot which would make the script way less maintainable
+    -- Instead, we will just use the dialogs with the lowest ID for every NPC and store choices in action's context
+    local ctxScrollSize = "scroll_size"
+    local ctxScrollStat = "scroll_stat"
+
+    local notEnoughDoploonsQID = 7519
+
+    local exitRID = 6768
+    local scrollRID = 7355
+    local scrollSizeRID = {7356, 7357, 7358, 7359} -- little/medium/big/powerful
+    local scrollStatRID = {7364, 7362, 7360, 7365, 7363, 7361} -- WIS / CHA / AGI / VIT / STR / INT
+    local classDoploonRID = {7395, 7396} -- each / this temple
+
+
     return function(p, answer)
         if answer == info.dialog.trade then
-            p:endDialog() -- FIXME
-        end
-        return false
-    end
-end
+            local responses = {exitRID, scrollRID}
 
----@return boolean true if matching
-local function makeInfoMenu(info)
-    return function(p, answer)
-        if answer == info.dialog.info then
-            p:endDialog() -- FIXME
+            p:ask(7108, responses)
+        elseif answer == scrollRID then p:ask(7510, scrollSizeRID)
+        elseif table.contains(scrollSizeRID, answer) then
+            p:setCtxVal(ctxScrollSize, answer)
+            p:ask(7511, scrollStatRID)
+        elseif table.contains(scrollStatRID, answer) then
+            p:setCtxVal(ctxScrollStat, answer)
+            p:ask(7524, classDoploonRID)
+        elseif answer == exitRID then p:endDialog()
+        else return false -- Nothing else matched
         end
-        return false
+        -- Something matched
+        return true
     end
 end
 
@@ -228,7 +246,6 @@ local rewardPlayer = function(p, doploon)
 end
 
 local onTalkDoppleMaster = function(info)
-    local infoMenu = makeInfoMenu(info)
     local tradeMenu = makeTradeMenu(info)
 
     return function(self, p, answer)
@@ -237,7 +254,7 @@ local onTalkDoppleMaster = function(info)
 
         if answer == 0 then
             if p:level() < requiredLevel then
-                p:ask(tooLowID)
+                p:ask(tooLowInitID)
                 return
             end
             -- Player already finished this dopple quest too recently
@@ -272,7 +289,7 @@ local onTalkDoppleMaster = function(info)
             if not doppleQuest:startFightFor(p, self.id) then
                 error("cheat attempt")
             end
-        elseif infoMenu(p, answer) then return
+        elseif answer == info.dialog.info then p:ask(205)
         elseif tradeMenu(p, answer) then  return
         end
     end

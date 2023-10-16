@@ -286,6 +286,7 @@ public class SPlayer extends DefaultUserdata<Player> {
         int qID = args.nextInt();
 
         QuestProgress qp = p.getQuestProgress(qID);
+        if(qp == null) return 0;
         if(qp.isFinished()) return 0;
 
         return qp.getCurrentStep();

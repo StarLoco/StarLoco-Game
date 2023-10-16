@@ -1,0 +1,40 @@
+local npc = Npc(790, 9067)
+
+npc.sales = {
+    {item=10383},
+    {item=10393},
+    {item=10386},
+    {item=10394},
+    {item=10388},
+    {item=10396},
+    {item=7492},
+    {item=7491},
+    {item=7463},
+    {item=7464},
+    {item=7465},
+    {item=7466},
+    {item=7467},
+    {item=1341},
+    {item=1333},
+    {item=1347},
+    {item=1335},
+    {item=1342},
+    {item=1348},
+    {item=7494},
+    {item=7493},
+    {item=7495},
+    {item=7468},
+    {item=1340},
+    {item=1345},
+    {item=1337},
+    {item=1343},
+    {item=1338},
+    {item=1346},
+    {item=10390},
+    {item=10401},
+    {item=10391},
+    {item=10407},
+    {item=10392}
+}
+
+RegisterNPCDef(npc)
