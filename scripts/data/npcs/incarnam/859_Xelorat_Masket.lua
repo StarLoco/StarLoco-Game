@@ -1,14 +1,18 @@
 local npc = Npc(859, 9079)
 
 local questID = 182
+local fedexLocalsQuestID = 180
 
 npc.gender = 1
 npc.accessories = {0, 2474, 6916, 0, 0}
+
+npc.quests = {fedexLocalsQuestID}
 
 ---@param p Player
 ---@param answer number
 function npc:onTalk(p, answer)
     local quest = QUESTS[questID]
+    local fedexLocalsQuest = QUESTS[fedexLocalsQuestID]
 
     if quest:ongoingFor(p) then 
         if p:consumeItem(8529, 1) then
@@ -17,6 +21,14 @@ function npc:onTalk(p, answer)
             return
         end
         error("hack attempt")
+        return
+    end
+
+    if fedexLocalsQuest:ongoingFor(p) then
+        if fedexLocalsQuest:canCompleteObjective(p, 753) then
+            p:ask(3682)
+            fedexLocalsQuest:completeObjective(p, 753)
+        end
         return
     end
 
