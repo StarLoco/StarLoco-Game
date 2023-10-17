@@ -76,6 +76,21 @@ function Quest:hasCompletedObjective(p, id)
 end
 
 ---@param p Player
+---@param ids number[]
+---@return boolean
+function Quest:hasCompletedObjectives(p, ids)
+    local completed = p:_completedObjectives(self.id)
+
+    for _, o in pairs(ids) do
+        if not table.contains(completed, o) then
+            return false
+        end
+    end
+
+    return true
+end
+
+---@param p Player
 ---@return boolean
 function Quest:finishedBy(p)
     return p:_questFinished(self.id)

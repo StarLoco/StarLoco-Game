@@ -1,4 +1,5 @@
 local npc = Npc(850, 31)
+
 --TODO: Lié à la quête 176
 npc.gender = 1
 npc.colors = {173494, 15924991, 3482728}

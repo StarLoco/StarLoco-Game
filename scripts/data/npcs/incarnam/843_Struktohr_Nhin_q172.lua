@@ -1,4 +1,5 @@
 local npc = Npc(843, 30)
+
 --TODO: Lié à la quête 172
 npc.colors = {16760576, 8205625, 16777139}
 npc.accessories = {6509, 8247, 0, 0, 0}
