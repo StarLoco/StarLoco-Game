@@ -8,12 +8,9 @@ function npc:onTalk(p, answer)
     elseif answer == 2528 then
         if p:spellLevel(413) < 1 then
             p:setSpellLevel(413, 1)
-            p:teleport(8244, 138)
-            p:endDialog()
-        else
-            p:teleport(8244, 138)
-            p:endDialog()
         end
+        p:teleport(8244, 138)
+        p:endDialog()
     end
 end
 
