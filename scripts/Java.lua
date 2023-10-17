@@ -84,6 +84,25 @@ function Player:breed() end
 ---@return number
 function Player:gender() end
 
+---@return number
+function Player:life() end
+
+---@return number
+function Player:maxLife() end
+
+---@param life number
+function Player:modLife(life) end
+
+---@param percent number
+function Player:setLifePercent(percent) end
+
+---@return number
+function Player:energy() end
+
+--- Set player's energy, setting to 0 transforms it to tomb
+---@param energy number
+function Player:modEnergy(energy) end
+
 ---@return boolean
 function Player:isGhost() end
 

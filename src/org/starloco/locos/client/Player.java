@@ -741,6 +741,9 @@ public class Player implements Scripted<SPlayer>, Actor {
         this.curPdv = pdv;
         if (this.curPdv >= this.maxPdv)
             this.curPdv = this.maxPdv;
+        if (this.curPdv < 0)
+            this.curPdv = 0;
+
         if (party != null)
             SocketManager.GAME_SEND_PM_MOD_PACKET_TO_GROUP(party, this);
     }

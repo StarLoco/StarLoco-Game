@@ -155,6 +155,46 @@ public class SPlayer extends DefaultUserdata<Player> {
         return true;
     }
 
+
+    @SuppressWarnings("unused")
+    private static int life(Player p) {
+        return p.getCurPdv();
+    }
+
+    @SuppressWarnings("unused")
+    private static int maxLife(Player p) {
+        return p.getMaxPdv();
+    }
+
+    @SuppressWarnings("unused")
+    private static void modLife(Player p, ArgumentIterator args) {
+        int life = args.nextInt();
+
+        p.setPdv(p.getCurPdv() + life);
+    }
+
+    @SuppressWarnings("unused")
+    private static void setLifePercent(Player p, ArgumentIterator args) {
+        int percent = args.nextInt();
+
+        p.setPdv((int) ((p.getMaxPdv() * 100L) / percent));
+    }
+
+    @SuppressWarnings("unused")
+    private static int energy(Player p) {
+        return p.getEnergy();
+    }
+
+    @SuppressWarnings("unused")
+    private static void modEnergy(Player p, ArgumentIterator args) {
+        int energy = args.nextInt();
+
+        int newEnergy = Math.min(10000, Math.max(0, p.getEnergy() + energy));
+        p.setEnergy(newEnergy);
+
+        if(newEnergy == 0) p.setGhost();
+    }
+
     @SuppressWarnings("unused")
     private static boolean isGhost(Player p) {
         return p.isGhost();

@@ -18,6 +18,10 @@ SwitchObjectType = 14
 ClassStatueObjectType = 15
 Unk1ObjectType = 16  -- Only one (id=131) which allow to use/leave/[ref Maison]/[ref CoffreMaison] whatever that is
 
+
+-- Server specific, not actually used in client
+NoMenuObjectType = 100
+
 local GfxToObjectId = {
     [7500] = 1,
     [7003] = 2,
@@ -210,6 +214,11 @@ local GfxToObjectId = {
     [1845] = 128,
     [2319] = 128,
     [6631] = 130,
-    [6632] = 131
+    [6632] = 131,
+
+    -- NoMenu objects
+    [542] = 10000, -- Phoenix
+    [1531] = 10001, -- Sign
+
 }
 RegisterObjectForSprites(GfxToObjectId)

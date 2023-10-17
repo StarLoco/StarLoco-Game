@@ -49,7 +49,7 @@ Objects.Alembic = RegisterIODef(62, JobToolsObjectType, {96})
 Objects.Wheat = RegisterIODef(63, ResourceObjectType, {}, true)
 Objects.Spelt = RegisterIODef(64, ResourceObjectType, {}, true)
 Objects.Sorghum = RegisterIODef(65, ResourceObjectType, {}, true)
-Objects.WildMint = RegisterIODef(66, ResourceObjectType, {72})
+Objects.WildMint = RegisterIODef(66, ResourceObjectType, {72}, true)
 Objects.FiveLeafClover = RegisterIODef(67, ResourceObjectType, {71}, true)
 Objects.FreyesqueOrchid = RegisterIODef(68, ResourceObjectType, {73}, true)
 Objects.MortarAndPestle = RegisterIODef(69, JobToolsObjectType, {})
@@ -107,3 +107,9 @@ Objects.ClassStatue = RegisterIODef(128, ClassStatueObjectType, {183})
 Objects.Unk129 = RegisterIODef(129, Unk1ObjectType, {186,185,184,187})
 Objects.CardRecycler = RegisterIODef(130, JobToolsObjectType, {188})
 Objects.MagicTable = RegisterIODef(131, JobToolsObjectType, {189})
+
+
+-- NoMenu Objects
+-- Objects you usually just run to
+Objects.Phoenix = RegisterIODef(10000, NoMenuObjectType, {0})
+Objects.Sign = RegisterIODef(10001, NoMenuObjectType, {0})

@@ -101,8 +101,6 @@ end
 function onObjectUseResurrect()
     ---@param p Player
     return function(p, skillId)
-        print(p:name(), skillId)
-        if skillId ~= 0 then return false end
         return p:resurrect()
     end
 end

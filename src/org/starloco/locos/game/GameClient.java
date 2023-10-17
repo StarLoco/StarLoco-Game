@@ -12,18 +12,17 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.starloco.locos.common.CryptManager;
 import org.starloco.locos.entity.exchange.NpcExchange;
+import org.starloco.locos.entity.map.*;
 import org.starloco.locos.game.action.type.BigStoreActionData;
 import org.starloco.locos.game.action.type.NpcDialogActionData;
 import org.starloco.locos.game.action.type.ScenarioActionData;
 import org.starloco.locos.hdv.BigStore;
+import org.starloco.locos.script.DataScriptVM;
 import org.starloco.locos.util.Pair;
 import org.apache.mina.core.session.IoSession;
 import org.starloco.locos.area.Area;
 import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.area.map.GameMap;
-import org.starloco.locos.entity.map.House;
-import org.starloco.locos.entity.map.MountPark;
-import org.starloco.locos.entity.map.Trunk;
 import org.starloco.locos.auction.AuctionManager;
 import org.starloco.locos.client.Account;
 import org.starloco.locos.client.Player;
@@ -4044,6 +4043,16 @@ public class GameClient {
             if (result == 0) {
                 SocketManager.GAME_SEND_GA_PACKET(this, "", "0", "", "");
                 removeAction(GA);
+
+                // Maybe the player is right next to an Object and want to use it
+                boolean allowSkill0 = Optional.ofNullable(this.player.getCurMap().data.interactiveObjects.get(targetCell.getId()))
+                        .flatMap(World.world::getObjectBySprite)
+                        .map(io -> io.allowSkill(0))
+                        .orElse(false);
+
+                if(allowSkill0) {
+                    DataScriptVM.getInstance().handlers.onSkillUse(player, targetCell.getId(), 0);
+                }
                 return;
             }
             if (result != -1000 && result < 0)

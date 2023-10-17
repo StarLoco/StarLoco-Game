@@ -7,7 +7,8 @@ Handlers.players.onSkillUse = function(p, cellID, skillID)
         JLogF("unknown skill {}", skillID)
         return
     end
-    return SKILLS[skillID](p, cellID)
+    SKILLS[skillID](p, cellID)
+    return
 end
 
 ---@param p Player

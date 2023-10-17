@@ -186,7 +186,7 @@ public class GameMap {
 
     public void refreshInteractiveObjects() {
         Map<Integer, InteractiveObject> objects = new HashMap<>();
-        this.data.interactiveObjects().forEach((key, gfxId) -> objects.put(key, new InteractiveObject(gfxId, this, key)));
+        this.data.interactiveObjects().forEach((key, gfxId) -> objects.put(key, new InteractiveObject(gfxId)));
         this.interactiveObjects = Collections.unmodifiableMap(objects);
     }
 

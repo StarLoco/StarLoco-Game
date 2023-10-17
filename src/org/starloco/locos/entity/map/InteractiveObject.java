@@ -5,18 +5,11 @@ import org.starloco.locos.job.JobConstant;
 
 public class InteractiveObject {
     private final int id;
-    private final int cellId;
 
     private int state;
-    private final GameMap map;
-    // private final GameCase cell;
-    private boolean interactive = true;
-    private long lastTime = 0;
 
-    public InteractiveObject(int id, final GameMap iMap, int cellId) {
+    public InteractiveObject(int id) {
         this.id = id;
-        this.map = iMap;
-        this.cellId = cellId;
         this.state = JobConstant.IOBJECT_STATE_FULL;
     }
 
@@ -305,28 +298,5 @@ public class InteractiveObject {
     public void setState(int state) {
         this.state = state;
     }
-
-    public boolean isInteractive() {
-        return this.interactive;
-    }
-
-    public void setInteractive(boolean interactive) {
-        this.interactive = interactive;
-    }
-
-//    public int getUseDuration() {
-//        int duration = 1500;
-//        if (this.getTemplate() != null)
-//            duration = this.getTemplate().getDuration();
-//        return duration;
-//    }
-//
-//    public int getUnknowValue() {
-//        int unk = 4;
-//        if (this.getTemplate() != null)
-//            unk = this.getTemplate().getUnk();
-//        return unk;
-//    }
-
 
 }

@@ -2,7 +2,7 @@
 
 -- No skill object use
 SKILLS[0] = function(p, cellID)
-    print("SKILL 0 USED")
+    -- print("SKILL 0 USED", p:name(), cellID)
     -- Use map object without skill
     local mapDef = p:map():def()
     local handler = mapDef.onObjectUse[cellID]
@@ -14,7 +14,8 @@ SKILLS[0] = function(p, cellID)
     if type(handler) ~= "function" then
         error("Non-skill map object use handler must be functions")
     end
-    return handler(p)
+
+    return handler(p, 0)
 end
 
 -- Save Zaap
@@ -22,6 +23,9 @@ SKILLS[44] = function(p, _)
     local md = p:map():def()
     p:savePosition(md.id, md.zaapCell)
 end
+
+-- Heal
+SKILLS[62] = function (p, _)  p:setLifePercent(100) end
 
 -- Draw water from well
 registerGatherSkill(102,
@@ -35,11 +39,10 @@ registerGatherSkill(102,
 )
 
 -- Use Zaap
-SKILLS[114] = function(p, _) p:openZaap() return true end
+SKILLS[114] = function(p, _)        p:openZaap() end
 
 -- Use garbage bin
-SKILLS[153] = function(p, cellID)
-    p:openTrunk(cellID) return true end
+SKILLS[153] = function(p, cellID)   p:openTrunk(cellID) end
 
 -- Use Switch
 SKILLS[179] = function(p, cellId)
