@@ -4086,6 +4086,7 @@ public class GameClient {
 
                 SocketManager.GAME_SEND_GA_PACKET(this, "", "0", "", "");
                 this.player.refreshCraftSecure(true);
+
                 removeAction(GA);
                 return;
             } else {
@@ -4589,7 +4590,7 @@ public class GameClient {
                         //On prend la case cibl?e
 
                         GameCase nextCell = this.player.getCurMap().getCase(World.world.getCryptManager().cellCode_To_ID(path.substring(path.length() - 2)));
-                        GameCase targetCell = this.player.getCurMap().getCase(World.world.getCryptManager().cellCode_To_ID(GA.packet.substring(GA.packet.length() - 2)));
+                        int targetCellID = World.world.getCryptManager().cellCode_To_ID(GA.packet.substring(GA.packet.length() - 2));
 
                         //On d?finie la case et on ajoute le personnage sur la case
                         this.player.setCurCell(nextCell);
@@ -4604,6 +4605,17 @@ public class GameClient {
                             GA.tp = false;
                             this.player.teleport((short) 9864, 265);
                             return;
+                        }
+
+                        // TODO: Maybe check that the player is still where we think he is
+                        // Maybe the player is right next to an Object and want to use it
+                        boolean allowSkill0 = Optional.ofNullable(player.getCurMap().data.interactiveObjects.get(targetCellID))
+                                .flatMap(World.world::getObjectBySprite)
+                                .map(io -> io.allowSkill(0))
+                                .orElse(false);
+
+                        if(allowSkill0) {
+                            DataScriptVM.getInstance().handlers.onSkillUse(player, targetCellID, 0);
                         }
                     } else {
                         this.player.getFight().onGK(this.player);

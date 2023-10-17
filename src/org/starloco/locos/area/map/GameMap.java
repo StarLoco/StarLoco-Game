@@ -30,6 +30,7 @@ import org.starloco.locos.game.scheduler.Updatable;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.*;
 import org.starloco.locos.object.GameObject;
+import org.starloco.locos.script.DataScriptVM;
 import org.starloco.locos.script.proxy.SMap;
 import org.starloco.locos.util.Pair;
 import org.starloco.locos.util.TimerWaiter;

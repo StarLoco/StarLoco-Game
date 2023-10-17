@@ -32,5 +32,3 @@ map.onObjectUse = {
 }
 
 map.zaapCell = 311
-
-
