@@ -35,9 +35,7 @@ public class GameHandler implements IoHandler {
 
             String[] s = packet.split("\n");
 
-            int i = 0;
-            do {
-                String p = s[i];
+            for(String p : s){
                 if(p.charAt(0) == 'ù') {
                     if(p.split("ù").length < 3) continue;
                     p = p.split("ù")[2];
@@ -47,8 +45,7 @@ public class GameHandler implements IoHandler {
                 if (Config.debug) {
                     World.world.logger.trace((client.getPlayer() == null ? "" : client.getPlayer().getName()) + " <-- " + p);
                 }
-                i++;
-            } while (i == s.length - 1);
+            }
         }
     }
 
