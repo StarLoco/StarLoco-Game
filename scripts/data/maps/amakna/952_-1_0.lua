@@ -13,14 +13,13 @@ local map = MapDef(
 map.positions = "cMcOc4dweqfkfMfZ|dbd6fmfrgIgPhihl"
 map.mobGroupsCount = 3
 map.mobGroupsMaxSize = 8
-
-
-local startId = 310
-local cellList = {117, 103, 89, 75, 132, 118, 104, 90, 147, 133, 119, 105, 162, 148, 134, 120, 177, 163, 149, 135, 192, 178, 164, 150, 207, 193, 179, 165, 222, 208, 194, 180, 237, 223, 209, 195, 252, 238, 224, 210}
-
-for i=1, 40 do
-	map.npcs[startId+i] = {cellList[i], 1}
-end
+map.allowedMobGrades = {
+	{489, 1},
+	{490, 1},
+	{491, 1},
+	{492, 1},
+	{493, 1}
+}
 
 -- '0;0;0;0;0;0;0' forbiddens -> capabilities ? Or script ?
 
