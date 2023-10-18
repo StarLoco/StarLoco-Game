@@ -24,7 +24,7 @@ map.onMovementEnd = {
 }
 
 map.npcs = {
-    -- [] = {183, 1}, -- Papycha
+    [1285] = {183, 1}, -- Papycha
     [809] = {338, 1},
 }
 
