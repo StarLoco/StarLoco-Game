@@ -14,11 +14,11 @@ map.positions = "c2dFdKdUdVdWdXdY|bDbHbRbSbVbWd9ea"
 map.mobGroupsCount = 3
 map.mobGroupsMaxSize = 8
 map.allowedMobGrades = {
-	{826, 1},
-	{826, 2},
-	{826, 3},
-	{826, 4},
-	{826, 5},
+	{489, 1},
+	{490, 1},
+	{491, 1},
+	{492, 1},
+	{493, 1}
 }
 -- '0;0;0;0;0;0;0' forbiddens -> capabilities ? Or script ?
 

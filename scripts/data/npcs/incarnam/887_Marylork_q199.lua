@@ -3,6 +3,8 @@ local questID = 199
 
 npc.colors = {8355711, -1, -1}
 
+npc.quests = {questID}
+
 ---@param p Player
 ---@param answer number
 function npc:onTalk(p, answer)
