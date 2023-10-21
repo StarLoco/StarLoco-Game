@@ -20,6 +20,7 @@ import org.classdump.luna.runtime.ExecutionContext;
 import org.classdump.luna.runtime.LuaFunction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.starloco.locos.client.Player;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.game.world.World.Couple;
 import org.starloco.locos.util.Pair;
@@ -28,8 +29,10 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.file.*;
 import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 public class ScriptVM {
@@ -126,57 +129,60 @@ public class ScriptVM {
         }
     }
 
-    public Object[] run(String code) {
-        synchronized (_vmLock) {
-            try {
-                LuaFunction<?, ?, ?, ?, ?> fn = loader.loadTextChunk(new Variable(env), "command", code); // May need to UTF-8 decode
-
-                return this.executor.call(this.state, fn);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+    private static AbstractLibFunction printOverwrite(Consumer<String> cbPrint) {
+        return new AbstractLibFunction() {
+            @Override
+            protected String name() {
+                return "print";
             }
-        }
+
+            @Override
+            protected void invoke(ExecutionContext context, ArgumentIterator args) {
+                StringJoiner sj = new StringJoiner(" ");
+
+                args.forEachRemaining(o -> {
+                    sj.add(o.toString());
+                });
+
+                cbPrint.accept(sj.toString());
+
+                context.getReturnBuffer().setTo();
+            }
+        };
     }
 
-    public Object[] run(String code, Consumer<String> cbPrint) {
+    public Object[] runCustomized(String code, Map<String, Object> customizer) {
         synchronized (_vmLock) {
-            Object origPrint = env.rawget("print");
+            Map<String, Object> original = new HashMap<>();
 
-            AbstractLibFunction customPrint = new AbstractLibFunction() {
+            customizer.forEach((name, val) -> {
+                // Back up existing values
+                original.put(name, env.rawget(name));
 
-                @Override
-                protected String name() {
-                    return "print";
-                }
-
-                @Override
-                protected void invoke(ExecutionContext context, ArgumentIterator args) {
-                    StringJoiner sj = new StringJoiner(" ");
-
-                    args.forEachRemaining(o -> {
-                        sj.add(o.toString());
-                    });
-
-                    cbPrint.accept(sj.toString());
-
-                    context.getReturnBuffer().setTo();
-                }
-            };
+                // Apply overrides
+                customizer.forEach(env::rawset);
+            });
 
             try {
-                env.rawset("print", customPrint);
-
                 LuaFunction<?, ?, ?, ?, ?> fn = loader.loadTextChunk(new Variable(env), "command", code); // May need to UTF-8 decode
-
-
                 return this.executor.call(this.state, fn);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             } finally {
-                env.rawset("print", origPrint);
+                // Restore original values
+                original.forEach(env::rawset);
             }
         }
     }
+
+    public Object[] runAdminCommand(Player player, String code, Consumer<String> cbPrint) {
+        Map<String, Object> overrides = new HashMap<>();
+        overrides.put("print", printOverwrite(cbPrint));
+        overrides.put("_me", player.scripted());
+
+        return runCustomized(code, overrides);
+    }
+
 
     public static Object recursiveGet(Table t, Object key) {
         if (t == null) return null;

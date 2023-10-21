@@ -3073,7 +3073,7 @@ public class CommandAdmin extends AdminUser {
                     + superArea);
         }  else if (command.equalsIgnoreCase("DLUA")) {
             String code = String.join(" ", Arrays.copyOfRange(infos, 1, infos.length));
-            Object[] ret = DataScriptVM.getInstance().run(code, this::sendMessage);
+            Object[] ret = DataScriptVM.getInstance().runAdminCommand(getPlayer(), code, this::sendMessage);
 
             this.sendMessage(Arrays.stream(ret).map(Object::toString).collect(Collectors.joining(" ")));
         } else {
