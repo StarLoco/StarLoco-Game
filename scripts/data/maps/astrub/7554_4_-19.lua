@@ -17,6 +17,10 @@ map.mobGroupsMaxSize = 4
 
 -- '0;0;0;0;0;0;0' forbiddens -> capabilities ? Or script ?
 
+map.npcs = {
+	[1226] = {386, 1},
+}
+
 map.onMovementEnd = {
 	[307] = moveEndTeleport(7553, 352),
 }
