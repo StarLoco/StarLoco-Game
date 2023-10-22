@@ -8,13 +8,6 @@ local q180 = Quest(180, {qs347})
 
 q180.availableTo = questRequirements(0, 179, nil)
 
--- qs347.objectives = {
---     TalkWithQuestObjective(752, babbleraNpcId),
---     TalkWithQuestObjective(753, xeloratNpcId),
---     TalkWithQuestObjective(754, cripeledNpcId),
---     TalkAgainToObjective(755, npcId)
--- }
-
 qs347.objectives = function(p)
     local objectives = {
         TalkWithQuestObjective(752, babbleraNpcId),
