@@ -2,7 +2,6 @@ local npc = Npc(1271, 9033)
 
 
 npc.sales = {
-    {item=743},
     {item=100},
     {item=101},
     {item=102},
