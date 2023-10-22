@@ -55,5 +55,20 @@ map.onMovementEnd = {
 	[334] = moveEndTeleport(7444, 361),
 	[452] = moveEndTeleport(7461, 32),
 }
+map.onObjectUse = {
+	[270] = onObjectUseOpenDocument(70, "070625112"), -- Quête fou du gland
+	[161] = onObjectUseOpenDocument(65, "0706251123"), -- Quête Lethaline
+	[119] = onObjectUseOpenDocument(96, "0706251201"), -- Quête Marzwel
+	[134] = onObjectUseOpenDocument(61, "0802081743"), -- Quête Padgref
+	[164] = onObjectUseOpenDocument(67, "0706251223"), -- Quête Qil Bil
+	[179] = onObjectUseOpenDocument(68, "0706251126"), -- Quête Brumen
+	[180] = onObjectUseOpenDocument(69, "0706251058"), -- Quête Ogivol
+	[269] = onObjectUseOpenDocument(94, "0706251138"), -- Quête Musha
+	[149] = onObjectUseOpenDocument(63, "0706251124"), -- Quête Frakacia
+	[299] = onObjectUseOpenDocument(93, "0706251135"), -- Quête Rok
+	[300] = onObjectUseOpenDocument(100, "0706251214"), -- Quête Aermyne
+	[329] = onObjectUseOpenDocument(98, "0706251211"), -- Quête Zatoishwan
+	[249] = onObjectUseOpenDocument(71, "0706251229"), -- Quête Avis de recherche
+}
 
 
