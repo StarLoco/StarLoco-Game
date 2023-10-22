@@ -7,11 +7,15 @@ ExtraClipSimpleQuest = 4
 ExtraClipAccountQuest = 6
 ExtraClipRepeatableQuest = 7
 
+---@alias QuestStepRewardFn fun(p:Player)
+
 ---@class Quest
 ---@field id number
 ---@field steps QuestStep[]
 ---@field isRepeatable boolean defaults to false
 ---@field isAccountBound boolean defaults to false
+
+---@type fun(id:number, steps:QuestStep[]):Quest
 Quest = {}
 Quest.__index = Quest
 
@@ -39,11 +43,13 @@ function Quest:step(sId)
 end
 
 ---@param p Player
+---@return boolean
 function Quest:availableTo(p)
     return p:_questAvailable(self.id)
 end
 
 ---@param p Player
+---@return boolean
 function Quest:ongoingFor(p)
     return p:_questOngoing(self.id)
 end
@@ -283,7 +289,9 @@ end
 ---@field id number
 ---@field questionId number defaults to nil
 ---@field objectives QuestObjective[]|fun(p:Player):QuestObjective[]
----@field rewardFn fun(p:Player)
+---@field rewardFn QuestStepRewardFn
+
+---@type fun(id:number, questionId:number):Quest
 QuestStep = {}
 QuestStep.__index = QuestStep
 
@@ -310,6 +318,7 @@ end
 
 ---@param exp number
 ---@param kamas number
+---@return QuestStepRewardFn
 function QuestBasicReward(exp, kamas)
     if exp < 0 then
         error("quest reward cannot remove exp")

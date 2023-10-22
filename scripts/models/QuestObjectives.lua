@@ -8,6 +8,8 @@ QuestObjective.__index = QuestObjective
 
 ---@class GenericQuestObjective : QuestObjective
 ---@field params table
+
+---@type fun(id:number, params:table):GenericQuestObjective
 GenericQuestObjective = {}
 GenericQuestObjective.__index = GenericQuestObjective
 
@@ -24,6 +26,8 @@ setmetatable(GenericQuestObjective, {
 
 ---@class TalkWithQuestObjective:QuestObjective
 ---@field npcId number
+
+---@type fun(id:number, npcId:number):TalkWithQuestObjective
 TalkWithQuestObjective = {}
 TalkWithQuestObjective.__index = TalkWithQuestObjective
 
@@ -42,6 +46,8 @@ setmetatable(TalkWithQuestObjective, {
 ---@field npcId number
 ---@field itemId number
 ---@field quantity number
+
+---@type fun(id:number, npcId:number, itemId:number, quantity:number):ShowItemObjective
 ShowItemObjective = {}
 ShowItemObjective.__index = ShowItemObjective
 
@@ -62,6 +68,8 @@ setmetatable(ShowItemObjective, {
 ---@field npcId number
 ---@field itemId number
 ---@field quantity number
+
+---@type fun(id:number, npcId:number, itemId:number, quantity:number):BringItemObjective
 BringItemObjective = {}
 BringItemObjective.__index = BringItemObjective
 
@@ -99,6 +107,8 @@ end
 
 ---@class DiscoverMapObjective:QuestObjective
 ---@field mapId number
+
+---@type fun(id:number, mapId:number):DiscoverMapObjective
 DiscoverMapObjective = {}
 DiscoverMapObjective.__index = DiscoverMapObjective
 
@@ -121,6 +131,8 @@ end
 
 ---@class DiscoverAreaObjective:QuestObjective
 ---@field areaId number
+
+---@type fun(id:number, areaId:number):DiscoverAreaObjective
 DiscoverAreaObjective = {}
 DiscoverAreaObjective.__index = DiscoverAreaObjective
 
@@ -144,6 +156,8 @@ end
 ---@class KillMonsterSingleFightObjective:QuestObjective
 ---@field monsterId number
 ---@field amount number
+
+---@type fun(id:number, monsterId:number, amount:number):KillMonsterSingleFightObjective
 KillMonsterSingleFightObjective = {}
 KillMonsterSingleFightObjective.__index = KillMonsterSingleFightObjective
 
@@ -167,6 +181,8 @@ end
 
 ---@class KillMonsterObjective:QuestObjective
 ---@field monsterId number
+
+---@type fun(id:number, monsterId:number):KillMonsterObjective
 KillMonsterObjective = {}
 KillMonsterObjective.__index = KillMonsterObjective
 
@@ -189,6 +205,8 @@ end
 
 ---@class UseObjectObjective:QuestObjective
 ---@field objectId number
+
+---@type fun(id:number, objectId:number):UseObjectObjective
 UseObjectObjective = {}
 UseObjectObjective.__index = UseObjectObjective
 
@@ -205,6 +223,8 @@ setmetatable(UseObjectObjective, {
 
 ---@class TalkAgainToObjective:QuestObjective
 ---@field npcId number
+
+---@type fun(id:number, npcId:number):TalkAgainToObjective
 TalkAgainToObjective = {}
 TalkAgainToObjective.__index = TalkAgainToObjective
 
@@ -222,6 +242,8 @@ setmetatable(TalkAgainToObjective, {
 ---@class EscortObjective:QuestObjective
 ---@field npcId number
 ---@field mapId number
+
+---@type fun(id:number, npcId:number, mapId:number):EscortObjective
 EscortObjective = {}
 EscortObjective.__index = EscortObjective
 
@@ -239,6 +261,8 @@ setmetatable(EscortObjective, {
 
 ---@class WinDuelObjective:QuestObjective
 -- What is the param for that objective ?
+
+---@type fun(id:number):WinDuelObjective
 WinDuelObjective = {}
 WinDuelObjective.__index = WinDuelObjective
 
@@ -255,6 +279,8 @@ setmetatable(WinDuelObjective, {
 ---@field npcId number
 ---@field monsterId number
 ---@field amount number
+
+---@type fun(npcId:number, monsterId:number, amount:number):BringSoulsObjective
 BringSoulsObjective = {}
 BringSoulsObjective.__index = BringSoulsObjective
 
@@ -273,6 +299,9 @@ setmetatable(BringSoulsObjective, {
 
 ---@class EliminateObjective:QuestObjective
 ---@field unk any
+-- Used for PvP stalk quest ?
+
+---@type fun(id:number, unk:any):EliminateObjective
 EliminateObjective = {}
 EliminateObjective.__index = EliminateObjective
 
