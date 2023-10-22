@@ -31,7 +31,6 @@ function npc:onTalk(p, answer)
             return
         end
 
-        -- Ongoing quest dialog
         if quest:currentStepFor(p).id == 346 then
             p:ask(3685)
             return

@@ -23,3 +23,10 @@ map.onMovementEnd = {
 }
 --TODO: LES NPCS NE DOIVENT APPARAITRE QUA PARTIR DU MOMENT OU ON A COMMENCE OU FINI LA QUETE 45 & ADD MOB (1 RAT DEGOUTANT)
 
+local mobGroup =  {
+	{465, {1} }
+}
+
+map.staticGroups = {
+	{209, mobGroup}
+}
