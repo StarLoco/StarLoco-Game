@@ -33,7 +33,8 @@ public class ExchangeAction<T> {
             FORGETTING_SPELL = 22,
             USING_OBJECT = 23,
             LOCK_TRUNK = 24,
-            LOCK_HOUSE = 25;
+            LOCK_HOUSE = 25,
+            READING_DOCUMENT = 26;
 
     private byte type;
     private T value;

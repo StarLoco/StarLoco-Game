@@ -34,6 +34,7 @@ import org.starloco.locos.game.GameClient;
 import org.starloco.locos.game.GameServer;
 import org.starloco.locos.game.action.ExchangeAction;
 import org.starloco.locos.game.action.GameAction;
+import org.starloco.locos.game.action.type.DocumentActionData;
 import org.starloco.locos.game.action.type.EmptyActionData;
 import org.starloco.locos.game.action.type.NpcDialogActionData;
 import org.starloco.locos.game.action.type.ScenarioActionData;
@@ -1410,7 +1411,7 @@ public class Player implements Scripted<SPlayer>, Actor {
     }
 
     public void openDocument(int id, String date) {
-        exchangeAction =  new ExchangeAction<>(ExchangeAction.USING_OBJECT, EmptyActionData.INSTANCE);
+        exchangeAction =  new ExchangeAction<>(ExchangeAction.READING_DOCUMENT, new DocumentActionData(id));
         SocketManager.GAME_SEND_DOCUMENT_CREATE_PACKET(getGameClient(), id, date);
     }
 

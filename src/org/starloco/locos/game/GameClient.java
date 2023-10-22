@@ -14,6 +14,7 @@ import org.starloco.locos.common.CryptManager;
 import org.starloco.locos.entity.exchange.NpcExchange;
 import org.starloco.locos.entity.map.*;
 import org.starloco.locos.game.action.type.BigStoreActionData;
+import org.starloco.locos.game.action.type.DocumentActionData;
 import org.starloco.locos.game.action.type.NpcDialogActionData;
 import org.starloco.locos.game.action.type.ScenarioActionData;
 import org.starloco.locos.hdv.BigStore;
@@ -1374,7 +1375,7 @@ public class GameClient {
         switch (packet.charAt(1)) {
             case 'V':
                 if(player.getExchangeAction() != null
-                && player.getExchangeAction().getType() != ExchangeAction.USING_OBJECT) {
+                && player.getExchangeAction().getType() != ExchangeAction.READING_DOCUMENT) {
                     player.setExchangeAction(null);
                 }
 
@@ -3886,9 +3887,15 @@ public class GameClient {
 
                 break;
 
-//            case 34://Get quest on sign.
-//                gameCheckSign(packet);
+            case 34://Get quest on sign.
+                ExchangeAction<?> action = player.getExchangeAction();
+                if(action == null || action.getType() != ExchangeAction.READING_DOCUMENT) {
+                    break;
+                }
 
+                int qID = Integer.parseInt(packet.substring(5));
+                DocumentActionData doc = (DocumentActionData) action.getValue();
+                doc.onQuestHRef(player, qID);
             case 300://Sort
                 gameTryCastSpell(packet);
                 break;

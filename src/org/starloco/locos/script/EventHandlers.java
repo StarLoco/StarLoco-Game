@@ -53,4 +53,8 @@ public class EventHandlers extends DefaultTable {
                 (boolean) t.rawget("isRepeatable")
         );
     }
+
+    public void onDocQuestHref(Player player, int docID, int questID) {
+        vm.call(getHandler(players, "onDocQuestHref"), player.scripted(), docID, questID);
+    }
 }

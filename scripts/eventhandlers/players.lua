@@ -89,3 +89,7 @@ Handlers.players.onQuestStatusRequest = function(player, questId, stepId)
         isRepeatable = quest.isRepeatable
     }
 end
+
+Handlers.players.onDocQuestHref = function()
+    -- TODO
+end
