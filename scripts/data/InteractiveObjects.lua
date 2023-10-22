@@ -219,6 +219,7 @@ local GfxToObjectId = {
     -- NoMenu objects
     [542] = 10000, -- Phoenix
     [1531] = 10001, -- Sign
+    [1985] = 10002, -- AvisRecherche
 
 }
 RegisterObjectForSprites(GfxToObjectId)
