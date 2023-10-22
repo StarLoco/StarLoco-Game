@@ -113,3 +113,4 @@ Objects.MagicTable = RegisterIODef(131, JobToolsObjectType, {189})
 -- Objects you usually just run to
 Objects.Phoenix = RegisterIODef(10000, NoMenuObjectType, {0})
 Objects.Sign = RegisterIODef(10001, NoMenuObjectType, {0})
+Objects.AvisRecherche = RegisterIODef(10002, NoMenuObjectType, {0})
