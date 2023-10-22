@@ -277,8 +277,9 @@ function Player:spellResetPanel() end
 ---@return boolean true if player's faction has the expected value after the call
 function Player:setFaction(faction, replace) end
 
----@param def MobGroupDef {cellId, {mobID,grade}[]}
-function Player:forceFight(def) end
+---@param cellID number
+---@param def MobGroupDef
+function Player:forceFight(cellID, def) end
 
 ---@param mapId number
 function Player:compassTo(mapId) end

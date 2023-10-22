@@ -377,9 +377,9 @@ local createQuest = function(info)
 
         local grade = gradeForPlayer(p)
         p:endDialog()
-        p:forceFight({-1, {
+        p:forceFight(-1, {
             {info.mob, {grade}}
-        }})
+        })
         return true
     end
 end
