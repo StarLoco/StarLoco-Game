@@ -117,19 +117,14 @@ function Player:addXP(xp, show) end
 ---@param question number
 ---@param answers table<number>
 ---@param param string
----@return void
 function Player:ask(question, answers, param) end
 
----@return void
 function Player:endDialog() end
 
---- Pause dialog
----@return void
 function Player:pauseDialog() end
 
 ---@param map number
 ---@param cell number
----@return void
 function Player:teleport(map, cell) end
 
 ---@return void

@@ -113,4 +113,6 @@ Objects.MagicTable = RegisterIODef(131, JobToolsObjectType, {189})
 -- Objects you usually just run to
 Objects.Phoenix = RegisterIODef(10000, NoMenuObjectType, {0})
 Objects.Sign = RegisterIODef(10001, NoMenuObjectType, {0})
-Objects.AvisRecherche = RegisterIODef(10002, NoMenuObjectType, {0})
+Objects.WantedScrollUp = RegisterIODef(10002, NoMenuObjectType, {0})
+Objects.WantedScrollDown = RegisterIODef(10003, NoMenuObjectType, {0})
+Objects.BigWantedPanel = RegisterIODef(10004, NoMenuObjectType, {0})

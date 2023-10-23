@@ -14,6 +14,7 @@ ExtraClipRepeatableQuest = 7
 ---@field steps QuestStep[]
 ---@field isRepeatable boolean defaults to false
 ---@field isAccountBound boolean defaults to false
+---@field startFromDocHref number[] defaults to empty
 
 ---@type fun(id:number, steps:QuestStep[]):Quest
 Quest = {}
@@ -26,6 +27,7 @@ setmetatable(Quest, {
         self.steps = steps
         self.isRepeatable = false
         self.isAccountBound = false
+        self.startFromDocHref = {}
 
         QUESTS[id] = self
         return self
@@ -69,7 +71,9 @@ end
 function Quest:startFor(p, npcId)
     if not self:availableTo(p) then return false end
     if p:_startQuest(self.id, self.steps[1].id, self.isAccountBound) then
-        p:map():updateNpcExtraForPlayer(npcId, p)
+        if npcId then
+            p:map():updateNpcExtraForPlayer(npcId, p)
+        end
     end
     return true
 end

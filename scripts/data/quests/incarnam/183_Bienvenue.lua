@@ -1,6 +1,6 @@
 local npcId = 868
 
-local qs348 = QuestStep(348, nil)
+local qs348 = QuestStep(348)
 qs348.objectives = {
     TalkWithQuestObjective(756, npcId)
 }

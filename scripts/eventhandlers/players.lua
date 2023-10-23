@@ -90,6 +90,19 @@ Handlers.players.onQuestStatusRequest = function(player, questId, stepId)
     }
 end
 
-Handlers.players.onDocQuestHref = function()
-    -- TODO
+Handlers.players.onDocQuestHref = function(player, docID, questID)
+    local quest = QUESTS[questID]
+    print("1")
+    -- Quest does not exist
+    if not quest then return false end
+    print("2")
+    -- Cannot start this quest from this document
+    if not table.contains(quest.startFromDocHref, docID) then return false end
+
+    print("3")
+    -- Cannot start, quest is not probably not available to this player
+    if not quest:startFor(player) then return false end
+
+    print("4")
+    return true
 end

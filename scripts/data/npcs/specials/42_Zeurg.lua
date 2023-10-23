@@ -20,7 +20,7 @@ npc.barters = {
 function npc:onTalk(p, answer)
     if answer == 0 then p:ask(60, {198, 200})
     elseif answer == 198 then
-        if p:breed() == 2 then p:ask(247, {199})
+        if p:breed() == OsamodasBreed then p:ask(247, {199})
         else  p:ask(248)
         end
     elseif answer == 199 then p:ask(249)

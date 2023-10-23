@@ -7,7 +7,7 @@ local QuestObjective = {}
 QuestObjective.__index = QuestObjective
 
 ---@class GenericQuestObjective : QuestObjective
----@field params table
+---@field params table defaults to empty
 
 ---@type fun(id:number, params:table):GenericQuestObjective
 GenericQuestObjective = {}
@@ -18,7 +18,7 @@ setmetatable(GenericQuestObjective, {
         local self = setmetatable({}, GenericQuestObjective)
         self.id = id
         self.type = GenericObjectiveType
-        self.params = params
+        self.params = params or {}
 
         return self
     end,

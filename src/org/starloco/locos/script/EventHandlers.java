@@ -45,12 +45,12 @@ public class EventHandlers extends DefaultTable {
         Table t = (Table)ret[0];
 
         return new QuestInfo(
-                ScriptVM.intsFromLuaTable((Table)(t.rawget("objectives"))),
-                ScriptVM.rawInteger(t, "previous"),
-                ScriptVM.rawInteger(t, "next"),
-                ScriptVM.rawInteger(t, "question"),
-                (boolean) t.rawget("isAccount"),
-                (boolean) t.rawget("isRepeatable")
+            ScriptVM.intsFromLuaTable((Table)(t.rawget("objectives"))),
+            ScriptVM.rawInteger(t, "previous"),
+            ScriptVM.rawInteger(t, "next"),
+            ScriptVM.rawInteger(t, "question"),
+            (boolean) t.rawget("isAccount"),
+            (boolean) t.rawget("isRepeatable")
         );
     }
 
