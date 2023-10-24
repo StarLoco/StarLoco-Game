@@ -54,7 +54,6 @@ import org.starloco.locos.object.ItemHash;
 import org.starloco.locos.object.ObjectSet;
 import org.starloco.locos.object.ObjectTemplate;
 import org.starloco.locos.other.Action;
-import org.starloco.locos.other.Dopeul;
 import org.starloco.locos.guild.Guild;
 import org.starloco.locos.quest.QuestProgress;
 import org.starloco.locos.quest.QuestInfo;
@@ -1964,18 +1963,6 @@ public class Player implements Scripted<SPlayer>, Actor {
                 if (pets.getType() == 0 || pets.getType() == 1)
                     continue;
                 p.updatePets(this, Integer.parseInt(pets.getGap().split(",")[1]));
-            } else if (object.getTemplate().getId() == 10207) {
-                String date = object.getTxtStat().get(Constant.STATS_DATE);
-                if (date != null) {
-                    if (date.contains("#")) {
-                        date = date.split("#")[3];
-                    }
-                    if (System.currentTimeMillis() - Long.parseLong(date) > 604800000) {
-                        object.getTxtStat().clear();
-                        object.getTxtStat().putAll(Dopeul.generateStatsTrousseau());
-                        SocketManager.GAME_SEND_UPDATE_ITEM(this, object);
-                    }
-                }
             }
         }
 

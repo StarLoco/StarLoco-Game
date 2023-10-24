@@ -98,7 +98,6 @@ public class DatabaseManager {
         this.daos.add(new ChallengeData(this.game));
         this.daos.add(new TrunkData(this.game));
         this.daos.add(new CraftData(this.game));
-        this.daos.add(new DungeonData(this.game));
         this.daos.add(new DropData(this.game));
         this.daos.add(new ExtraMonsterData(this.game));
         this.daos.add(new FullMorphData(this.game));

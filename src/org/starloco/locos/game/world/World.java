@@ -407,9 +407,6 @@ public class World implements Scripted<SWorld> {
         DatabaseManager.get(BigStoreListingData.class).loadFully();
         logger.debug("The objects of hotels were loaded successfully.");
 
-        DatabaseManager.get(DungeonData.class).loadFully();
-        logger.debug("The dungeons were loaded successfully.");
-
         DatabaseManager.get(RuneData.class).loadFully();
         logger.debug("The runes were loaded successfully.");
 

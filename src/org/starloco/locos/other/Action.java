@@ -147,10 +147,6 @@ public class Action {
                 player.verifAndAddZaap(Short.parseShort(args));
                 break;
 
-            case -7://Echange doplon		
-                Dopeul.getReward(player, Integer.parseInt(args));
-                break;
-
             case -6://Dopeuls
                 GameMap mapActuel = player.getCurMap();
                 java.util.Map<Integer, Couple<Integer, Integer>> dopeuls = Action.getDopeul();
@@ -977,12 +973,6 @@ public class Action {
                 }
                 break;
 
-            case 34://Loterie
-                int idLot = Integer.parseInt(args.split(",", 2)[0]);
-                //int mapId1 = Integer.parseInt(args.split(",", 2)[1]);
-                Loterie.startLoterie(player, idLot);
-                break;
-
             case 35: //Reset Carac condition : Map x�lor 741 et l'obre de recons 10563
                 try {
                     if (player.getCurMap().getId() != 741
@@ -1046,10 +1036,6 @@ public class Action {
 //                    e23.printStackTrace();
 //                }
 //                break;
-
-            case 37://Loterie pioute
-                Loterie.startLoteriePioute(player);
-                break;
 
             case 38://Apprendre une �mote
                 player.addStaticEmote(Integer.parseInt(args));
@@ -2640,17 +2626,6 @@ public class Action {
                 }
                 break;
 
-            case 511://Cadeau Bworker
-                int cadeau = Loterie.getCadeauBworker();
-                GameObject newObjAdded121 = World.world.getObjTemplate(cadeau).createNewItem(1, false);
-                if (!player.addObjetSimiler(newObjAdded121, true, -1)) {
-                    World.world.addGameObject(newObjAdded121);
-                    player.addItem(newObjAdded121, true);
-                }
-                SocketManager.GAME_SEND_Im_PACKET(player, "021;" + 1 + "~"
-                        + cadeau);
-                break;
-
             case 512://Rat Blanc : R�compense
                 if (player.getCurMap().getId() == 10213) {
                     player.teleport((short) 6536, 273);
@@ -3099,56 +3074,6 @@ public class Action {
                     return true;
 
                 player.teleport((short) 8977, 448);
-                break;
-            case 976://T�l�portation en Minotoror
-                try {
-                    if (player.getCurMap().getId() != (short) 9557)
-                        return true;
-                    if (!player.hasItemTemplate(8305, 1, false))
-                        return true;
-                    if (!player.hasItemTemplate(8306, 1, false))
-                        return true;
-                    boolean ok = false;
-                    if (player.hasItemTemplate(10207, 1, false)) {
-                        String stats, statsReplace = "";
-                        object = player.getItemTemplate(10207);
-                        stats = object.getTxtStat().get(Constant.STATS_NAME_DJ);
-                        try {
-                            for (String i : stats.split(",")) {
-                                if (Dopeul.parseConditionTrousseau(i.replace(" ", ""), 783, player.getCurMap().getId())) {
-                                    ok = true;
-                                    statsReplace = i;
-                                    break;
-                                }
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                        if (!statsReplace.isEmpty()) {
-                            String newStats = "";
-                            for (String i : stats.split(","))
-                                if (!i.equals(statsReplace))
-                                    newStats += (newStats.isEmpty() ? i : "," + i);
-                            object.getTxtStat().remove(Constant.STATS_NAME_DJ);
-                            object.getTxtStat().put(Constant.STATS_NAME_DJ, newStats);
-                            SocketManager.GAME_SEND_UPDATE_ITEM(player, player.getItemTemplate(10207));
-                        }
-                    }
-                    if (!ok && !player.hasItemTemplate(7924, 1, false))
-                        return true;
-
-                    SocketManager.GAME_SEND_Im_PACKET(player, "022;" + 1 + "~" + 8305);
-                    player.removeItemByTemplateId(8305, 1, false);
-                    SocketManager.GAME_SEND_Im_PACKET(player, "022;" + 1 + "~" + 8306);
-                    player.removeItemByTemplateId(8306, 1, false);
-                    if(!ok) {
-                        SocketManager.GAME_SEND_Im_PACKET(player, "022;" + 1 + "~" + 7924);
-                        player.removeItemByTemplateId(7924, 1, false);
-                    }
-                    player.teleport((short) 9880, 399);
-                } catch (Exception e) {
-                    return true;
-                }
                 break;
 
             case 977://T�l�portation en salle des dalles Toror

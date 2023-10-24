@@ -40,10 +40,14 @@ public class GameHandler implements IoHandler {
                     if(p.split("ù").length < 3) continue;
                     p = p.split("ù")[2];
                 }
-
-                client.parsePacket(p);
-                if (Config.debug) {
-                    World.world.logger.trace((client.getPlayer() == null ? "" : client.getPlayer().getName()) + " <-- " + p);
+                try {
+                    client.parsePacket(p);
+                } catch(Exception e) {
+                    throw new Exception("Cannot process packet: "+p, e);
+                } finally {
+                    if (Config.debug) {
+                        World.world.logger.trace((client.getPlayer() == null ? "" : client.getPlayer().getName()) + " <-- " + p);
+                    }
                 }
             }
         }

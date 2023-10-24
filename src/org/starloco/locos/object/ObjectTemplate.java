@@ -12,7 +12,6 @@ import org.starloco.locos.fight.spells.SpellEffect;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.Constant;
 import org.starloco.locos.object.entity.SoulStone;
-import org.starloco.locos.other.Dopeul;
 
 import java.util.*;
 
@@ -343,9 +342,7 @@ public class ObjectTemplate {
             Map<Integer, String> txtStat = new HashMap<>();
             txtStat.put(Constant.STATS_DATE, System.currentTimeMillis() + "");
             item = new GameObject(-1, getId(), qua, Constant.ITEM_POS_NO_EQUIPED, new Stats(false, null), new ArrayList<>(), new HashMap<>(), txtStat, 0);
-        } else if (this.getId() == 10207) {
-            item = new GameObject(-1, getId(), qua, Constant.ITEM_POS_NO_EQUIPED, new Stats(false, null), new ArrayList<>(), new HashMap<>(), Dopeul.generateStatsTrousseau(), 0);
-        } else if (getType() == Constant.ITEM_TYPE_FAMILIER) {
+        }  else if (getType() == Constant.ITEM_TYPE_FAMILIER) {
             String jet = World.world.getPets(this.getId()).getJet();
             Stats stats =  useMax ? generateNewStatsFromTemplate(jet, true) : new Stats(false, null);
 
@@ -403,8 +400,6 @@ public class ObjectTemplate {
             Map<Integer, String> txtStat = new HashMap<>();
             txtStat.put(Constant.STATS_DATE, System.currentTimeMillis() + "");
             item = new GameObject(id, getId(), qua, Constant.ITEM_POS_NO_EQUIPED, new Stats(false, null), new ArrayList<>(), new HashMap<>(), txtStat, 0);
-        } else if (this.getId() == 10207) {
-            item = new GameObject(id, getId(), qua, Constant.ITEM_POS_NO_EQUIPED, new Stats(false, null), new ArrayList<>(), new HashMap<>(), Dopeul.generateStatsTrousseau(), 0);
         } else if (getType() == Constant.ITEM_TYPE_FAMILIER) {
             item = new GameObject(id, getId(), 1, Constant.ITEM_POS_NO_EQUIPED, (useMax ? generateNewStatsFromTemplate(World.world.getPets(this.getId()).getJet(), false) : new Stats(false, null)), new ArrayList<>(), new HashMap<>(), World.world.getPets(getId()).generateNewtxtStatsForPets(), 0);
             //Ajouter du Pets_data SQL et World
