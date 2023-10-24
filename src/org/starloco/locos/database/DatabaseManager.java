@@ -5,7 +5,6 @@ import ch.qos.logback.classic.Logger;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.slf4j.LoggerFactory;
-import org.starloco.locos.database.data.BaseData;
 import org.starloco.locos.database.data.DAO;
 import org.starloco.locos.database.data.game.*;
 import org.starloco.locos.database.data.login.*;
@@ -60,7 +59,6 @@ public class DatabaseManager {
      *  Initialiazation of all entities table
      */
     private void initialize() {
-        this.daos.add(new BaseData(null));
 
         //region login data
         this.daos.add(new AccountData(this.login));
