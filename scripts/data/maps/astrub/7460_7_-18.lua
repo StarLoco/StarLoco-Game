@@ -57,10 +57,10 @@ map.onMovementEnd = {
 }
 
 map.onObjectUse = {
-	[270] = onObjectUseOpenDocument(70, "0706251122"), -- Sign Fouduglen
+	[270] = onObjectUseOpenDocument(70, "0706251122"), -- Sign Akornadikt
 	[161] = onObjectUseOpenDocument(65, "0706251123"), -- Sign Lethaline
 	[119] = onObjectUseOpenDocument(96, "0706251201"), -- Sign Marzwel
-	[120] = onObjectUseOpenDocument(61, "0802081743"), -- Sign Padgref
+	[120] = onObjectUseOpenDocument(61, "0802081743"), -- Sign Nomarrow
 	[150] = onObjectUseOpenDocument(67, "0706251223"), -- Sign Qil Bil
 	[179] = onObjectUseOpenDocument(68, "0706251126"), -- Sign Brumen
 	[180] = onObjectUseOpenDocument(69, "0706251058"), -- Sign Ogivol

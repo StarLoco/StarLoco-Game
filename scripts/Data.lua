@@ -33,8 +33,9 @@ loadPack("data/maps")
 loadPack("data/quests")
 loadPack("data/dungeons") -- Always load after maps
 
--- Load Dopples Quests/NPCs
+-- Load other gameplay features
 requireReload("data/Dopples")
+requireReload("data/Wanted")
 
 
 -- Load event handlers
