@@ -34,10 +34,7 @@ import org.starloco.locos.game.GameClient;
 import org.starloco.locos.game.GameServer;
 import org.starloco.locos.game.action.ExchangeAction;
 import org.starloco.locos.game.action.GameAction;
-import org.starloco.locos.game.action.type.DocumentActionData;
-import org.starloco.locos.game.action.type.EmptyActionData;
-import org.starloco.locos.game.action.type.NpcDialogActionData;
-import org.starloco.locos.game.action.type.ScenarioActionData;
+import org.starloco.locos.game.action.type.*;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.guild.GuildMember;
 import org.starloco.locos.job.Job;
@@ -3837,7 +3834,7 @@ public class Player implements Scripted<SPlayer>, Actor {
 
     public void useCraftSkill(int skillId, int ingredientsCount) {
         setAway(true);
-        setExchangeAction(new ExchangeAction<>(ExchangeAction.CRAFTING, skillId));
+        setExchangeAction(new ExchangeAction<>(ExchangeAction.CRAFTING, new CraftingActionData(this, skillId, ingredientsCount)));
 
         SocketManager.GAME_SEND_ECK_PACKET(this, 3, ingredientsCount + ";" + skillId);
     }

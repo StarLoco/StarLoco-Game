@@ -5,6 +5,7 @@ import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import io.jsonwebtoken.Jwts;
@@ -13,10 +14,7 @@ import io.jsonwebtoken.security.Keys;
 import org.starloco.locos.common.CryptManager;
 import org.starloco.locos.entity.exchange.NpcExchange;
 import org.starloco.locos.entity.map.*;
-import org.starloco.locos.game.action.type.BigStoreActionData;
-import org.starloco.locos.game.action.type.DocumentActionData;
-import org.starloco.locos.game.action.type.NpcDialogActionData;
-import org.starloco.locos.game.action.type.ScenarioActionData;
+import org.starloco.locos.game.action.type.*;
 import org.starloco.locos.hdv.BigStore;
 import org.starloco.locos.script.DataScriptVM;
 import org.starloco.locos.util.Pair;
@@ -1403,7 +1401,7 @@ public class GameClient {
                 bigStore(packet);
                 break;
             case 'K'://Ok
-                ready();
+                exchangeReady();
                 break;
             case 'L'://jobAction : Refaire le craft pr?cedent
                 replayCraft();
@@ -1697,16 +1695,15 @@ public class GameClient {
         }
     }
 
-    private void ready() {
+    private void exchangeReady() {
         if(this.player.getExchangeAction() == null) return;
 
         ExchangeAction<?> exchangeAction = this.player.getExchangeAction();
         Object value = exchangeAction.getValue();
 
-        if (exchangeAction.getType() == ExchangeAction.CRAFTING && value instanceof JobAction) {
-            if (((JobAction) value).isCraft()) {
-                ((JobAction) value).startCraft(this.player);
-            }
+        if (exchangeAction.getType() == ExchangeAction.CRAFTING) {
+            if(!(value instanceof CraftingActionData)) throw new IllegalStateException("hack attempt");
+            ((CraftingActionData) value).craft();
             return;
         }
 
@@ -1799,9 +1796,11 @@ public class GameClient {
     }
 
     private void replayCraft() {
-        if (this.player.getExchangeAction() != null && this.player.getExchangeAction().getType() == ExchangeAction.CRAFTING)
-            if (((JobAction) this.player.getExchangeAction().getValue()).getJobCraft() == null)
-                ((JobAction) this.player.getExchangeAction().getValue()).putLastCraftIngredients();
+        ExchangeAction<?> eAction = this.player.getExchangeAction();
+        if(eAction == null || this.player.getExchangeAction().getType() != ExchangeAction.CRAFTING) {
+            throw new IllegalStateException("hack attempt");
+        }
+        ((CraftingActionData)eAction.getValue()).replayLastCraft();
     }
 
     private synchronized void movementItemOrKamas(String packet) {
@@ -2351,12 +2350,28 @@ public class GameClient {
                 break;
 
             case ExchangeAction.CRAFTING:
-                int skillID = (Integer) this.player.getExchangeAction().getValue();
+                final Pattern pattern = Pattern.compile("([+-])([0-9]+)\\|([0-9]+)");
 
-                switch(packet.charAt(2)) {
+                CraftingActionData craft = (CraftingActionData) this.player.getExchangeAction().getValue();
+                char op = packet.charAt(2);
+                packet = packet.substring(3);
+
+                switch(op) {
                     case 'O':
+                        Matcher matcher = pattern.matcher(packet);
+                        while (matcher.find()) {
+
+                            int itemID = Integer.parseInt(matcher.group(2));
+                            int quantity = Integer.parseInt(matcher.group(3));
+
+                            if(!matcher.group(1).equals("+")){
+                                quantity = -quantity;
+                            }
+                            craft.modIngredient(itemID, quantity);
+                        }
                         break;
                     case 'R':
+                        craft.setCraftCount(Integer.parseInt(packet));
                         break;
                     case 'r':
                         break;
@@ -2642,7 +2657,7 @@ public class GameClient {
         TimerWaiter.addNext(() -> {
             this.player.send("EA" + (breakingObject.getCount() - i));
             ArrayList<Couple<Integer, Integer>> objects = new ArrayList<>(breakingObject.getObjects());
-            this.ready();
+            this.exchangeReady();
             breakingObject.setObjects(objects);
             this.recursiveBreakingObject(breakingObject, i + 1, count);
         }, 1000, TimeUnit.MILLISECONDS);
