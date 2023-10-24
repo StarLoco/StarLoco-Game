@@ -57,7 +57,7 @@ map.onMovementEnd = {
 }
 
 map.onObjectUse = {
-	[270] = onObjectUseOpenDocument(70, "0706251122"), -- Sign fou du gland
+	[270] = onObjectUseOpenDocument(70, "0706251122"), -- Sign Fouduglen
 	[161] = onObjectUseOpenDocument(65, "0706251123"), -- Sign Lethaline
 	[119] = onObjectUseOpenDocument(96, "0706251201"), -- Sign Marzwel
 	[120] = onObjectUseOpenDocument(61, "0802081743"), -- Sign Padgref

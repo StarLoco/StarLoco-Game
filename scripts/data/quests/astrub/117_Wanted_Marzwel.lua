@@ -6,6 +6,6 @@ qs203.objectives = {
 }
 qs203.rewardFn = QuestBasicReward(0, 25000)
 
-qs203.availableTo =  questRequirements(50)
+q117.availableTo = questRequirements(50)
 
 q117.startFromDocHref = {96}
