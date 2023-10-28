@@ -3,7 +3,10 @@ package org.starloco.locos.game.action.type;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.object.GameObject;
+import org.starloco.locos.script.DataScriptVM;
+import org.starloco.locos.script.EventHandlers;
 
+import javax.xml.crypto.Data;
 import java.util.HashMap;
 
 public class CraftingActionData implements ActionDataInterface {
@@ -44,7 +47,7 @@ public class CraftingActionData implements ActionDataInterface {
     }
 
     public void craft() {
-        // TODO
+        DataScriptVM.getInstance().handlers.onCraft(player, skillID, ingredients);
     }
 
     public void replayLastCraft() {

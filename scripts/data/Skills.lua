@@ -3,6 +3,9 @@ local GATHER_SKILL_BASE_DURATION = 12000
 ---@type table<number, fun(p:Player, cellId:number)>
 SKILLS = {}
 
+---@type table<number, number>
+SKILL_JOBS = {}
+
 ---@class SkillRequirements
 ---@field jobID number
 ---@field jobLvl number
@@ -62,11 +65,12 @@ end
 ---@alias GatherRewardFn fun(p:Player)
 ---@alias GatherDurationFn fun(p:Player):number
 
----@param skillId number
+---@param skillID number
 ---@param requirements SkillRequirements
 ---@param ingredientCountFn fun(p:Player):number
-function registerCraftSkill(skillId,  requirements, ingredientCountFn)
-    SKILLS[skillId] = function(p, cellId)
+---@param jobID number
+function registerCraftSkill(skillID, requirements, ingredientCountFn, jobID)
+    SKILLS[skillID] = function(p, cellId)
         if not checkRequirements(p, requirements) then return end
 
         -- Animation
@@ -83,8 +87,9 @@ function registerCraftSkill(skillId,  requirements, ingredientCountFn)
             end)
         end
 
-        return p:useCraftSkill(skillId, ingredientCountFn(p))
+        return p:useCraftSkill(skillID, ingredientCountFn(p))
     end
+    SKILL_JOBS[skillID] = jobID
 end
 
 ---@param minTime number

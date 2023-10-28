@@ -376,6 +376,12 @@ public class ScriptVM {
         return out;
     }
 
+    public static Table mapToTable(Map<Integer, Integer> vals) {
+        DefaultTable out = new DefaultTable();
+        vals.forEach((k, v) -> out.rawset(String.valueOf(k), v));
+        return out;
+    }
+
     public static <T> Table listOf(Stream<T> vals) {
         DefaultTable out = new DefaultTable();
         int i = 1;

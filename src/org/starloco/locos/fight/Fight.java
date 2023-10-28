@@ -4112,9 +4112,6 @@ public class Fight {
     private void earlyEndfightEvent(Player p) {
         boolean isWinner = winners.stream().map(Fighter::getPlayer).filter(Objects::nonNull).anyMatch(fp -> fp.getId() == p.getId());
 
-        Table winners = ScriptVM.scriptedValsTable(this.winners);
-        Table losers = ScriptVM.scriptedValsTable(this.losers);
-
         DataScriptVM.getInstance().handlers.onFightEnd(p, type, isWinner, winners, losers);
     }
 

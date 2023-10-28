@@ -4,8 +4,13 @@ import org.classdump.luna.Table;
 import org.classdump.luna.impl.DefaultTable;
 import org.classdump.luna.runtime.LuaFunction;
 import org.starloco.locos.client.Player;
+import org.starloco.locos.fight.Fighter;
 import org.starloco.locos.quest.QuestInfo;
-import org.starloco.locos.script.proxy.SPlayer;
+
+import java.util.List;
+import java.util.Map;
+
+import static org.starloco.locos.script.ScriptVM.mapToTable;
 
 public class EventHandlers extends DefaultTable {
     private final DataScriptVM vm;
@@ -35,8 +40,11 @@ public class EventHandlers extends DefaultTable {
         vm.call(getHandler(players, "onSkillUse"), player.scripted(), cellID, skillID);
     }
 
-    public void onFightEnd(Player player, int type, boolean isWinner, Table winners, Table losers) {
-        vm.call(getHandler(players, "onFightEnd"), player.scripted(), type, isWinner, winners, losers);
+    public void onFightEnd(Player player, int type, boolean isWinner, List<Fighter> winners, List<Fighter> losers) {
+        Table tWinners = ScriptVM.scriptedValsTable(winners);
+        Table tLosers = ScriptVM.scriptedValsTable(losers);
+
+        vm.call(getHandler(players, "onFightEnd"), player.scripted(), type, isWinner, tWinners, tLosers);
     }
 
     public QuestInfo questInfo(Player player, int id, int currentStep) {
@@ -56,5 +64,9 @@ public class EventHandlers extends DefaultTable {
 
     public void onDocQuestHref(Player player, int docID, int questID) {
         vm.call(getHandler(players, "onDocQuestHref"), player.scripted(), docID, questID);
+    }
+
+    public void onCraft(Player player, int skillID, Map<Integer,Integer> ingredients) {
+        vm.call(getHandler(players, "onCraft"), player.scripted(), skillID,  mapToTable(ingredients));
     }
 }
