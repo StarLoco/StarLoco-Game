@@ -15,7 +15,7 @@ local wantedInfo = {
     -- Aermyne
     {response=2554, item=7350, doc=100, quest=119, step=206, objective=431, kamas=16000, minLevel=32},
     -- Ogivol
-    {response=2114, item=6876, doc=96, quest=35, step=109, objective=313, kamas=32000, minLevel=41},
+    {response=2114, item=6876, doc=69, quest=35, step=109, objective=313, kamas=32000, minLevel=41},
     -- Marzwel
     {response=2552, item=7353, doc=96, quest=117, step=203, objective=425, kamas=25000, minLevel=50},
     -- Musha
