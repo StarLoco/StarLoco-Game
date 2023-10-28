@@ -16,7 +16,7 @@ import java.util.Objects;
 
 public class WorldSave extends Updatable<Void> {
 
-    public final static WorldSave instance = new WorldSave(60 * 60 * 1000);
+    public final static WorldSave instance = new WorldSave(20 * 60 * 1000);
     private static Thread thread;
 
     private WorldSave(int wait) {

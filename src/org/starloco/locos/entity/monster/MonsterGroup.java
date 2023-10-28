@@ -271,11 +271,7 @@ public class MonsterGroup {
     }
 
     public void addStarBonus() {
-        if (this.getStarBonus() >= 150) {
-            this.starBonus = 150;
-        } else {
-            this.starBonus += 5;
-        }
+        this.starBonus = (short)Math.min(150, this.starBonus+5);
     }
 
     public int getStarBonus() {
