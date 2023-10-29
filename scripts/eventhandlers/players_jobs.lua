@@ -27,7 +27,7 @@ end
 ---@param skillID number
 ---@param ingredients table<number, number>
 Handlers.players.onCraft = function(p, skillID, ingredients)
-    local job = SKILL_JOBS[skillID] or 0
+    local jobID = SKILL_JOBS[skillID] or 0
 
     if not SKILLS[skillID] then
         JLogF("unknown skill {}", skillID)

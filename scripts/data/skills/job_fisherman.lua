@@ -18,8 +18,67 @@ local gatherSkills = {
     {id=131,  obj=Objects.GiantSeaFish,   xp=50, minLvl=75, respawn={6000, 10000}, fishes={600, 1805, 602, 1784} },
 }
 
--- Empty fish
-registerCraftSkill(133, {jobID = jobID, toolIDs=toolIDs})
+-- Craft for Empty
+local sk133Crafts = {
+    -- Gutted Breaded Fish
+    {item=1751, ingredients={ {1750, 1} } },
+    -- Gutted Igloo Fish
+    {item=1755, ingredients={ {1754, 1} } },
+    -- Gutted Surimice Crab
+    {item=1758, ingredients={ {1757, 1} } },
+    -- Gutted Exotic Surimice Crab
+    {item=1760, ingredients={ {1759, 1} } },
+    -- Gutted Kittenfish
+    {item=1761, ingredients={ {603, 1} } },
+    -- Gutted Tiger Fish
+    {item=1763, ingredients={ {1762, 1} } },
+    -- Gutted Lard Bass
+    {item=1780, ingredients={ {1779, 1} } },
+    -- Gutted Grawn
+    {item=1781, ingredients={ {598, 1} } },
+    -- Gutted Gudgeon
+    {item=1783, ingredients={ {1782, 1} } },
+    -- Gutted Blue Skate
+    {item=1785, ingredients={ {1784, 1} } },
+    -- Gutted Horror Grawn
+    {item=1787, ingredients={ {1786, 1} } },
+    -- Gutted Farle's Ray
+    {item=1789, ingredients={ {1788, 1} } },
+    -- Gutted Kiye Gudgeon
+    {item=1791, ingredients={ {1790, 1} } },
+    -- Gutted Siktrin Bass
+    {item=1793, ingredients={ {1792, 1} } },
+    -- Gutted Ediem Carp
+    {item=1795, ingredients={ {1794, 1} } },
+    -- Gutted Small Sandy Carp
+    {item=1797, ingredients={ {1796, 1} } },
+    -- Gutted Kralove
+    {item=1798, ingredients={ {600, 1} } },
+    -- Gutted Unique Kralove
+    {item=1800, ingredients={ {1799, 1} } },
+    -- Gutted Perch
+    {item=1802, ingredients={ {1801, 1} } },
+    -- Gutted Kittenperch
+    {item=1804, ingredients={ {1803, 1} } },
+    -- Gutted Shiny Sardine
+    {item=1806, ingredients={ {1805, 1} } },
+    -- Gutted Dark Sardine
+    {item=1808, ingredients={ {1807, 1} } },
+    -- Gutted Trout
+    {item=1845, ingredients={ {1844, 1} } },
+    -- Gutted Pike
+    {item=1848, ingredients={ {1847, 1} } },
+    -- Gutted Tupe-Halett Pike
+    {item=1851, ingredients={ {1849, 1} } },
+    -- Gutted Sickle-Hammerhead Shark
+    {item=1852, ingredients={ {602, 1} } },
+    -- Gutted Open-Market Shark
+    {item=1854, ingredients={ {1853, 1} } },
+    -- Gutted Ancestral Trout
+    {item=1976, ingredients={ {1846, 1} } },
+}
+
+registerCraftSkill(133, sk133Crafts,{jobID = jobID, toolIDs=toolIDs}, ingredientsForCraftJob(jobID), jobID)
 
 local successChanceForSkill = function(sk, p)
     -- Snapper

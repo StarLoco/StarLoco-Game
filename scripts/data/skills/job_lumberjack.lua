@@ -23,4 +23,61 @@ local gatherSkills = {
 
 registerGatherJobSkills(jobID, {toolType=toolType}, gatherSkills)
 
-registerCraftSkill(101, {jobID = jobID, toolType = toolType}, ingredientsForCraftJob(jobID))
+-- Craft for Saw
+local sk101Crafts = {
+    -- Ash Plank
+    {item=459, ingredients={ {303, 20} } },
+    -- Wood Shavings Potion
+    {item=2539, ingredients={ {473, 2}, {476, 2} } },
+    -- Strong Wood Shavings Potion
+    {item=2540, ingredients={ {460, 2}, {461, 2}, {471, 2} } },
+    -- Rare Wood Shavings Potion
+    {item=2543, ingredients={ {474, 2}, {449, 2}, {472, 1}, {2250, 1} } },
+    -- Chestnut Plank
+    {item=6868, ingredients={ {473, 20} } },
+    -- Oak Plank
+    {item=7653, ingredients={ {460, 20} } },
+    -- Yew Plank
+    {item=7654, ingredients={ {461, 20} } },
+    -- Ebony Plank
+    {item=7655, ingredients={ {449, 20} } },
+    -- Elm Plank
+    {item=7656, ingredients={ {470, 20} } },
+    -- Maple Plank
+    {item=7657, ingredients={ {471, 20} } },
+    -- Hornbeam Plank
+    {item=7658, ingredients={ {472, 20} } },
+    -- Walnut Plank
+    {item=7659, ingredients={ {476, 20} } },
+    -- Cherry Plank
+    {item=7660, ingredients={ {474, 20} } },
+    -- Bombu Plank
+    {item=7661, ingredients={ {2358, 20} } },
+    -- Oliviolet Plank
+    {item=7662, ingredients={ {2357, 20} } },
+    -- Bamboo Plank
+    {item=7663, ingredients={ {7013, 20} } },
+    -- Dark Bamboo Plank
+    {item=7664, ingredients={ {7016, 20} } },
+    -- Holy Bamboo Plank
+    {item=7665, ingredients={ {7014, 20} } },
+    -- Ancestral Wood Plank
+    {item=7666, ingredients={ {920, 20} } },
+    -- Bewitched Wood Plank
+    {item=7667, ingredients={ {926, 20} } },
+    -- Treechnid Wood Plank
+    {item=7668, ingredients={ {2250, 20} } },
+    -- Golden Bamboo Plank
+    {item=7669, ingredients={ {7017, 20} } },
+    -- Magic Bamboo Plank
+    {item=7670, ingredients={ {7261, 20} } },
+    -- Bambooto Plank
+    {item=7671, ingredients={ {7286, 20} } },
+    -- Holy Bambooto Plank
+    {item=7672, ingredients={ {7289, 20} } },
+    -- Kaliptus Plank
+    {item=8078, ingredients={ {7925, 20} } },
+}
+
+
+registerCraftSkill(101, sk101Crafts, {jobID = jobID, toolType = toolType}, ingredientsForCraftJob(jobID), jobID)
