@@ -347,7 +347,7 @@ public class ObjectTemplate {
             Stats stats =  useMax ? generateNewStatsFromTemplate(jet, true) : new Stats(false, null);
 
             item = new GameObject(-1, getId(), 1, Constant.ITEM_POS_NO_EQUIPED, stats, new ArrayList<>(), new HashMap<>(), World.world.getPets(getId()).generateNewtxtStatsForPets(), 0);
-            if(((ObjectData) DatabaseManager.get(ObjectData.class)).insert(item)) {
+            if(DatabaseManager.get(ObjectData.class).insert(item)) {
                 PetEntry pet = new PetEntry(item.getGuid(), getId(), System.currentTimeMillis(), 0, 10, 0, false);
                 World.world.addPetsEntry(pet);
                 ((PetData) DatabaseManager.get(PetData.class)).insert(pet);

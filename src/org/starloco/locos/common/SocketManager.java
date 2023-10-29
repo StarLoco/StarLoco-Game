@@ -1225,6 +1225,10 @@ public class SocketManager {
         send(out, packet);
     }
 
+    public static void GAME_SEND_EXCHANGE_OTHER_MOVE_OK(Player out, char type, String signe, String s1) {
+        GAME_SEND_EXCHANGE_OTHER_MOVE_OK(out.getGameClient(), type, signe, s1);
+    }
+
     public static void GAME_SEND_EXCHANGE_OTHER_MOVE_OK(GameClient out, char type, String signe, String s1) {
         String packet = "EmK" + type + signe;
         if (!s1.equals(""))

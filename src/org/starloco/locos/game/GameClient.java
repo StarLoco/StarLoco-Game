@@ -2342,7 +2342,7 @@ public class GameClient {
                         if(!curBigStore.addEntry(toAdd)) {
                             return;
                         }
-                        SocketManager.GAME_SEND_EXCHANGE_OTHER_MOVE_OK(this, '+', "", toAdd.parseToEmK()); //Envoie un packet pour ajthiser l'item dans la fenetre de l'HDV du client
+                        SocketManager.GAME_SEND_EXCHANGE_OTHER_MOVE_OK(this, '+', "", toAdd.parseToEmK()); //Envoie un packet pour ajouter l'item dans la fenetre de l'HDV du client
                         SocketManager.GAME_SEND_HDVITEM_SELLING(this.player, toAdd.getHdvId());
                         DatabaseManager.get(PlayerData.class).update(this.player);
                         break;

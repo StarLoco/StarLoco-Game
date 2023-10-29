@@ -166,6 +166,11 @@ function Player:getItem(template, quantity) end
 ---@return boolean worked
 function Player:consumeItem(template, quantity) end
 
+---@param guid number
+---@param quantity number
+---@return boolean worked
+function Player:consumeItemGUID(guid, quantity) end
+
 ---@param quantity number
 ---@return boolean worked
 function Player:modKamas(quantity) end
@@ -305,14 +310,6 @@ function Player:openDocument(id, date) end
 ---@param quantity number
 function Player:showReceivedItem(actorID, quantity) end
 
----@param actorID number
----@param quantity number
-function Player:showReceivedItem(actorID, quantity) end
-
----@param actorID number
----@param quantity number
-function Player:showReceivedItem(actorID, quantity) end
-
 ---@param effectID number
 ---@return number
 function Player:baseStat(effectID) end
@@ -340,6 +337,10 @@ function Item:guid() end
 --- Returns the template id
 ---@return number
 function Item:id() end
+
+--- Returns the quantity
+---@return number
+function Item:quantity() end
 
 --- Returns the template type id
 ---@return number

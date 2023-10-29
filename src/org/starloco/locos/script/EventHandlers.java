@@ -4,11 +4,17 @@ import org.classdump.luna.Table;
 import org.classdump.luna.impl.DefaultTable;
 import org.classdump.luna.runtime.LuaFunction;
 import org.starloco.locos.client.Player;
+import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.fight.Fighter;
+import org.starloco.locos.game.world.World;
+import org.starloco.locos.object.GameObject;
 import org.starloco.locos.quest.QuestInfo;
 
+import javax.xml.crypto.Data;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.starloco.locos.script.ScriptVM.mapToTable;
 
@@ -66,7 +72,37 @@ public class EventHandlers extends DefaultTable {
         vm.call(getHandler(players, "onDocQuestHref"), player.scripted(), docID, questID);
     }
 
-    public void onCraft(Player player, int skillID, Map<Integer,Integer> ingredients) {
-        vm.call(getHandler(players, "onCraft"), player.scripted(), skillID,  mapToTable(ingredients));
+    public boolean onCraft(Player player, int skillID, Map<Integer,Integer> ingredients) {
+        Table lIngredients = DataScriptVM.listOf(ingredients.entrySet().stream()
+            .map(e ->
+                player.getItems().get(e.getKey()).getItemView(e.getValue()).scripted()
+            )
+        );
+
+        Object[] ret = vm.call(getHandler(players, "onCraft"), player.scripted(), skillID,  lIngredients);
+        if(ret[0] == null) {
+            // Craft failed ?
+            return false;
+        }
+        int itemID = ((Long)ret[0]).intValue();
+
+        GameObject item = World.world.getObjTemplate(itemID).createNewItem(1, false);
+        if(player.addItem(item, true,false)) {
+            World.world.addGameObject(item);
+        } else {
+            // Player had a similar item, should we use this GUID ?
+        }
+
+        String emkParams = String.join("|",
+            String.valueOf(item.getGuid()),
+            String.valueOf(item.getQuantity()),
+            String.valueOf(itemID),
+            item.encodeStats()
+        );
+        SocketManager.GAME_SEND_EXCHANGE_OTHER_MOVE_OK(player, 'O', "+", emkParams);
+        SocketManager.GAME_SEND_Ec_PACKET(player, "K;"+itemID);
+        SocketManager.GAME_SEND_IO_PACKET_TO_MAP(player.getCurMap(), player.getId(), "+"+itemID);
+
+        return true;
     }
 }

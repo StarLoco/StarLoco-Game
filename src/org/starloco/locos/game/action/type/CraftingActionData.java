@@ -47,7 +47,10 @@ public class CraftingActionData implements ActionDataInterface {
     }
 
     public void craft() {
-        DataScriptVM.getInstance().handlers.onCraft(player, skillID, ingredients);
+        if(!DataScriptVM.getInstance().handlers.onCraft(player, skillID, ingredients)) {
+            return;
+        }
+        ingredients.clear();
     }
 
     public void replayLastCraft() {

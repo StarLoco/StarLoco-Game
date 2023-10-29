@@ -335,11 +335,15 @@ public class ScriptVM {
         return out;
     }
 
-    public static Table ItemStack(Couple<Integer, Integer> stack) {
+    public static Table ItemStack(int id, int qua) {
         return new ImmutableTable.Builder()
-                .add("itemID", stack.first)
-                .add("quantity", stack.second)
-                .build();
+            .add("itemID", id)
+            .add("quantity", qua)
+            .build();
+    }
+
+    public static Table ItemStack(Couple<Integer, Integer> stack) {
+        return ItemStack(stack.first, stack.second);
     }
 
     public static Couple<Integer, Integer> ItemStackFromLua(Table t) {

@@ -118,5 +118,4 @@ public class SMap extends DefaultUserdata<GameMap> {
 
         SocketManager.GAME_SEND_GA_PACKET_TO_MAP(m, actionIDStr, actionType, p.getId(), actionValue);
     }
-
 }

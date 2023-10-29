@@ -70,8 +70,8 @@ function Npc:barterOutcome(player, offer)
             local b = barter.from
             -- Wrong number of provided items
             if #b ~= #offer then
-                return
-            end -- This return actually continues the for loop
+                return -- This return actually continues the for loop
+            end
 
             local tmpCount = nil
             for i in ipairs(b) do

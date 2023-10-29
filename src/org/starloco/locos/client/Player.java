@@ -2727,14 +2727,14 @@ public class Player implements Scripted<SPlayer>, Actor {
         }
     }
 
-    public void removeItem(int guid, int nombre, boolean send,
+    public boolean removeItem(int guid, int nombre, boolean send,
                            boolean deleteFromWorld) {
         GameObject obj;
         synchronized(objects) {
             obj = objects.get(guid);
         }
 
-        if(obj == null) return;
+        if(obj == null) return false;
 
         if (nombre > obj.getQuantity())
             nombre = obj.getQuantity();
@@ -2759,6 +2759,7 @@ public class Player implements Scripted<SPlayer>, Actor {
         }
 
         SocketManager.GAME_SEND_Ow_PACKET(this);
+        return true;
     }
 
     public void deleteItem(int guid) {

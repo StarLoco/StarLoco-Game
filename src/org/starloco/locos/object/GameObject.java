@@ -24,8 +24,8 @@ public class GameObject {
     private final SItem scriptVal;
 
     protected ObjectTemplate template;
-    protected int quantity = 1;
-    protected int position = Constant.ITEM_POS_NO_EQUIPED;
+    protected int quantity;
+    protected int position;
     protected int guid;
     protected int obvijevanPos;
     protected int obvijevanLook;
@@ -82,9 +82,20 @@ public class GameObject {
 
         GameObject object = new GameObject(-1, this.getTemplate().getId(), qua, insert ? Constant.ITEM_POS_NO_EQUIPED : this.getPosition(), newStats, effects, this.getSoulStat(), this.getTxtStat(), this.getPuit());
         if(insert)
-            if(((ObjectData) DatabaseManager.get(ObjectData.class)).insert(object))
+            if(DatabaseManager.get(ObjectData.class).insert(object))
                 return object;
         return null;
+    }
+
+    public GameObject getItemView(int qua) {
+        Map<Integer, Integer> maps = new HashMap<>();
+        maps.putAll(this.getStats().getEffects());
+        Stats newStats = new Stats(maps);
+        ArrayList<SpellEffect> effects = new ArrayList<>();
+        for(SpellEffect effect : this.getEffects())
+            effects.add(effect.clone());
+
+        return new GameObject(guid, this.getTemplate().getId(), qua, this.getPosition(), newStats, effects, this.getSoulStat(), this.getTxtStat(), this.getPuit());
     }
 
     public void setId(int id) {

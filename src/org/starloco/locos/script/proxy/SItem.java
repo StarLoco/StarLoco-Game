@@ -29,6 +29,11 @@ public class SItem  extends DefaultUserdata<GameObject> {
     }
 
     @SuppressWarnings("unused")
+    private static int quantity(GameObject item) {
+        return item.getQuantity();
+    }
+
+    @SuppressWarnings("unused")
     private static int type(GameObject item) {
         return item.getTemplate().getType();
     }

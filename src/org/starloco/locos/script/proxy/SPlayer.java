@@ -510,6 +510,13 @@ public class SPlayer extends DefaultUserdata<Player> {
         return p.removeItemByTemplateId(itemID, quantity, true);
     }
 
+    @SuppressWarnings("unused")
+    private static boolean consumeItemGUID(Player p, ArgumentIterator args) {
+        int itemGUID = args.nextInt();
+        int quantity = args.nextInt();
+        return p.removeItem(itemGUID, quantity, true, true);
+    }
+
 
     @SuppressWarnings("unused")
     private static boolean addItem(Player p, ArgumentIterator args) {

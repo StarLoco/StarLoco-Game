@@ -44,9 +44,14 @@ end
 ---@field itemID:number (0 for kamas)
 ---@field quantity:number
 ItemStack = {}
+ItemStack.__index = ItemStack
 setmetatable(ItemStack, {
     __call = function(cls, itemID, quantity)
-        local self = {}
+        local self = setmetatable({}, {
+            __eq = function(a, b)
+                return a.itemID == b.itemID and a.quantity == b.quantity
+            end
+        })
         self.itemID = itemID
         self.quantity = quantity or 1
         return self

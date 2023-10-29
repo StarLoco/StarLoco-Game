@@ -7,7 +7,10 @@ SKILLS = {}
 ---@type table<number, number>
 SKILL_JOBS = {}
 
----@alias RecipeDef table<number, number>
+---@class RecipeDef
+---@field item number
+---@field ingredients ItemStack[]
+
 
 ---@type table<number, RecipeDef[]>
 SKILL_CRAFTS = {}
@@ -97,6 +100,13 @@ function registerCraftSkill(skillID, crafts, requirements, ingredientCountFn, jo
         return p:useCraftSkill(skillID, ingredientCountFn(p))
     end
 
+    -- Convert {id, qua} to ItemStack and sort by templateID
+    for _, craft in ipairs(crafts) do
+        for i, ingredient in ipairs(craft.ingredients) do
+            craft.ingredients[i] = ItemStack(ingredient[1], ingredient[2])
+        end
+        table.sort(craft.ingredients, ItemStack.itemIDASC)
+    end
     SKILL_CRAFTS[skillID] = crafts
 
     if jobID then
