@@ -22,4 +22,7 @@ map.onMovementEnd = {
 	[456] = moveEndTeleport(10114, 35),
 }
 
+map.npcs = {
+	[786] = {238, 1},
+}
 
