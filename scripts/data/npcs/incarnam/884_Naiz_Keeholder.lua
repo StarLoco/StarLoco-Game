@@ -11,9 +11,9 @@ npc.customArtwork = 9091
 ---@param p Player
 local function startFight(p)
     p:endDialog()
-    p:forceFight(-1, {
+    p:forceFight({-1, {
         {984, {1}}
-    })
+    }})
 end
 
 ---@param p Player

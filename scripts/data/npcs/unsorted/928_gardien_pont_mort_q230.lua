@@ -10,9 +10,9 @@ local coralWeight = 10
 ---@param p Player
 local fail = function(p)
     p:endDialog()
-    p:forceFight(-1, {
+    p:forceFight({-1, {
         {1094, {5}}
-    })
+    }})
 end
 
 ---@param p Player
