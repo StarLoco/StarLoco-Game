@@ -1709,7 +1709,8 @@ public class Constant {
             case 1073:
             case 949://Karkargo
                 return 0;//Blanc
-            //case 476://Blop
+            case 476://Blop
+                return 0; // White
             default:
                 return 4;
         }
