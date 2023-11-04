@@ -12,17 +12,10 @@ local map = MapDef(
 
 map.positions = "dGd8eneyePfffjfLgb|drdTd-ejeAe2e6fwfY"
 map.capabilities = 78
-map.mobGroupsCount = 3
-map.mobGroupsMaxSize = 3
+map.mobGroupsCount = 0
+map.mobGroupsMaxSize = 1
 map.npcs = {
 	[873] = {309, 1},
-}
-map.allowedMobGrades = {
-	{1003, 1},
-	{1003, 2},
-	{1003, 3},
-	{1003, 4},
-	{1003, 5},
 }
 -- '0;0;0;0;0;0;0' forbiddens -> capabilities ? Or script ?
 
@@ -30,4 +23,25 @@ map.onMovementEnd = {
 	[308] = moveEndTeleport(10358, 323),
 }
 
+local mobGroup1 =  {
+	{1003, {1}},
+}
 
+local mobGroup2 =  {
+	{1003, {1}},
+}
+
+local mobGroup3 =  {
+	{1003, {1}},
+}
+
+local mobGroup4 =  {
+	{1003, {1}},
+}
+
+map.staticGroups = {
+	{182, mobGroup1},
+	{212, mobGroup2},
+	{242, mobGroup3},
+	{272, mobGroup4},
+}
