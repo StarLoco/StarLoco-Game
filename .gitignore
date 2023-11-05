@@ -1,5 +1,7 @@
 .gradle
 build
+Build
 logs
+Logs
 game.jar
 game.config.properties
