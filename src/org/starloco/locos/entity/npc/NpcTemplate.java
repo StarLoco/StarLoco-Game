@@ -129,7 +129,7 @@ public class NpcTemplate {
             int price = rawOptionalInt(t, "price", item.getPrice());
             int currencyID = rawOptionalInt(t, "currency", 0);
 
-            // Predicates specified defaults to kamas
+            // Not specified defaults to kamas
             if(currencyID==0) currencyID = -1; // currency -1 -> Kamas
 
             Currency currency;

@@ -595,7 +595,7 @@ public class SPlayer extends DefaultUserdata<Player> {
         int xpDelta = args.nextInt();
         boolean send = args.nextOptionalBoolean(true);
 
-        if(xpDelta<0) return false; // Predicates supported
+        if(xpDelta<0) return false; // Not supported
 
         JobStat js = p.getMetierByID(jobID);
         if(js == null) return false;

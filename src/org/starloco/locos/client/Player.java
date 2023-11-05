@@ -1488,7 +1488,7 @@ public class Player implements Scripted<SPlayer>, Actor {
             ptsDelta = (previousLevel*(previousLevel-1) - (newLevel * (newLevel-1)))/2;
 
             if(_spellPts < ptsDelta) {
-                // Predicates enough points
+                // Not enough points
                 return new EnsureSpellLevelResult(false, 0, previousLevel, false);
             }
             _spellPts += ptsDelta;

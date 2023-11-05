@@ -196,7 +196,7 @@ public class MonsterGroup {
             int max = Integer.parseInt(parts[2]);
 
             try {
-                // Predicates really random anymore, but that will be replaced by script anyway
+                // Not really random anymore, but that will be replaced by script anyway
                 out.add(new Pair<>(idMonster, World.world.getMonstre(idMonster).getGrades().values().stream()
                         .filter(g -> g.getLevel() >= min && g.getLevel() <= max).map(MonsterGrade::getGrade).collect(Collectors.toList())));
             }catch(NullPointerException e) {
