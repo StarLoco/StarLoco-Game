@@ -37,6 +37,8 @@ public class Constant {
     public static final int ETAT_MOTIV_SYLVESTRE = 9;
     public static final int ETAT_APPRIVOISEMENT = 10;
     public static final int ETAT_CHEVAUCHANT = 11;
+
+
     public static final int FIGHT_TYPE_CHALLENGE = 0;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            //D�fies
     public static final int FIGHT_TYPE_AGRESSION = 1;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            //Aggros
     public static final int FIGHT_TYPE_CONQUETE = 2;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            //Conquete
@@ -44,6 +46,8 @@ public class Constant {
     public static final int FIGHT_TYPE_PVM = 4;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            //PvM
     public static final int FIGHT_TYPE_PVT = 5;
     public static final int FIGHT_TYPE_ROYAL = 6;
+
+
     //Percepteur
     public static final int FIGHT_STATE_INIT = 1;
     public static final int FIGHT_STATE_PLACE = 2;
@@ -267,8 +271,8 @@ public class Constant {
     public static final int STATS_REM_FORC = 157;
     public static final int STATS_ADD_PODS = 158;
     public static final int STATS_REM_PODS = 159;
-    public static final int STATS_ADD_AFLEE = 160;
-    public static final int STATS_ADD_MFLEE = 161;
+    public static final int STATS_ADD_ADODGE = 160;
+    public static final int STATS_ADD_MDODGE = 161;
     public static final int STATS_REM_AFLEE = 162;
     public static final int STATS_REM_MFLEE = 163;
     public static final int STATS_ADD_MAITRISE = 165;
@@ -281,7 +285,7 @@ public class Constant {
     public static final int STATS_REM_PROS = 177;
     public static final int STATS_ADD_SOIN = 178;
     public static final int STATS_REM_SOIN = 179;
-    public static final int STATS_CREATURE = 182;
+    public static final int STATS_SUMMON_COUNT = 182;
     public static final int STATS_ADD_RES_M = 183;
     public static final int STATS_ADD_RES_P = 184;
     public static final int STATS_REM_PERDOM = 186;
@@ -1758,7 +1762,7 @@ public class Constant {
             //Amande
             case 20:
                 stats.addOneStat(STATS_ADD_INIT, lvl * 10); // 100*10 = 1000
-                stats.addOneStat(STATS_CREATURE, lvl / 50); // 100/50 = 2
+                stats.addOneStat(STATS_SUMMON_COUNT, lvl / 50); // 100/50 = 2
                 break;
             //Dor�e
             case 18:
@@ -1769,7 +1773,7 @@ public class Constant {
             case 38:
                 stats.addOneStat(STATS_ADD_INIT, lvl * 5); // 100*5 = 500
                 stats.addOneStat(STATS_ADD_VITA, lvl);
-                stats.addOneStat(STATS_CREATURE, lvl / 50); // 100/50 = 2
+                stats.addOneStat(STATS_SUMMON_COUNT, lvl / 50); // 100/50 = 2
                 break;
             //Rousse-Dor�e
             case 46:
@@ -1781,7 +1785,7 @@ public class Constant {
                 stats.addOneStat(STATS_ADD_INIT, lvl * 5);
                 stats.addOneStat(STATS_ADD_SAGE, lvl / 4);
                 stats.addOneStat(STATS_ADD_VITA, lvl / 2);
-                stats.addOneStat(STATS_CREATURE, lvl / 100); // 100/100 = 1
+                stats.addOneStat(STATS_SUMMON_COUNT, lvl / 100); // 100/100 = 1
                 break;
             //Indigo |
             case 17:
@@ -1803,7 +1807,7 @@ public class Constant {
                 stats.addOneStat(STATS_ADD_INIT, lvl * 5);
                 stats.addOneStat(STATS_ADD_VITA, lvl / 2);
                 stats.addOneStat(STATS_ADD_CHAN, (int) (lvl / 1.65));
-                stats.addOneStat(STATS_CREATURE, lvl / 100);
+                stats.addOneStat(STATS_SUMMON_COUNT, lvl / 100);
                 break;
             //Pourpre | Stade 4
             case 19:
@@ -1856,14 +1860,14 @@ public class Constant {
                 stats.addOneStat(STATS_ADD_INIT, lvl * 5);
                 stats.addOneStat(STATS_ADD_VITA, lvl / 2);
                 stats.addOneStat(STATS_ADD_AGIL, (int) (lvl / 1.65));
-                stats.addOneStat(STATS_CREATURE, lvl / 100);
+                stats.addOneStat(STATS_SUMMON_COUNT, lvl / 100);
                 break;
             // Amande-Ivoire
             case 37:
                 stats.addOneStat(STATS_ADD_INIT, lvl * 5);
                 stats.addOneStat(STATS_ADD_VITA, (int) (lvl * 0.4));
                 stats.addOneStat(STATS_ADD_PERDOM, (int) (lvl * 0.4));
-                stats.addOneStat(STATS_CREATURE, lvl / 100);
+                stats.addOneStat(STATS_SUMMON_COUNT, lvl / 100);
                 break;
             // Amande-Rousse
             case 44:
@@ -1898,14 +1902,14 @@ public class Constant {
                 stats.addOneStat(STATS_ADD_INIT, lvl * 5);
                 stats.addOneStat(STATS_ADD_VITA, lvl / 2);
                 stats.addOneStat(STATS_ADD_FORC, (int) (lvl / 1.65));
-                stats.addOneStat(STATS_CREATURE, lvl / 100);
+                stats.addOneStat(STATS_SUMMON_COUNT, lvl / 100);
                 break;
             // Amande-Orchid�e
             case 40:
                 stats.addOneStat(STATS_ADD_INIT, lvl * 5);
                 stats.addOneStat(STATS_ADD_VITA, lvl / 2);
                 stats.addOneStat(STATS_ADD_INTE, (int) (lvl / 1.65));
-                stats.addOneStat(STATS_CREATURE, lvl / 100);
+                stats.addOneStat(STATS_SUMMON_COUNT, lvl / 100);
                 break;
             // Dor�e-Pourpre
             case 49:
@@ -1938,7 +1942,7 @@ public class Constant {
                 stats.addOneStat(STATS_ADD_INIT, lvl * 5);
                 stats.addOneStat(STATS_ADD_VITA, lvl / 2);
                 stats.addOneStat(STATS_ADD_PROS, (int) (lvl / 2.50));
-                stats.addOneStat(STATS_CREATURE, lvl / 100);
+                stats.addOneStat(STATS_SUMMON_COUNT, lvl / 100);
                 break;
             //Dor�e-Ivoire
             case 45:
@@ -2024,7 +2028,7 @@ public class Constant {
             case 35:
                 stats.addOneStat(STATS_ADD_VITA, lvl);
                 stats.addOneStat(STATS_ADD_PM, lvl / 100);
-                stats.addOneStat(STATS_CREATURE, lvl / 100);
+                stats.addOneStat(STATS_SUMMON_COUNT, lvl / 100);
                 stats.addOneStat(STATS_ADD_INIT, lvl * 5);
                 break;
             //Amande-Prune
@@ -2032,7 +2036,7 @@ public class Constant {
                 stats.addOneStat(STATS_ADD_VITA, lvl * 2);
                 stats.addOneStat(STATS_ADD_INIT, lvl * 5);
                 stats.addOneStat(STATS_ADD_PO, lvl / 100);
-                stats.addOneStat(STATS_CREATURE, lvl / 100);
+                stats.addOneStat(STATS_SUMMON_COUNT, lvl / 100);
                 break;
             //Dor�e-Emeraude
             case 43:

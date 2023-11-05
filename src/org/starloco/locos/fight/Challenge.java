@@ -162,7 +162,7 @@ public class Challenge {
             case 25://Ordonn�
                 int levelMax = 0;
                 for (Fighter fighter : fight.getFighters(2)) {
-                    if (fighter.isDead() || fighter.isInvocation() || fighter.isDouble())
+                    if (fighter.isDead() || fighter.isInvocation())
                         continue;
                     if (fighter.getPlayer() == null && fighter.getMob() != null && fighter.getInvocator() == null && fighter.getLvl() > levelMax) {
                         levelMax = fighter.getLvl();
@@ -483,11 +483,11 @@ public class Challenge {
                 break;
             case 30: // Les petits d'abord
             case 48: // Les mules d'abord
-                if (mob.isInvocation() || mob.isDouble())
+                if (mob.isInvocation())
                     return;
                 if (mob.getId() != killer.getId()) {
                     int lvlMin = 5000;
-                    for (Fighter f : fight.getFighters2(1)) {
+                    for (Fighter f : fight.getTeamFighters(1)) {
                         if (f.isInvocation())
                             continue;
                         if (f.getLvl() < lvlMin)
@@ -532,8 +532,7 @@ public class Challenge {
             case 10: // Cruel
                 if (_cible == null)
                     return;
-                if (_cible.isInvocation() || _cible.isDouble()
-                        || mob.getPlayer() != null)
+                if (_cible.isInvocation() || mob.getPlayer() != null)
                     return;
                 if (_cible.getId() != mob.getId()
                         && _cible.getLvl() != mob.getLvl()) {
@@ -543,8 +542,7 @@ public class Challenge {
                     try {
                         int levelMin = 2000;
                         for (Fighter fighter : fight.getFighters(2)) {
-                            if (fighter.isInvocation() || fighter.isDouble()
-                                    || fighter.getPlayer() != null || fighter.isDead())
+                            if (fighter.isInvocation() || fighter.getPlayer() != null || fighter.isDead())
                                 continue;
                             if (fighter.getPlayer() == null
                                     && fighter.getLvl() < levelMin) {
@@ -563,9 +561,9 @@ public class Challenge {
             case 25: // Ordonn�
                 if (_cible == null)
                     return;
-                if (mob.isInvocation() || mob.isDouble() || mob.getPlayer() != null)
+                if (mob.isInvocation() || mob.getPlayer() != null)
                     return;
-                if(killer.isMob() && killer != mob)
+                if(killer.getMob() != null && killer != mob)
                     return;
 
                 if (_cible.getId() != mob.getId()) {
@@ -574,8 +572,7 @@ public class Challenge {
                 } else {
                     int levelMax = 0;
                     for (Fighter fighter : fight.getFighters(2)) {
-                        if (fighter.isInvocation() || fighter.isDouble()
-                                || fighter.getPlayer() != null || fighter.isDead())
+                        if (fighter.isInvocation() || fighter.getPlayer() != null || fighter.isDead())
                             continue;
                         if (fighter.getLvl() > levelMax) {
                             levelMax = fighter.getLvl();

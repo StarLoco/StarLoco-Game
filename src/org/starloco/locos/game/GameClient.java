@@ -1244,7 +1244,7 @@ public class GameClient {
                 }
 
                 TimerWaiter.addNext(() -> {
-                    fight.joinPrismFight(this.player, (fight.getInit0().isPrisme() ? fight.getInit0() : fight.getInit1()).getTeam());
+                    fight.joinPrismFight(this.player, (fight.getInit0().getPrism() != null ? fight.getInit0() : fight.getInit1()).getTeam());
                     World.world.getOnlinePlayers().stream().filter(Objects::nonNull).filter(player -> player.getAlignment() == player.getAlignment()).forEach(Prism::parseDefense);
                 }, 2, TimeUnit.SECONDS);
                 break;
@@ -6183,7 +6183,6 @@ public class GameClient {
                 Fighter target = this.player.getFight().getFighterByPerso(this.player);
                 this.player.getFight().getFighters(7).stream().filter(fighter -> fighter != null && fighter.getPlayer() != null).forEach(fighter -> fighter.getPlayer().send(this.player.getCurMap().getFighterGMPacket(this.player)));
                 target.setPdv(this.player.getCurPdv());
-                target.setPdvMax(this.player.getMaxPdv());
                 SocketManager.GAME_SEND_STATS_PACKET(this.player);
             }
 

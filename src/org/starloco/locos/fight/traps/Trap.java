@@ -122,9 +122,14 @@ public class Trap {
             }
         }
 
-        Fighter caster = this.caster.getPlayer() == null ?
-                new Fighter(this.fight, this.caster.getMob()) :
-                new Fighter(this.fight, this.caster.getPlayer());
+        // Hack creating a fake Fighter that cast the trap spell in its center
+        Fighter caster = null;
+        try {
+            caster = this.caster.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
+
         caster.setCell(this.cell);
 
         List<Fighter> targets = cells.stream().flatMap(cell -> cell.getFighters().stream()).collect(Collectors.toList());

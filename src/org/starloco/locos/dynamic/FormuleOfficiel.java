@@ -2,7 +2,10 @@ package org.starloco.locos.dynamic;
 
 import org.starloco.locos.client.Player;
 import org.starloco.locos.entity.Collector;
+import org.starloco.locos.fight.CollectorFighter;
 import org.starloco.locos.fight.Fighter;
+import org.starloco.locos.fight.MobFighter;
+import org.starloco.locos.fight.CloneFighter;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.Config;
 import org.starloco.locos.kernel.Constant;
@@ -44,7 +47,7 @@ public class FormuleOfficiel {
                 int sizeGroupe = 0;
                 for (Fighter f : winners) {
                     if (f.getPlayer() != null && !f.isInvocation()
-                            && !f.isMob() && !f.isCollector() && !f.isDouble())
+                            && !(f instanceof MobFighter) && !(f instanceof CollectorFighter) && !(f instanceof CloneFighter))
                         sizeGroupe++;
                 }
                 if (sizeGroupe < 1)
@@ -138,7 +141,7 @@ public class FormuleOfficiel {
             int sizeGroupe = 0;
             for (Fighter f : winners) {
                 if (f.getPlayer() != null && !f.isInvocation()
-                        && !f.isMob() && !f.isCollector() && !f.isDouble())
+                        && !(f instanceof MobFighter) && !(f instanceof CollectorFighter) && !(f instanceof CloneFighter))
                     sizeGroupe++;
             }
             if (sizeGroupe < 1)

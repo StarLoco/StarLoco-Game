@@ -23,7 +23,7 @@ public class Stats {
             this.effects.put(Constant.STATS_ADD_PM, 3);
             this.effects.put(Constant.STATS_ADD_PROS, player.getClasse() == Constant.CLASS_ENUTROF ? 120 : 100);
             this.effects.put(Constant.STATS_ADD_PODS, 1000);
-            this.effects.put(Constant.STATS_CREATURE, 1);
+            this.effects.put(Constant.STATS_SUMMON_COUNT, 1);
             this.effects.put(Constant.STATS_ADD_INIT, 1);
         }
     }
@@ -35,7 +35,7 @@ public class Stats {
             this.effects.put(Constant.STATS_ADD_PM, 3);
             this.effects.put(Constant.STATS_ADD_PROS, player.getClasse() == Constant.CLASS_ENUTROF ? 120 : 100);
             this.effects.put(Constant.STATS_ADD_PODS, 1000);
-            this.effects.put(Constant.STATS_CREATURE, 1);
+            this.effects.put(Constant.STATS_SUMMON_COUNT, 1);
             this.effects.put(Constant.STATS_ADD_INIT, 1);
         }
     }
@@ -65,8 +65,8 @@ public class Stats {
             this.effects.put(Constant.STATS_ADD_RP_EAU, floor);
             this.effects.put(Constant.STATS_ADD_RP_AIR, floor);
             this.effects.put(Constant.STATS_ADD_RP_TER, floor);
-            this.effects.put(Constant.STATS_ADD_AFLEE, floor);
-            this.effects.put(Constant.STATS_ADD_MFLEE, floor);
+            this.effects.put(Constant.STATS_ADD_ADODGE, floor);
+            this.effects.put(Constant.STATS_ADD_MDODGE, floor);
         }
     }
 
@@ -75,7 +75,7 @@ public class Stats {
     }
 
     public int get(int id) {
-        return this.effects.get(id) == null ? 0 : this.effects.get(id);
+        return this.effects.getOrDefault(id, 0);
     }
 
     public int addOneStat(int id, int val) {
@@ -130,13 +130,13 @@ public class Stats {
         int val = this.effects.get(id) == null ? 0 : this.effects.get(id);
 
         switch (id) {
-            case Constant.STATS_ADD_AFLEE:
+            case Constant.STATS_ADD_ADODGE:
                 if (this.effects.get(Constant.STATS_REM_AFLEE) != null)
                     val -= getEffect(Constant.STATS_REM_AFLEE);
                 if (this.effects.get(Constant.STATS_ADD_SAGE) != null)
                     val += getEffect(Constant.STATS_ADD_SAGE) / 4;
                 break;
-            case Constant.STATS_ADD_MFLEE:
+            case Constant.STATS_ADD_MDODGE:
                 if (this.effects.get(Constant.STATS_REM_MFLEE) != null)
                     val -= getEffect(Constant.STATS_REM_MFLEE);
                 if (this.effects.get(Constant.STATS_ADD_SAGE) != null)

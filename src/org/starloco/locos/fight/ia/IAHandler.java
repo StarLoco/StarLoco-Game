@@ -1,8 +1,10 @@
 package org.starloco.locos.fight.ia;
 
 import org.starloco.locos.entity.monster.MonsterGrade;
+import org.starloco.locos.fight.CollectorFighter;
 import org.starloco.locos.fight.Fight;
 import org.starloco.locos.fight.Fighter;
+import org.starloco.locos.fight.CloneFighter;
 import org.starloco.locos.fight.ia.type.*;
 import org.starloco.locos.fight.ia.type.boss.*;
 import org.starloco.locos.fight.ia.type.invocations.*;
@@ -18,9 +20,9 @@ public class IAHandler {
         MonsterGrade monsterGrade = fighter.getMob();
 
         if (monsterGrade == null) {
-            if (fighter.isDouble())
+            if (fighter instanceof CloneFighter)
                 ia = new Blocker(fight, fighter, (byte) 4);
-            if (fighter.isCollector())
+            if (fighter instanceof CollectorFighter)
                 ia = new IAPerco(fight, fighter, (byte) 7);
         } else if (monsterGrade.getTemplate() == null) {
             ia.setStop(true);

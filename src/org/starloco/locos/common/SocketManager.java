@@ -5,7 +5,6 @@ import org.starloco.locos.area.map.CellsDataProvider;
 import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.area.map.MapData;
-import org.starloco.locos.entity.map.InteractiveObject;
 import org.starloco.locos.entity.map.MountPark;
 import org.starloco.locos.entity.map.Trunk;
 import org.starloco.locos.client.Player;
@@ -37,6 +36,7 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import static org.starloco.locos.util.Predicates.not;
 
 public class SocketManager {
 
@@ -644,29 +644,15 @@ public class SocketManager {
                 continue;
             packet.append(p.getId()).append(";").append(p.getCell().getId()).append(";1|");
         }
-        for (Fighter perso : fight.getFighters(teams)) {
-            if (perso.hasLeft())
-                continue;
-            if (perso.getPlayer() == null
-                    || !perso.getPlayer().isOnline())
-                continue;
-            send(perso.getPlayer(), packet.toString());
-        }
+        fight.getFighters(teams).stream()
+            .filter(not(Fighter::hasLeft))
+            .forEach(f -> f.send(packet.toString()));
     }
 
-    public static void GAME_SEND_GIC_PACKET_TO_FIGHT(Fight fight, int teams,
-                                                     Fighter f) {
-        StringBuilder packet = new StringBuilder();
-        packet.append("GIC|").append(f.getId()).append(";").append(f.getCell().getId()).append(";1|");
-
-        for (Fighter perso : fight.getFighters(teams)) {
-            if (perso.hasLeft())
-                continue;
-            if (perso.getPlayer() == null
-                    || !perso.getPlayer().isOnline())
-                continue;
-            send(perso.getPlayer(), packet.toString());
-        }
+    public static void GAME_SEND_GIC_PACKET_TO_FIGHT(Fight fight, int teams, Fighter fighter) {
+        fight.getFighters(teams).stream()
+            .filter(not(Fighter::hasLeft))
+            .forEach(f -> f.send("GIC|" + fighter.getId() + ";" + fighter.getCell().getId() + ";1|"));
     }
 
     public static void GAME_SEND_GS_PACKET_TO_FIGHT(Fight fight, int teams) {
@@ -674,10 +660,9 @@ public class SocketManager {
         for (Fighter f : fight.getFighters(teams)) {
             if (f.hasLeft())
                 continue;
-            f.initBuffStats();
-            if (f.getPlayer() == null || !f.getPlayer().isOnline())
-                continue;
-            send(f.getPlayer(), packet);
+            f.initFightBuffs();
+
+            f.send(packet);
         }
     }
 

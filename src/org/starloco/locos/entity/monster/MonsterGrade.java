@@ -24,18 +24,17 @@ public class MonsterGrade {
     private int level;
     private int pdv;
     private int pdvMax;
-    private int inFightId;
     private int init;
     private int pa;
     private int pm;
     private int size;
     private int baseXp = 10;
     private ArrayList<SpellEffect> fightBuffs = new ArrayList<>();
-    private Map<Integer, Integer> stats = new HashMap<>();
+    private final Map<Integer, Integer> stats;
     private Map<Integer, Spell.SortStats> spells = new HashMap<>();
     private ArrayList<Integer> statsInfos = new ArrayList<>();
 
-    public MonsterGrade(Monster template, int grade, int level, int pa, int pm, String resists, String stats, String statsInfos, String allSpells, int pdvMax, int aInit, int xp) {
+    public MonsterGrade(Monster template, int grade, int level, int pa, int pm, String resists, String strStats, String statsInfos, String allSpells, int pdvMax, int aInit, int xp) {
         this.scriptVal = new SMobGrade(this);
         this.size = baseSize + grade * sizeBonusPerGrade;
         this.template = template;
@@ -47,45 +46,52 @@ public class MonsterGrade {
         this.pm = pm;
         this.baseXp = xp;
         this.init = aInit;
-        this.stats.clear();
         this.spells.clear();
 
-        String[] resist = resists.split(";"), stat = stats.split(","), statInfos = statsInfos.split(";");
+
+        HashMap<Integer, Integer> stats = new HashMap<>();
+
+        String[] resist = resists.split(";"), stat = strStats.split(","), statInfos = statsInfos.split(";");
 
         for (String str : statInfos)
             this.statsInfos.add(Integer.parseInt(str));
 
         try {
             if (resist.length > 3) {
-                this.stats.put(Constant.STATS_ADD_RP_NEU, Integer.parseInt(resist[0]));
-                this.stats.put(Constant.STATS_ADD_RP_TER, Integer.parseInt(resist[1]));
-                this.stats.put(Constant.STATS_ADD_RP_FEU, Integer.parseInt(resist[2]));
-                this.stats.put(Constant.STATS_ADD_RP_EAU, Integer.parseInt(resist[3]));
-                this.stats.put(Constant.STATS_ADD_RP_AIR, Integer.parseInt(resist[4]));
-                this.stats.put(Constant.STATS_ADD_AFLEE, Integer.parseInt(resist[5]));
-                this.stats.put(Constant.STATS_ADD_MFLEE, Integer.parseInt(resist[6]));
+                stats.put(Constant.STATS_ADD_RP_NEU, Integer.parseInt(resist[0]));
+                stats.put(Constant.STATS_ADD_RP_TER, Integer.parseInt(resist[1]));
+                stats.put(Constant.STATS_ADD_RP_FEU, Integer.parseInt(resist[2]));
+                stats.put(Constant.STATS_ADD_RP_EAU, Integer.parseInt(resist[3]));
+                stats.put(Constant.STATS_ADD_RP_AIR, Integer.parseInt(resist[4]));
+                stats.put(Constant.STATS_ADD_ADODGE, Integer.parseInt(resist[5]));
+                stats.put(Constant.STATS_ADD_MDODGE, Integer.parseInt(resist[6]));
             } else {
                 String[] split = resist[0].split(",");
-                this.stats.put(-1, Integer.parseInt(split[0]));
-                this.stats.put(-100, Integer.parseInt(split[1]));
-                this.stats.put(Constant.STATS_ADD_AFLEE, Integer.parseInt(resist[1]));
-                this.stats.put(Constant.STATS_ADD_MFLEE, Integer.parseInt(resist[2]));
+                stats.put(-1, Integer.parseInt(split[0]));
+                stats.put(-100, Integer.parseInt(split[1]));
+                stats.put(Constant.STATS_ADD_ADODGE, Integer.parseInt(resist[1]));
+                stats.put(Constant.STATS_ADD_MDODGE, Integer.parseInt(resist[2]));
             }
 
-            this.stats.put(Constant.STATS_ADD_FORC, Integer.parseInt(stat[0]));
-            this.stats.put(Constant.STATS_ADD_SAGE, Integer.parseInt(stat[1]));
-            this.stats.put(Constant.STATS_ADD_INTE, Integer.parseInt(stat[2]));
-            this.stats.put(Constant.STATS_ADD_CHAN, Integer.parseInt(stat[3]));
-            this.stats.put(Constant.STATS_ADD_AGIL, Integer.parseInt(stat[4]));
-            this.stats.put(Constant.STATS_ADD_DOMA, Integer.parseInt(statInfos[0]));
-            this.stats.put(Constant.STATS_ADD_PERDOM, Integer.parseInt(statInfos[1]));
-            this.stats.put(Constant.STATS_ADD_SOIN, Integer.parseInt(statInfos[2]));
-            this.stats.put(Constant.STATS_CREATURE, Integer.parseInt(statInfos[3]));
+            stats.put(Constant.STATS_ADD_PA, pa);
+            stats.put(Constant.STATS_ADD_PM, pm);
+            stats.put(Constant.STATS_ADD_VITA, pdvMax);
+            stats.put(Constant.STATS_ADD_FORC, Integer.parseInt(stat[0]));
+            stats.put(Constant.STATS_ADD_SAGE, Integer.parseInt(stat[1]));
+            stats.put(Constant.STATS_ADD_INTE, Integer.parseInt(stat[2]));
+            stats.put(Constant.STATS_ADD_CHAN, Integer.parseInt(stat[3]));
+            stats.put(Constant.STATS_ADD_AGIL, Integer.parseInt(stat[4]));
+            stats.put(Constant.STATS_ADD_DOMA, Integer.parseInt(statInfos[0]));
+            stats.put(Constant.STATS_ADD_PERDOM, Integer.parseInt(statInfos[1]));
+            stats.put(Constant.STATS_ADD_SOIN, Integer.parseInt(statInfos[2]));
+            stats.put(Constant.STATS_SUMMON_COUNT, Integer.parseInt(statInfos[3]));
             if (resist.length > 5) {
-                this.stats.put(Constant.STATS_ADD_SAGE, Integer.parseInt(resist[5]) * 3);
+                stats.put(Constant.STATS_ADD_SAGE, Integer.parseInt(resist[5]) * 3);
             }
+
+            this.stats = stats;
         } catch (Exception e) {
-            World.world.logger.error("  > Error : Monster (id:" + template.getId() + ", grade: " + grade + ") : reading stats failed.", e);
+            throw new RuntimeException("Monster (id:" + template.getId() + ", grade: " + grade + ") : reading stats failed.", e);
         }
 
         if (!allSpells.equalsIgnoreCase("")) {
@@ -130,7 +136,6 @@ public class MonsterGrade {
         this.stats = stats;
         this.statsInfos = statsInfos;
         this.spells = spells;
-        this.inFightId = -1;
         this.baseXp = xp;
     }
 
@@ -180,18 +185,6 @@ public class MonsterGrade {
         this.pdv = pdv;
     }
 
-    public int getPdvMax() {
-        return this.pdvMax;
-    }
-
-    public int getInFightID() {
-        return this.inFightId;
-    }
-
-    public void setInFightID(int i) {
-        this.inFightId = i;
-    }
-
     public int getInit() {
         int fact = 4;
         int maxPdv = pdvMax;
@@ -229,8 +222,9 @@ public class MonsterGrade {
     }
 
     public Stats getStats() {
-        if (this.getTemplate().getId() == 42 && !stats.containsKey(Constant.STATS_CREATURE))
-            stats.put(Constant.STATS_CREATURE, 5);
+        if (this.getTemplate().getId() == 42 && !stats.containsKey(Constant.STATS_SUMMON_COUNT))
+            stats.put(Constant.STATS_SUMMON_COUNT, 5);
+
         if (this.stats.get(-1) != null) {
             Map<Integer, Integer> stats = new HashMap<>(this.stats);
             stats.remove(-1);
@@ -251,34 +245,6 @@ public class MonsterGrade {
 
     public Map<Integer, Spell.SortStats> getSpells() {
         return this.spells;
-    }
-
-    public void setStatsInvocations(final Fighter caster, int mobID) {
-        if (caster.getPlayer() == null && mobID != 264 && mobID != 114 && mobID != 115)
-            return;
-        else if (mobID == 264 && caster.getMob() != null)
-            pdvMax = 425;
-        if (mobID == 114 && caster.getMob() != null)
-            pdvMax = 35;
-        if (mobID == 115 && caster.getMob() != null)
-            pdvMax = 90;
-        if (mobID == 262 && caster.getPlayer() != null)
-            pdvMax = 225;
-        if (mobID == 246 && caster.getPlayer() != null)
-            pdvMax = 80;
-        if (mobID == 1108 && caster.getPlayer() != null)
-            pdvMax = 490;
-
-        stats.put(Constant.STATS_ADD_VITA, pdvMax);
-        Stream.of(
-                Constant.STATS_ADD_SAGE,
-                Constant.STATS_ADD_FORC,
-                Constant.STATS_ADD_INTE,
-                Constant.STATS_ADD_CHAN,
-                Constant.STATS_ADD_AGIL,
-                Constant.STATS_ADD_VITA).forEach(stat -> stats.put(stat, stats.getOrDefault(stat, 0) * 3));
-        pdvMax = stats.get(Constant.STATS_ADD_VITA);
-        pdv = pdvMax;
     }
 
     public SMobGrade scripted() {

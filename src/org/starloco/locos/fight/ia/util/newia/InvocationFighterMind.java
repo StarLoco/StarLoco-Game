@@ -22,7 +22,7 @@ public class InvocationFighterMind extends FighterMind {
     public InvocationFighterMind(AbstractEasyIA ia) {
         super(ia);
 
-        if(ia.getFighter().nbrInvoc >= ia.getFighter().getTotalStats().get(Constant.STATS_CREATURE))
+        if(ia.getFighter().getNbrInvoc() >= ia.getFighter().getTotalStats().get(Constant.STATS_SUMMON_COUNT))
             return;
 
         for(Fighter target : this.getEnemies(false)) {

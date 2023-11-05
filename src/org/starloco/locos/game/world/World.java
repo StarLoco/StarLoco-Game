@@ -668,7 +668,7 @@ public class World implements Scripted<SWorld> {
 
     public void addNpcTemplate(NpcTemplate temp) {
         if (npcsTemplate.containsKey(temp.getId()) && temp.legacy == null) {
-            Main.logger.error("Overwriting npc template #{} with script", temp.getId());
+            Main.logger.warn("Overwriting npc template #{} with script", temp.getId());
         }
         npcsTemplate.put(temp.getId(), temp);
     }

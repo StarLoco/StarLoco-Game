@@ -5,6 +5,7 @@ import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.common.Formulas;
 import org.starloco.locos.common.PathFinding;
 import org.starloco.locos.common.SocketManager;
+import org.starloco.locos.fight.CollectorFighter;
 import org.starloco.locos.fight.Fight;
 import org.starloco.locos.fight.Fighter;
 import org.starloco.locos.fight.ia.AbstractEasyIA;
@@ -545,7 +546,7 @@ public class Function {
     {
         if (fight == null || fighter == null)
             return false;
-        if (fighter.nbInvocation() >= fighter.getTotalStats().getEffect(Constant.STATS_CREATURE))
+        if (fighter.nbInvocation() >= fighter.getTotalStats().getEffect(Constant.STATS_SUMMON_COUNT))
             return false;
         Fighter nearest = getNearestEnnemy(fight, fighter, false);
         if (nearest == null)
@@ -573,7 +574,7 @@ public class Function {
     {
         if (fight == null || fighter == null)
             return false;
-        if (fighter.nbInvocation() >= fighter.getTotalStats().getEffect(Constant.STATS_CREATURE))
+        if (fighter.nbInvocation() >= fighter.getTotalStats().getEffect(Constant.STATS_SUMMON_COUNT))
             return false;
         Fighter nearest = getNearestEnnemy(fight, fighter, false);
         if (nearest == null)
@@ -675,7 +676,7 @@ public class Function {
                     if (PDVPER < PDVPERmin && PDVPER < 95)
                     {
                         int infl = 0;
-                        if (f.isCollector())
+                        if (f instanceof CollectorFighter)
                         {
                             for (Map.Entry<Integer, SortStats> ss : World.world.getGuild(f.getCollector().getGuildId()).getSpells().entrySet())
                             {
@@ -762,7 +763,7 @@ public class Function {
                     if (PDVPER < PDVPERmin && PDVPER < 95)
                     {
                         int infl = 0;
-                        if (f.isCollector())
+                        if (f instanceof CollectorFighter)
                         {
                             for (Map.Entry<Integer, SortStats> ss : World.world.getGuild(f.getCollector().getGuildId()).getSpells().entrySet())
                             {
@@ -835,7 +836,7 @@ public class Function {
             return null;
         int infl = -1500000;
         SortStats ss = null;
-        if (F.isCollector())
+        if (F instanceof CollectorFighter)
         {
             for (Map.Entry<Integer, SortStats> SS : World.world.getGuild(F.getCollector().getGuildId()).getSpells().entrySet())
             {
@@ -907,7 +908,7 @@ public class Function {
             return null;
         int infl = 0;
         SortStats ss = null;
-        if (F.isCollector())
+        if (F instanceof CollectorFighter)
         {
             for (Map.Entry<Integer, SortStats> SS : World.world.getGuild(F.getCollector().getGuildId()).getSpells().entrySet())
             {
@@ -1793,7 +1794,7 @@ public class Function {
             return null;
         int influence = -1500000;
         SortStats ss = null;
-        Collection<SortStats> spells = (caster.isCollector() ? World.world.getGuild(caster.getCollector().getGuildId()).getSpells().values() : caster.getMob().getSpells().values());
+        Collection<SortStats> spells = (caster instanceof CollectorFighter ? World.world.getGuild(caster.getCollector().getGuildId()).getSpells().values() : caster.getMob().getSpells().values());
 
         for (SortStats tmp : spells) {
             int i = calculInfluence(tmp, caster, target);
@@ -1811,7 +1812,7 @@ public class Function {
         int influence = 0;
         SortStats ss = null;
 
-        Collection<SortStats> spells = (caster.isCollector() ? World.world.getGuild(caster.getCollector().getGuildId()).getSpells().values() : caster.getMob().getSpells().values());
+        Collection<SortStats> spells = (caster instanceof CollectorFighter ? World.world.getGuild(caster.getCollector().getGuildId()).getSpells().values() : caster.getMob().getSpells().values());
         for (SortStats tmp : spells) {
             if (influence < calculInfluenceHeal(tmp) && calculInfluenceHeal(tmp) != 0) {
                 influence = calculInfluenceHeal(tmp);

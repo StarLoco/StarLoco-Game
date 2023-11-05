@@ -35,7 +35,6 @@ import org.starloco.locos.game.GameServer;
 import org.starloco.locos.game.action.ExchangeAction;
 import org.starloco.locos.game.action.GameAction;
 import org.starloco.locos.game.action.type.DocumentActionData;
-import org.starloco.locos.game.action.type.EmptyActionData;
 import org.starloco.locos.game.action.type.NpcDialogActionData;
 import org.starloco.locos.game.action.type.ScenarioActionData;
 import org.starloco.locos.game.world.World;
@@ -609,8 +608,8 @@ public class Player implements Scripted<SPlayer>, Actor {
         stats.put(Constant.STATS_ADD_RP_FEU, P.getStats().getEffect(Constant.STATS_ADD_RP_FEU));
         stats.put(Constant.STATS_ADD_RP_EAU, P.getStats().getEffect(Constant.STATS_ADD_RP_EAU));
         stats.put(Constant.STATS_ADD_RP_AIR, P.getStats().getEffect(Constant.STATS_ADD_RP_AIR));
-        stats.put(Constant.STATS_ADD_AFLEE, P.getStats().getEffect(Constant.STATS_ADD_AFLEE));
-        stats.put(Constant.STATS_ADD_MFLEE, P.getStats().getEffect(Constant.STATS_ADD_MFLEE));
+        stats.put(Constant.STATS_ADD_ADODGE, P.getStats().getEffect(Constant.STATS_ADD_ADODGE));
+        stats.put(Constant.STATS_ADD_MDODGE, P.getStats().getEffect(Constant.STATS_ADD_MDODGE));
 
         byte showWings = 0;
         int alvl = 0;
@@ -696,16 +695,35 @@ public class Player implements Scripted<SPlayer>, Actor {
         this.classe = classe;
     }
 
+    public int[] getColors() {
+        int color1 = this.color1;
+        int color2 = this.color2;
+        int color3 = this.color3;
+        if (this.getObjetByPos(Constant.ITEM_POS_MALEDICTION) != null) {
+            if (this.getObjetByPos(Constant.ITEM_POS_MALEDICTION).getTemplate().getId() == 10838) {
+                color1 = 16342021;
+                color2 = 16342021;
+                color3 = 16342021;
+            }
+        }
+
+        return new int[]{
+            color1,
+            color2,
+            color3,
+        };
+    }
+
     public int getColor1() {
-        return this.color1;
+        return this.getColors()[0];
     }
 
     public int getColor2() {
-        return this.color2;
+        return this.getColors()[1];
     }
 
     public int getColor3() {
-        return this.color3;
+        return this.getColors()[2];
     }
 
     public int getLevel() {
@@ -1470,7 +1488,7 @@ public class Player implements Scripted<SPlayer>, Actor {
             ptsDelta = (previousLevel*(previousLevel-1) - (newLevel * (newLevel-1)))/2;
 
             if(_spellPts < ptsDelta) {
-                // Not enough points
+                // Predicates enough points
                 return new EnsureSpellLevelResult(false, 0, previousLevel, false);
             }
             _spellPts += ptsDelta;
@@ -2086,7 +2104,7 @@ public class Player implements Scripted<SPlayer>, Actor {
             if (this.dead == 1 && !this.isGhost)
                 str.append("-1");
             str.append(getSpeed()).append(";");//Restriction
-            str.append((_onMount && _mount != null ? _mount.getStringColor(parsecolortomount()) : "")).append(";");
+            str.append((_onMount && _mount != null ? _mount.getStringColor(encodeColorsForMount()) : "")).append(";");
             str.append(this.isDead()).append(";");
         }
         return str.toString();
@@ -2205,7 +2223,7 @@ public class Player implements Scripted<SPlayer>, Actor {
         ASData.append(stats.getEffect(Constant.STATS_ADD_AGIL)).append(",").append(sutffStats.getEffect(Constant.STATS_ADD_AGIL)).append(",").append(donStats.getEffect(Constant.STATS_ADD_AGIL)).append(",").append(buffStats.getEffect(Constant.STATS_ADD_AGIL)).append("|");
         ASData.append(stats.getEffect(Constant.STATS_ADD_INTE)).append(",").append(sutffStats.getEffect(Constant.STATS_ADD_INTE)).append(",").append(donStats.getEffect(Constant.STATS_ADD_INTE)).append(",").append(buffStats.getEffect(Constant.STATS_ADD_INTE)).append("|");
         ASData.append(stats.getEffect(Constant.STATS_ADD_PO)).append(",").append(sutffStats.getEffect(Constant.STATS_ADD_PO)).append(",").append(donStats.getEffect(Constant.STATS_ADD_PO)).append(",").append(buffStats.getEffect(Constant.STATS_ADD_PO)).append("|");
-        ASData.append(stats.getEffect(Constant.STATS_CREATURE)).append(",").append(sutffStats.getEffect(Constant.STATS_CREATURE)).append(",").append(donStats.getEffect(Constant.STATS_CREATURE)).append(",").append(buffStats.getEffect(Constant.STATS_CREATURE)).append("|");
+        ASData.append(stats.getEffect(Constant.STATS_SUMMON_COUNT)).append(",").append(sutffStats.getEffect(Constant.STATS_SUMMON_COUNT)).append(",").append(donStats.getEffect(Constant.STATS_SUMMON_COUNT)).append(",").append(buffStats.getEffect(Constant.STATS_SUMMON_COUNT)).append("|");
         ASData.append(stats.getEffect(Constant.STATS_ADD_DOMA)).append(",").append(sutffStats.getEffect(Constant.STATS_ADD_DOMA)).append(",").append(donStats.getEffect(Constant.STATS_ADD_DOMA)).append(",").append(buffStats.getEffect(Constant.STATS_ADD_DOMA)).append("|");
         ASData.append(stats.getEffect(Constant.STATS_ADD_PDOM)).append(",").append(sutffStats.getEffect(Constant.STATS_ADD_PDOM)).append(",").append(donStats.getEffect(Constant.STATS_ADD_PDOM)).append(",").append(buffStats.getEffect(Constant.STATS_ADD_PDOM)).append("|");
         ASData.append(stats.getEffect(Constant.STATS_ADD_MAITRISE)).append(",").append(sutffStats.getEffect(Constant.STATS_ADD_MAITRISE)).append(",").append(donStats.getEffect(Constant.STATS_ADD_MAITRISE)).append(",").append(buffStats.getEffect(Constant.STATS_ADD_MAITRISE)).append("|");//ASData.append("0,0,0,0|");//Maitrise ?
@@ -2216,8 +2234,8 @@ public class Player implements Scripted<SPlayer>, Actor {
         ASData.append(stats.getEffect(Constant.STATS_RETDOM)).append(",").append(sutffStats.getEffect(Constant.STATS_RETDOM)).append(",").append(donStats.getEffect(Constant.STATS_RETDOM)).append(",").append(buffStats.getEffect(Constant.STATS_RETDOM)).append("|");
         ASData.append(stats.getEffect(Constant.STATS_ADD_CC)).append(",").append(sutffStats.getEffect(Constant.STATS_ADD_CC)).append(",").append(donStats.getEffect(Constant.STATS_ADD_CC)).append(",").append(buffStats.getEffect(Constant.STATS_ADD_CC)).append("|");
         ASData.append(stats.getEffect(Constant.STATS_ADD_EC)).append(",").append(sutffStats.getEffect(Constant.STATS_ADD_EC)).append(",").append(donStats.getEffect(Constant.STATS_ADD_EC)).append(",").append(buffStats.getEffect(Constant.STATS_ADD_EC)).append("|");
-        ASData.append(stats.getEffect(Constant.STATS_ADD_AFLEE)).append(",").append(sutffStats.getEffect(Constant.STATS_ADD_AFLEE)).append(",").append(0).append(",").append(buffStats.getEffect(Constant.STATS_ADD_AFLEE)).append(",").append(buffStats.getEffect(Constant.STATS_ADD_AFLEE)).append("|");
-        ASData.append(stats.getEffect(Constant.STATS_ADD_MFLEE)).append(",").append(sutffStats.getEffect(Constant.STATS_ADD_MFLEE)).append(",").append(0).append(",").append(buffStats.getEffect(Constant.STATS_ADD_MFLEE)).append(",").append(buffStats.getEffect(Constant.STATS_ADD_MFLEE)).append("|");
+        ASData.append(stats.getEffect(Constant.STATS_ADD_ADODGE)).append(",").append(sutffStats.getEffect(Constant.STATS_ADD_ADODGE)).append(",").append(0).append(",").append(buffStats.getEffect(Constant.STATS_ADD_ADODGE)).append(",").append(buffStats.getEffect(Constant.STATS_ADD_ADODGE)).append("|");
+        ASData.append(stats.getEffect(Constant.STATS_ADD_MDODGE)).append(",").append(sutffStats.getEffect(Constant.STATS_ADD_MDODGE)).append(",").append(0).append(",").append(buffStats.getEffect(Constant.STATS_ADD_MDODGE)).append(",").append(buffStats.getEffect(Constant.STATS_ADD_MDODGE)).append("|");
         ASData.append(stats.getEffect(Constant.STATS_ADD_R_NEU)).append(",").append(sutffStats.getEffect(Constant.STATS_ADD_R_NEU)).append(",").append(0).append(",").append(buffStats.getEffect(Constant.STATS_ADD_R_NEU)).append(",").append(buffStats.getEffect(Constant.STATS_ADD_R_NEU)).append("|");
         ASData.append(stats.getEffect(Constant.STATS_ADD_RP_NEU)).append(",").append(sutffStats.getEffect(Constant.STATS_ADD_RP_NEU)).append(",").append(0).append(",").append(buffStats.getEffect(Constant.STATS_ADD_RP_NEU)).append(",").append(buffStats.getEffect(Constant.STATS_ADD_RP_NEU)).append("|");
         ASData.append(stats.getEffect(Constant.STATS_ADD_R_PVP_NEU)).append(",").append(sutffStats.getEffect(Constant.STATS_ADD_R_PVP_NEU)).append(",").append(0).append(",").append(buffStats.getEffect(Constant.STATS_ADD_R_PVP_NEU)).append(",").append(buffStats.getEffect(Constant.STATS_ADD_R_PVP_NEU)).append("|");
@@ -2386,7 +2404,7 @@ public class Player implements Scripted<SPlayer>, Actor {
         stats.addOneStat(Constant.STATS_ADD_AGIL, this.air);
         stats.addOneStat(Constant.STATS_ADD_INIT, this.initiative);
         stats.addOneStat(Constant.STATS_ADD_PROS, 100);
-        stats.addOneStat(Constant.STATS_CREATURE, 1);
+        stats.addOneStat(Constant.STATS_SUMMON_COUNT, 1);
         this.useCac = false;
         return stats;
     }
@@ -5592,17 +5610,8 @@ public class Player implements Scripted<SPlayer>, Actor {
         ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this);
     }
 
-    public String parsecolortomount() {
-        int color1 = this.getColor1(), color2 = this.getColor2(), color3 = this.getColor3();
-        if (this.getObjetByPos(Constant.ITEM_POS_MALEDICTION) != null)
-            if (this.getObjetByPos(Constant.ITEM_POS_MALEDICTION).getTemplate().getId() == 10838) {
-                color1 = 16342021;
-                color2 = 16342021;
-                color3 = 16342021;
-            }
-        return (color1 == -1 ? "" : Integer.toHexString(color1)) + ","
-                + (color2 == -1 ? "" : Integer.toHexString(color2)) + ","
-                + (color3 == -1 ? "" : Integer.toHexString(color3));
+    public String encodeColorsForMount() {
+        return Arrays.stream(getColors()).mapToObj(String::valueOf).collect(Collectors.joining(","));
     }
 
     //region Objects class

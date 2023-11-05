@@ -8,6 +8,7 @@ import org.starloco.locos.client.other.Stats;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.fight.Fight;
 import org.starloco.locos.fight.Fighter;
+import org.starloco.locos.fight.PlayerFighter;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.Constant;
 import org.starloco.locos.util.TimerWaiter;
@@ -25,7 +26,7 @@ public class Prism {
     private int Map;
     private int cell;
     private int name;
-    private int gfx;
+    public final int gfx;
     private int honor = 0;
     private int area = -1;
     private Fight fight;
@@ -64,25 +65,26 @@ public class Prism {
     }
 
     public static String attackerOfPrisme(int id, int MapId, int FightId) {
-        String str = "+";
-        str += Integer.toString(id, 36);
+        StringBuilder str = new StringBuilder("+");
+        str.append(Integer.toString(id, 36));
         GameMap gameMap = World.world.getMap(MapId);
-        if(gameMap != null) {
-            for (Fight fight : gameMap.getFights()) {
-                if (fight.getId() == FightId) {
-                    for (Fighter fighter : fight.getFighters(1)) {
-                        if (fighter.getPlayer() == null)
-                            continue;
-                        str += "|";
-                        str += Integer.toString(fighter.getPlayer().getId(), 36) + ";";
-                        str += fighter.getPlayer().getName() + ";";
-                        str += fighter.getPlayer().getLevel() + ";";
-                        str += "0;";
-                    }
+
+        if(gameMap==null) return str.toString();
+
+        for (Fight fight : gameMap.getFights()) {
+            if (fight.getId() == FightId) {
+                for (Fighter fighter : fight.getFighters(1)) {
+                    if(!(fighter instanceof PlayerFighter))
+                        continue;
+                    str.append("|");
+                    str.append(Integer.toString(fighter.getId(), 36)).append(";");
+                    str.append(fighter.getPacketsName()).append(";");
+                    str.append(fighter.getLvl()).append(";");
+                    str.append("0;");
                 }
             }
         }
-        return str;
+        return str.toString();
     }
 
     public static String defenderOfPrisme(int id, int MapId, int FightId) {
@@ -94,19 +96,19 @@ public class Prism {
             for (Fight fight : gameMap.getFights()) {
                 if (fight.getId() == FightId) {
                     for (Fighter fighter : fight.getFighters(2)) {
-                        if (fighter.getPlayer() == null)
+                        if(!(fighter instanceof PlayerFighter))
                             continue;
                         str += "|";
-                        str += Integer.toString(fighter.getPlayer().getId(), 36)
+                        str += Integer.toString(fighter.getId(), 36)
                                 + ";";
-                        str += fighter.getPlayer().getName() + ";";
-                        str += fighter.getPlayer().getGfxId() + ";";
-                        str += fighter.getPlayer().getLevel() + ";";
-                        str += Integer.toString(fighter.getPlayer().getColor1(), 36)
+                        str += fighter.getPacketsName() + ";";
+                        str += fighter.getDefaultGfx() + ";";
+                        str += fighter.getLvl() + ";";
+                        str += Integer.toString(fighter.getColors()[0], 36)
                                 + ";";
-                        str += Integer.toString(fighter.getPlayer().getColor2(), 36)
+                        str += Integer.toString(fighter.getColors()[1], 36)
                                 + ";";
-                        str += Integer.toString(fighter.getPlayer().getColor3(), 36)
+                        str += Integer.toString(fighter.getColors()[2], 36)
                                 + ";";
                         if (fight.getFighters(2).size() > 7)
                             str += "1;";
@@ -204,8 +206,8 @@ public class Prism {
         this.stats.put(Constant.STATS_ADD_RP_EAU, resistance);
         this.stats.put(Constant.STATS_ADD_RP_AIR, resistance);
         this.stats.put(Constant.STATS_ADD_RP_TER, resistance);
-        this.stats.put(Constant.STATS_ADD_AFLEE, resistance);
-        this.stats.put(Constant.STATS_ADD_MFLEE, resistance);
+        this.stats.put(Constant.STATS_ADD_ADODGE, resistance);
+        this.stats.put(Constant.STATS_ADD_MDODGE, resistance);
         this.stats.put(Constant.STATS_ADD_PA, 6);
         this.stats.put(Constant.STATS_ADD_PM, 0);
     }

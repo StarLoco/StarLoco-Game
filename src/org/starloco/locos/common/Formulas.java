@@ -6,6 +6,7 @@ import org.starloco.locos.area.map.OrthogonalProj;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.fight.Fight;
 import org.starloco.locos.fight.Fighter;
+import org.starloco.locos.fight.PlayerFighter;
 import org.starloco.locos.fight.spells.ResEffectInfo;
 import org.starloco.locos.fight.spells.SpellEffect;
 import org.starloco.locos.game.world.World;
@@ -426,7 +427,9 @@ public class Formulas {
                 break;
         }
         //On bride la resistance a 50% si c'est un joueur
-        if ((target.isCollector() || target.getMob() == null) && respT > 50) respT = 50;
+        if (target instanceof PlayerFighter) {
+            respT = Math.min(50, respT);
+        }
 
         if (statC < 0)
             statC = 0;
@@ -550,8 +553,8 @@ public class Formulas {
             target.removePdvMax((int) Math.floor(num / 10));
 
         // The level of the mob help the damage
-        if (caster.getPlayer() == null && !caster.isCollector())
-            return (int) (num * Math.ceil((caster.getLvl() * 0.5) / 100));
+//        if (caster.getPlayer() == null && !caster.isCollector())
+//            return (int) (num * Math.ceil((caster.getLvl() * 0.5) / 100));
         return (int) num;
     }
 
@@ -1277,10 +1280,10 @@ public class Formulas {
 
     //region Formule esquive Pa/Pm
     public static int getPointsLost(char type, int value, Fighter caster, Fighter target) {
-        float esquiveC = type == 'a' ? caster.getTotalStatsLessBuff().getEffect(Constant.STATS_ADD_AFLEE) : caster.getTotalStatsLessBuff().getEffect(Constant.STATS_ADD_MFLEE);
-        float esquiveT = type == 'a' ? target.getTotalStats().getEffect(Constant.STATS_ADD_AFLEE) : target.getTotalStats().getEffect(Constant.STATS_ADD_MFLEE);
+        float esquiveC = type == 'a' ? caster.getTotalStatsLessBuff().getEffect(Constant.STATS_ADD_ADODGE) : caster.getTotalStatsLessBuff().getEffect(Constant.STATS_ADD_MDODGE);
+        float esquiveT = type == 'a' ? target.getTotalStats().getEffect(Constant.STATS_ADD_ADODGE) : target.getTotalStats().getEffect(Constant.STATS_ADD_MDODGE);
         float ptsMax = type == 'a' ? target.getTotalStatsLessBuff().getEffect(Constant.STATS_ADD_PA) : target.getTotalStatsLessBuff().getEffect(Constant.STATS_ADD_PM);
-        if(target.isMob())
+        if(target.getMob() != null)
             ptsMax = type == 'a' ? target.getMob().getPa() : target.getMob().getPm();
         int loose = 0;
 

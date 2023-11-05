@@ -2,52 +2,46 @@ package org.starloco.locos.fight;
 
 import org.classdump.luna.impl.ImmutableTable;
 import org.starloco.locos.area.map.Actor;
-import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.client.other.Stats;
 import org.starloco.locos.common.Formulas;
 import org.starloco.locos.common.PathFinding;
 import org.starloco.locos.common.SocketManager;
-import org.starloco.locos.database.data.game.ExperienceTables;
 import org.starloco.locos.entity.Collector;
 import org.starloco.locos.entity.Prism;
 import org.starloco.locos.entity.monster.MonsterGrade;
+import org.starloco.locos.entity.mount.Mount;
 import org.starloco.locos.fight.spells.LaunchedSpell;
 import org.starloco.locos.fight.spells.Spell;
 import org.starloco.locos.fight.spells.SpellEffect;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.Config;
 import org.starloco.locos.kernel.Constant;
-import org.starloco.locos.guild.Guild;
 import org.starloco.locos.script.Scripted;
 import org.starloco.locos.util.TimerWaiter;
 
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-public class Fighter implements Comparable<Fighter>, Scripted<Object>, Actor {
+public abstract  class Fighter implements Comparable<Fighter>, Scripted<Object>, Actor, Cloneable {
+    protected final int id;
+    protected final Fight fight;
 
-    public int nbrInvoc;
+    private int erodedLP = 0;
+
+    private int nbrInvoc;
     private boolean trapped = false, glyphed = false;
-    public boolean isStatique = false;
-    private int id = 0;
+    private boolean isStatique = false;
     private boolean canPlay = false;
-    private Fight fight;
-    private int type = 0;                                // 1 : Personnage, 2 : Mob, 5 : Perco
-    private MonsterGrade mob = null;
-    private Player player = null;
-    private Player _double = null;
-    private Collector collector = null;
-    private Prism prism = null;
+    // protected int type = 0;
     private int team = -2;
     private GameCase cell;
-    private int pdvMax;
     private int pdv;
     private boolean isDead;
     private boolean hasLeft;
-    private int gfxId;
     private Fighter isHolding;
     private Fighter holdedBy;
     private Fighter oldCible = null;
@@ -59,66 +53,113 @@ public class Fighter implements Comparable<Fighter>, Scripted<Object>, Actor {
     private boolean isTraqued = false;
     private Stats stats;
     private Map<Integer, Integer> state = new HashMap<>();
-    private ArrayList<SpellEffect> fightBuffs = new ArrayList<>();
+    protected final ArrayList<SpellEffect> fightBuffs = new ArrayList<>();
     private Map<Integer, Integer> chatiValue = new HashMap<>();
     private ArrayList<LaunchedSpell> launchedSpell = new ArrayList<>();
-    public World.Couple<Byte, Long> killedBy;
+    private World.Couple<Byte, Long> killedBy;
 
-    public Fighter(Fight f, MonsterGrade mob) {
-        setId(mob.getInFightID());
+    protected Fighter(int id, Fight f) {
+        this.id = id;
         this.fight = f;
-        this.type = 2;
-        this.mob = mob;
-        this.pdvMax = mob.getPdvMax();
-        this.pdv = mob.getPdv();
-        this.gfxId = getDefaultGfx();
-        if(this.mob.getTemplate().getId() == 423) // Kralamour géant
-            this.state.put(Constant.ETAT_ENRACINE, 9999);
     }
 
-    public Fighter(Fight f, Player player) {
-        this.fight = f;
-        if (player._isClone) {
-            this.type = 10;
-            setDouble(player);
-        } else {
-            this.type = 1;
-            this.player = player;
-        }
-        setId(player.getId());
-        this.pdvMax = player.getMaxPdv();
-        this.pdv = player.getCurPdv();
-        this.gfxId = getDefaultGfx();
+    private void init() {
+        this.pdv = this.getPdvMax();
     }
 
-    public Fighter(Fight f, Collector Perco) {
-        this.fight = f;
-        this.type = 5;
-        setCollector(Perco);
-        setId(-1);
-        this.pdvMax = (World.world.getGuild(Perco.getGuildId()).getLvl() * 100);
-        this.pdv = (World.world.getGuild(Perco.getGuildId()).getLvl() * 100);
-        this.gfxId = 6000;
+    public static Fighter NewPlayer(Fight f, Player player) {
+        Fighter fi = new PlayerFighter(f, player);
+        fi.init();
+        return fi;
     }
 
-    public Fighter(Fight Fight, Prism Prisme) {
-        this.fight = Fight;
-        this.type = 7;
-        setPrism(Prisme);
-        setId(-1);
-        this.pdvMax = Prisme.getLevel() * 10000;
-        this.pdv = Prisme.getLevel() * 10000;
-        this.gfxId = Prisme.getAlignment() == 1 ? 8101 : 8100;
-        Prisme.refreshStats();
+    public static Fighter NewCollector(int id, Fight f, Collector collector) {
+        Fighter fi = new CollectorFighter(id, f, collector);
+        fi.init();
+        return fi;
     }
+
+    public static Fighter NewMob(int id, Fight f, MonsterGrade mg) {
+        Fighter fi = new MobFighter(id, f, mg);
+        fi.init();
+        return fi;
+    }
+
+    public static Fighter NewPrism(int id, Fight f, Prism p) {
+        Fighter fi = new PrismFighter(id, f, p);
+        fi.init();
+        return fi;
+    }
+
+    public static Fighter NewClone(int id, Fight f, PlayerFighter p) {
+        Fighter fi = new CloneFighter(id, f, p);
+        fi.init();
+        return fi;
+    }
+
+    public static Fighter NewSummon(int id, Fight f, MonsterGrade mg, Fighter caster) {
+        Fighter fi = new SummonFighter(id, f, mg, caster);
+        fi.init();
+        return fi;
+    }
+
+//    public Fighter(Fight f, Player player) {
+//        this.fight = f;
+//        if (player._isClone) {
+//            this.type = 10;
+//            setDouble(player);
+//        } else {
+//            this.type = 1;
+//            this.player = player;
+//        }
+//        setId(player.getId());
+//        this.pdvMax = player.getMaxPdv();
+//        this.pdv = player.getCurPdv();
+//        this.gfxId = getDefaultGfx();
+//    }
+//
+//    public Fighter(Fight f, Collector Perco) {
+//        this.fight = f;
+//        this.type = 5;
+//        setCollector(Perco);
+//        setId(-1);
+//        this.pdvMax = (World.world.getGuild(Perco.getGuildId()).getLvl() * 100);
+//        this.pdv = (World.world.getGuild(Perco.getGuildId()).getLvl() * 100);
+//        this.gfxId = 6000;
+//    }
+
+//    public Fighter(Fight Fight, Prism Prisme) {
+//        this.fight = Fight;
+//        this.type = 7;
+//        setPrism(Prisme);
+//        setId(-1);
+//        this.pdvMax = Prisme.getLevel() * 10000;
+//        this.pdv = Prisme.getLevel() * 10000;
+//        this.gfxId = Prisme.getAlignment() == 1 ? 8101 : 8100;
+//        Prisme.refreshStats();
+//    }
 
     public int getId() {
         return this.id;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
+    public abstract int getType();
+
+    public abstract int getLvl();
+
+    public abstract int baseMaxPdv();
+
+    protected abstract Stats getBaseStats();
+
+    public abstract int getDefaultGfx();
+
+    @Override
+    public Fighter clone() throws CloneNotSupportedException { return (Fighter) super.clone(); };
+
+    protected String getMountColors() { return null; };
+
+
+
 
     public boolean canPlay() {
         return this.canPlay;
@@ -132,65 +173,79 @@ public class Fighter implements Comparable<Fighter>, Scripted<Object>, Actor {
         return this.fight;
     }
 
-    public int getType() {
-        return this.type;
+    public void initFightBuffs() {}
+
+    public void send(String pck) {}
+
+    public abstract Optional<Spell.SortStats> spellRankForID(int id);
+
+    public String xpString(String separator) {
+        return "0" + separator + "0" + separator + "0";
     }
 
-    public MonsterGrade getMob() {
-        if (this.type == 2)
-            return this.mob;
-        return null;
-    }
+    public abstract String getPacketsName();
 
-    public boolean isMob() {
-        return (this.mob != null);
-    }
+    abstract Stream<String> getGMPacketParts();
 
-    public Player getPlayer() {
-        if (this.type == 1)
-            return this.player;
-        return null;
-    }
+    Optional<Mount> getMount() { return Optional.empty(); };
 
-    public Player getDouble() {
-        return _double;
-    }
+    public int[] getColors() { return new int[]{-1, -1, -1}; }
 
-    public boolean isDouble() {
-        return (this._double != null);
-    }
+//    public MonsterGrade getMob() {
+//        if (this.type == 2)
+//            return this.mob;
+//        return null;
+//    }
+//
+//    public boolean isMob() {
+//        return (this.mob != null);
+//    }
+//
+//    public Player getPlayer() {
+//        if (this.type == 1)
+//            return this.player;
+//        return null;
+//    }
+//
+//    public Player getDouble() {
+//        return _double;
+//    }
+//
+//    public boolean isDouble() {
+//        return (this._double != null);
+//    }
+//
+//    public void setDouble(Player _double) {
+//        this._double = _double;
+//    }
+//
+//    public Collector getCollector() {
+//        if (this.type == 5)
+//            return this.collector;
+//        return null;
+//    }
+//
+//    public boolean isCollector() {
+//        return (this.collector != null);
+//    }
+//
+//    public void setCollector(Collector collector) {
+//        this.collector = collector;
+//    }
 
-    public void setDouble(Player _double) {
-        this._double = _double;
-    }
-
-    public Collector getCollector() {
-        if (this.type == 5)
-            return this.collector;
-        return null;
-    }
-
-    public boolean isCollector() {
-        return (this.collector != null);
-    }
-
-    public void setCollector(Collector collector) {
-        this.collector = collector;
-    }
-
-    public Prism getPrism() {
-        if (this.type == 7)
-            return this.prism;
-        return null;
-    }
-
-    public void setPrism(Prism prism) {
-        this.prism = prism;
-    }
-
-    public boolean isPrisme() {
-        return (this.prism != null);
-    }
+//    public Prism getPrism() {
+//        if (this.type == 7)
+//            return this.prism;
+//        return null;
+//    }
+//
+//    public void setPrism(Prism prism) {
+//        this.prism = prism;
+//    }
+//
+//    public boolean isPrisme() {
+//        return (this.prism != null);
+//    }
 
     public int getTeam() {
         return this.team;
@@ -217,27 +272,20 @@ public class Fighter implements Comparable<Fighter>, Scripted<Object>, Actor {
     }
 
     public int getPdvMax() {
-        return this.pdvMax + getBuffValue(Constant.STATS_ADD_VITA);
+        return this.baseMaxPdv() + getBuffValue(Constant.STATS_ADD_VITA) - erodedLP;
     }
 
     public void removePdvMax(int pdv) {
-        this.pdvMax = this.pdvMax - pdv;
-        if (this.pdv > this.pdvMax)
-            this.pdv = this.pdvMax;
+        erodedLP += pdv;
+        this.pdv = Math.min(getPdvMax(), this.pdv);
     }
 
     public int getPdv() {
         return (this.pdv + getBuffValue(Constant.STATS_ADD_VITA));
     }
 
-    public void setPdvMax(int pdvMax) {
-        this.pdvMax = pdvMax;
-    }
-
     public void setPdv(int pdv) {
-        this.pdv = pdv;
-        if(this.pdv > this.pdvMax)
-            this.pdv = this.pdvMax;
+        this.pdv = Math.min(this.getPdvMax(), pdv);
     }
 
     public void removePdv(Fighter caster, int pdv) {
@@ -247,11 +295,11 @@ public class Fighter implements Comparable<Fighter>, Scripted<Object>, Actor {
     }
 
     public void fullPdv() {
-        this.pdv = this.pdvMax;
+        this.pdv = this.getPdvMax();
     }
 
     public boolean isFullPdv() {
-        return this.pdv == this.pdvMax;
+        return this.pdv == this.getPdvMax();
     }
 
     public boolean isDead() {
@@ -433,24 +481,7 @@ public class Fighter implements Comparable<Fighter>, Scripted<Object>, Actor {
     }
 
     public Stats getTotalStatsLessBuff() {
-        Stats stats = new Stats(new HashMap<>());
-        if (this.type == 1)
-            stats = this.player.getTotalStats(true);
-        if (this.type == 2) {
-            if (this.stats == null) {
-                this.stats = this.mob.getStats();
-                stats = this.stats;
-            } else {
-                stats = this.mob.getStats();
-            }
-        }
-        if (this.type == 5)
-            stats = new Stats(World.world.getGuild(getCollector().getGuildId()));
-        if (this.type == 7)
-            stats = getPrism().getStats();
-        if (this.type == 10)
-            stats = getDouble().getTotalStats(true);
-        return stats;
+        return getBaseStats();
     }
 
     public boolean hasBuff(int id) {
@@ -463,14 +494,16 @@ public class Fighter implements Comparable<Fighter>, Scripted<Object>, Actor {
     public SpellEffect addBuff(int id, int value, int duration, boolean debuff, int spellId, String args, Fighter caster, boolean sendGA, boolean sendGIE) {
         SpellEffect effect = new SpellEffect(id, value, duration, debuff, caster, args, spellId);
 
-        if(this.mob != null)
+        Optional<MobFighter> mob = this.as(MobFighter.class);
+        if(mob.isPresent()) {
             for(int id1 : Constant.STATIC_INVOCATIONS)
-                if (id1 != 2750 && id1 == this.mob.getTemplate().getId())
+                if (id1 != 2750 && id1 == mob.get().getTemplate().getId())
                     return effect;
+        }
 
         switch(spellId) {
             case 1099:
-                if(this.mob != null && this.mob.getTemplate().getId() == 423)
+                if(mob.isPresent() && mob.get().getTemplate().getId() == 423)
                     return effect;
                 break;
             case 99:case 5:case 20:case 127: case 89:case 126:case 115:case 192: case 4:case 1:case 6:
@@ -503,7 +536,7 @@ public class Fighter implements Comparable<Fighter>, Scripted<Object>, Actor {
             }
         }
         // Cas infini
-        if(this.mob != null && duration == 0)
+        if(mob.isPresent() && duration == 0)
             duration = -1;
 
         effect.setTurn(duration);
@@ -599,8 +632,8 @@ public class Fighter implements Comparable<Fighter>, Scripted<Object>, Actor {
             }), 750);
         }
 
-        if (this.player != null && !this.hasLeft) {
-            SocketManager.GAME_SEND_STATS_PACKET(this.player);
+        if(!this.hasLeft){
+            this.as(PlayerFighter.class).ifPresent(PlayerFighter::sendStats);
         }
     }
 
@@ -659,7 +692,7 @@ public class Fighter implements Comparable<Fighter>, Scripted<Object>, Actor {
                     case 108:
                         if (effect.getSpell() == 441) {
                             //Baisse des pdvs max
-                            this.pdvMax = (this.pdvMax - effect.getValue());
+                            erodedLP += effect.getValue();
                             //Baisse des pdvs actuel
                             if (this.pdv - effect.getValue() <= 0) {
                                 this.fight.onFighterDie(this, this.holdedBy);
@@ -686,11 +719,6 @@ public class Fighter implements Comparable<Fighter>, Scripted<Object>, Actor {
         }
     }
 
-    public void initBuffStats() {
-        if (this.type == 1)
-            this.fightBuffs.addAll(new ArrayList<>(this.player.get_buff().values()));
-    }
-
     void applyBeginningTurnBuff(Fight fight) {
         List<SpellEffect> effects = new ArrayList<>(this.fightBuffs);
         for (int effectID : Constant.BEGIN_TURN_BUFF) {
@@ -713,22 +741,7 @@ public class Fighter implements Comparable<Fighter>, Scripted<Object>, Actor {
     }
 
     public Stats getTotalStats() {
-        Stats stats = new Stats(new HashMap<>());
-        if (this.type == 1)
-            stats = this.player.getTotalStats(false);
-        if (this.type == 2)
-            stats = this.mob.getStats();
-        if (this.type == 5)
-            stats = new Stats(World.world.getGuild(getCollector().getGuildId()));
-        if (this.type == 7)
-            stats = this.getPrism().getStats();
-        if (this.type == 10)
-            stats = this.getDouble().getTotalStats(false);
-
-        if(this.type != 1)
-            stats = Stats.cumulStatFight(stats, getFightBuffStats());
-
-        return stats;
+        return Stats.cumulStatFight(getBaseStats(), getFightBuffStats());
     }
 
     public int getMaitriseDmg(int id) {
@@ -746,7 +759,7 @@ public class Fighter implements Comparable<Fighter>, Scripted<Object>, Actor {
         return false;
     }
 
-    boolean testIfCC(int tauxCC) {
+    boolean critStrikeCheck(int tauxCC) {
         if (tauxCC < 2)
             return false;
         int agi = getTotalStats().getEffect(Constant.STATS_ADD_AGIL);
@@ -760,84 +773,32 @@ public class Fighter implements Comparable<Fighter>, Scripted<Object>, Actor {
         return (jet == tauxCC);
     }
 
-    boolean testIfCC(int porcCC, Spell.SortStats sSort, Fighter fighter) {
-        Player perso = fighter.getPlayer();
-        if (porcCC < 2)
-            return false;
-        int agi = getTotalStats().getEffect(Constant.STATS_ADD_AGIL);
-        if (agi < 0)
-            agi = 0;
-        porcCC -= getTotalStats().getEffect(Constant.STATS_ADD_CC);
-        if (fighter.getType() == 1
-                && perso.getObjectsClassSpell().containsKey(sSort.getSpellID())) {
-            int modi = perso.getValueOfClassObject(sSort.getSpellID(), 287);
-            porcCC -= modi;
-        }
-        porcCC = (int) ((porcCC * 2.9901) / Math.log(agi + 12));
-        if (porcCC < 2)
-            porcCC = 2;
+    protected int criticalStrikeModifier(int baseCC, int spellID) {
+        // By default, there is no modifier
+        return baseCC;
+    }
+
+    boolean critStrikeCheck(int porcCC, Spell.SortStats sSort, Fighter fighter) {
+        if(porcCC == 0) return false;
+         porcCC = criticalStrikeModifier(porcCC, sSort.getSpellID());
         int jet = Formulas.getRandomValue(1, porcCC);
         return (jet == porcCC);
     }
 
     int getInitiative() {
-        if (this.type == 1)
-            return this.player.getInitiative();
-        if (this.type == 2)
-            return this.mob.getInit();
-        if (this.type == 5)
-            return World.world.getGuild(getCollector().getGuildId()).getLvl();
-        if (this.type == 7)
-            return 0;
-        if (this.type == 10)
-            return getDouble().getInitiative();
-        return 0;
-    }
+        return getTotalStats().getEffect(Constant.STATS_ADD_INIT);
+    };
 
     public int getPa() {
-        switch (this.type) {
-            case 1:
-                return getTotalStats().getEffect(Constant.STATS_ADD_PA);
-            case 2:
-                return getTotalStats().getEffect(Constant.STATS_ADD_PA)
-                        + this.mob.getPa();
-            case 5:
-                return getTotalStats().getEffect(Constant.STATS_ADD_PM) + 6;
-            case 7:
-                return getTotalStats().getEffect(Constant.STATS_ADD_PM) + 6;
-            case 10:
-                return getTotalStats().getEffect(Constant.STATS_ADD_PA);
-        }
-        return 0;
+        return getTotalStats().getEffect(Constant.STATS_ADD_PA);
     }
 
     public int getPm() {
-        switch (this.type) {
-            case 1: // personnage
-                return getTotalStats().getEffect(Constant.STATS_ADD_PM);
-            case 2: // mob
-                return getTotalStats().getEffect(Constant.STATS_ADD_PM) + this.mob.getPm();
-            case 5: // perco
-                return getTotalStats().getEffect(Constant.STATS_ADD_PM) + 4;
-            case 7: // prisme
-                return getTotalStats().getEffect(Constant.STATS_ADD_PM);
-            case 10: // clone
-                return getTotalStats().getEffect(Constant.STATS_ADD_PM);
-        }
-        return 0;
+        return getTotalStats().getEffect(Constant.STATS_ADD_PM);
     }
 
     int getPros() {
-        switch (this.type) {
-            case 1: // personnage
-                return (getTotalStats().getEffect(Constant.STATS_ADD_PROS) + Math.round(getTotalStats().getEffect(Constant.STATS_ADD_CHAN) / 10) + Math.round(getBuffValue(Constant.STATS_ADD_CHAN) / 10));
-            case 2: // mob
-                if (this.isInvocation()) // Si c'est un coffre anim�, la chance est �gale � 1000*(1+lvlinvocateur/100)
-                    return (getTotalStats().getEffect(Constant.STATS_ADD_PROS) + (1000 * (1 + this.getInvocator().getLvl() / 100)) / 10);
-                else
-                    return (getTotalStats().getEffect(Constant.STATS_ADD_PROS) + Math.round(getBuffValue(Constant.STATS_ADD_CHAN) / 10));
-        }
-        return 0;
+        return getTotalStats().getEffect(Constant.STATS_ADD_PROS);
     }
 
     public int getCurPa(Fight fight) {
@@ -857,7 +818,7 @@ public class Fighter implements Comparable<Fighter>, Scripted<Object>, Actor {
     }
 
     public boolean canLaunchSpell(int spellID) {
-        return this.getPlayer().hasSpell(spellID) && LaunchedSpell.cooldownGood(this, spellID);
+        return spellRankForID(spellID).isPresent() && LaunchedSpell.cooldownGood(this, spellID);
     }
 
     public void unHide(int spellid) {
@@ -874,8 +835,7 @@ public class Fighter implements Comparable<Fighter>, Scripted<Object>, Actor {
                     return;
             }
         }
-        ArrayList<SpellEffect> buffs = new ArrayList<>();
-        buffs.addAll(getFightBuff());
+        ArrayList<SpellEffect> buffs = new ArrayList<>(getFightBuff());
         for (SpellEffect SE : buffs) {
             if (SE.getEffectID() == 150)
                 getFightBuff().remove(SE);
@@ -889,199 +849,33 @@ public class Fighter implements Comparable<Fighter>, Scripted<Object>, Actor {
         return hasBuff(150);
     }
 
-    public int getPdvMaxOutFight() {
-        if (this.player != null)
-            return this.player.getMaxPdv();
-        if (this.mob != null)
-            return this.mob.getPdvMax();
-        return 0;
-    }
-
     public Map<Integer, Integer> getChatiValue() {
         return this.chatiValue;
     }
 
-    public int getDefaultGfx() {
-        if (this.player != null)
-            return this.player.getGfxId();
-        if (this.mob != null)
-            return this.mob.getTemplate().getGfxId();
-        return 0;
-    }
-
-    public int getLvl() {
-        if (this.type == 1)
-            return this.player.getLevel();
-        if (this.type == 2)
-            return this.mob.getLevel();
-        if (this.type == 5)
-            return World.world.getGuild(getCollector().getGuildId()).getLvl();
-        if (this.type == 7)
-            return getPrism().getLevel();
-        if (this.type == 10)
-            return getDouble().getLevel();
-        return 0;
-    }
-
-    public String xpString(String str) {
-        if (this.player != null) {
-            ExperienceTables.ExperienceTable xpTable = World.world.getExperiences().players;
-
-            return xpTable.minXpAt(this.player.getLevel()) + str
-                    + this.player.getExp() + str + xpTable.maxXpAt(this.player.getLevel());
-        }
-        return "0" + str + "0" + str + "0";
-    }
-
-    public String getPacketsName() {
-        if (this.type == 1)
-            return this.player.getName();
-        if (this.type == 2)
-            return this.mob.getTemplate().getId() + "";
-        if (this.type == 5)
-            return this.getCollector().getFullName();
-        if (this.type == 7)
-            return (getPrism().getAlignment() == 1 ? 1111 : 1112) + "";
-        if (this.type == 10)
-            return getDouble().getName();
-
-        return "";
-    }
-
     public String getGmPacket(char c, boolean withGm) {
-        StringBuilder str = new StringBuilder();
-        str.append(withGm ? "GM|" : "").append(c);
-        str.append(getCell().getId()).append(";");
-        str.append("1;0;");//1; = Orientation
-        str.append(getId()).append(";");
-        str.append(getPacketsName()).append(";");
+        StringJoiner str = new StringJoiner(";", (withGm?"GM|":"")+c, "");
+        str.add(String.valueOf(getCell().getId()));
+        str.add("1");
+        str.add("0");
+        str.add(String.valueOf(getId()));
+        str.add(getPacketsName());
 
-        switch (this.type) {
-            case 1://Perso
-                str.append(this.player.getClasse()).append(";");
-                str.append(this.player.getGfxId()).append("^").append(this.player.get_size()).append(";");
-                str.append(this.player.getSexe()).append(";");
-                str.append(this.player.getLevel()).append(";");
-                str.append(this.player.getAlignment()).append(",");
-                str.append("0").append(",");
-                str.append((this.player.is_showWings() ? this.player.getGrade() : "0")).append(",");
-                str.append(this.player.getLevel() + this.player.getId());
-                if (this.player.is_showWings() && this.player.getDeshonor() > 0) {
-                    str.append(",");
-                    str.append(this.player.getDeshonor() > 0 ? 1 : 0).append(';');
-                } else {
-                    str.append(";");
-                }
-                int color1 = this.player.getColor1(),
-                        color2 = this.player.getColor2(),
-                        color3 = this.player.getColor3();
-                if (this.player.getObjetByPos(Constant.ITEM_POS_MALEDICTION) != null)
-                    if (this.player.getObjetByPos(Constant.ITEM_POS_MALEDICTION).getTemplate().getId() == 10838) {
-                        color1 = 16342021;
-                        color2 = 16342021;
-                        color3 = 16342021;
-                    }
-                str.append((color1 == -1 ? "-1" : Integer.toHexString(color1))).append(";");
-                str.append((color2 == -1 ? "-1" : Integer.toHexString(color2))).append(";");
-                str.append((color3 == -1 ? "-1" : Integer.toHexString(color3))).append(";");
-                str.append(this.player.getGMStuffString()).append(";");
-                str.append(getPdv()).append(";");
-                str.append(getTotalStats().getEffect(Constant.STATS_ADD_PA)).append(";");
-                str.append(getTotalStats().getEffect(Constant.STATS_ADD_PM)).append(";");
-                str.append(getTotalStats().getEffect(Constant.STATS_ADD_RP_NEU)).append(";");
-                str.append(getTotalStats().getEffect(Constant.STATS_ADD_RP_TER)).append(";");
-                str.append(getTotalStats().getEffect(Constant.STATS_ADD_RP_FEU)).append(";");
-                str.append(getTotalStats().getEffect(Constant.STATS_ADD_RP_EAU)).append(";");
-                str.append(getTotalStats().getEffect(Constant.STATS_ADD_RP_AIR)).append(";");
-                str.append(getTotalStats().getEffect(Constant.STATS_ADD_AFLEE)).append(";");
-                str.append(getTotalStats().getEffect(Constant.STATS_ADD_MFLEE)).append(";");
-                str.append(this.team).append(";");
-                if (this.player.isOnMount() && this.player.getMount() != null)
-                    str.append(this.player.getMount().getStringColor(this.player.parsecolortomount()));
-                str.append(";");
-                break;
-            case 2://Mob
-                str.append("-2;");
-                str.append(this.mob.getTemplate().getGfxId()).append("^").append(this.mob.getSize()).append(";");
-                str.append(this.mob.getGrade()).append(";");
-                str.append(this.mob.getTemplate().getColors().replace(",", ";")).append(";");
-                str.append("0,0,0,0;");
-                str.append(this.getPdvMax()).append(";");
-                str.append(this.mob.getPa()).append(";");
-                str.append(this.mob.getPm()).append(";");
-                str.append(this.team);
-                break;
-            case 5://Perco
-                str.append("-6;");//Perco
-                str.append("6000^100;");//GFXID^Size
-                Guild G = World.world.getGuild(this.collector.getGuildId());
-                str.append(G.getLvl()).append(";");
-                str.append("1;");
-                str.append("2;4;");
-                int resistance = (int) Math.floor(G.getLvl() / 2);
-                if(resistance > 50) resistance = 50;
-                str.append(resistance).append(";").append(resistance).append(";").append(resistance).append(";").append(resistance)
-                        .append(";").append(resistance).append(";").append(resistance).append(";").append(resistance).append(";");//R�sistances
-                str.append(this.team);
-                break;
-            case 7://Prisme
-                str.append("-2;");
-                str.append(getPrism().getAlignment() == 1 ? 8101 : 8100).append("^100;");
-                str.append(getPrism().getLevel()).append(";");
-                str.append("-1;-1;-1;");
-                str.append("0,0,0,0;");
-                str.append(this.getPdvMax()).append(";");
-                str.append(getTotalStats().getEffect(Constant.STATS_ADD_PA)).append(";");
-                str.append(getTotalStats().getEffect(Constant.STATS_ADD_PM)).append(";");
-                str.append(getTotalStats().getEffect(214)).append(";");
-                str.append(getTotalStats().getEffect(210)).append(";");
-                str.append(getTotalStats().getEffect(213)).append(";");
-                str.append(getTotalStats().getEffect(211)).append(";");
-                str.append(getTotalStats().getEffect(212)).append(";");
-                str.append(getTotalStats().getEffect(160)).append(";");
-                str.append(getTotalStats().getEffect(161)).append(";");
-                str.append(this.team);
-                break;
-            case 10://Double
-                str.append(getDouble().getClasse()).append(";");
-                str.append(getDouble().getGfxId()).append("^").append(getDouble().get_size()).append(";");
-                str.append(getDouble().getSexe()).append(";");
-                str.append(getDouble().getLevel()).append(";");
-                str.append(getDouble().getAlignment()).append(",");
-                str.append("1,");//TODO
-                str.append((getDouble().is_showWings() ? getDouble().getALvl() : "0")).append(",");
-                str.append(getDouble().getId()).append(";");
+        getGMPacketParts().forEach(str::add);
 
-                str.append((getDouble().getColor1() == -1 ? "-1" : Integer.toHexString(getDouble().getColor1()))).append(";");
-                str.append((getDouble().getColor2() == -1 ? "-1" : Integer.toHexString(getDouble().getColor2()))).append(";");
-                str.append((getDouble().getColor3() == -1 ? "-1" : Integer.toHexString(getDouble().getColor3()))).append(";");
-                str.append(getDouble().getGMStuffString()).append(";");
-                str.append(getPdv()).append(";");
-                str.append(getTotalStats().getEffect(Constant.STATS_ADD_PA)).append(";");
-                str.append(getTotalStats().getEffect(Constant.STATS_ADD_PM)).append(";");
-                str.append(getTotalStats().getEffect(Constant.STATS_ADD_RP_NEU)).append(";");
-                str.append(getTotalStats().getEffect(Constant.STATS_ADD_RP_TER)).append(";");
-                str.append(getTotalStats().getEffect(Constant.STATS_ADD_RP_FEU)).append(";");
-                str.append(getTotalStats().getEffect(Constant.STATS_ADD_RP_EAU)).append(";");
-                str.append(getTotalStats().getEffect(Constant.STATS_ADD_RP_AIR)).append(";");
-                str.append(getTotalStats().getEffect(Constant.STATS_ADD_AFLEE)).append(";");
-                str.append(getTotalStats().getEffect(Constant.STATS_ADD_MFLEE)).append(";");
-                str.append(this.team).append(";");
-                if (getDouble().isOnMount() && getDouble().getMount() != null)
-                    str.append(getDouble().getMount().getStringColor(getDouble().parsecolortomount()));
-                str.append(";");
-                break;
-        }
+        str.add(String.valueOf(team));
+
+        getMount().ifPresent(m -> str.add(m.getStringColor(getMountColors())));
 
         return str.toString();
     }
 
     public boolean isStatic() {
-        if(this.getMob() != null && this.getMob().getTemplate() != null)
-            for (int id : Constant.STATIC_INVOCATIONS)
-                if (id == this.getMob().getTemplate().getId())
-                    return true;
-        return false;
+//        if(this.getMob() != null && this.getMob().getTemplate() != null)
+//            for (int id : Constant.STATIC_INVOCATIONS)
+//                if (id == this.getMob().getTemplate().getId())
+//                    return true;
+        return isStatique;
     }
 
     @Override
@@ -1092,18 +886,11 @@ public class Fighter implements Comparable<Fighter>, Scripted<Object>, Actor {
 
     @Override
     public Object scripted() {
-        switch(this.type) {
-        case 1:
-            return this.getPlayer().scripted();
-        case 2:
-            return this.getMob().scripted();
-        default:
-            return (new ImmutableTable.Builder())
-                .add("id", this.id)
-                .add("type", this.type)
-                .add("level", this.getLvl())
-                .build();
-        }
+        return (new ImmutableTable.Builder())
+            .add("id", this.id)
+            .add("type", this.getType())
+            .add("level", this.getLvl())
+            .build();
     }
 
     @Override
@@ -1114,5 +901,59 @@ public class Fighter implements Comparable<Fighter>, Scripted<Object>, Actor {
     @Override
     public String name() {
         return getPacketsName();
+    }
+
+    public void setStatic(boolean b) {
+        isStatique = b;
+    }
+
+    public void modNbrInvoc(int i) {
+        nbrInvoc += i;
+    }
+
+    public int getNbrInvoc() {
+        return nbrInvoc;
+    }
+
+    public World.Couple<Byte, Long> getKilledBy() {
+        return killedBy;
+    }
+
+    public void setKilledBy(World.Couple<Byte, Long> killer) {
+        killedBy = killer;
+    }
+
+    private <T extends Fighter> Optional<T> as(Class<T> c) {
+        return Optional.of(this).filter(c::isInstance).map(c::cast);
+    }
+
+    public boolean aiControlled() { return true; };
+
+    boolean canLoot() { return false; }
+
+    int minKamasReward() { return 0; }
+    int maxKamasReward() { return 0; }
+
+    Stream<World.Drop> drops() { return Stream.empty(); }
+
+    // Tmp helpers to help compilation. This will eventually go
+    @Deprecated
+    public Player getPlayer() {
+        return null;
+    }
+
+    @Deprecated
+    public MonsterGrade getMob() {
+        return null;
+    }
+
+    @Deprecated
+    public Collector getCollector() {
+        return null;
+    }
+
+    @Deprecated
+    public Prism getPrism() {
+        return null;
     }
 }

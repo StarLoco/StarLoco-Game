@@ -163,7 +163,7 @@ public class ScriptMapData extends MapData {
 
     @Override
     public void onFightEnd(Fight f, Player p, List<Fighter> winTeam, List<Fighter> looseTeam) {
-        boolean isWinner = winTeam.stream().map(Fighter::getPlayer).filter(Objects::nonNull).anyMatch(fp -> fp.getId() == p.getId());
+        boolean isWinner = winTeam.stream().filter(Objects::nonNull).anyMatch(fp -> fp.getId() == p.getId());
 
         Table winners = ScriptVM.scriptedValsTable(winTeam);
         Table losers = ScriptVM.scriptedValsTable(looseTeam);

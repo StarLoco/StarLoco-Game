@@ -1,15 +1,10 @@
 package org.starloco.locos.job;
 
-import org.starloco.locos.entity.map.InteractiveObject;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.common.Formulas;
-import org.starloco.locos.common.PathFinding;
 import org.starloco.locos.common.SocketManager;
-import org.starloco.locos.entity.monster.MonsterGroup;
 import org.starloco.locos.fight.spells.SpellEffect;
 import org.starloco.locos.game.GameClient;
-import org.starloco.locos.game.action.ExchangeAction;
-import org.starloco.locos.game.action.GameAction;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.game.world.World.Couple;
 import org.starloco.locos.job.maging.Rune;
@@ -19,7 +14,6 @@ import org.starloco.locos.kernel.Logging;
 import org.starloco.locos.object.GameObject;
 import org.starloco.locos.object.ObjectTemplate;
 import org.starloco.locos.util.RandomStats;
-import org.starloco.locos.util.TimerWaiter;
 
 import java.util.*;
 import java.util.Map.Entry;
@@ -1934,10 +1928,10 @@ public class JobAction {
             case Constant.STATS_ADD_PODS:
                 r = 0.25;
                 break;
-            case Constant.STATS_ADD_AFLEE:
+            case Constant.STATS_ADD_ADODGE:
                 r = 1.0;
                 break;
-            case Constant.STATS_ADD_MFLEE:
+            case Constant.STATS_ADD_MDODGE:
                 r = 1.0;
                 break;
             case Constant.STATS_ADD_INIT:
@@ -1949,7 +1943,7 @@ public class JobAction {
             case Constant.STATS_ADD_SOIN:
                 r = 20.0;
                 break;
-            case Constant.STATS_CREATURE:
+            case Constant.STATS_SUMMON_COUNT:
                 r = 30.0;
                 break;
             case Constant.STATS_ADD_RP_TER:
@@ -2082,10 +2076,10 @@ public class JobAction {
             case Constant.STATS_ADD_PODS:
                 r = 404.0;
                 break;
-            case Constant.STATS_ADD_AFLEE:
+            case Constant.STATS_ADD_ADODGE:
                 r = 0.0;
                 break;
-            case Constant.STATS_ADD_MFLEE:
+            case Constant.STATS_ADD_MDODGE:
                 r = 0.0;
                 break;
             case Constant.STATS_ADD_INIT:
@@ -2097,7 +2091,7 @@ public class JobAction {
             case Constant.STATS_ADD_SOIN:
                 r = 5.0;
                 break;
-            case Constant.STATS_CREATURE:
+            case Constant.STATS_SUMMON_COUNT:
                 r = 3.0;
                 break;
             case Constant.STATS_ADD_RP_TER:

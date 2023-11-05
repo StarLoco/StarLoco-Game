@@ -7,8 +7,7 @@ import org.starloco.locos.common.PathFinding;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.entity.monster.Monster;
 import org.starloco.locos.entity.monster.MonsterGrade;
-import org.starloco.locos.fight.Fight;
-import org.starloco.locos.fight.Fighter;
+import org.starloco.locos.fight.*;
 import org.starloco.locos.fight.spells.Spell.SortStats;
 import org.starloco.locos.fight.traps.Glyph;
 import org.starloco.locos.fight.traps.Trap;
@@ -2126,7 +2125,7 @@ public class SpellEffect implements Cloneable {
 			if (caster.isHidden())
 				caster.unHide(spell);
 			for (Fighter target : targets) {
-				if (caster.isMob() && (caster.getTeam2() == target.getTeam2())
+				if (caster.getMob() != null && (caster.getTeam2() == target.getTeam2())
 						&& !caster.isInvocation())
 					continue; // Les monstres de s'entretuent pas
 				if (target.hasBuff(765))//sacrifice
@@ -2180,7 +2179,7 @@ public class SpellEffect implements Cloneable {
 			if (caster.isHidden())
 				caster.unHide(spell);
 			for (Fighter target : targets) {
-				if (spell != 946 && caster.isMob() && (caster.getTeam2() == target.getTeam2()) && !caster.isInvocation())
+				if (spell != 946 && caster.getMob() != null && (caster.getTeam2() == target.getTeam2()) && !caster.isInvocation())
 					continue; // Les monstres de s'entretuent pas
 
 				if (target.hasBuff(765))//sacrifice
@@ -2253,7 +2252,7 @@ public class SpellEffect implements Cloneable {
 			if (caster.isHidden())
 				caster.unHide(spell);
 			for (Fighter target : targets) {
-				if (caster.isMob()) {
+				if (caster.getMob() != null) {
 					if (spell != 946 && caster.getTeam2() == target.getTeam2() && !caster.isInvocation())
 						continue; // Les monstres de s'entretuent pas
 				}
@@ -2309,7 +2308,7 @@ public class SpellEffect implements Cloneable {
 			if (caster.isHidden())
 				caster.unHide(spell);
 			for (Fighter target : targets) {
-				if (spell != 946 &&caster.isMob() && (caster.getTeam2() == target.getTeam2()) && !caster.isInvocation())
+				if (spell != 946 &&caster.getMob() != null && (caster.getTeam2() == target.getTeam2()) && !caster.isInvocation())
 					continue; // Les monstres de s'entretuent pas
 
 				if (target.hasBuff(765))//sacrifice
@@ -2395,7 +2394,7 @@ public class SpellEffect implements Cloneable {
 			if (caster.isHidden())
 				caster.unHide(spell);
 			for (Fighter target : targets) {
-				if (spell != 946 && caster.isMob() && (caster.getTeam2() == target.getTeam2()) && !caster.isInvocation())
+				if (spell != 946 && caster.getMob() != null && (caster.getTeam2() == target.getTeam2()) && !caster.isInvocation())
 					continue; // Les monstres de s'entretuent pas
 				if (target.hasBuff(765))//sacrifice
 				{
@@ -2451,7 +2450,7 @@ public class SpellEffect implements Cloneable {
 			if (caster.isHidden())
 				caster.unHide(spell);
 			for (Fighter target : targets) {
-				if (spell != 946 &&caster.isMob() && (caster.getTeam2() == target.getTeam2()) && !caster.isInvocation())
+				if (spell != 946 &&caster.getMob() != null && (caster.getTeam2() == target.getTeam2()) && !caster.isInvocation())
 					continue; // Les monstres de s'entretuent pas
 
 				if (target.hasBuff(765))//sacrifice
@@ -2528,7 +2527,7 @@ public class SpellEffect implements Cloneable {
 		if (isCaC)//CaC Feu
 		{
 			for (Fighter target : targets) {
-				if (spell != 946 && caster.isMob() && (caster.getTeam2() == target.getTeam2()) && !caster.isInvocation())
+				if (spell != 946 && caster.getMob() != null && (caster.getTeam2() == target.getTeam2()) && !caster.isInvocation())
 					continue; // Les monstres de s'entretuent pas
 				if (target.hasBuff(765))//sacrifice
 				{
@@ -2579,7 +2578,7 @@ public class SpellEffect implements Cloneable {
 			}
 		} else if (turns <= 0) {
 			for (Fighter target : targets) {
-				if (spell != 946 && caster.isMob() && (caster.getTeam2() == target.getTeam2()) && !caster.isInvocation())
+				if (spell != 946 && caster.getMob() != null && (caster.getTeam2() == target.getTeam2()) && !caster.isInvocation())
 					continue; // Les monstres de s'entretuent pas
 				if (spell == 36 && target == caster)//Frappe du Craqueleur ne tape pas l'osa
 				{
@@ -2658,7 +2657,7 @@ public class SpellEffect implements Cloneable {
 		if (isCaC)//CaC Neutre
 		{
 			for (Fighter target : targets) {
-				if (caster.isMob() && (caster.getTeam2() == target.getTeam2())
+				if (caster.getMob() != null && (caster.getTeam2() == target.getTeam2())
 						&& !caster.isInvocation())
 					continue; // Les monstres de s'entretuent pas
 				if (target.hasBuff(765))//sacrifice
@@ -2710,7 +2709,7 @@ public class SpellEffect implements Cloneable {
 			}
 		} else if (turns <= 0) {
 			for (Fighter target : targets) {
-				if (spell != 946 && caster.isMob() && (caster.getTeam2() == target.getTeam2()) && !caster.isInvocation())
+				if (spell != 946 && caster.getMob() != null && (caster.getTeam2() == target.getTeam2()) && !caster.isInvocation())
 					continue; // Les monstres de s'entretuent pas
 
 				if (target.hasBuff(765))//sacrifice
@@ -3629,19 +3628,19 @@ public class SpellEffect implements Cloneable {
 		}
 	}
 
-	private void applyEffect_180(Fight fight)//invocation
+	private void applyEffect_180(Fight fight)// Summon clone
 	{
 		int cell = this.cell.getId();
 		if (!this.cell.getFighters().isEmpty())
 			return;
-		int id = fight.getNextLowerFighterGuid();
-		Player clone = Player.ClonePerso(caster.getPlayer(), -id - 10000, (caster.getPlayer().getMaxPdv() - ((caster.getLvl() - 1) * 5 + 50)));
-		clone.setFight(fight);
+		if(!(caster instanceof PlayerFighter))
+			return;
 
-		Fighter fighter = new Fighter(fight, clone);
+		int id = fight.getNextLowerFighterGuid();
+
+		Fighter fighter = Fighter.NewClone(-id - 10000, fight, (PlayerFighter)caster);
 		fighter.fullPdv();
 		fighter.setTeam(caster.getTeam());
-		fighter.setInvocator(caster);
 
 		fight.getMap().getCase(cell).addFighter(fighter);
 		fighter.setCell(fight.getMap().getCase(cell));
@@ -3659,7 +3658,7 @@ public class SpellEffect implements Cloneable {
 	{
 		int cell = this.cell.getId();
 
-		if (!this.cell.getFighters().isEmpty() || caster.nbrInvoc >= caster.getTotalStats().get(Constant.STATS_CREATURE))
+		if (!this.cell.getFighters().isEmpty() || caster.getNbrInvoc() >= caster.getTotalStats().get(Constant.STATS_SUMMON_COUNT))
 			return;
 
 		int id = -1, level = -1;
@@ -3701,9 +3700,7 @@ public class SpellEffect implements Cloneable {
 		if (id == -1 || level == -1 || MG == null)
 			return;
 
-		MG.setInFightID(fight.getNextLowerFighterGuid());
-		MG.setStatsInvocations(caster, id); // Augmenter les statistiques uniquement pour les invocations de personnages
-		Fighter F = new Fighter(fight, MG);
+		Fighter F = Fighter.NewSummon(fight.getNextLowerFighterGuid(), fight, MG, caster);
 		F.setTeam(caster.getTeam());
 		F.setInvocator(caster);
 		fight.getMap().getCase(cell).addFighter(F);
@@ -3716,7 +3713,7 @@ public class SpellEffect implements Cloneable {
 		TimerWaiter.addNext(() -> {
 			SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 181, caster.getId() + "", gm);
 			SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 999, caster.getId() + "", gtl);
-			caster.nbrInvoc++;
+			caster.modNbrInvoc(+1);
 			fight.checkTraps(F);
 		}, 100, TimeUnit.MILLISECONDS);
 	}
@@ -3769,18 +3766,11 @@ public class SpellEffect implements Cloneable {
 
 		if (monster == -1 || level == -1 || monsterGrade == null)
 			return;
-		monsterGrade.setStatsInvocations(this.caster, monster);
 
 		int id = fight.getNextLowerFighterGuid();
-		monsterGrade.setInFightID(id);
 
-		Fighter fighter = new Fighter(fight, monsterGrade);
+		Fighter fighter = Fighter.NewSummon(id, fight, monsterGrade, caster);
 
-		if (monster == 282 && this.caster.getPlayer() != null) {
-			float factor = (1.0F + (caster.getLvl()) / 100.0F);
-			fighter.setPdvMax(Math.round(monsterGrade.getPdvMax() * factor));
-			fighter.setPdv(fighter.getPdvMax());
-		}
 		fighter.setTeam(this.caster.getTeam());
 		fighter.setInvocator(this.caster);
 		fighter.setState(Constant.ETAT_ENRACINE, 9999);
@@ -4165,7 +4155,7 @@ public class SpellEffect implements Cloneable {
 		//Punition
 		//Formule de barge ? :/ Clair que ca punie ceux qui veulent l'utiliser x_x
 		double val = ((double) Formulas.getRandomJet(caster, null, jet) / (double) 100);
-		int pdvMax = caster.getPdvMaxOutFight();
+		int pdvMax = caster.baseMaxPdv();
 		double pVie = (double) caster.getPdv() / (double) caster.getPdvMax();
 		double rad = (double) 2 * Math.PI * (double) (pVie - 0.5);
 		double cos = Math.cos(rad);
@@ -4285,7 +4275,6 @@ public class SpellEffect implements Cloneable {
 		} else if (target.isInvocation())
 			fight.getOrderPlaying().add((fight.getOrderPlaying().indexOf(target.getInvocator()) + 1), target);
 
-		target.nbrInvoc = 0;
 		target.setCell(cell);
 		target.getCell().addFighter(target);
 

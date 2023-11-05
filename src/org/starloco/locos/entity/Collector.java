@@ -365,6 +365,10 @@ public class Collector {
         return this.guildId;
     }
 
+    public Guild getGuild() {
+        return World.world.getGuild(guildId);
+    }
+
     public int getN1() {
         return this.N1;
     }
