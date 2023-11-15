@@ -1789,13 +1789,12 @@ public class Player implements Scripted<SPlayer>, Actor {
             Optional<Player> p = new ArrayList<>(World.world.getOnlinePlayers()).stream().filter(p1 -> p1 != null && p1.getAlignment() > 0
                     && p1.getAccount() != null && p1.getAccount().getCurrentIp().equalsIgnoreCase(getAccount().getCurrentIp()))
                     .findFirst();
-            if(p != null) {
-                p.ifPresent(player -> {
-                    this.alignment = player.alignment;
-                    if(this.alignment == Constant.ALIGNEMENT_BONTARIEN) Main.angels++;
-                    else if(player.getAlignment() == Constant.ALIGNEMENT_BRAKMARIEN) Main.demons++;
-                });
-            }
+            p.ifPresent(player -> {
+                this.alignment = player.alignment;
+                if(this.alignment == Constant.ALIGNEMENT_BONTARIEN) Main.angels++;
+                else if(player.getAlignment() == Constant.ALIGNEMENT_BRAKMARIEN) Main.demons++;
+            });
+
             if(this.alignment <= 0) {
                 if (Main.angels > Main.demons) {
                     this.alignment = Constant.ALIGNEMENT_BRAKMARIEN;
