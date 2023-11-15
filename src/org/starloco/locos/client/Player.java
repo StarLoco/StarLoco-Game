@@ -86,8 +86,6 @@ public class Player implements Scripted<SPlayer>, Actor {
     //Disponibilit�
     public boolean _isAbsent = false;
     public boolean _isInvisible = false;
-    //Double
-    public boolean _isClone = false;
     //Suiveur - Suivi
     public Map<Integer, Player> follower = new HashMap<>();
     public Player follow = null;
@@ -1778,7 +1776,6 @@ public class Player implements Scripted<SPlayer>, Actor {
     }
 
     public void OnJoinGame() {
-        this._isClone = false;
         getAccount().setCurrentPlayer(this);
         this.setOnline(true);
 
@@ -3993,7 +3990,6 @@ public class Player implements Scripted<SPlayer>, Actor {
         _inviting = 0;
         sitted = false;
         _onMount = false;
-        _isClone = false;
         _isAbsent = false;
         _isInvisible = false;
         follower.clear();
