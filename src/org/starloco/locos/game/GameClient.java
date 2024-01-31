@@ -18,6 +18,7 @@ import org.starloco.locos.game.action.type.DocumentActionData;
 import org.starloco.locos.game.action.type.NpcDialogActionData;
 import org.starloco.locos.game.action.type.ScenarioActionData;
 import org.starloco.locos.hdv.BigStore;
+import org.starloco.locos.hdv.BigStoreListingLotSize;
 import org.starloco.locos.script.DataScriptVM;
 import org.starloco.locos.util.Pair;
 import org.apache.mina.core.session.IoSession;
@@ -1621,8 +1622,9 @@ public class GameClient {
                 int amount = Integer.parseInt(info[1]);
                 int price = Integer.parseInt(info[2]);
 
-                // Client amount is [1,3], we want [0,2]
-                BigStoreListing entry = bigStore.buyItem(exchangeAction.getCategoryId(), exchangeAction.getTemplateId(), ligneID, amount-1, price, this.player).orElse(null);
+                // Client amount is [1,3], our enum is 0-2
+                BigStoreListingLotSize lotSize = BigStoreListingLotSize.fromValue(amount-1);
+                BigStoreListing entry = bigStore.buyItem(exchangeAction.getCategoryId(), exchangeAction.getTemplateId(), ligneID, lotSize, price, this.player).orElse(null);
 
                 if (entry == null) {
                     SocketManager.GAME_SEND_Im_PACKET(this.player, "172");//Envoie un message d'erreur d'achat
