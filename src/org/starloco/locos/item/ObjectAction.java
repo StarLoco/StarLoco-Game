@@ -50,7 +50,7 @@ public class ObjectAction {
     }
 
     public void apply(Player player0, Player target, int objet, int cellid) {
-        Item object = World.world.getGameObject(objet);
+        FullItem object = World.world.getGameObject(objet);
 
         if (object == null) {
             SocketManager.GAME_SEND_MESSAGE(player0, "Error object null. Merci de prévenir un administrateur est d'indiquer le message.");
@@ -59,13 +59,13 @@ public class ObjectAction {
         if (player0 == null || !player0.isOnline() || player0.getDoAction() || player0.getGameClient() == null)
             return;
 
-        if(object.getTemplate().getType() != 116) {// EPO Fami, this is fucked but, condition is dead
+        if(object.template().getTypeID() != 116) {// EPO Fami, this is fucked but, condition is dead
             if (!this.cond.equalsIgnoreCase("") && !this.cond.equalsIgnoreCase("-1") && !World.world.getConditionManager().validConditions(player0, this.cond)) {
                 SocketManager.GAME_SEND_Im_PACKET(player0, "119");
                 return;
             }
         }
-        if (player0.getLevel() < World.world.getGameObject(objet).getTemplate().getLevel()) {
+        if (player0.getLevel() < World.world.getGameObject(objet).template().getLevel()) {
             SocketManager.GAME_SEND_Im_PACKET(player0, "119");
             return;
         }
@@ -178,7 +178,7 @@ public class ObjectAction {
                                         continue;
                                     }
 
-                                    boolean can = object.getTemplate().getId() >= 10382 && object.getTemplate().getId() <= 10407;
+                                    boolean can = object.template().getId() >= 10382 && object.template().getId() <= 10407;
                                     val = val * (can ? Config.rateJob : 1);
                                     job.addXp(player, val);
                                     SocketManager.GAME_SEND_JX_PACKET(player, new ArrayList<>(Collections.singletonList(job)));
@@ -301,7 +301,7 @@ public class ObjectAction {
                             return;
                         }
 
-                        Item obj = World.world.getGameObject(objet);
+                        FullItem obj = World.world.getGameObject(objet);
 
                         if(obj != null) {
                             int spell = obj.getStats().get(Constant.STATS_FORGET_ONE_LEVEL_SPELL);
@@ -366,13 +366,13 @@ public class ObjectAction {
                         obj = World.world.getGameObject(objet);
                         if (obj == null)
                             return;
-                        Item object0 = player.getObjetByPos(Constant.ITEM_POS_FAMILIER);
+                        FullItem object0 = player.getObjetByPos(Constant.ITEM_POS_FAMILIER);
                         if (object0 == null)
                             return;
-                        PetEntry pets = World.world.getPetsEntry(object0.getGuid());
+                        PetEntry pets = World.world.getPetsEntry_legacy(object0.getGuid());
                         if (pets == null)
                             return;
-                        if (obj.getTemplate().getConditions().contains(object0.getTemplate().getId() + ""))
+                        if (obj.template().getConditions().contains(object0.template().getId() + ""))
                             pets.giveEpo(player);
                         else
                             isOk = false;
@@ -505,32 +505,32 @@ public class ObjectAction {
 
                     case 17://B�n�diction.
                         if (player0.getFight() != null) return;
-                        player.setBenediction(World.world.getGameObject(objet).getTemplate().getId());
+                        player.setBenediction(World.world.getGameObject(objet).template().getId());
                         break;
 
                     case 18://Mal�diction.
                         if (player0.getFight() != null) return;
-                        player.setMalediction(World.world.getGameObject(objet).getTemplate().getId());
+                        player.setMalediction(World.world.getGameObject(objet).template().getId());
                         break;
 
                     case 19://RolePlay Buff.
                         if (player0.getFight() != null) return;
-                        player.setRoleplayBuff(World.world.getGameObject(objet).getTemplate().getId());
+                        player.setRoleplayBuff(World.world.getGameObject(objet).template().getId());
                         break;
 
                     case 20://Bonbon.
                         if (player0.getFight() != null) return;
-                        player.setCandy(World.world.getGameObject(objet).getTemplate().getId());
+                        player.setCandy(World.world.getGameObject(objet).template().getId());
                         break;
 
                     case 21://Poser un objet d'�levage.
                         if (player0.getFight() != null) return;
                         GameMap map0 = player.getCurMap();
                         object0 = World.world.getGameObject(objet);
-                        id0 = object0.getTemplate().getId();
+                        id0 = object0.template().getId();
 
                         int resist = object0.getResistance(object0.encodeStats());
-                        int resistMax = object0.getResistanceMax(object0.getTemplate().getStrTemplate());
+                        int resistMax = object0.getResistanceMax(object0.template().getStrTemplate());
                         if (map0.getMountPark() == null)
                             return;
                         MountPark MP = map0.getMountPark();
@@ -677,7 +677,7 @@ public class ObjectAction {
                     case 26://Ajout d'objet.
                         if (player0.getFight() != null) return;
                         for (String i : arg.split(";")) {
-                            obj = World.world.getObjTemplate(Integer.parseInt(i.split(",")[0])).createNewItem(Integer.parseInt(i.split(",")[1]), false);
+                            obj = World.world.getItemTemplate(Integer.parseInt(i.split(",")[0])).createNewItem(Integer.parseInt(i.split(",")[1]), false);
                             if (player.addItem(obj, true, false))
                                 World.world.addGameObject(obj);
                         }
@@ -734,7 +734,7 @@ public class ObjectAction {
                         break;
 
                     case 34://Fm cac
-                        Item gameObject = player.getObjetByPos(Constant.ITEM_POS_ARME);
+                        FullItem gameObject = player.getObjetByPos(Constant.ITEM_POS_ARME);
 
                         if(gameObject == null) {
                             player.sendMessage(player.getLang().trans("objet.objectaction.fmcac.noequip"));
@@ -847,26 +847,26 @@ public class ObjectAction {
                         boolean max = false;
                         switch (Integer.parseInt(arg)){
                             case 2: //Sort
-                                World.world.getObjTemplates().stream().filter(t -> t.getType() == ITEM_TYPE_PARCHEMIN_SORT).forEach(templates::add);
+                                World.world.getObjTemplates().stream().filter(t -> t.getTypeID() == ITEM_TYPE_PARCHEMIN_SORT).forEach(templates::add);
                                 template = templates.get(Formulas.random.nextInt(templates.size()));
                                 break;
                             case 3: //Maitrise
-                                World.world.getObjTemplates().stream().filter(t -> t.getType() == ITEM_TYPE_MAITRISE).forEach(templates::add);
+                                World.world.getObjTemplates().stream().filter(t -> t.getTypeID() == ITEM_TYPE_MAITRISE).forEach(templates::add);
                                 template = templates.get(Formulas.random.nextInt(templates.size()));
                                 break;
                             case 4: //Obji
-                                World.world.getObjTemplates().stream().filter(t -> t.getType() == ITEM_TYPE_OBJET_VIVANT).forEach(templates::add);
+                                World.world.getObjTemplates().stream().filter(t -> t.getTypeID() == ITEM_TYPE_OBJET_VIVANT).forEach(templates::add);
                                 template = templates.get(Formulas.random.nextInt(templates.size()));
                                 break;
                             case 5: //Fami
-                                World.world.getObjTemplates().stream().filter(t -> t.getType() == ITEM_TYPE_FAMILIER).forEach(templates::add);
+                                World.world.getObjTemplates().stream().filter(t -> t.getTypeID() == ITEM_TYPE_FAMILIER).forEach(templates::add);
                                 template = templates.get(Formulas.random.nextInt(templates.size()));
                                 max = true;
                                 break;
                             case 6:
                                 int[] item = new int[3];
                                 item[0] = 7493; item[1] = 7494; item[2] = 7495;
-                                template = World.world.getObjTemplate(item[Formulas.getRandomValue(0, 2)]);
+                                template = World.world.getItemTemplate(item[Formulas.getRandomValue(0, 2)]);
                                 break;
                         }
                         obj = template.createNewItem(1, max);
@@ -878,7 +878,7 @@ public class ObjectAction {
                         if (player0.getFight() != null) return;
                         templates = new ArrayList<>();
                         final List<Integer> acceptedMount = Arrays.asList(7808,7810,7811,7812,7813,7814,7815,7816,7817,7818,7819,7820,7821,7822);
-                        World.world.getObjTemplates().stream().filter(t -> t.getType() == ITEM_TYPE_CERTIF_MONTURE && acceptedMount.contains(t.getId()) ).forEach(templates::add);
+                        World.world.getObjTemplates().stream().filter(t -> t.getTypeID() == ITEM_TYPE_CERTIF_MONTURE && acceptedMount.contains(t.getId()) ).forEach(templates::add);
                         template = templates.get(Formulas.random.nextInt(templates.size()));
 
                         obj = template.createNewItem(1, false);
@@ -907,7 +907,7 @@ public class ObjectAction {
             e.printStackTrace();
         }
 
-        boolean effect = this.haveEffect(World.world.getGameObject(objet).getTemplate().getId(), World.world.getGameObject(objet), player);
+        boolean effect = this.haveEffect(World.world.getGameObject(objet).template().getId(), World.world.getGameObject(objet), player);
         if (effect)
             isOk = true;
         if (isOk)
@@ -916,8 +916,8 @@ public class ObjectAction {
             isOk = true;
         if (objet != -1) {
             if (send)
-                SocketManager.GAME_SEND_Im_PACKET(player, "022;" + 1 + "~" + World.world.getGameObject(objet).getTemplate().getId());
-            if (sureIsOk || (isOk && effect && World.world.getGameObject(objet).getTemplate().getId() != 7799)) {
+                SocketManager.GAME_SEND_Im_PACKET(player, "022;" + 1 + "~" + World.world.getGameObject(objet).template().getId());
+            if (sureIsOk || (isOk && effect && World.world.getGameObject(objet).template().getId() != 7799)) {
                 if (World.world.getGameObject(objet) != null) {
                     player0.removeItem(objet, 1, true, true);
                 }
@@ -925,17 +925,17 @@ public class ObjectAction {
         }
     }
 
-    private boolean haveEffect(int id, Item item, Player player) {
+    private boolean haveEffect(int id, FullItem item, Player player) {
         if (player.getFight() != null) return true;
         switch (id) {
             case 8378://Fragment magique.
                 for (World.Couple<Integer, Integer> couple : ((Fragment) item).getRunes()) {
-                    ItemTemplate itemTemplate = World.world.getObjTemplate(couple.first);
+                    ItemTemplate itemTemplate = World.world.getItemTemplate(couple.first);
 
                     if (itemTemplate == null)
                         continue;
 
-                    Item newItem = itemTemplate.createNewItem(couple.second, true);
+                    FullItem newItem = itemTemplate.createNewItem(couple.second, true);
 
                     if (newItem == null)
                         continue;

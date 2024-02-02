@@ -8,7 +8,7 @@ import org.starloco.locos.player.Player;
 import org.starloco.locos.common.Formulas;
 import org.starloco.locos.event.EventManager;
 import org.starloco.locos.game.world.World;
-import org.starloco.locos.item.Item;
+import org.starloco.locos.item.FullItem;
 import org.starloco.locos.util.TimerWaiter;
 
 import java.util.ArrayList;
@@ -21,7 +21,7 @@ public class EventFindMe extends Event {
 
     private GameMap map;
     private GameCase cell;
-    private Item object;
+    private FullItem object;
     private int count = 0;
     private long time;
 
@@ -42,7 +42,7 @@ public class EventFindMe extends Event {
         // Generate an item by the level of the population
         this.map = this.getRandomMap();
         this.cell = this.map.getCase(this.map.getRandomFreeCellId());
-        this.object = World.world.getObjTemplate(26001) .createNewItem(1, false);
+        this.object = World.world.getItemTemplate(26001) .createNewItem(1, false);
     }
 
     private GameMap getRandomMap() {

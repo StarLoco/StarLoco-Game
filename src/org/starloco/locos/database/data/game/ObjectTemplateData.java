@@ -20,18 +20,10 @@ public class ObjectTemplateData extends FunctionDAO<ItemTemplate> {
         try {
             getData("SELECT * FROM " + getTableName() + ";", result -> {
                 while (result.next()) {
-                    ItemTemplate template = World.world.getObjTemplate(result.getInt("id"));
-                    if (template != null) {
-                        template.setInfos(result.getString("statsTemplate"), result.getString("name"), result.getInt("type"),
-                                result.getInt("level"), result.getInt("pod"), result.getInt("prix"), result.getInt("panoplie"),
-                                result.getString("conditions"), result.getString("armesInfos"), result.getInt("sold"), result.getInt("avgPrice"),
-                                result.getInt("points"), result.getInt("newPrice"));
-                    } else {
-                        World.world.addObjTemplate(new ItemTemplate(result.getInt("id"), result.getString("statsTemplate"),
-                                result.getString("name"), result.getInt("type"), result.getInt("level"), result.getInt("pod"),
-                                result.getInt("prix"), result.getInt("panoplie"), result.getString("conditions"), result.getString("armesInfos"),
-                                result.getInt("sold"), result.getInt("avgPrice"), result.getInt("points"), result.getInt("newPrice")));
-                    }
+                    World.world.addObjTemplate(new ItemTemplate(result.getInt("id"), result.getString("statsTemplate"),
+                        result.getString("name"), result.getInt("type"), result.getInt("level"), result.getInt("pod"),
+                        result.getInt("prix"), result.getInt("panoplie"), result.getString("conditions"), result.getString("armesInfos"),
+                        result.getInt("sold"), result.getInt("avgPrice"), result.getInt("points"), result.getInt("newPrice")));
                 }
             });
         } catch (SQLException e) {

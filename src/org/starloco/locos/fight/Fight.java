@@ -48,7 +48,7 @@ import org.starloco.locos.guild.Guild;
 import org.starloco.locos.job.JobConstant;
 import org.starloco.locos.kernel.Config;
 import org.starloco.locos.kernel.Constant;
-import org.starloco.locos.item.Item;
+import org.starloco.locos.item.FullItem;
 import org.starloco.locos.item.ItemTemplate;
 import org.starloco.locos.item.entity.SoulStone;
 import org.starloco.locos.other.Action;
@@ -1427,9 +1427,9 @@ public class Fight {
                                                 SocketManager.GAME_SEND_Im_PACKET(player, "034;" + looseEnergy);
 
                                             if (caster.getPlayer().getObjetByPos(Constant.ITEM_POS_FAMILIER) != null) {
-                                                Item obj = caster.getPlayer().getObjetByPos(Constant.ITEM_POS_FAMILIER);
+                                                FullItem obj = caster.getPlayer().getObjetByPos(Constant.ITEM_POS_FAMILIER);
                                                 if (obj != null) {
-                                                    PetEntry pets = World.world.getPetsEntry(obj.getGuid());
+                                                    PetEntry pets = World.world.getPetsEntry_legacy(obj.getGuid());
                                                     if (pets != null)
                                                         pets.looseFight(caster.getPlayer());
                                                 }
@@ -1541,9 +1541,9 @@ public class Fight {
                                     if (player.isOnline())
                                         SocketManager.GAME_SEND_Im_PACKET(player, "034;" + loosEnergy);
                                     if (caster.getPlayer().getObjetByPos(Constant.ITEM_POS_FAMILIER) != null) {
-                                        Item obj = caster.getPlayer().getObjetByPos(Constant.ITEM_POS_FAMILIER);
+                                        FullItem obj = caster.getPlayer().getObjetByPos(Constant.ITEM_POS_FAMILIER);
                                         if (obj != null) {
-                                            PetEntry pets = World.world.getPetsEntry(obj.getGuid());
+                                            PetEntry pets = World.world.getPetsEntry_legacy(obj.getGuid());
                                             if (pets != null)
                                                 pets.looseFight(caster.getPlayer());
                                         }
@@ -2522,15 +2522,15 @@ public class Fight {
         if (perso.getObjetByPos(Constant.ITEM_POS_ARME) == null) {
             tryCastSpell(caster, World.world.getSort(0).getStatsByLevel(1), cellID);
         } else {
-            Item arme = perso.getObjetByPos(Constant.ITEM_POS_ARME);
+            FullItem arme = perso.getObjetByPos(Constant.ITEM_POS_ARME);
             // Pierre d'�mes = EC
-            if (arme.getTemplate().getType() == 83) {
+            if (arme.template().getTypeID() == 83) {
                 SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(this, 7, 305, perso.getId() + "", "");// Echec Critique Cac
                 this.endTurn(false, current);
                 return;
             }
 
-            int PACost = arme.getTemplate().getPACost();
+            int PACost = arme.template().getPACost();
 
             if (getCurFighterPa() < PACost) {
                 SocketManager.GAME_SEND_Im_PACKET(perso, "1170;" + getCurFighterPa() + "~" + PACost);
@@ -2538,15 +2538,15 @@ public class Fight {
             }
 
             int dist = PathFinding.getDistanceBetween(getMap(), caster.getCell().getId(), cellID);
-            int MaxPO = arme.getTemplate().getPOmax();
-            int MinPO = arme.getTemplate().getPOmin();
+            int MaxPO = arme.template().getPOmax();
+            int MinPO = arme.template().getPOmin();
 
             if (dist < MinPO || dist > MaxPO) {
                 SocketManager.GAME_SEND_Im_PACKET(perso, "1171;" + MinPO + "~" + MaxPO + "~" + dist);
                 return;
             }
 
-            boolean isEc = arme.getTemplate().getTauxEC() != 0 && Formulas.getRandomValue(1, arme.getTemplate().getTauxEC()) == arme.getTemplate().getTauxEC();
+            boolean isEc = arme.template().getTauxEC() != 0 && Formulas.getRandomValue(1, arme.template().getTauxEC()) == arme.template().getTauxEC();
             this.curFighterUsedPa += PACost;
 
             if (isEc) {
@@ -2554,7 +2554,7 @@ public class Fight {
                 endTurn(false, current);
             } else {
                 SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(this, 7, 303, perso.getId() + "", cellID + "");
-                boolean isCC = caster.critStrikeCheck(arme.getTemplate().getTauxCC());
+                boolean isCC = caster.critStrikeCheck(arme.template().getTauxCC());
                 if (isCC) {
                     SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(this, 7, 301, perso.getId() + "", "0");
                 }
@@ -2562,7 +2562,7 @@ public class Fight {
                 // Si le joueur est invisible
                 if (caster.isHidden()) caster.unHide(-1);
                 ArrayList<SpellEffect> effects = isCC ? arme.getCritEffects() : arme.getEffects();
-                ArrayList<Fighter> targets = PathFinding.getCiblesByZoneByWeapon(this, arme.getTemplate().getType(), getMap().getCase(cellID), caster.getCell().getId());
+                ArrayList<Fighter> targets = PathFinding.getCiblesByZoneByWeapon(this, arme.template().getTypeID(), getMap().getCase(cellID), caster.getCell().getId());
 
                 for (SpellEffect SE : effects) {
                     try {
@@ -2586,13 +2586,13 @@ public class Fight {
                  * 6519 Baguette de Kouartz
                  * 8118 Baguette du Scarabosse Dor�
                  */
-                int idArme = arme.getTemplate().getId(), basePdvSoin = 1, pdvSoin;
+                int idArme = arme.template().getId(), basePdvSoin = 1, pdvSoin;
                 if (idArme == 7172 || idArme == 7156 || idArme == 1355 || idArme == 7182 || idArme == 7040 || idArme == 6539 || idArme == 6519 || idArme == 8118) {
                     pdvSoin = Constant.getArmeSoin(idArme);
                     if (pdvSoin != -1) {
                         if (isCC) {
-                            basePdvSoin = basePdvSoin + arme.getTemplate().getBonusCC();
-                            pdvSoin = pdvSoin + arme.getTemplate().getBonusCC();
+                            basePdvSoin = basePdvSoin + arme.template().getBonusCC();
+                            pdvSoin = pdvSoin + arme.template().getBonusCC();
                         }
                         int intel = perso.getStats().getEffect(Constant.STATS_ADD_INTE) + perso.getStuffStats().getEffect(Constant.STATS_ADD_INTE) + perso.getDonsStats().getEffect(Constant.STATS_ADD_INTE) + perso.getBuffsStats().getEffect(Constant.STATS_ADD_INTE);
                         int soins = perso.getStats().getEffect(Constant.STATS_ADD_SOIN) + perso.getStuffStats().getEffect(Constant.STATS_ADD_SOIN) + perso.getDonsStats().getEffect(Constant.STATS_ADD_SOIN) + perso.getBuffsStats().getEffect(Constant.STATS_ADD_SOIN);
@@ -3160,7 +3160,7 @@ public class Fight {
                             }
                         }
                         if (ok && temp != null) {
-                            Item object = World.world.getObjTemplate(10275).createNewItem(1, false);
+                            FullItem object = World.world.getItemTemplate(10275).createNewItem(1, false);
                             if (temp.addItem(object, true, false))
                                 World.world.addGameObject(object);
                             SocketManager.GAME_SEND_Im_PACKET(temp, "021;1~10275");
@@ -4119,7 +4119,7 @@ public class Fight {
 
         player.afterFight = true;
 
-        Item weapon = player.getObjetByPos(Constant.ITEM_POS_ARME);
+        FullItem weapon = player.getObjetByPos(Constant.ITEM_POS_ARME);
         if (weapon != null) {
             if (weapon.getTxtStat().containsKey(Constant.STATS_RESIST)) {
                 int statNew = Integer.parseInt(weapon.getTxtStat().get(Constant.STATS_RESIST), 16) - 1;
@@ -4153,7 +4153,7 @@ public class Fight {
                     player.teleportOldMap();
 
         if (this.getType() == Constant.FIGHT_TYPE_PVM) {
-            Item obj = player.getObjetByPos(Constant.ITEM_POS_FAMILIER);
+            FullItem obj = player.getObjetByPos(Constant.ITEM_POS_FAMILIER);
             if (obj != null) {
                 Map<Integer, Integer> souls = new HashMap<>();
 
@@ -4169,7 +4169,7 @@ public class Fight {
                         souls.put(id, 1);
                 }
                 if (!souls.isEmpty()) {
-                    PetEntry pet = World.world.getPetsEntry(obj.getGuid());
+                    PetEntry pet = World.world.getPetsEntry_legacy(obj.getGuid());
                     if (pet != null)
                         pet.eatSouls(player, souls);
                 }
@@ -4185,7 +4185,7 @@ public class Fight {
         if (player.getMorphMode() && player.donjon)
             player.unsetFullMorph();
 
-        Item arme = player.getObjetByPos(Constant.ITEM_POS_ARME);
+        FullItem arme = player.getObjetByPos(Constant.ITEM_POS_ARME);
 
         if (arme != null) {
             if (arme.getTxtStat().containsKey(Constant.STATS_RESIST)) {
@@ -4202,9 +4202,9 @@ public class Fight {
         }
 
         if (player.getObjetByPos(Constant.ITEM_POS_FAMILIER) != null && this.getType() != Constant.FIGHT_TYPE_CHALLENGE) {
-            Item obj = player.getObjetByPos(Constant.ITEM_POS_FAMILIER);
+            FullItem obj = player.getObjetByPos(Constant.ITEM_POS_FAMILIER);
             if (obj != null) {
-                PetEntry pets = World.world.getPetsEntry(obj.getGuid());
+                PetEntry pets = World.world.getPetsEntry_legacy(obj.getGuid());
                 if (pets != null)
                     pets.looseFight(player);
             }
@@ -4437,7 +4437,7 @@ public class Fight {
                         try {
                             Fighter f = this.getCapturer().get(Formulas.getRandomValue(0, this.getCapturer().size() - 1)); // R�cup�re un captureur au hasard dans la liste
                             if (f != null && f.getPlayer() != null) {
-                                if (f.getPlayer().getObjetByPos(Constant.ITEM_POS_ARME) == null || !(f.getPlayer().getObjetByPos(Constant.ITEM_POS_ARME).getTemplate().getType() == Constant.ITEM_TYPE_PIERRE_AME)) {
+                                if (f.getPlayer().getObjetByPos(Constant.ITEM_POS_ARME) == null || !(f.getPlayer().getObjetByPos(Constant.ITEM_POS_ARME).template().getTypeID() == Constant.ITEM_TYPE_PIERRE_AME)) {
                                     this.getCapturer().remove(f);
                                     continue;
                                 }
@@ -4499,7 +4499,7 @@ public class Fight {
                         try {
                             Fighter f = getTrainer().get(Formulas.getRandomValue(0, getTrainer().size() - 1)); // R�cup�re un captureur au hasard dans la liste
                             Player player = f.getPlayer();
-                            if (player.getObjetByPos(Constant.ITEM_POS_ARME) == null || !(player.getObjetByPos(Constant.ITEM_POS_ARME).getTemplate().getType() == Constant.ITEM_TYPE_FILET_CAPTURE)) {
+                            if (player.getObjetByPos(Constant.ITEM_POS_ARME) == null || !(player.getObjetByPos(Constant.ITEM_POS_ARME).template().getTypeID() == Constant.ITEM_TYPE_FILET_CAPTURE)) {
                                 getTrainer().remove(f);
                                 continue;
                             }
@@ -4593,7 +4593,7 @@ public class Fight {
             totalProspecting = (int)(totalProspecting * challengeFactor);
 
             ArrayList<Drop> dropsPlayers = new ArrayList<>(), dropsMeats = new ArrayList<>();
-            Collection<Item> dropsCollector = null;
+            Collection<FullItem> dropsCollector = null;
             Couple<Integer, Integer> kamas;
 
             if (this.getType() == Constant.FIGHT_TYPE_PVT && win == 1) {
@@ -4676,7 +4676,7 @@ public class Fight {
                                 if (stalkTarget.getTarget() == curPlayer)
                                     quantity = 4;
 
-                            Item object = World.world.getObjTemplate(10275).createNewItem(quantity, false);
+                            FullItem object = World.world.getItemTemplate(10275).createNewItem(quantity, false);
                             if (curPlayer.addItem(object, true, false))
                                 World.world.addGameObject(object);
                             kamas = new Couple<>(1000 * quantity, 1000 * quantity);
@@ -4702,7 +4702,7 @@ public class Fight {
                     if (curPlayer != null) {
                         kamas = new Couple<>(1000 * quantity, 1000 * quantity);
                         curPlayer.addKamas(1000 * quantity);
-                        Item object = World.world.getObjTemplate(10275).createNewItem(quantity, false);
+                        FullItem object = World.world.getItemTemplate(10275).createNewItem(quantity, false);
                         if (curPlayer.addItem(object, true, false))
                             World.world.addGameObject(object);
                         stalk = true;
@@ -4713,12 +4713,12 @@ public class Fight {
 
             //region Heroic
             Map<Player, String> list = null;
-            ArrayList<Item> objects = null;
+            ArrayList<FullItem> objects = null;
 
             if (Config.modeHeroic) {
                 switch (this.getType()) {
                     case Constant.FIGHT_TYPE_AGRESSION:
-                        final ArrayList<Item> objects1 = new ArrayList<>();
+                        final ArrayList<FullItem> objects1 = new ArrayList<>();
                         int money = 0;
 
                         for (final Fighter fighter : loosers) {
@@ -4728,9 +4728,9 @@ public class Fight {
                                 money += player.getKamas();
                                 totalXP += player.getExp() * 10 / 100;
 
-                                Iterator<Item> iterator1 = new ArrayList<>(player.getItems().values()).iterator();
+                                Iterator<FullItem> iterator1 = new ArrayList<>(player.getItems().values()).iterator();
                                 while (iterator1.hasNext()) {
-                                    Item toRemove = iterator1.next();
+                                    FullItem toRemove = iterator1.next();
                                     if (toRemove != null) {
                                         player.removeItem(toRemove.getGuid(), toRemove.getQuantity(), true, false);
                                     }
@@ -4831,12 +4831,12 @@ public class Fight {
                     Map<Integer, Integer> objectsWon = new HashMap<>(), itemWon2 = new HashMap<>();
                     if (this.getType() == Constant.FIGHT_TYPE_PVT && win == 1 && dropsCollector != null) {
                         int objectPerPlayer = (int) Math.floor((double) dropsCollector.size() / (double) winners.size()), counter = 0;
-                        ArrayList<Item> temporary2 = new ArrayList<>(dropsCollector);
+                        ArrayList<FullItem> temporary2 = new ArrayList<>(dropsCollector);
                         Collections.shuffle(temporary2);
 
-                        for (Item object : temporary2) {
+                        for (FullItem object : temporary2) {
                             if (counter <= objectPerPlayer) {
-                                objectsWon.put(object.getTemplate().getId(), object.getQuantity());
+                                objectsWon.put(object.template().getId(), object.getQuantity());
                                 dropsCollector.remove(object);
                                 World.world.removeGameObject(object.getGuid());
                                 counter++;
@@ -4869,7 +4869,7 @@ public class Fight {
                                     break;
                             }
                             if (jet < chance || ok) {
-                                ItemTemplate itemTemplate = World.world.getObjTemplate(drop.getObjectId());
+                                ItemTemplate itemTemplate = World.world.getItemTemplate(drop.getObjectId());
 
                                 if (itemTemplate == null)
                                     continue;
@@ -4980,7 +4980,7 @@ public class Fight {
                             ArrayList<Drop> temporary = new ArrayList<>(dropsMeats);
                             Collections.shuffle(temporary);
 
-                            Item weapon = player.getObjetByPos(Constant.ITEM_POS_ARME);
+                            FullItem weapon = player.getObjetByPos(Constant.ITEM_POS_ARME);
                             boolean ok = weapon != null && weapon.getStats().getEffect(795) == 1;
 
                             if (ok) {
@@ -4989,7 +4989,7 @@ public class Fight {
                                             chance = Double.parseDouble(formatter.format(drop.getLocalPercent() * (i.getPros() / 100.0)).replace(',', '.'));
 
                                     if (jet < chance) {
-                                        ItemTemplate itemTemplate = World.world.getObjTemplate(drop.getObjectId());
+                                        ItemTemplate itemTemplate = World.world.getItemTemplate(drop.getObjectId());
 
                                         if (drop.getAction() == 1 && itemTemplate != null && player.getMetierByID(41) != null && player.getMetierByID(41).get_lvl() >= drop.getLevel())
                                             itemWon2.put(itemTemplate.getId(), (itemWon2.get(itemTemplate.getId()) == null ? 0 : itemWon2.get(itemTemplate.getId())) + 1);
@@ -5024,7 +5024,7 @@ public class Fight {
                             if (i.getId() == this.getCaptWinner() && fullSoul != null) {
                                 if (drops.length() > 0)
                                     drops.append(",");
-                                drops.append(fullSoul.getTemplate().getId()).append("~").append(1);
+                                drops.append(fullSoul.template().getId()).append("~").append(1);
                                 if (player.addItem(fullSoul, false, false))
                                     World.world.addGameObject(fullSoul);
                             }
@@ -5039,7 +5039,7 @@ public class Fight {
 
                         final Map<ItemTemplate, Integer> dropsToAttribute = new HashMap<>();
                         for (Entry<Integer, Integer> entry : objectsWon.entrySet()) {
-                            ItemTemplate itemTemplate = World.world.getObjTemplate(entry.getKey());
+                            ItemTemplate itemTemplate = World.world.getItemTemplate(entry.getKey());
 
                             if (player == null && i.getInvocator() == null) break;
                             if (itemTemplate == null || i instanceof CloneFighter) continue;
@@ -5049,7 +5049,7 @@ public class Fight {
                             dropsToAttribute.put(itemTemplate, entry.getValue());
                         }
                         for (Entry<Integer, Integer> entry : itemWon2.entrySet()) {
-                            ItemTemplate itemTemplate = World.world.getObjTemplate(entry.getKey());
+                            ItemTemplate itemTemplate = World.world.getItemTemplate(entry.getKey());
 
                             if (player == null && i.getInvocator().getPlayer() == null) break;
                             if (itemTemplate == null) continue;
@@ -5062,18 +5062,18 @@ public class Fight {
                         TimerWaiter.addNext(() -> {
                             for (Entry<ItemTemplate, Integer> entry : dropsToAttribute.entrySet()) {
                                 ItemTemplate template = entry.getKey();
-                                if (template.getType() == 32 && player != null) {
+                                if (template.getTypeID() == 32 && player != null) {
                                     player.setMascotte(template.getId());
-                                } else if (template.getType() == Constant.ITEM_TYPE_FAMILIER && Config.maxPets) {
-                                    Item obj = template.createNewItem(1, false);
+                                } else if (template.getTypeID() == Constant.ITEM_TYPE_FAMILIER && Config.maxPets) {
+                                    FullItem obj = template.createNewItem(1, false);
                                     if (target.addItem(obj, true, false))//Si le joueur n'avait pas d'item similaire
                                         World.world.addGameObject(obj);
                                     SocketManager.GAME_SEND_Ow_PACKET(target);
                                 } else {
-                                    Item newObj = World.world.getObjTemplate(template.getId()).createNewItemWithoutDuplication(target.getItems().values(), entry.getValue(), false);
-                                    if (World.world.getObjTemplate(template.getId()).getType() == Constant.ITEM_TYPE_CERTIF_MONTURE) {
+                                    FullItem newObj = World.world.getItemTemplate(template.getId()).createNewItemWithoutDuplication(target.getItems().values(), entry.getValue(), false);
+                                    if (World.world.getItemTemplate(template.getId()).getTypeID() == Constant.ITEM_TYPE_CERTIF_MONTURE) {
                                         //obj.setMountStats(this.getPlayer(), null);
-                                        Mount mount = new Mount(Constant.getMountColorByParchoTemplate(newObj.getTemplate().getId()), target.getId(), false);
+                                        Mount mount = new Mount(Constant.getMountColorByParchoTemplate(newObj.template().getId()), target.getId(), false);
                                         newObj.clearStats();
                                         newObj.getStats().addOneStat(995, mount.getId());
                                         newObj.getTxtStat().put(996, target.getName());
@@ -5102,9 +5102,9 @@ public class Fight {
                                 if (id == -1) continue;
                                 drops.append(id).append("~1");
                                 // Certificat :
-                                ItemTemplate OT2 = World.world.getObjTemplate(Constant.getCertificatByDopeuls(IDmob));
+                                ItemTemplate OT2 = World.world.getItemTemplate(Constant.getCertificatByDopeuls(IDmob));
                                 if (OT2 != null) {
-                                    Item obj2 = OT2.createNewItem(1, false);
+                                    FullItem obj2 = OT2.createNewItem(1, false);
                                     if (player.addItem(obj2, true, false))// Si le joueur n'avait pas d'item similaire
                                         World.world.addGameObject(obj2);
                                     obj2.refreshStatsObjet("325#0#0#" + System.currentTimeMillis());
@@ -5156,7 +5156,7 @@ public class Fight {
 
                             switch (player.getCurMap().getId()) {
                                 case 8984:
-                                    Item obj = World.world.getObjTemplate(8012).createNewItem(1, false);
+                                    FullItem obj = World.world.getItemTemplate(8012).createNewItem(1, false);
                                     if (player.addItem(obj, true, false))
                                         World.world.addGameObject(obj);
                                     drops.append(drops.length() > 0 ? "," : "").append("8012~1");
@@ -5171,9 +5171,9 @@ public class Fight {
                             xpPlayer = XP.get();
                             if (xpPlayer != 0) {
                                 if (player.getMorphMode()) {
-                                    Item obj = player.getObjetByPos(Constant.ITEM_POS_ARME);
+                                    FullItem obj = player.getObjetByPos(Constant.ITEM_POS_ARME);
                                     if (obj != null)
-                                        if (Constant.isIncarnationWeapon(obj.getTemplate().getId()))
+                                        if (Constant.isIncarnationWeapon(obj.template().getId()))
                                             if (player.addXpIncarnations(xpPlayer))
                                                 i.setLevelUp(true);
                                 } else if (player.addXp(xpPlayer))
@@ -5459,7 +5459,7 @@ public class Fight {
                                 chance = (int) (drop.getLocalPercent() * (World.world.getGuild(collector.getGuildId()).getStats(Constant.STATS_ADD_PROS) / 100.0));
 
                         if (jet < chance) {
-                            ItemTemplate itemTemplate = World.world.getObjTemplate(drop.getObjectId());
+                            ItemTemplate itemTemplate = World.world.getItemTemplate(drop.getObjectId());
 
                             if (itemTemplate == null)
                                 continue;
@@ -5538,7 +5538,7 @@ public class Fight {
                     }
 
                     for (Entry<Integer, Integer> entry : objectsWon.entrySet()) {
-                        ItemTemplate itemTemplate = World.world.getObjTemplate(entry.getKey());
+                        ItemTemplate itemTemplate = World.world.getItemTemplate(entry.getKey());
 
                         if (itemTemplate == null || collector.getPodsTotal() + itemTemplate.getPod() * entry.getValue() >= collector.getMaxPod())
                             continue;
@@ -5546,7 +5546,7 @@ public class Fight {
 
                         drops += entry.getKey() + "~" + entry.getValue();
 
-                        Item newObj = World.world.getObjTemplate(itemTemplate.getId()).createNewItemWithoutDuplication(collector.getOjects().values(), entry.getValue(), false);
+                        FullItem newObj = World.world.getItemTemplate(itemTemplate.getId()).createNewItemWithoutDuplication(collector.getOjects().values(), entry.getValue(), false);
 
                         if (newObj != null && collector.getOjects().get(newObj.getGuid()) == null) {
                             if (collector.addObjet(newObj))
@@ -5732,7 +5732,7 @@ public class Fight {
         }
     }
 
-    public static Map<Player, String> give(ArrayList<Item> objects, ArrayList<Fighter> winners) {
+    public static Map<Player, String> give(ArrayList<FullItem> objects, ArrayList<Fighter> winners) {
         final Map<Player, String> list = new HashMap<>();
 
         if (Config.modeHeroic) {
@@ -5749,9 +5749,9 @@ public class Fight {
 
             if (!players.isEmpty() && objects != null && !objects.isEmpty()) {
                 byte count = -1;
-                Item object;
+                FullItem object;
 
-                Iterator<Item> iterator = objects.iterator();
+                Iterator<FullItem> iterator = objects.iterator();
                 while (iterator.hasNext()) {
                     object = objects.iterator().next();
 
@@ -5767,7 +5767,7 @@ public class Fight {
                         object.setPosition(Constant.ITEM_POS_NO_EQUIPED);
                         player.addItem(object, true, false);
                         String value = list.get(player);
-                        value += (value.isEmpty() ? "" : ",") + object.getTemplate().getId() + "~" + object.getQuantity();
+                        value += (value.isEmpty() ? "" : ",") + object.template().getId() + "~" + object.getQuantity();
                         list.remove(player);
                         list.put(player, value);
                         objects.remove(object);

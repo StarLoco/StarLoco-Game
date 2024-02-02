@@ -18,7 +18,7 @@ import org.starloco.locos.game.world.World;
 import org.starloco.locos.job.Job;
 import org.starloco.locos.job.JobStat;
 import org.starloco.locos.kernel.Constant;
-import org.starloco.locos.item.Item;
+import org.starloco.locos.item.FullItem;
 import org.starloco.locos.item.ItemTemplate;
 import org.starloco.locos.quest.QuestProgress;
 import org.starloco.locos.script.DataScriptVM;
@@ -482,7 +482,7 @@ public class SPlayer extends DefaultUserdata<Player> {
         int pos = args.nextInt();
         return p.getEquippedObjects().stream()
                 .filter(i -> i.getPosition() == pos)
-                .findFirst().map(Item::scripted)
+                .findFirst().map(FullItem::scripted)
                 .orElse(null);
     }
 
@@ -495,7 +495,7 @@ public class SPlayer extends DefaultUserdata<Player> {
     private static SItem getItem(Player p, ArgumentIterator args) {
         int itemID = args.nextInt();
         int quantity = args.nextOptionalInt(1);
-        Item item = p.getItemTemplate(itemID, quantity);
+        FullItem item = p.getItemTemplate(itemID, quantity);
         if(item == null) {
             // No item return null
             return null;
@@ -523,8 +523,8 @@ public class SPlayer extends DefaultUserdata<Player> {
             .anyMatch(i -> i.getPosition() == pos);
         if(posAlreadyFilled) return false;
 
-        ItemTemplate tmpl = World.world.getObjTemplate(itemID);
-        Item item = tmpl.createNewItem(quantity, isPerfect);
+        ItemTemplate tmpl = World.world.getItemTemplate(itemID);
+        FullItem item = tmpl.createNewItem(quantity, isPerfect);
         item.setPosition(pos);
 
         p.addItem(item, pos==Constant.ITEM_POS_NO_EQUIPED, display);

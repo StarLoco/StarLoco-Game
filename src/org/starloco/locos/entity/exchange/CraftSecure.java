@@ -10,7 +10,7 @@ import org.starloco.locos.job.JobConstant;
 import org.starloco.locos.job.JobStat;
 import org.starloco.locos.kernel.Config;
 import org.starloco.locos.kernel.Constant;
-import org.starloco.locos.item.Item;
+import org.starloco.locos.item.FullItem;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -108,7 +108,7 @@ public class CraftSecure extends PlayerExchange {
                 if (couple.second == 0)
                     continue;
 
-                Item object = World.world.getGameObject(couple.first);
+                FullItem object = World.world.getGameObject(couple.first);
 
                 if (object == null)
                     continue;
@@ -164,7 +164,7 @@ public class CraftSecure extends PlayerExchange {
     }
 
     public void setPayItems(byte type, boolean adding, int guid, int quantity) {
-        Item object = World.world.getGameObject(guid);
+        FullItem object = World.world.getGameObject(guid);
 
         if (object == null)
             return;
@@ -185,13 +185,13 @@ public class CraftSecure extends PlayerExchange {
         }
     }
 
-    private void addItem(Item object, int quantity, byte type) {
+    private void addItem(FullItem object, int quantity, byte type) {
         if (object.getQuantity() < quantity)
             quantity = object.getQuantity();
 
         ArrayList<Couple<Integer, Integer>> items = (type == 1 ? this.payItems : this.payItemsIfSuccess);
         Couple<Integer, Integer> couple = getCoupleInList(items, object.getGuid());
-        String add = "|" + object.getTemplate().getId() + "|" + object.encodeStats();
+        String add = "|" + object.template().getId() + "|" + object.encodeStats();
 
         if (couple != null) {
             couple.second += quantity;
@@ -205,7 +205,7 @@ public class CraftSecure extends PlayerExchange {
         this.player1.send("Ep" + type + ";O+" + object.getGuid() + "|" + quantity + add);
     }
 
-    private void removeItem(Item object, int quantity, byte type) {
+    private void removeItem(FullItem object, int quantity, byte type) {
         ArrayList<Couple<Integer, Integer>> items = (type == 1 ? this.payItems : this.payItemsIfSuccess);
         Couple<Integer, Integer> couple = getCoupleInList(items, object.getGuid());
 
@@ -219,7 +219,7 @@ public class CraftSecure extends PlayerExchange {
         } else {
             couple.second = newQua;
             this.player2.send("Ep" + type + ";O+" + object.getGuid() + "|" + newQua);
-            this.player1.send("Ep" + type + ";O+" + object.getGuid() + "|" + newQua + "|" + object.getTemplate().getId() + "|" + object.encodeStats());
+            this.player1.send("Ep" + type + ";O+" + object.getGuid() + "|" + newQua + "|" + object.template().getId() + "|" + object.encodeStats());
         }
     }
 

@@ -5,7 +5,7 @@ import org.starloco.locos.common.Formulas;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.Config;
 import org.starloco.locos.kernel.Constant;
-import org.starloco.locos.item.Item;
+import org.starloco.locos.item.FullItem;
 import org.starloco.locos.util.Pair;
 
 import java.util.*;
@@ -22,7 +22,7 @@ public class MonsterGroup {
     private boolean changeAgro = false, isFix = false;
     private Map<Integer, MonsterGrade> mobs = new HashMap<>();
     private String condition = "";
-    private ArrayList<Item> objects;
+    private ArrayList<FullItem> objects;
 
     public MonsterGroup(int id, int alignment, List<MonsterGrade> possibles, GameMap map, int cell, int fixSize, MonsterGrade extra) {
         this.id = id;
@@ -113,7 +113,7 @@ public class MonsterGroup {
         if (!objects.isEmpty()) {
             this.objects = new ArrayList<>();
             for (String value : objects.split(",")) {
-                final Item item = World.world.getGameObject(Integer.parseInt(value));
+                final FullItem item = World.world.getGameObject(Integer.parseInt(value));
                 if (item != null)
                     this.objects.add(item);
             }
@@ -318,7 +318,7 @@ public class MonsterGroup {
         }, 60000 * 10);
     }
 
-    public ArrayList<Item> getObjects() {
+    public ArrayList<FullItem> getObjects() {
         if (this.objects == null && Config.modeHeroic)
             this.objects = new ArrayList<>();
         else if (!Config.modeHeroic)

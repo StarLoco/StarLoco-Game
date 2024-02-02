@@ -3,11 +3,11 @@ package org.starloco.locos.item.entity;
 import org.starloco.locos.database.DatabaseManager;
 import org.starloco.locos.database.data.login.ObjectData;
 import org.starloco.locos.game.world.World.Couple;
-import org.starloco.locos.item.Item;
+import org.starloco.locos.item.FullItem;
 
 import java.util.ArrayList;
 
-public class Fragment extends Item {
+public class Fragment extends FullItem {
 
     private ArrayList<Couple<Integer, Integer>> runes;
 

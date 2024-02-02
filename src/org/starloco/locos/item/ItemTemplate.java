@@ -17,11 +17,11 @@ import java.util.*;
 
 public class ItemTemplate {
 
-    private int id;
-    private String strTemplate;
+    public final int id;
+    private final String strTemplate;
     private String name;
-    private int type;
-    private int level;
+    public final ItemType type;
+    public final int level;
     private int pod;
     private int price;
     private int panoId;
@@ -31,7 +31,7 @@ public class ItemTemplate {
     private boolean isTwoHanded;
     private long sold;
     private int avgPrice;
-    private int points, newPrice;
+    private int points;
     private ArrayList<ObjectAction> onUseActions;
 
     public String toString() {
@@ -44,7 +44,7 @@ public class ItemTemplate {
         this.id = id;
         this.strTemplate = strTemplate;
         this.name = name;
-        this.type = type;
+        this.type = ItemType.fromClientID(type);
         this.level = level;
         this.pod = pod;
         this.price = price;
@@ -59,41 +59,7 @@ public class ItemTemplate {
         this.sold = sold;
         this.avgPrice = avgPrice;
         this.points = points;
-        this.newPrice = newPrice;
         if(armesInfos.isEmpty()) return;
-        try {
-            String[] infos = armesInfos.split(";");
-            PACost = Integer.parseInt(infos[0]);
-            POmin = Integer.parseInt(infos[1]);
-            POmax = Integer.parseInt(infos[2]);
-            tauxCC = Integer.parseInt(infos[3]);
-            tauxEC = Integer.parseInt(infos[4]);
-            bonusCC = Integer.parseInt(infos[5]);
-            isTwoHanded = infos[6].equals("1");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void setInfos(String strTemplate, String name, int type, int level, int pod, int price, int panoId, String conditions, String armesInfos, int sold, int avgPrice, int points, int newPrice) {
-        this.strTemplate = strTemplate;
-        this.name = name;
-        this.type = type;
-        this.level = level;
-        this.pod = pod;
-        this.price = price;
-        this.panoId = panoId;
-        this.conditions = conditions;
-        this.PACost = -1;
-        this.POmin = 1;
-        this.POmax = 1;
-        this.tauxCC = 100;
-        this.tauxEC = 2;
-        this.bonusCC = 0;
-        this.sold = sold;
-        this.avgPrice = avgPrice;
-        this.points = points;
-        this.newPrice = newPrice;
         try {
             String[] infos = armesInfos.split(";");
             PACost = Integer.parseInt(infos[0]);
@@ -112,10 +78,6 @@ public class ItemTemplate {
         return id;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
     public String getStrTemplate() {
         return strTemplate;
     }
@@ -128,22 +90,13 @@ public class ItemTemplate {
         this.name = name;
     }
 
-    public int getType() {
-        return type;
-    }
-
-    public void setType(int type) {
-        this.type = type;
+    public int getTypeID() {
+        return type.clientID;
     }
 
     public int getLevel() {
         return level;
     }
-
-    public void setLevel(int level) {
-        this.level = level;
-    }
-
     public int getPod() {
         return pod;
     }
@@ -250,10 +203,10 @@ public class ItemTemplate {
         return onUseActions == null ? new ArrayList<>() : onUseActions;
     }
 
-    public Item createNewCertificat(Item obj) {
-        Item item = null;
-        if (getType() == Constant.ITEM_TYPE_CERTIFICAT_CHANIL) {
-            PetEntry myPets = World.world.getPetsEntry(obj.getGuid());
+    public FullItem createNewCertificat(FullItem obj) {
+        FullItem item = null;
+        if (getTypeID() == Constant.ITEM_TYPE_CERTIFICAT_CHANIL) {
+            PetEntry myPets = World.world.getPetsEntry_legacy(obj.getGuid());
             Map<Integer, String> txtStat = new HashMap<>();
             Map<Integer, String> actualStat = obj.getTxtStat();
             if (actualStat.containsKey(Constant.STATS_PETS_PDV))
@@ -266,18 +219,18 @@ public class ItemTemplate {
                 txtStat.put(Constant.STATS_PETS_EPO, actualStat.get(Constant.STATS_PETS_EPO));
             if (actualStat.containsKey(Constant.STATS_PETS_REPAS))
                 txtStat.put(Constant.STATS_PETS_REPAS, actualStat.get(Constant.STATS_PETS_REPAS));
-            item = new Item(-1, getId(), 1, Constant.ITEM_POS_NO_EQUIPED, obj.getStats(), new ArrayList<>(), new HashMap<>(), txtStat, 0);
+            item = new FullItem(-1, getId(), 1, Constant.ITEM_POS_NO_EQUIPED, obj.getStats(), new ArrayList<>(), new HashMap<>(), txtStat, 0);
             ((ObjectData) DatabaseManager.get(ObjectData.class)).insert(item);
-            ((PetData) DatabaseManager.get(PetData.class)).delete(World.world.getPetsEntry(obj.getGuid()));
+            ((PetData) DatabaseManager.get(PetData.class)).delete(World.world.getPetsEntry_legacy(obj.getGuid()));
             World.world.removePetsEntry(obj.getGuid());
         }
         return item;
     }
 //TODO: PRendre example ici !!!!
-    public Item createNewFamilier(Item obj) {
+    public FullItem createNewFamilier(FullItem obj) {
         Map<Integer, String> stats = new HashMap<>();
         stats.putAll(obj.getTxtStat());
-        Item object = new Item(-1, getId(), 1, Constant.ITEM_POS_NO_EQUIPED, obj.getStats(), new ArrayList<>(), new HashMap<>(), stats, 0);
+        FullItem object = new FullItem(-1, getId(), 1, Constant.ITEM_POS_NO_EQUIPED, obj.getStats(), new ArrayList<>(), new HashMap<>(), stats, 0);
 
         if(((ObjectData) DatabaseManager.get(ObjectData.class)).insert(object)) {
             PetEntry petEntry = new PetEntry(object.getGuid(), getId(), System.currentTimeMillis(), 0, Integer.parseInt(stats.get(Constant.STATS_PETS_PDV), 16), Integer.parseInt(stats.get(Constant.STATS_PETS_POIDS), 16), !stats.containsKey(Constant.STATS_PETS_EPO));
@@ -290,63 +243,63 @@ public class ItemTemplate {
         return null;
     }
 
-    public Item createNewBenediction(int turn) {
+    public FullItem createNewBenediction(int turn) {
         Stats stats = generateNewStatsFromTemplate(getStrTemplate(), true);
         stats.addOneStat(Constant.STATS_TURN, turn);
-        Item item = new Item(-1, getId(), 1, Constant.ITEM_POS_BENEDICTION, stats, new ArrayList<>(), new HashMap<>(), new HashMap<>(), 0);
+        FullItem item = new FullItem(-1, getId(), 1, Constant.ITEM_POS_BENEDICTION, stats, new ArrayList<>(), new HashMap<>(), new HashMap<>(), 0);
         if(((ObjectData) DatabaseManager.get(ObjectData.class)).insert(item))
             return item;
         return null;
     }
 
-    public Item createNewMalediction() {
+    public FullItem createNewMalediction() {
         Stats stats = generateNewStatsFromTemplate(getStrTemplate(), true);
         stats.addOneStat(Constant.STATS_TURN, 1);
-        Item object = new Item(-1, getId(), 1, Constant.ITEM_POS_MALEDICTION, stats, new ArrayList<>(), new HashMap<>(), new HashMap<>(), 0);
+        FullItem object = new FullItem(-1, getId(), 1, Constant.ITEM_POS_MALEDICTION, stats, new ArrayList<>(), new HashMap<>(), new HashMap<>(), 0);
         if(((ObjectData) DatabaseManager.get(ObjectData.class)).insert(object))
             return object;
         return null;
     }
 
-    public Item createNewRoleplayBuff() {
+    public FullItem createNewRoleplayBuff() {
         Stats stats = generateNewStatsFromTemplate(getStrTemplate(), true);
         stats.addOneStat(Constant.STATS_TURN, 1);
-        Item object = new Item(-1, getId(), 1, Constant.ITEM_POS_ROLEPLAY_BUFF, stats, new ArrayList<>(), new HashMap<>(), new HashMap<>(), 0);
+        FullItem object = new FullItem(-1, getId(), 1, Constant.ITEM_POS_ROLEPLAY_BUFF, stats, new ArrayList<>(), new HashMap<>(), new HashMap<>(), 0);
         if(((ObjectData) DatabaseManager.get(ObjectData.class)).insert(object))
             return object;
         return null;
     }
 
-    public Item createNewCandy(int turn) {
+    public FullItem createNewCandy(int turn) {
         Stats stats = generateNewStatsFromTemplate(getStrTemplate(), true);
         stats.addOneStat(Constant.STATS_TURN, turn);
-        Item item = new Item(-1, getId(), 1, Constant.ITEM_POS_BONBON, stats, new ArrayList<>(), new HashMap<>(), new HashMap<>(), 0);
+        FullItem item = new FullItem(-1, getId(), 1, Constant.ITEM_POS_BONBON, stats, new ArrayList<>(), new HashMap<>(), new HashMap<>(), 0);
         if(((ObjectData) DatabaseManager.get(ObjectData.class)).insert(item))
             return item;
         return null;
     }
 
-    public Item createNewFollowPnj(int turn) {
+    public FullItem createNewFollowPnj(int turn) {
         Stats stats = generateNewStatsFromTemplate(getStrTemplate(), true);
         stats.addOneStat(Constant.STATS_TURN, turn);
         stats.addOneStat(148, 0);
-        Item item = new Item(id, getId(), 1, Constant.ITEM_POS_PNJ_SUIVEUR, stats, new ArrayList<>(), new HashMap<>(), new HashMap<>(), 0);
+        FullItem item = new FullItem(id, getId(), 1, Constant.ITEM_POS_PNJ_SUIVEUR, stats, new ArrayList<>(), new HashMap<>(), new HashMap<>(), 0);
         if(((ObjectData) DatabaseManager.get(ObjectData.class)).insert(item))
             return item;
         return null;
     }
 
-    public Item createNewItem(int qua, boolean useMax) {
-        Item item;
-        if (getType() == Constant.ITEM_TYPE_QUETES && (Constant.isCertificatDopeuls(getId()) || getId() == 6653)) {
+    public FullItem createNewItem(int qua, boolean useMax) {
+        FullItem item;
+        if (getTypeID() == Constant.ITEM_TYPE_QUETES && (Constant.isCertificatDopeuls(getId()) || getId() == 6653)) {
             Map<Integer, String> txtStat = new HashMap<>();
             txtStat.put(Constant.STATS_DATE, System.currentTimeMillis() + "");
-            item = new Item(-1, getId(), qua, Constant.ITEM_POS_NO_EQUIPED, new Stats(false, null), new ArrayList<>(), new HashMap<>(), txtStat, 0);
-        }  else if (getType() == Constant.ITEM_TYPE_FAMILIER) {
+            item = new FullItem(-1, getId(), qua, Constant.ITEM_POS_NO_EQUIPED, new Stats(false, null), new ArrayList<>(), new HashMap<>(), txtStat, 0);
+        }  else if (getTypeID() == Constant.ITEM_TYPE_FAMILIER) {
             String jet = World.world.getPets(this.getId()).getJet();
             Stats stats =  useMax ? generateNewStatsFromTemplate(jet, true) : new Stats(false, null);
 
-            item = new Item(-1, getId(), 1, Constant.ITEM_POS_NO_EQUIPED, stats, new ArrayList<>(), new HashMap<>(), World.world.getPets(getId()).generateNewtxtStatsForPets(), 0);
+            item = new FullItem(-1, getId(), 1, Constant.ITEM_POS_NO_EQUIPED, stats, new ArrayList<>(), new HashMap<>(), World.world.getPets(getId()).generateNewtxtStatsForPets(), 0);
             if(((ObjectData) DatabaseManager.get(ObjectData.class)).insert(item)) {
                 PetEntry pet = new PetEntry(item.getGuid(), getId(), System.currentTimeMillis(), 0, 10, 0, false);
                 World.world.addPetsEntry(pet);
@@ -354,19 +307,19 @@ public class ItemTemplate {
                 return item;
             }
             return null;
-        } else if(getType() == Constant.ITEM_TYPE_CERTIF_MONTURE) {
-            item = new Item(-1, getId(), qua, Constant.ITEM_POS_NO_EQUIPED, generateNewStatsFromTemplate(getStrTemplate(), useMax), getEffectTemplate(getStrTemplate()), new HashMap<>(), new HashMap<>(), 0);
+        } else if(getTypeID() == Constant.ITEM_TYPE_CERTIF_MONTURE) {
+            item = new FullItem(-1, getId(), qua, Constant.ITEM_POS_NO_EQUIPED, generateNewStatsFromTemplate(getStrTemplate(), useMax), getEffectTemplate(getStrTemplate()), new HashMap<>(), new HashMap<>(), 0);
         } else {
-            if (getType() == Constant.ITEM_TYPE_OBJET_ELEVAGE) {
-                item = new Item(-1, getId(), qua, Constant.ITEM_POS_NO_EQUIPED, new Stats(false, null), new ArrayList<>(), new HashMap<>(), getStringResistance(getStrTemplate()), 0);
+            if (getTypeID() == Constant.ITEM_TYPE_OBJET_ELEVAGE) {
+                item = new FullItem(-1, getId(), qua, Constant.ITEM_POS_NO_EQUIPED, new Stats(false, null), new ArrayList<>(), new HashMap<>(), getStringResistance(getStrTemplate()), 0);
             } else if (Constant.isIncarnationWeapon(getId())) {
                 Map<Integer, Integer> Stats = new HashMap<>();
                 Stats.put(Constant.ERR_STATS_XP, 0);
                 Stats.put(Constant.STATS_NIVEAU, 1);
-                item = new Item(-1, getId(), qua, Constant.ITEM_POS_NO_EQUIPED, generateNewStatsFromTemplate(getStrTemplate(), useMax), getEffectTemplate(getStrTemplate()), Stats, new HashMap<>(), 0);
+                item = new FullItem(-1, getId(), qua, Constant.ITEM_POS_NO_EQUIPED, generateNewStatsFromTemplate(getStrTemplate(), useMax), getEffectTemplate(getStrTemplate()), Stats, new HashMap<>(), 0);
             } else {
                 Map<Integer, String> Stat = new HashMap<>();
-                switch (getType()) {
+                switch (getTypeID()) {
                     case 1:
                     case 2:
                     case 3:
@@ -384,7 +337,7 @@ public class ItemTemplate {
                         }
                         break;
                 }
-                item = new Item(-1, getId(), qua, Constant.ITEM_POS_NO_EQUIPED, generateNewStatsFromTemplate(getStrTemplate(), useMax), getEffectTemplate(getStrTemplate()), new HashMap<>(), Stat, 0);
+                item = new FullItem(-1, getId(), qua, Constant.ITEM_POS_NO_EQUIPED, generateNewStatsFromTemplate(getStrTemplate(), useMax), getEffectTemplate(getStrTemplate()), new HashMap<>(), Stat, 0);
                 item.getSpellStats().addAll(this.getSpellStatsTemplate());
             }
         }
@@ -393,15 +346,15 @@ public class ItemTemplate {
         return null;
     }
 
-    public Item createNewItemWithoutDuplication(Collection<Item> objects, int qua, boolean useMax) {
+    public FullItem createNewItemWithoutDuplication(Collection<FullItem> objects, int qua, boolean useMax) {
         int id = -1;
-        Item item;
-        if (getType() == Constant.ITEM_TYPE_QUETES && (Constant.isCertificatDopeuls(getId()) || getId() == 6653)) {
+        FullItem item;
+        if (getTypeID() == Constant.ITEM_TYPE_QUETES && (Constant.isCertificatDopeuls(getId()) || getId() == 6653)) {
             Map<Integer, String> txtStat = new HashMap<>();
             txtStat.put(Constant.STATS_DATE, System.currentTimeMillis() + "");
-            item = new Item(id, getId(), qua, Constant.ITEM_POS_NO_EQUIPED, new Stats(false, null), new ArrayList<>(), new HashMap<>(), txtStat, 0);
-        } else if (getType() == Constant.ITEM_TYPE_FAMILIER) {
-            item = new Item(id, getId(), 1, Constant.ITEM_POS_NO_EQUIPED, (useMax ? generateNewStatsFromTemplate(World.world.getPets(this.getId()).getJet(), false) : new Stats(false, null)), new ArrayList<>(), new HashMap<>(), World.world.getPets(getId()).generateNewtxtStatsForPets(), 0);
+            item = new FullItem(id, getId(), qua, Constant.ITEM_POS_NO_EQUIPED, new Stats(false, null), new ArrayList<>(), new HashMap<>(), txtStat, 0);
+        } else if (getTypeID() == Constant.ITEM_TYPE_FAMILIER) {
+            item = new FullItem(id, getId(), 1, Constant.ITEM_POS_NO_EQUIPED, (useMax ? generateNewStatsFromTemplate(World.world.getPets(this.getId()).getJet(), false) : new Stats(false, null)), new ArrayList<>(), new HashMap<>(), World.world.getPets(getId()).generateNewtxtStatsForPets(), 0);
             //Ajouter du Pets_data SQL et World
             if(((ObjectData) DatabaseManager.get(ObjectData.class)).insert(item)) {
                 PetEntry pet = new PetEntry(item.getGuid(), getId(), System.currentTimeMillis(), 0, 10, 0, false);
@@ -410,19 +363,19 @@ public class ItemTemplate {
                 return item;
             }
             return null;
-        } else if(getType() == Constant.ITEM_TYPE_CERTIF_MONTURE) {
-            item = new Item(id, getId(), qua, Constant.ITEM_POS_NO_EQUIPED, generateNewStatsFromTemplate(getStrTemplate(), useMax), getEffectTemplate(getStrTemplate()), new HashMap<>(), new HashMap<>(), 0);
+        } else if(getTypeID() == Constant.ITEM_TYPE_CERTIF_MONTURE) {
+            item = new FullItem(id, getId(), qua, Constant.ITEM_POS_NO_EQUIPED, generateNewStatsFromTemplate(getStrTemplate(), useMax), getEffectTemplate(getStrTemplate()), new HashMap<>(), new HashMap<>(), 0);
         } else {
-            if (getType() == Constant.ITEM_TYPE_OBJET_ELEVAGE) {
-                item = new Item(id, getId(), qua, Constant.ITEM_POS_NO_EQUIPED, new Stats(false, null), new ArrayList<>(), new HashMap<>(), getStringResistance(getStrTemplate()), 0);
+            if (getTypeID() == Constant.ITEM_TYPE_OBJET_ELEVAGE) {
+                item = new FullItem(id, getId(), qua, Constant.ITEM_POS_NO_EQUIPED, new Stats(false, null), new ArrayList<>(), new HashMap<>(), getStringResistance(getStrTemplate()), 0);
             } else if (Constant.isIncarnationWeapon(getId())) {
                 Map<Integer, Integer> Stats = new HashMap<>();
                 Stats.put(Constant.ERR_STATS_XP, 0);
                 Stats.put(Constant.STATS_NIVEAU, 1);
-                item = new Item(id, getId(), qua, Constant.ITEM_POS_NO_EQUIPED, generateNewStatsFromTemplate(getStrTemplate(), useMax), getEffectTemplate(getStrTemplate()), Stats, new HashMap<>(), 0);
+                item = new FullItem(id, getId(), qua, Constant.ITEM_POS_NO_EQUIPED, generateNewStatsFromTemplate(getStrTemplate(), useMax), getEffectTemplate(getStrTemplate()), Stats, new HashMap<>(), 0);
             } else {
                 Map<Integer, String> Stat = new HashMap<>();
-                switch (getType()) {
+                switch (getTypeID()) {
                     case 1:
                     case 2:
                     case 3:
@@ -442,12 +395,12 @@ public class ItemTemplate {
                         }
                         break;
                 }
-                item = new Item(id, getId(), qua, Constant.ITEM_POS_NO_EQUIPED, generateNewStatsFromTemplate(getStrTemplate(), useMax), getEffectTemplate(getStrTemplate()), new HashMap<Integer, Integer>(), Stat, 0);
+                item = new FullItem(id, getId(), qua, Constant.ITEM_POS_NO_EQUIPED, generateNewStatsFromTemplate(getStrTemplate(), useMax), getEffectTemplate(getStrTemplate()), new HashMap<Integer, Integer>(), Stat, 0);
                 item.getSpellStats().addAll(this.getSpellStatsTemplate());
             }
         }
 
-        for(Item object : objects) {
+        for(FullItem object : objects) {
             if (World.world.getConditionManager().stackIfSimilar(object, item, true)) {
                 object.setQuantity(object.getQuantity() + item.getQuantity());
                 return object;
@@ -490,7 +443,7 @@ public class ItemTemplate {
                                               boolean useMax) {
         Stats itemStats = new Stats(false, null);
         //Si stats Vides
-        if (statsTemplate.equals(""))
+        if (statsTemplate.isEmpty())
             return itemStats;
 
         String[] splitted = statsTemplate.split(",");
@@ -551,7 +504,7 @@ public class ItemTemplate {
 
     private ArrayList<SpellEffect> getEffectTemplate(String statsTemplate) {
         ArrayList<SpellEffect> Effets = new ArrayList<>();
-        if (statsTemplate.equals(""))
+        if (statsTemplate.isEmpty())
             return Effets;
 
         String[] splitted = statsTemplate.split(",");
@@ -586,7 +539,7 @@ public class ItemTemplate {
     public void applyAction(Player player, Player target, int objectId, short cellId, int quantity) {
         for (int i = 0; i < quantity; i++) {
             if (World.world.getGameObject(objectId) == null) return;
-            if (World.world.getGameObject(objectId).getTemplate().getType() == 85 && World.world.getGameObject(objectId).getTemplate().getId() == 7010) {
+            if (World.world.getGameObject(objectId).type() == ItemType.FULL_SOUL_STONE && World.world.getGameObject(objectId).template().getId() == 7010) {
                 if (!SoulStone.isInArenaMap(player.getCurMap().getId()))
                     if (!SoulStone.isInArenaMap(player.getCurMap().getId()))
                         return;
@@ -594,7 +547,7 @@ public class ItemTemplate {
                 SoulStone soulStone = (SoulStone) World.world.getGameObject(objectId);
 
                 player.getCurMap().spawnNewGroup(true, player.getCurCell().getId(), soulStone.parseGroupData(), "MiS=" + player.getId());
-                SocketManager.GAME_SEND_Im_PACKET(player, "022;" + 1 + "~" + World.world.getGameObject(objectId).getTemplate().getId());
+                SocketManager.GAME_SEND_Im_PACKET(player, "022;" + 1 + "~" + World.world.getGameObject(objectId).templateID);
                 player.removeItem(objectId, 1, true, true);
             } else {
                 for (ObjectAction action : this.getOnUseActions())
@@ -608,15 +561,17 @@ public class ItemTemplate {
         sold += amount;
         avgPrice = (int) ((getAvgPrice() * oldSold + price) / getSold());
     }
+
+    // WTF is that list for
     private final static List<Integer> bannedObjects = Arrays.asList(493,494,495,496,922,7098,9972,454, 577, 596, 492, 491, 493, 494, 495, 496, 498, 499, 500, 577, 579, 911, 922, 1501, 1520, 1539, 1560, 1561, 1562, 1563, 1564, 1565, 2154, 2155, 2156, 2170, 2376, 6663, 6713, 6839, 6840, 7098, 7493, 7495, 7650, 7913, 7920, 8539, 8540, 8854, 9031, 9202, 9396, 9627, 9961, 9544, 9545, 9546, 9547, 9548, 10125, 10126, 10127, 10133);
 
     public boolean isAnEquipment(boolean ethereal, List<Integer> bannedTypes) {
         if ((!ethereal && this.getStrTemplate().contains("32c#")) || this.getStrTemplate().isEmpty() || (this.conditions != null && this.conditions.contains("BI")))
             return false;
-        if(bannedTypes != null && bannedTypes.contains(this.getType()))
+        if(bannedTypes != null && bannedTypes.contains(this.getTypeID()))
             return false;
 
-        switch (this.getType()) {
+        switch (this.getTypeID()) {
             case Constant.ITEM_TYPE_AMULETTE:
             case Constant.ITEM_TYPE_ANNEAU:
             case Constant.ITEM_TYPE_BOTTES:
@@ -648,11 +603,11 @@ public class ItemTemplate {
         return !bannedObjects.contains(this.getId());
     }
 
-    public boolean isFilledSoulStone() {
+    public boolean isFullSoulStone() {
         switch (type) {
-            case 85:
-            case 124:
-            case 125:
+            case FULL_SOUL_STONE:
+            case BOSS_SOUL_STONE:
+            case ARCHMONSTER_SOUL_STONE:
                 return true;
         default:
             return false;

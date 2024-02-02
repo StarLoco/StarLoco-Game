@@ -4,7 +4,7 @@ import org.starloco.locos.player.Player;
 import org.starloco.locos.common.Formulas;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.game.world.World;
-import org.starloco.locos.item.Item;
+import org.starloco.locos.item.FullItem;
 
 public class Noel {
 
@@ -38,7 +38,7 @@ public class Noel {
         } else if (value >= 10000 && value < 100000) {//All objects
             template = Integer.parseInt(objectOne.split(",")[Formulas.getRandomValue(0, objectOne.split(",").length - 1)]);
         }
-        Item obj = World.world.getObjTemplate(template).createNewItem(1, false);
+        FullItem obj = World.world.getItemTemplate(template).createNewItem(1, false);
         if (player.addItem(obj, true, false))
             World.world.addGameObject(obj);
         SocketManager.GAME_SEND_Ow_PACKET(player);
@@ -55,7 +55,7 @@ public class Noel {
         } else if (value >= 10000 && value < 100000) {//All objects
             template = Integer.parseInt(objectTwo.split(",")[Formulas.getRandomValue(0, objectTwo.split(",").length - 1)]);
         }
-        Item obj = World.world.getObjTemplate(template).createNewItem(1, false);
+        FullItem obj = World.world.getItemTemplate(template).createNewItem(1, false);
         if (player.addItem(obj, true, false))
             World.world.addGameObject(obj);
         SocketManager.GAME_SEND_Ow_PACKET(player);
@@ -72,7 +72,7 @@ public class Noel {
         } else if (value >= 10000 && value < 100000) {//All objects
             template = Integer.parseInt(objectTree.split(",")[Formulas.getRandomValue(0, objectTree.split(",").length - 1)]);
         }
-        Item obj = World.world.getObjTemplate(template).createNewItem(1, false);
+        FullItem obj = World.world.getItemTemplate(template).createNewItem(1, false);
         if (player.addItem(obj, true, false))
             World.world.addGameObject(obj);
         SocketManager.GAME_SEND_Ow_PACKET(player);
@@ -89,7 +89,7 @@ public class Noel {
         } else if (value >= 10000 && value < 100000) {//All objects
             template = Integer.parseInt(objectFour.split(",")[Formulas.getRandomValue(0, objectFour.split(",").length - 1)]);
         }
-        Item obj = World.world.getObjTemplate(template).createNewItem(1, false);
+        FullItem obj = World.world.getItemTemplate(template).createNewItem(1, false);
         if (player.addItem(obj, true, false))
             World.world.addGameObject(obj);
         SocketManager.GAME_SEND_Ow_PACKET(player);
@@ -106,7 +106,7 @@ public class Noel {
         } else if (value >= 10000 && value < 100000) {//All objects
             template = Integer.parseInt(objectFive.split(",")[Formulas.getRandomValue(0, objectFive.split(",").length - 1)]);
         }
-        Item obj = World.world.getObjTemplate(template).createNewItem(1, false);
+        FullItem obj = World.world.getItemTemplate(template).createNewItem(1, false);
         if (player.addItem(obj, true, false))
             World.world.addGameObject(obj);
         SocketManager.GAME_SEND_Ow_PACKET(player);

@@ -14,7 +14,7 @@ import org.starloco.locos.game.world.World.Couple;
 import org.starloco.locos.guild.GuildMember;
 import org.starloco.locos.kernel.Config;
 import org.starloco.locos.kernel.Constant;
-import org.starloco.locos.item.Item;
+import org.starloco.locos.item.FullItem;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -434,7 +434,7 @@ public class Formulas {
         if (statC < 0)
             statC = 0;
         if (caster.getPlayer() != null && isCaC) {
-            int ArmeType = caster.getPlayer().getObjetByPos(1).getTemplate().getType();
+            int ArmeType = caster.getPlayer().getObjetByPos(1).template().getTypeID();
             j = Constant.getWeaponBonusByClass(ArmeType, caster.getPlayer().getClasse());
             if ((caster.getSpellValueBool(392)) && ArmeType == 2)//ARC
                 i = caster.getMaitriseDmg(392);
@@ -758,7 +758,7 @@ public class Formulas {
         return Math.round(rkamas * Config.rateKamas);
     }
 
-    public static Couple<Integer, Integer> decompPierreAme(Item toDecomp) {
+    public static Couple<Integer, Integer> decompPierreAme(FullItem toDecomp) {
         Couple<Integer, Integer> toReturn;
         String[] stats = toDecomp.encodeStats().split("#");
         int lvlMax = Integer.parseInt(stats[3], 16);

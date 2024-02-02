@@ -56,7 +56,7 @@ public final class SaleOffer {
         }
 
         public static Currency itemCurrency(int templateID) {
-            ItemTemplate t = World.world.getObjTemplate(templateID);
+            ItemTemplate t = World.world.getItemTemplate(templateID);
             if(t==null) throw new IllegalArgumentException(String.format("unknown item template #%d", templateID));
             return new Currency(t);
         }

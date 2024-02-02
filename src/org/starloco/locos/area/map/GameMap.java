@@ -29,7 +29,7 @@ import org.starloco.locos.fight.Fighter;
 import org.starloco.locos.game.scheduler.Updatable;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.*;
-import org.starloco.locos.item.Item;
+import org.starloco.locos.item.FullItem;
 import org.starloco.locos.script.proxy.SMap;
 import org.starloco.locos.util.Pair;
 import org.starloco.locos.util.TimerWaiter;
@@ -43,7 +43,7 @@ import java.util.stream.Stream;
 
 public class GameMap {
 
-    public static final Map<String, ArrayList<Item>> fixMobGroupObjects = new HashMap<>();
+    public static final Map<String, ArrayList<FullItem>> fixMobGroupObjects = new HashMap<>();
     public static final Updatable<ArrayList<RespawnGroup>> updatable = new Updatable<ArrayList<RespawnGroup>>(30000) {
         private final ArrayList<RespawnGroup> groups = new ArrayList<>();
 
@@ -150,7 +150,7 @@ public class GameMap {
 
     // Make those private once GameCase is gone
     ConcurrentHashMap<Integer, Set<Actor>> actors = new ConcurrentHashMap<>();
-    ConcurrentHashMap<Integer, Item> droppedItems = new ConcurrentHashMap<>();
+    ConcurrentHashMap<Integer, FullItem> droppedItems = new ConcurrentHashMap<>();
 
     Map<Integer, InteractiveObject> interactiveObjects;
     // end: Make those private once GameCase is gone
@@ -538,7 +538,7 @@ public class GameMap {
     public void sendFloorItems(Player player) {
         StringBuilder builder = new StringBuilder("GDO");
         this.cases.stream().filter(c -> c.getDroppedItem(false) != null)
-                .forEach(c -> builder.append("+").append(c.getId()).append(";").append(c.getDroppedItem(false).getTemplate().getId()).append(";0|"));
+                .forEach(c -> builder.append("+").append(c.getId()).append(";").append(c.getDroppedItem(false).templateID()).append(";0|"));
         player.send(builder.toString());
     }
 
@@ -1488,11 +1488,11 @@ public class GameMap {
         if (cell.getDroppedItem(false) != null) {
             if (!Main.mapAsBlocked) {
                 synchronized (cell) {
-                    Item obj = cell.getDroppedItem(true);
+                    FullItem obj = cell.getDroppedItem(true);
 
                     if (obj != null) {
                         if (Logging.USE_LOG)
-                            Logging.getInstance().write("Object", "GetInOnTheFloor : " + player.getName() + " a ramassé [" + obj.getTemplate().getId() + "@" + obj.getGuid() + ";" + obj.getQuantity() + "]");
+                            Logging.getInstance().write("Object", "GetInOnTheFloor : " + player.getName() + " a ramassé [" + obj.templateID() + "@" + obj.getGuid() + ";" + obj.getQuantity() + "]");
                         if (player.addItem(obj, true, false))
                             World.world.addGameObject(obj);
                         SocketManager.GAME_SEND_GDO_PACKET_TO_MAP(this, '-', id, 0, 0);

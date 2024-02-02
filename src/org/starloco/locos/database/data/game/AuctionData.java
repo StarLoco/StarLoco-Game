@@ -6,7 +6,7 @@ import org.starloco.locos.auction.AuctionManager;
 import org.starloco.locos.player.Player;
 import org.starloco.locos.database.data.FunctionDAO;
 import org.starloco.locos.game.world.World;
-import org.starloco.locos.item.Item;
+import org.starloco.locos.item.FullItem;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -26,10 +26,10 @@ public class AuctionData extends FunctionDAO<Auction> {
             getData("SELECT * FROM " + getTableName() + ";", result -> {
                 while (result.next()) {
                     final Player player = World.world.getPlayer(result.getInt("owner"));
-                    final Item object = World.world.getGameObject(result.getInt("object"));
+                    final FullItem object = World.world.getGameObject(result.getInt("object"));
 
                     if (object == null || player == null) {
-                        final Auction auction = new Auction(result.getInt("price"), player, new Item(result.getInt("object"), -1, 1, -1, "", 0), result.getByte("retry"));
+                        final Auction auction = new Auction(result.getInt("price"), player, new FullItem(result.getInt("object"), -1, 1, -1, "", 0), result.getByte("retry"));
                         this.delete(auction);
                     } else {
                         final Auction auction = new Auction(result.getInt("price"), player, object, result.getByte("retry"));

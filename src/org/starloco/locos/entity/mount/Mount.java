@@ -13,7 +13,7 @@ import org.starloco.locos.database.data.login.MountData;
 import org.starloco.locos.game.scheduler.Updatable;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.Constant;
-import org.starloco.locos.item.Item;
+import org.starloco.locos.item.FullItem;
 import org.starloco.locos.util.TimerWaiter;
 
 import java.util.ArrayList;
@@ -60,7 +60,7 @@ public class Mount {
     private int couple;
 	
 	private Stats stats = new Stats();
-	private java.util.Map<Integer, Item> objects = new HashMap<>();
+	private java.util.Map<Integer, FullItem> objects = new HashMap<>();
 	private List<Integer> capacitys = new ArrayList<>(2);
 
 	public Mount(int color, int owner, boolean savage) {
@@ -164,7 +164,7 @@ public class Mount {
 		for(String str : objects.split(";")) {
 			if(str.isEmpty()) continue;
 			try {
-				Item item = World.world.getGameObject(Integer.parseInt(str));
+				FullItem item = World.world.getGameObject(Integer.parseInt(str));
 				if(item != null)
 					this.objects.put(item.getGuid(), item);
 			} catch (Exception e) {
@@ -185,7 +185,7 @@ public class Mount {
 				Mount mountArg = World.world.getMountById(arg);
 				if(mountArg == null) continue;
                 if(mountArg.getSex() !=	mount.getSex() && mountArg.isFecund() != 0 && mount.isFecund() != 0 && mountArg.getCellId() == cellTest) {
-					if(mountArg.getReproduction() < 20 && mount.getReproduction() < 20 && !mountArg.isCastrated() && !mount.isCastrated()) {
+					if(mountArg.getReproduction() < 20 && mount.getReproduction() < 20 && !mountArg.isSpayed() && !mount.isSpayed()) {
 						if(mountArg.getSex() == 1) {
 							mountArg.fecundatedDate = System.currentTimeMillis();
 							mountArg.setCouple(mount.id);
@@ -437,7 +437,7 @@ public class Mount {
 	}
 	//endregion getter/setter
 	
-	public java.util.Map<Integer, Item> getObjects() {
+	public java.util.Map<Integer, FullItem> getObjects() {
 		return objects;
 	}
 	
@@ -471,15 +471,12 @@ public class Mount {
 		this.reproduction = -1;
 	}
 
-	private boolean isCastrated() {
+	private boolean isSpayed() {
 		return this.reproduction == -1;
 	}
 	
 	public int getActualPods() {
-		int pods = 0;
-		for(Item item : this.objects.values())
-			pods += item.getTemplate().getPod() * item.getQuantity();
-		return pods;
+		return this.objects.values().stream().mapToInt(i -> i.template().getPod() * i.getQuantity()).sum();
 	}
 	
 	public int getMaxPods() {
@@ -937,7 +934,7 @@ public class Mount {
 	public void addObject(int guid, int qua, Player P) {
 		if(qua <= 0)
 			return;
-		Item playerObj = World.world.getGameObject(guid);
+		FullItem playerObj = World.world.getGameObject(guid);
 		if(playerObj == null) return;
 		//Si le joueur n'a pas l'item dans son sac ...
 		if(P.getItems().get(guid) == null)
@@ -950,7 +947,7 @@ public class Mount {
 		//Si c'est un item equipe ...
 		if(playerObj.getPosition() != Constant.ITEM_POS_NO_EQUIPED)return;
 		
-		Item TrunkObj = this.getSimilarObject(playerObj);
+		FullItem TrunkObj = this.getSimilarObject(playerObj);
 		int newQua = playerObj.getQuantity() - qua;
 		if(TrunkObj == null)//S'il n'y pas d'item du meme Template
 		{
@@ -961,7 +958,7 @@ public class Mount {
 				P.removeItem(playerObj.getGuid());
 				//On met l'objet du sac dans le coffre, avec la meme quantite
 				this.objects.put(playerObj.getGuid() ,playerObj);
-				str = "O+"+playerObj.getGuid()+"|"+playerObj.getQuantity()+"|"+playerObj.getTemplate().getId()+"|"+playerObj.encodeStats();
+				str = "O+"+playerObj.getGuid()+"|"+playerObj.getQuantity()+"|"+playerObj.templateID()+"|"+playerObj.encodeStats();
 				SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(P, guid);
 			}else//S'il reste des objets au joueur
 			{
@@ -973,7 +970,7 @@ public class Mount {
 				this.objects.put(TrunkObj.getGuid() ,TrunkObj);
 				
 				//Envoie des packets
-				str = "O+"+TrunkObj.getGuid()+"|"+TrunkObj.getQuantity()+"|"+TrunkObj.getTemplate().getId()+"|"+TrunkObj.encodeStats();
+				str = "O+"+TrunkObj.getGuid()+"|"+TrunkObj.getQuantity()+"|"+TrunkObj.templateID()+"|"+TrunkObj.encodeStats();
 				SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(P, playerObj);
 			}
 		}else // S'il y avait un item du meme template
@@ -988,7 +985,7 @@ public class Mount {
 				//On ajoute la quantite a l'objet dans le coffre
 				TrunkObj.setQuantity(TrunkObj.getQuantity() + playerObj.getQuantity());
 				//On envoie l'ajout au coffre de l'objet
-			    str = "O+"+TrunkObj.getGuid()+"|"+TrunkObj.getQuantity()+"|"+TrunkObj.getTemplate().getId()+"|"+TrunkObj.encodeStats();
+			    str = "O+"+TrunkObj.getGuid()+"|"+TrunkObj.getQuantity()+"|"+TrunkObj.templateID()+"|"+TrunkObj.encodeStats();
 				//On envoie la supression de l'objet du sac au joueur
 				SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(P, guid);
 			}else //S'il restait des objets
@@ -996,7 +993,7 @@ public class Mount {
 				//On modifie la quantite d'item du sac
 				playerObj.setQuantity(newQua);
 				TrunkObj.setQuantity(TrunkObj.getQuantity() + qua);
-				str = "O+"+TrunkObj.getGuid()+"|"+TrunkObj.getQuantity()+"|"+TrunkObj.getTemplate().getId()+"|"+TrunkObj.encodeStats();
+				str = "O+"+TrunkObj.getGuid()+"|"+TrunkObj.getQuantity()+"|"+TrunkObj.templateID()+"|"+TrunkObj.encodeStats();
 				SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(P, playerObj);
 			}
 		}
@@ -1008,14 +1005,14 @@ public class Mount {
 	public void removeObject(int guid, int qua, Player P) {
 		if(qua <= 0)
 			return;
-		Item TrunkObj = World.world.getGameObject(guid);
+		FullItem TrunkObj = World.world.getGameObject(guid);
 		//Si le joueur n'a pas l'item dans son coffre
 		if(this.objects.get(guid) == null)
 		{
 			return;
 		}
 		
-		Item playerObj = P.getSimilarItem(TrunkObj);
+		FullItem playerObj = P.getSimilarItem(TrunkObj);
 		String str = "";
 		int newQua = TrunkObj.getQuantity() - qua;
 		
@@ -1047,7 +1044,7 @@ public class Mount {
 				//On envoie les packets
 				SocketManager.GAME_SEND_OAKO_PACKET(P,playerObj);
 				SocketManager.GAME_SEND_Ew_PACKET(P, this.getActualPods(), this.getMaxPods());
-				str = "O+"+TrunkObj.getGuid()+"|"+TrunkObj.getQuantity()+"|"+TrunkObj.getTemplate().getId()+"|"+TrunkObj.encodeStats();
+				str = "O+"+TrunkObj.getGuid()+"|"+TrunkObj.getQuantity()+"|"+TrunkObj.templateID()+"|"+TrunkObj.encodeStats();
 			}
 		}else // Le joueur avait deja� un item similaire
 		{
@@ -1074,7 +1071,7 @@ public class Mount {
 				//On envoie les packets
 				SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(P,playerObj);
 				SocketManager.GAME_SEND_Ew_PACKET(P, this.getActualPods(), this.getMaxPods());
-				str = "O+"+TrunkObj.getGuid()+"|"+TrunkObj.getQuantity()+"|"+TrunkObj.getTemplate().getId()+"|"+TrunkObj.encodeStats();
+				str = "O+"+TrunkObj.getGuid()+"|"+TrunkObj.getQuantity()+"|"+TrunkObj.templateID()+"|"+TrunkObj.encodeStats();
 
 			}
 		}
@@ -1082,10 +1079,10 @@ public class Mount {
 		SocketManager.GAME_SEND_EsK_PACKET(P, str);
 	}
 	
-	private Item getSimilarObject(Item obj) {
-		for(Item item : this.objects.values())
-			if(item.getTemplate().getType() != 85)
-				if(item.getTemplate().getId() == obj.getTemplate().getId() && World.world.getConditionManager().stackIfSimilar(item, obj, true) && item.getStats().isSameStats(obj.getStats()))
+	private FullItem getSimilarObject(FullItem obj) {
+		for(FullItem item : this.objects.values())
+			if(!item.template().isFullSoulStone())
+				if(item.templateID() == obj.templateID() && World.world.getConditionManager().stackIfSimilar(item, obj, true) && item.getStats().isSameStats(obj.getStats()))
 					return item;
 		return null;
 	}
@@ -1123,14 +1120,14 @@ public class Mount {
 	
 	public String parseToMountObjects() {
 		StringBuilder packet = new StringBuilder();
-		for(Item obj : this.objects.values())
+		for(FullItem obj : this.objects.values())
 			packet.append("O").append(obj.encodeItem()).append(";");
 		return packet.toString();
 	}
 	
 	public String parseObjectsToString() {
 		String str = "";
-		for(Item item : this.objects.values())
+		for(FullItem item : this.objects.values())
 			str += (str.isEmpty() ? "" : ";") + item.getGuid();
 		return str;
 	}

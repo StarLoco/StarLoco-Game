@@ -22,7 +22,7 @@ public class ObjectActionData extends FunctionDAO<ObjectAction> {
             getData("SELECT * FROM " + getTableName() + ";", result -> {
                 while (result.next()) {
                     int id = result.getInt("template");
-                    ItemTemplate template = World.world.getObjTemplate(id);
+                    ItemTemplate template = World.world.getItemTemplate(id);
 
                     if (template != null)
                         template.addAction(new ObjectAction(result.getString("type"), result.getString("args"), ""));

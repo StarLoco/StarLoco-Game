@@ -38,7 +38,7 @@ import org.starloco.locos.job.JobStat;
 import org.starloco.locos.kernel.Config;
 import org.starloco.locos.kernel.Constant;
 import org.starloco.locos.kernel.Main;
-import org.starloco.locos.item.Item;
+import org.starloco.locos.item.FullItem;
 import org.starloco.locos.item.ItemSet;
 import org.starloco.locos.item.ItemTemplate;
 import org.starloco.locos.util.TimerWaiter;
@@ -970,9 +970,9 @@ public class CommandAdmin extends AdminUser {
             String mess = "==========\n"
                     + "Liste d'items sur le personnage :\n";
             this.sendMessage(mess);
-            for (Entry<Integer, Item> entry : perso.getItems().entrySet()) {
+            for (Entry<Integer, FullItem> entry : perso.getItems().entrySet()) {
                 mess = entry.getValue().getGuid() + " || "
-                        + entry.getValue().getTemplate().getName() + " || "
+                        + entry.getValue().template().getName() + " || "
                         + entry.getValue().getQuantity();
                 this.sendMessage(mess);
             }
@@ -1000,9 +1000,9 @@ public class CommandAdmin extends AdminUser {
             Account cBank = perso.getAccount();
             String mess = "==========\n" + "Liste d'items dans la banque :";
             this.sendMessage(mess);
-            for (Item entry : cBank.getBank()) {
+            for (FullItem entry : cBank.getBank()) {
                 mess = entry.getGuid() + " || "
-                        + entry.getTemplate().getName() + " || "
+                        + entry.template().getName() + " || "
                         + entry.getQuantity();
                 this.sendMessage(mess);
             }
@@ -1029,8 +1029,8 @@ public class CommandAdmin extends AdminUser {
             String mess = "==========\n" + "Liste d'items dans le Store :";
             this.sendMessage(mess);
             for (Entry<Integer, Integer> obj : perso.getStoreItems().entrySet()) {
-                Item entry = World.world.getGameObject(obj.getKey());
-                mess = entry.getGuid() + " || " + entry.getTemplate().getName()
+                FullItem entry = World.world.getGameObject(obj.getKey());
+                mess = entry.getGuid() + " || " + entry.template().getName()
                         + " || " + entry.getQuantity();
                 this.sendMessage(mess);
             }
@@ -1056,9 +1056,9 @@ public class CommandAdmin extends AdminUser {
             String mess = "==========\n" + "Liste d'items dans la banque :";
             this.sendMessage(mess);
             if(perso.getMount() != null) {
-                for (Entry<Integer, Item> entry : perso.getMount().getObjects().entrySet()) {
+                for (Entry<Integer, FullItem> entry : perso.getMount().getObjects().entrySet()) {
                     mess = entry.getValue().getGuid() + " || "
-                            + entry.getValue().getTemplate().getName() + " || "
+                            + entry.getValue().template().getName() + " || "
                             + entry.getValue().getQuantity();
                     this.sendMessage(mess);
                 }
@@ -1678,7 +1678,7 @@ public class CommandAdmin extends AdminUser {
                 useMax = infos[2].equals("MAX");//Si un jet est specifie
 
             for (ItemTemplate t : IS.getItemTemplates()) {
-                Item obj = t.createNewItem(1, useMax);
+                FullItem obj = t.createNewItem(1, useMax);
                 if (this.getPlayer().addItem(obj, true, false))//Si le joueur n'avait pas d'item similaire
                     World.world.addGameObject(obj);
             }
@@ -1717,13 +1717,13 @@ public class CommandAdmin extends AdminUser {
                 if (infos[3].equalsIgnoreCase("MAX"))
                     useMax = true;
             }
-            ItemTemplate t = World.world.getObjTemplate(tID);
+            ItemTemplate t = World.world.getItemTemplate(tID);
             if (t == null) {
                 String mess = "Le template " + tID + " n'existe pas.";
                 this.sendMessage(mess);
                 return;
             }
-            if (t.getType() == Constant.ITEM_TYPE_OBJET_ELEVAGE
+            if (t.getTypeID() == Constant.ITEM_TYPE_OBJET_ELEVAGE
                     && (t.getStrTemplate().isEmpty() || t.getStrTemplate().equalsIgnoreCase(""))) {
                 this.sendMessage("Impossible de creer l'item d'elevage. Le StrTemplate ("
                         + tID + ") est vide.");
@@ -1731,12 +1731,12 @@ public class CommandAdmin extends AdminUser {
             }
             if (qua < 1)
                 qua = 1;
-            Item obj = t.createNewItem(qua, useMax);
+            FullItem obj = t.createNewItem(qua, useMax);
 
 
-            if(t.getType() == Constant.ITEM_TYPE_CERTIF_MONTURE) {
+            if(t.getTypeID() == Constant.ITEM_TYPE_CERTIF_MONTURE) {
                 //obj.setMountStats(this.getPlayer(), null);
-                Mount mount = new Mount(Constant.getMountColorByParchoTemplate(obj.getTemplate().getId()), this.getPlayer().getId(), false);
+                Mount mount = new Mount(Constant.getMountColorByParchoTemplate(obj.template().getId()), this.getPlayer().getId(), false);
                 obj.clearStats();
                 obj.getStats().addOneStat(995, (mount.getId()));
                 obj.getTxtStat().put(996, this.getPlayer().getName());
@@ -1983,7 +1983,7 @@ public class CommandAdmin extends AdminUser {
                     break;
                 case "DEBUG":
                     int position = Integer.parseInt(infos[2]);
-                    Item object = this.getPlayer().getObjetByPos(position);
+                    FullItem object = this.getPlayer().getObjetByPos(position);
                     this.sendSuccessMessage("The id of position " + position + " is " + object.getGuid());
                     break;
             }
@@ -2516,7 +2516,7 @@ public class CommandAdmin extends AdminUser {
                 this.sendMessage("Les parametres sont invalides.");
                 return;
             }
-            Item object = World.world.getGameObject(obj);
+            FullItem object = World.world.getGameObject(obj);
             if (object == null) {
                 this.sendMessage("L'objet n'existe pas.");
                 return;
@@ -2550,7 +2550,7 @@ public class CommandAdmin extends AdminUser {
         } else if (command.equalsIgnoreCase("LISTTYPE")) {
             String s = "";
             for (ItemTemplate obj : World.world.getObjTemplates())
-                if (obj.getType() == Integer.parseInt(infos[1]))
+                if (obj.getTypeID() == Integer.parseInt(infos[1]))
                     s += obj.getId() + ",";
             this.sendMessage(s);
             return;
@@ -2694,7 +2694,7 @@ public class CommandAdmin extends AdminUser {
             String data = "";
             int count = 0;
             for (ItemTemplate obj : World.world.getObjTemplates()) {
-                if (type.contains(String.valueOf(obj.getType()) + ",") && obj.getLevel() >= 2 && obj.getLevel() <= 50 && obj.isAnEquipment(false, Arrays.asList(Constant.ITEM_TYPE_DOFUS, Constant.ITEM_TYPE_FAMILIER))) {
+                if (type.contains(String.valueOf(obj.getTypeID()) + ",") && obj.getLevel() >= 2 && obj.getLevel() <= 50 && obj.isAnEquipment(false, Arrays.asList(Constant.ITEM_TYPE_DOFUS, Constant.ITEM_TYPE_FAMILIER))) {
                     /*GameObject addObj = obj.createNewItem(1, true);
                     if (this.getPlayer().addObjet(addObj, true))//Si le joueur n'avait pas d'item similaire
                         World.world.addGameObject(addObj);*/
@@ -2732,7 +2732,7 @@ public class CommandAdmin extends AdminUser {
                 // ok
             }
 
-            PetEntry p = World.world.getPetsEntry(objID);
+            PetEntry p = World.world.getPetsEntry_legacy(objID);
             if (p == null) {
                 this.sendMessage("Le familier n'existe pas.");
                 return;

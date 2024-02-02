@@ -10,7 +10,7 @@ import org.starloco.locos.entity.exchange.NpcExchange;
 import org.starloco.locos.entity.npc.Npc;
 import org.starloco.locos.game.scheduler.Updatable;
 import org.starloco.locos.game.world.World;
-import org.starloco.locos.item.Item;
+import org.starloco.locos.item.FullItem;
 import org.starloco.locos.util.TimerWaiter;
 
 import java.text.SimpleDateFormat;
@@ -46,7 +46,7 @@ public class AuctionManager extends Updatable<Void> {
         return auctions;
     }
 
-    public void talk(String key, Item object, boolean tradeTalk, Object... params) {
+    public void talk(String key, FullItem object, boolean tradeTalk, Object... params) {
         GameMap map = World.world.getMap(this.map);
         Npc npc = map.getNpcByTemplateId(9605);
 
@@ -83,8 +83,8 @@ public class AuctionManager extends Updatable<Void> {
         player.send("cMK|" + npc.getId() + "|Commissaire|" + msg + "|");
     }
 
-    private String getTalkStringObject(Item object, String msg) {
-        return "°0" + msg + "|" + object.getTemplate().getId() + "!" + object.encodeStats();
+    private String getTalkStringObject(FullItem object, String msg) {
+        return "°0" + msg + "|" + object.template().getId() + "!" + object.encodeStats();
     }
 
     private boolean currentIsAvailable() {
@@ -174,7 +174,7 @@ public class AuctionManager extends Updatable<Void> {
     private void stop() {
         if(this.currentIsAvailable()) {
             Player target = this.current.getCustomer();
-            final Item object = this.current.getObject();
+            final FullItem object = this.current.getObject();
 
             if (target != null) {
                 target.addInBank(object.getGuid(), object.getQuantity(), true);
@@ -183,7 +183,7 @@ public class AuctionManager extends Updatable<Void> {
                 final Account owner = this.current.getOwner().getAccount();
                 owner.setBankKamas(owner.getBankKamas() + this.current.getPrice());
                 if(owner.getCurrentPlayer() != null)
-                    owner.getCurrentPlayer().send("Im065;" + this.current.getPrice() + "~" + object.getTemplate().getId());
+                    owner.getCurrentPlayer().send("Im065;" + this.current.getPrice() + "~" + object.template().getId());
                 ((AuctionData) DatabaseManager.get(AuctionData.class)).delete(this.current);
                 this.talk("game.auction.auctionmanager.stop.felicitation", null, false, target.getName());
             } else {
@@ -279,8 +279,8 @@ public class AuctionManager extends Updatable<Void> {
                         if (count == 100) break;
                         count++;
 
-                        Item object = auction.getObject();
-                        String str = object.getGuid() + "|" + object.getQuantity() + "|" + object.getTemplate().getId() + "|" +
+                        FullItem object = auction.getObject();
+                        String str = object.getGuid() + "|" + object.getQuantity() + "|" + object.template().getId() + "|" +
                                 auction.getObject().encodeStats() + ",3db#0#0#0#" + auction.getOwner().getName() + ",c2#" + Integer.toHexString(auction.getPrice()) + "#0#0#0";
 
                         TimerWaiter.addNext(() -> SocketManager.GAME_SEND_EXCHANGE_OTHER_MOVE_OK(player.getGameClient(), 'O', "+", str), count * 100);
@@ -318,9 +318,9 @@ public class AuctionManager extends Updatable<Void> {
         player.sendTypeMessage("Auction", player.getLang().trans("game.auction.auctionmanager.infos.3"));
     }
 
-    public boolean onPlayerChangeItemInNpcExchange(Player player, Item object) {
+    public boolean onPlayerChangeItemInNpcExchange(Player player, FullItem object) {
         if(!this.isValid(player)) return false;
-        if(object != null && object.getTemplate() != null && object.getTemplate().getLevel() <= 50) return true;
+        if(object != null && object.template() != null && object.template().getLevel() <= 50) return true;
         if(player.getExchangeAction() != null) {
            NpcExchange exchange = ((NpcExchange) player.getExchangeAction().getValue());
            if(exchange != null) {

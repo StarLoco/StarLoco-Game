@@ -8,7 +8,7 @@ import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.entity.npc.Npc;
 import org.starloco.locos.event.EventManager;
 import org.starloco.locos.game.world.World;
-import org.starloco.locos.item.Item;
+import org.starloco.locos.item.FullItem;
 import org.starloco.locos.item.ItemTemplate;
 import org.starloco.locos.util.TimerWaiter;
 
@@ -166,10 +166,10 @@ public class EventSmiley extends Event {
 
             SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(this.map, "", this.animator.getId(), "Event", "event.type.eventsmiley.win");
             winner.sendMessage(winner.getLang().trans("event.type.eventsmiley.winner"));
-            ItemTemplate template = World.world.getObjTemplate(EventManager.TOKEN);
+            ItemTemplate template = World.world.getItemTemplate(EventManager.TOKEN);
 
             if(template != null) {
-                Item object = template.createNewItem(1, false);
+                FullItem object = template.createNewItem(1, false);
 
                 if (object != null && winner.addItem(object, true, false)) {
                     World.world.addGameObject(object);

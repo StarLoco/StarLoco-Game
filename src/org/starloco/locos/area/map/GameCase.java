@@ -5,7 +5,7 @@ import org.starloco.locos.player.Player;
 import org.starloco.locos.entity.map.InteractiveObjectTemplate;
 import org.starloco.locos.fight.Fighter;
 import org.starloco.locos.game.world.World;
-import org.starloco.locos.item.Item;
+import org.starloco.locos.item.FullItem;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -37,7 +37,7 @@ public class GameCase {
         return getActorsOfType(Fighter.class);
     }
 
-    public Item getDroppedItem(boolean delete) {
+    public FullItem getDroppedItem(boolean delete) {
         if(delete) {
             return map.droppedItems.remove(cellId);
         }
@@ -1050,7 +1050,7 @@ public class GameCase {
 //        }
 //    }
 
-    public void tryDropItem(Item obj) {
+    public void tryDropItem(FullItem obj) {
         if(map.droppedItems.putIfAbsent(cellId, obj) != null) {
             throw new IllegalStateException("attempted to drop item on a cell that already has a dropped item");
         }

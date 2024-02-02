@@ -32,7 +32,7 @@ import org.starloco.locos.hdv.BigStoreListing;
 import org.starloco.locos.job.Job;
 import org.starloco.locos.kernel.Constant;
 import org.starloco.locos.kernel.Main;
-import org.starloco.locos.item.Item;
+import org.starloco.locos.item.FullItem;
 import org.starloco.locos.item.ItemSet;
 import org.starloco.locos.item.ItemTemplate;
 import org.starloco.locos.item.entity.Fragment;
@@ -59,7 +59,7 @@ public class World implements Scripted<SWorld> {
     private final Map<Integer, Player> players = new HashMap<>();
     private final Map<Integer, GameMap> maps = new ConcurrentHashMap<>();
     private final Map<Integer, ScriptMapData> mapsData = new ConcurrentHashMap<>();
-    private final Map<Integer, Item> objects = new ConcurrentHashMap<>();
+    private final Map<Integer, FullItem> objects = new ConcurrentHashMap<>();
 
     private volatile ExperienceTables experiences;
 
@@ -218,18 +218,18 @@ public class World implements Scripted<SWorld> {
     //endregion
 
     //region Objects data
-    public CopyOnWriteArrayList<Item> getGameObjects() {
+    public CopyOnWriteArrayList<FullItem> getGameObjects() {
         return new CopyOnWriteArrayList<>(objects.values());
     }
 
-    public void addGameObject(Item item) {
+    public void addGameObject(FullItem item) {
         if (item != null && !this.objects.containsKey(item.getGuid())) {
             objects.put(item.getGuid(), item);
         }
     }
 
-    public Item getGameObject(int id) {
-        Item object = objects.get(id);
+    public FullItem getGameObject(int id) {
+        FullItem object = objects.get(id);
         if (object == null) {
             object = DatabaseManager.get(ObjectData.class).load(id);
         }
@@ -720,7 +720,7 @@ public class World implements Scripted<SWorld> {
         ObjTemplates.put(obj.getId(), obj);
     }
 
-    public ItemTemplate getObjTemplate(int id) {
+    public ItemTemplate getItemTemplate(int id) {
         return ObjTemplates.get(id);
     }
 
@@ -728,7 +728,7 @@ public class World implements Scripted<SWorld> {
         ArrayList<ItemTemplate> array = new ArrayList<>();
         final int levelMin = (level - 5 < 0 ? 0 : level - 5), levelMax = level + 5;
         getObjectsTemplates().values().stream().filter(objectTemplate -> objectTemplate != null && objectTemplate.getStrTemplate().contains("32c#")
-                && (levelMin < objectTemplate.getLevel() && objectTemplate.getLevel() < levelMax) && objectTemplate.getType() != 93).forEach(array::add);
+                && (levelMin < objectTemplate.getLevel() && objectTemplate.getLevel() < levelMax) && objectTemplate.getTypeID() != 93).forEach(array::add);
         return array;
     }
 
@@ -953,31 +953,31 @@ public class World implements Scripted<SWorld> {
     public void unloadPerso(int g) {
         Player toRem = players.get(g);
         if (!toRem.getItems().isEmpty())
-            for (Entry<Integer, Item> curObj : toRem.getItems().entrySet())
+            for (Entry<Integer, FullItem> curObj : toRem.getItems().entrySet())
                 objects.remove(curObj.getKey());
 
     }
 
-    public Item newObjet(int id, int template, int qua, int pos, String stats, int puit) {
-        if (getObjTemplate(template) == null) {
+    public FullItem newObjet(int id, int template, int qua, int pos, String stats, int puit) {
+        if (getItemTemplate(template) == null) {
             return null;
         }
 
         if (template == 8378) {
             return new Fragment(id, stats);
-        } else if (getObjTemplate(template).isFilledSoulStone()) {
+        } else if (getItemTemplate(template).isFullSoulStone()) {
             return new SoulStone(id, qua, template, pos, stats);
-        } else if (getObjTemplate(template).getType() == 24 && (Constant.isCertificatDopeuls(getObjTemplate(template).getId()) || getObjTemplate(template).getId() == 6653)) {
+        } else if (getItemTemplate(template).getTypeID() == 24 && (Constant.isCertificatDopeuls(getItemTemplate(template).getId()) || getItemTemplate(template).getId() == 6653)) {
             try {
                 Map<Integer, String> txtStat = new HashMap<>();
                 txtStat.put(Constant.STATS_DATE, stats.substring(3) + "");
-                return new Item(id, template, qua, Constant.ITEM_POS_NO_EQUIPED, new Stats(false, null), new ArrayList<>(), new HashMap<>(), txtStat, puit);
+                return new FullItem(id, template, qua, Constant.ITEM_POS_NO_EQUIPED, new Stats(false, null), new ArrayList<>(), new HashMap<>(), txtStat, puit);
             } catch (Exception e) {
                 e.printStackTrace();
-                return new Item(id, template, qua, pos, stats, 0);
+                return new FullItem(id, template, qua, pos, stats, 0);
             }
         } else {
-            return new Item(id, template, qua, pos, stats, 0);
+            return new FullItem(id, template, qua, pos, stats, 0);
         }
     }
 
@@ -1262,8 +1262,11 @@ public class World implements Scripted<SWorld> {
         PetsEntry.put(pets.getObjectId(), pets);
     }
 
-    public PetEntry getPetsEntry(int guid) {
+    public PetEntry getPetsEntry_legacy(int guid) {
         return PetsEntry.get(guid);
+    }
+    public Optional<PetEntry> getPetsEntry(int guid) {
+        return Optional.ofNullable(PetsEntry.get(guid));
     }
 
     public PetEntry removePetsEntry(int guid) {

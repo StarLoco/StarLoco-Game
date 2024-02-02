@@ -7,7 +7,7 @@ import org.starloco.locos.database.data.login.ObjectData;
 import org.starloco.locos.database.data.login.PetData;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.Constant;
-import org.starloco.locos.item.Item;
+import org.starloco.locos.item.FullItem;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -102,7 +102,7 @@ public class PetEntry {
 		 * PETIT WABBIT = 3U de poids b2 = 8U de poids 70 = 8U de poids le reste
 		 * a 1U de poids
 		 */
-        Item obj = World.world.getGameObject(this.objectId);
+        FullItem obj = World.world.getGameObject(this.objectId);
         if (obj == null)
             return 0;
         int cumul = 0;
@@ -142,23 +142,23 @@ public class PetEntry {
     }
 
     public void looseFight(Player player) {
-        Item obj = World.world.getGameObject(this.objectId);
+        FullItem obj = World.world.getGameObject(this.objectId);
         if (obj == null)
             return;
-        Pet pets = World.world.getPets(obj.getTemplate().getId());
+        Pet pets = World.world.getPets(obj.template().getId());
         if (pets == null)
             return;
 
         this.pdv--;
         obj.getTxtStat().remove(Constant.STATS_PETS_PDV);
-        obj.getTxtStat().put(Constant.STATS_PETS_PDV, Integer.toHexString((this.pdv > 0 ? (this.pdv) : 0)));
+        obj.getTxtStat().put(Constant.STATS_PETS_PDV, Integer.toHexString((Math.max(this.pdv, 0))));
 
         if (this.pdv <= 0) {
             this.pdv = 0;
             obj.getTxtStat().remove(Constant.STATS_PETS_PDV);
             obj.getTxtStat().put(Constant.STATS_PETS_PDV, Integer.toHexString(0));//Mise a 0 des pdv
 
-            if (pets.getDeadTemplate() == 0 || World.world.getObjTemplate(pets.getDeadTemplate()) == null)// Si Pets DeadTemplate = 0 remove de l'item et pet entry
+            if (pets.getDeadTemplate() == 0 || World.world.getItemTemplate(pets.getDeadTemplate()) == null)// Si Pets DeadTemplate = 0 remove de l'item et pet entry
             {
                 World.world.removeGameObject(obj.getGuid());
                 player.removeItem(obj.getGuid());
@@ -166,7 +166,7 @@ public class PetEntry {
                 if (player.addItem(obj, true, false))//Si le joueur n'avait pas d'item similaire
                     World.world.addGameObject(obj);
             } else {
-                obj.setTemplate(pets.getDeadTemplate());
+                // Handled in FullItem instead: obj.setTemplate(pets.getDeadTemplate());
                 if (obj.getPosition() == Constant.ITEM_POS_FAMILIER) {
                     obj.setPosition(Constant.ITEM_POS_NO_EQUIPED);
                     SocketManager.GAME_SEND_OBJET_MOVE_PACKET(player, obj);
@@ -175,14 +175,14 @@ public class PetEntry {
             SocketManager.GAME_SEND_Im_PACKET(player, "154");
         }
         SocketManager.GAME_SEND_UPDATE_OBJECT_DISPLAY_PACKET(player, obj);
-        ((PetData) DatabaseManager.get(PetData.class)).update(this);
+        DatabaseManager.get(PetData.class).update(this);
     }
 
-    public void eat(Player p, int min, int max, int statsID, Item feed) {
-        Item obj = World.world.getGameObject(this.objectId);
+    public void eat(Player p, int min, int max, int statsID, FullItem feed) {
+        FullItem obj = World.world.getGameObject(this.objectId);
         if (obj == null)
             return;
-        Pet pets = World.world.getPets(obj.getTemplate().getId());
+        Pet pets = World.world.getPets(obj.template().getId());
         if (pets == null)
             return;
 
@@ -202,7 +202,7 @@ public class PetEntry {
                 {
                     if (obj.getStats().getEffects().containsKey(statsID)) {
                         int value = obj.getStats().getEffects().get(statsID)
-                                + World.world.getPets(World.world.getGameObject(this.objectId).getTemplate().getId()).getGain();
+                                + World.world.getPets(World.world.getGameObject(this.objectId).template().getId()).getGain();
                         if (value > this.getMaxStat())
                             value = this.getMaxStat();
                         obj.getStats().getEffects().remove(statsID);
@@ -236,7 +236,7 @@ public class PetEntry {
                 {
                     if (obj.getStats().getEffects().containsKey(statsID)) {
                         int value = obj.getStats().getEffects().get(statsID)
-                                + World.world.getPets(World.world.getGameObject(this.objectId).getTemplate().getId()).getGain();
+                                + World.world.getPets(World.world.getGameObject(this.objectId).template().getId()).getGain();
                         if (value > this.getMaxStat())
                             value = this.getMaxStat();
                         obj.getStats().getEffects().remove(statsID);
@@ -262,7 +262,7 @@ public class PetEntry {
                 {
                     if (obj.getStats().getEffects().containsKey(statsID)) {
                         int value = obj.getStats().getEffects().get(statsID)
-                                + World.world.getPets(World.world.getGameObject(this.objectId).getTemplate().getId()).getGain();
+                                + World.world.getPets(World.world.getGameObject(this.objectId).template().getId()).getGain();
                         if (value > this.getMaxStat())
                             value = this.getMaxStat();
                         obj.getStats().getEffects().remove(statsID);
@@ -285,7 +285,7 @@ public class PetEntry {
                 p.removeItem(obj.getGuid());
                 SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(p, obj.getGuid());
             } else {
-                obj.setTemplate(pets.getDeadTemplate());
+                // Handled in FullItem instead: obj.setTemplate(pets.getDeadTemplate());
 
                 if (obj.getPosition() == Constant.ITEM_POS_FAMILIER) {
                     obj.setPosition(Constant.ITEM_POS_NO_EQUIPED);
@@ -296,20 +296,20 @@ public class PetEntry {
         }
         if (obj.getTxtStat().containsKey(Constant.STATS_PETS_REPAS)) {
             obj.getTxtStat().remove(Constant.STATS_PETS_REPAS);
-            obj.getTxtStat().put(Constant.STATS_PETS_REPAS, Integer.toHexString(feed.getTemplate().getId()));
+            obj.getTxtStat().put(Constant.STATS_PETS_REPAS, Integer.toHexString(feed.template().getId()));
         } else {
-            obj.getTxtStat().put(Constant.STATS_PETS_REPAS, Integer.toHexString(feed.getTemplate().getId()));
+            obj.getTxtStat().put(Constant.STATS_PETS_REPAS, Integer.toHexString(feed.template().getId()));
         }
         SocketManager.GAME_SEND_UPDATE_OBJECT_DISPLAY_PACKET(p, obj);
-        ((ObjectData) DatabaseManager.get(ObjectData.class)).update(obj);
-        ((PetData) DatabaseManager.get(PetData.class)).update(this);
+        DatabaseManager.get(ObjectData.class).update(obj);
+        DatabaseManager.get(PetData.class).update(this);
     }
 
     public void eatSouls(Player p, Map<Integer, Integer> souls) {
-        Item obj = World.world.getGameObject(this.objectId);
+        FullItem obj = World.world.getGameObject(this.objectId);
         if (obj == null)
             return;
-        Pet pet = World.world.getPets(obj.getTemplate().getId());
+        Pet pet = World.world.getPets(obj.template().getId());
         if (pet == null || pet.getType() != 1)
             return;
         //Ajout a l'item les SoulStats tu�s
@@ -363,19 +363,19 @@ public class PetEntry {
             System.out.println("Error : " + e.getMessage());
         }
         SocketManager.GAME_SEND_UPDATE_OBJECT_DISPLAY_PACKET(p, obj);
-        ((ObjectData) DatabaseManager.get(ObjectData.class)).update(obj);
-        ((PetData) DatabaseManager.get(PetData.class)).update(this);
+        DatabaseManager.get(ObjectData.class).update(obj);
+        DatabaseManager.get(PetData.class).update(this);
     }
 
     public void updatePets(Player p, int max) {
-        Item obj = World.world.getGameObject(this.objectId);
+        FullItem obj = World.world.getGameObject(this.objectId);
         if (obj == null)
             return;
-        Pet pets = World.world.getPets(obj.getTemplate().getId());
+        Pet pets = World.world.getPets(obj.template().getId());
         if (pets == null)
             return;
         if (this.pdv <= 0
-                && obj.getTemplate().getId() == pets.getDeadTemplate())
+                && obj.template().getId() == pets.getDeadTemplate())
             return;//Ne le met pas a jour si deja mort
 
         if (this.lastEatDate + (max * 3600000) < System.currentTimeMillis())//Oublier de le nourrir
@@ -411,7 +411,7 @@ public class PetEntry {
                 p.removeItem(obj.getGuid());
                 SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(p, obj.getGuid());
             } else {
-                obj.setTemplate(pets.getDeadTemplate());
+                // Handled in FullItem instead: obj.setTemplate(pets.getDeadTemplate());
                 if (obj.getPosition() == Constant.ITEM_POS_FAMILIER) {
                     obj.setPosition(Constant.ITEM_POS_NO_EQUIPED);
                     SocketManager.GAME_SEND_OBJET_MOVE_PACKET(p, obj);
@@ -420,16 +420,16 @@ public class PetEntry {
             SocketManager.GAME_SEND_Im_PACKET(p, "154");
         }
         SocketManager.GAME_SEND_UPDATE_OBJECT_DISPLAY_PACKET(p, obj);
-        ((ObjectData) DatabaseManager.get(ObjectData.class)).update(obj);
-        ((PetData) DatabaseManager.get(PetData.class)).update(this);
+        DatabaseManager.get(ObjectData.class).update(obj);
+        DatabaseManager.get(PetData.class).update(this);
     }
 
     public void resurrection() {
-        Item obj = World.world.getGameObject(this.objectId);
+        FullItem obj = World.world.getGameObject(this.objectId);
         if (obj == null)
             return;
 
-        obj.setTemplate(this.template);
+        // Handled in FullItem instead: obj.setTemplate(this.template);
 
         this.pdv = 1;
         this.corpulence = 0;
@@ -438,15 +438,15 @@ public class PetEntry {
 
         obj.getTxtStat().remove(Constant.STATS_PETS_PDV);
         obj.getTxtStat().put(Constant.STATS_PETS_PDV, Integer.toHexString(this.pdv));
-        ((ObjectData) DatabaseManager.get(ObjectData.class)).update(obj);
-        ((PetData) DatabaseManager.get(PetData.class)).update(this);
+        DatabaseManager.get(ObjectData.class).update(obj);
+        DatabaseManager.get(PetData.class).update(this);
     }
 
     public void restoreLife(Player p) {
-        Item obj = World.world.getGameObject(this.objectId);
+        FullItem obj = World.world.getGameObject(this.objectId);
         if (obj == null)
             return;
-        Pet pets = World.world.getPets(obj.getTemplate().getId());
+        Pet pets = World.world.getPets(obj.template().getId());
         if (pets == null)
             return;
 
@@ -464,15 +464,15 @@ public class PetEntry {
         } else {
             return;
         }
-        ((ObjectData) DatabaseManager.get(ObjectData.class)).update(obj);
-        ((PetData) DatabaseManager.get(PetData.class)).update(this);
+        DatabaseManager.get(ObjectData.class).update(obj);
+        DatabaseManager.get(PetData.class).update(this);
     }
 
     public void giveEpo(Player p) {
-        Item obj = World.world.getGameObject(this.objectId);
+        FullItem obj = World.world.getGameObject(this.objectId);
         if (obj == null)
             return;
-        Pet pets = World.world.getPets(obj.getTemplate().getId());
+        Pet pets = World.world.getPets(obj.template().getId());
         if (pets == null)
             return;
         if (this.isEupeoh)
@@ -480,6 +480,6 @@ public class PetEntry {
         obj.getTxtStat().put(Constant.STATS_PETS_EPO, Integer.toHexString(1));
         SocketManager.GAME_SEND_Im_PACKET(p, "032");
         SocketManager.GAME_SEND_UPDATE_OBJECT_DISPLAY_PACKET(p, obj);
-        ((PetData) DatabaseManager.get(PetData.class)).update(this);
+        DatabaseManager.get(PetData.class).update(this);
     }
 }

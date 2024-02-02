@@ -1,7 +1,7 @@
 package org.starloco.locos.hdv;
 
 import org.starloco.locos.game.world.World;
-import org.starloco.locos.item.Item;
+import org.starloco.locos.item.FullItem;
 
 public class BigStoreListing {
     private int id;
@@ -10,13 +10,13 @@ public class BigStoreListing {
     private final int owner;
     private final int price;
     private final BigStoreListingLotSize lotSize;
-    private final Item item;
+    private final FullItem item;
 
-    public BigStoreListing(int price, byte amount, int owner, Item item) {
+    public BigStoreListing(int price, byte amount, int owner, FullItem item) {
         this(-1, price, amount, owner, item);
     }
 
-    public BigStoreListing(int id, int price, byte amount, int owner, Item item) {
+    public BigStoreListing(int id, int price, byte amount, int owner, FullItem item) {
         this.id = id;
         this.price = price;
         this.lotSize = BigStoreListingLotSize.fromValue(amount);
@@ -59,7 +59,7 @@ public class BigStoreListing {
         return this.lotSize;
     }
 
-    public Item getGameObject() {
+    public FullItem getGameObject() {
         return this.item;
     }
 
@@ -67,14 +67,14 @@ public class BigStoreListing {
         // For EL packet, we want to be able to identify each listing, so we return the listing ID
         StringBuilder toReturn = new StringBuilder();
         int duration = World.world.getHdv(hdvId).getDuration();
-        toReturn.append(this.getId()).append(";").append(lotSize.amount).append(";").append(this.getGameObject().getTemplate().getId()).append(";").append(this.getGameObject().encodeStats()).append(";").append(this.price).append(";").append(duration);
+        toReturn.append(this.getId()).append(";").append(lotSize.amount).append(";").append(this.getGameObject().template().getId()).append(";").append(this.getGameObject().encodeStats()).append(";").append(this.price).append(";").append(duration);
         return toReturn.toString();
     }
 
     public String parseToEmK() {
         StringBuilder toReturn = new StringBuilder();
         int duration = World.world.getHdv(hdvId).getDuration();
-        toReturn.append(this.getGameObject().getGuid()).append("|").append(lotSize.amount).append("|").append(this.getGameObject().getTemplate().getId()).append("|").append(this.getGameObject().encodeStats()).append("|").append(this.price).append("|").append(duration);
+        toReturn.append(this.getGameObject().getGuid()).append("|").append(lotSize.amount).append("|").append(this.getGameObject().template().getId()).append("|").append(this.getGameObject().encodeStats()).append("|").append(this.price).append("|").append(duration);
         return toReturn.toString();
     }
 }

@@ -53,7 +53,7 @@ public class Rune {
     }
 
     private void setCharacteristic() {
-        this.characteristic = Short.parseShort(World.world.getObjTemplate(this.id).getStrTemplate().split("#")[0], 16);
+        this.characteristic = Short.parseShort(World.world.getItemTemplate(this.id).getStrTemplate().split("#")[0], 16);
         if(this.characteristic == 112)
             this.characteristic = Constant.STATS_ADD_DOMA;
     }

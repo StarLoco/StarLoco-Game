@@ -11,7 +11,7 @@ import org.starloco.locos.database.data.login.PlayerData;
 import org.starloco.locos.game.action.ExchangeAction;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.Constant;
-import org.starloco.locos.item.Item;
+import org.starloco.locos.item.FullItem;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,7 +29,7 @@ public class Trunk {
     private int ownerId;
     private long kamas;
     private Player player = null;
-    private Map<Integer, Item> object = new HashMap<>();
+    private Map<Integer, FullItem> object = new HashMap<>();
 
     public Trunk(int id, int houseId, int mapId, int cellId) {
         this.id = id;
@@ -93,7 +93,7 @@ public class Trunk {
             String[] infos = item.split(":");
             int guid = Integer.parseInt(infos[0]);
 
-            Item obj = World.world.getGameObject(guid);
+            FullItem obj = World.world.getGameObject(guid);
             if (obj == null)
                 continue;
             this.object.put(obj.getGuid(), obj);
@@ -164,11 +164,11 @@ public class Trunk {
         this.player = player;
     }
 
-    public Map<Integer, Item> getObject() {
+    public Map<Integer, FullItem> getObject() {
         return object;
     }
 
-    public void setObject(Map<Integer, Item> object) {
+    public void setObject(Map<Integer, FullItem> object) {
         this.object = object;
     }
 
@@ -206,7 +206,7 @@ public class Trunk {
     public String parseToTrunkPacket() {
         StringBuilder packet = new StringBuilder();
 
-        for (Item obj : this.object.values())
+        for (FullItem obj : this.object.values())
             packet.append("O").append(obj.encodeItem()).append(";");
         if (getKamas() != 0)
             packet.append("G").append(getKamas());
@@ -225,7 +225,7 @@ public class Trunk {
             return;
         }
 
-        Item PersoObj = World.world.getGameObject(guid);
+        FullItem PersoObj = World.world.getGameObject(guid);
         if (PersoObj == null)
             return;
         if(PersoObj.isAttach()) return;
@@ -238,7 +238,7 @@ public class Trunk {
         if (PersoObj.getPosition() != Constant.ITEM_POS_NO_EQUIPED)
             return;
 
-        Item TrunkObj = getSimilarTrunkItem(PersoObj);
+        FullItem TrunkObj = getSimilarTrunkItem(PersoObj);
         int newQua = PersoObj.getQuantity() - qua;
         if (TrunkObj == null)//S'il n'y pas d'item du meme Template
         {
@@ -249,7 +249,7 @@ public class Trunk {
                 //On met l'objet du sac dans le coffre, avec la meme quantit�
                 this.object.put(PersoObj.getGuid(), PersoObj);
                 str = "O+" + PersoObj.getGuid() + "|" + PersoObj.getQuantity()
-                        + "|" + PersoObj.getTemplate().getId() + "|"
+                        + "|" + PersoObj.template().getId() + "|"
                         + PersoObj.encodeStats();
                 SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(P, guid);
             } else
@@ -263,7 +263,7 @@ public class Trunk {
                 this.object.put(TrunkObj.getGuid(), TrunkObj);
                 //Envoie des packets
                 str = "O+" + TrunkObj.getGuid() + "|" + TrunkObj.getQuantity()
-                        + "|" + TrunkObj.getTemplate().getId() + "|"
+                        + "|" + TrunkObj.template().getId() + "|"
                         + TrunkObj.encodeStats();
                 SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(P, PersoObj);
             }
@@ -281,7 +281,7 @@ public class Trunk {
                         + PersoObj.getQuantity());
                 //on envoie l'ajout au coffre de l'objet
                 str = "O+" + TrunkObj.getGuid() + "|" + TrunkObj.getQuantity()
-                        + "|" + TrunkObj.getTemplate().getId() + "|"
+                        + "|" + TrunkObj.template().getId() + "|"
                         + TrunkObj.encodeStats();
                 //on envoie la supression de l'objet du sac au joueur
                 SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(P, guid);
@@ -292,7 +292,7 @@ public class Trunk {
                 PersoObj.setQuantity(newQua);
                 TrunkObj.setQuantity(TrunkObj.getQuantity() + qua);
                 str = "O+" + TrunkObj.getGuid() + "|" + TrunkObj.getQuantity()
-                        + "|" + TrunkObj.getTemplate().getId() + "|"
+                        + "|" + TrunkObj.template().getId() + "|"
                         + TrunkObj.encodeStats();
                 SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(P, PersoObj);
             }
@@ -312,7 +312,7 @@ public class Trunk {
             return;
         if (((Trunk) P.getExchangeAction().getValue()).getId() != getId())
             return;
-        Item TrunkObj = World.world.getGameObject(guid);
+        FullItem TrunkObj = World.world.getGameObject(guid);
         if (TrunkObj == null)
             return;
         //Si le joueur n'a pas l'item dans son coffre
@@ -320,7 +320,7 @@ public class Trunk {
         if (this.object.get(guid) == null)
             return;
 
-        Item PersoObj = P.getSimilarItem(TrunkObj);
+        FullItem PersoObj = P.getSimilarItem(TrunkObj);
         String str = "";
         int newQua = TrunkObj.getQuantity() - qua;
 
@@ -352,7 +352,7 @@ public class Trunk {
                 //On envoie les packets
                 SocketManager.GAME_SEND_OAKO_PACKET(P, PersoObj);
                 str = "O+" + TrunkObj.getGuid() + "|" + TrunkObj.getQuantity()
-                        + "|" + TrunkObj.getTemplate().getId() + "|"
+                        + "|" + TrunkObj.template().getId() + "|"
                         + TrunkObj.encodeStats();
             }
         } else {
@@ -379,7 +379,7 @@ public class Trunk {
                 //On envoie les packets
                 SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(P, PersoObj);
                 str = "O+" + TrunkObj.getGuid() + "|" + TrunkObj.getQuantity()
-                        + "|" + TrunkObj.getTemplate().getId() + "|"
+                        + "|" + TrunkObj.template().getId() + "|"
                         + TrunkObj.encodeStats();
             }
         }
@@ -393,8 +393,8 @@ public class Trunk {
         ((PlayerData) DatabaseManager.get(PlayerData.class)).update(P);
     }
 
-    private Item getSimilarTrunkItem(Item obj) {
-        for (Item object : this.object.values())
+    private FullItem getSimilarTrunkItem(FullItem obj) {
+        for (FullItem object : this.object.values())
             if(World.world.getConditionManager().stackIfSimilar(object, obj, true))
                 return object;
         return null;
@@ -402,15 +402,15 @@ public class Trunk {
 
     public String parseTrunkObjetsToDB() {
         StringBuilder str = new StringBuilder();
-        for (Entry<Integer, Item> entry : this.object.entrySet()) {
-            Item obj = entry.getValue();
+        for (Entry<Integer, FullItem> entry : this.object.entrySet()) {
+            FullItem obj = entry.getValue();
             str.append(obj.getGuid()).append("|");
         }
         return str.toString();
     }
 
     public void moveTrunkToBank(Account Cbank) {
-        for (Entry<Integer, Item> obj : this.object.entrySet())
+        for (Entry<Integer, FullItem> obj : this.object.entrySet())
             Cbank.getBank().add(obj.getValue());
         this.object.clear();
         ((TrunkData) DatabaseManager.get(TrunkData.class)).update(this);

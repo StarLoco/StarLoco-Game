@@ -16,7 +16,7 @@ public class ItemSet {
 
         for (String str : items.split(",")) {
             try {
-                ItemTemplate obj = World.world.getObjTemplate(Integer.parseInt(str.trim()));
+                ItemTemplate obj = World.world.getItemTemplate(Integer.parseInt(str.trim()));
                 if (obj == null)
                     continue;
                 this.itemTemplates.add(obj);

@@ -10,7 +10,7 @@ import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.Config;
 import org.starloco.locos.kernel.Constant;
 import org.starloco.locos.kernel.Logging;
-import org.starloco.locos.item.Item;
+import org.starloco.locos.item.FullItem;
 import org.starloco.locos.util.TimerWaiter;
 
 import java.text.SimpleDateFormat;
@@ -177,13 +177,13 @@ public class CommandPlayer {
 
         boolean bank = info.length >= 2 && info[1].equalsIgnoreCase("bank");
 
-        for (Item object : new ArrayList<>(bank ? player.getAccount().getBank() : player.getItems().values())) {
+        for (FullItem object : new ArrayList<>(bank ? player.getAccount().getBank() : player.getItems().values())) {
             if(info.length == 2) {
-                if (object == null || object.getTemplate() == null || !object.getTemplate().getStrTemplate().isEmpty())
+                if (object == null || object.template() == null || !object.template().getStrTemplate().isEmpty())
                     continue;
-                if (object.getTemplate().isAnEquipment(true, null))
+                if (object.template().isAnEquipment(true, null))
                     continue;
-                switch (object.getTemplate().getType()) {
+                switch (object.template().getTypeID()) {
                     case Constant.ITEM_TYPE_OBJET_VIVANT:
                     case Constant.ITEM_TYPE_PRISME:
                     case Constant.ITEM_TYPE_FILET_CAPTURE:
@@ -216,7 +216,7 @@ public class CommandPlayer {
             }
             if(object.getPosition() != -1)
                 continue;
-            switch (object.getTemplate().getType()) {
+            switch (object.template().getTypeID()) {
                 case Constant.ITEM_TYPE_BONBON:
                 case Constant.ITEM_TYPE_PERSO_SUIVEUR:
                 case Constant.ITEM_TYPE_RP_BUFF:
@@ -227,7 +227,7 @@ public class CommandPlayer {
                 case Constant.ITEM_TYPE_QUETES:
                     continue;
             }
-            if (bannedItemJob.contains(object.getTemplate().getId()))
+            if (bannedItemJob.contains(object.template().getId()))
                 continue;
             count++;
             if(!bank) {
@@ -247,16 +247,16 @@ public class CommandPlayer {
     private static boolean commandTransfertWithMaster(Player player, String msg) {
         String[] info = msg.split(" ");
         if(info.length == 1 && player.getParty() != null && player.getParty().getMaster() != null && player.getParty().getMaster().getId() == player.getId()) {
-            final List<Item> objects = new ArrayList<>();
+            final List<FullItem> objects = new ArrayList<>();
             player.getParty().getPlayers().stream()
                     .filter(follower -> follower.getFight() == null && follower.getGameClient() != null && player.getParty().isWithTheMaster(follower, false, false))
                     .forEach(follower -> {
                         follower.getGameClient().clearAllPanels(null);
-                        for(Item object : new ArrayList<>(follower.getItems().values())) {
+                        for(FullItem object : new ArrayList<>(follower.getItems().values())) {
                             if(object != null) {
-                                if (object.getPosition() != -1 || object.getTemplate().isAnEquipment(true, null))
+                                if (object.getPosition() != -1 || object.template().isAnEquipment(true, null))
                                     continue;
-                                switch (object.getTemplate().getType()) {
+                                switch (object.template().getTypeID()) {
                                     case Constant.ITEM_TYPE_OBJET_VIVANT: case Constant.ITEM_TYPE_PRISME:
                                     case Constant.ITEM_TYPE_FILET_CAPTURE: case Constant.ITEM_TYPE_CERTIF_MONTURE:
                                     case Constant.ITEM_TYPE_OBJET_UTILISABLE: case Constant.ITEM_TYPE_OBJET_ELEVAGE:
@@ -278,7 +278,7 @@ public class CommandPlayer {
                         }
                     });
             TimerWaiter.addNext(() -> {
-                for(Item object : objects) {
+                for(FullItem object : objects) {
                     if(!player.addItem(object, true, false))
                         World.world.removeGameObject(object.getGuid());
                 }

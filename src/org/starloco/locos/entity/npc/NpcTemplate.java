@@ -123,7 +123,7 @@ public class NpcTemplate {
         return offers.stream().map(o -> {
             Table t = (Table) o;
             int itemID = rawInt(t,"item");
-            ItemTemplate item = World.world.getObjTemplate(itemID);
+            ItemTemplate item = World.world.getItemTemplate(itemID);
             if(item==null) throw new IllegalArgumentException(String.format("unknown item template #%d", itemID));
 
             int price = rawOptionalInt(t, "price", item.getPrice());
@@ -209,7 +209,7 @@ public class NpcTemplate {
             if (!sales.equals("")) {
                 for (String obj : sales.split(",")) {
                     try {
-                        ItemTemplate template = World.world.getObjTemplate(Integer.parseInt(obj));
+                        ItemTemplate template = World.world.getItemTemplate(Integer.parseInt(obj));
                         if (template != null)
                             this.sales.add(new SaleOffer(template, template.getPrice()));
                     } catch (NumberFormatException e) {

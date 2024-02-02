@@ -10,7 +10,7 @@ import org.starloco.locos.database.data.login.PlayerData;
 import org.starloco.locos.fight.Fight;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.Constant;
-import org.starloco.locos.item.Item;
+import org.starloco.locos.item.FullItem;
 import org.starloco.locos.guild.Guild;
 
 import java.util.Collection;
@@ -33,8 +33,8 @@ public class Collector {
     private Player poseur = null;
     private long date;
     //Les logs
-    private java.util.Map<Integer, Item> logObjects = new HashMap<>();
-    private java.util.Map<Integer, Item> objects = new HashMap<>();
+    private java.util.Map<Integer, FullItem> logObjects = new HashMap<>();
+    private java.util.Map<Integer, FullItem> objects = new HashMap<>();
     //La d�fense
     private java.util.Map<Integer, Player> defenserId = new HashMap<>();
 
@@ -55,7 +55,7 @@ public class Collector {
                 continue;
             String[] infos = item.split(":");
             int itemId = Integer.parseInt(infos[0]);
-            Item obj = World.world.getGameObject(itemId);
+            FullItem obj = World.world.getGameObject(itemId);
             if (obj == null)
                 continue;
             this.objects.put(obj.getGuid(), obj);
@@ -417,7 +417,7 @@ public class Collector {
         this.inExchange = inExchange;
     }
 
-    public void addLogObjects(int id, Item obj) {
+    public void addLogObjects(int id, FullItem obj) {
         this.logObjects.put(id, obj);
     }
 
@@ -426,13 +426,13 @@ public class Collector {
             return "";
         StringBuilder str = new StringBuilder();
 
-        for (Item obj : this.logObjects.values())
-            str.append(";").append(obj.getTemplate().getId()).append(",").append(obj.getQuantity());
+        for (FullItem obj : this.logObjects.values())
+            str.append(";").append(obj.templateID()).append(",").append(obj.getQuantity());
 
         return str.toString();
     }
 
-    public java.util.Map<Integer, Item> getOjects() {
+    public java.util.Map<Integer, FullItem> getOjects() {
         return this.objects;
     }
 
@@ -442,9 +442,9 @@ public class Collector {
 
     public int getPodsTotal() {
         int pod = 0;
-        for (Item object : this.objects.values())
+        for (FullItem object : this.objects.values())
             if (object != null)
-                pod += object.getTemplate().getPod() * object.getQuantity();
+                pod += object.template().getPod() * object.getQuantity();
         return pod;
     }
 
@@ -452,9 +452,9 @@ public class Collector {
         return World.world.getGuild(this.getGuildId()).getStats(Constant.STATS_ADD_PODS);
     }
 
-    public boolean addObjet(Item newObj) {
-        for (java.util.Map.Entry<Integer, Item> entry : this.objects.entrySet()) {
-            Item obj = entry.getValue();
+    public boolean addObjet(FullItem newObj) {
+        for (java.util.Map.Entry<Integer, FullItem> entry : this.objects.entrySet()) {
+            FullItem obj = entry.getValue();
             if (World.world.getConditionManager().stackIfSimilar(obj, newObj, true)) {
                 obj.setQuantity(obj.getQuantity() + newObj.getQuantity());//On ajoute QUA item a la quantit� de l'objet existant
                 return false;
@@ -469,7 +469,7 @@ public class Collector {
     }
 
     public void delCollector(int id) {
-        for (Item obj : this.objects.values())
+        for (FullItem obj : this.objects.values())
             World.world.removeGameObject(obj.getGuid());
         World.world.getCollectors().remove(id);
     }
@@ -477,7 +477,7 @@ public class Collector {
     public String getItemCollectorList() {
         StringBuilder items = new StringBuilder();
         if (!this.objects.isEmpty())
-            for (Item obj : this.objects.values())
+            for (FullItem obj : this.objects.values())
                 items.append("O").append(obj.encodeItem()).append(";");
         if (this.kamas != 0)
             items.append("G").append(this.kamas);
@@ -486,7 +486,7 @@ public class Collector {
 
     public String parseItemCollector() {
         String items = "";
-        for (Item obj : this.objects.values())
+        for (FullItem obj : this.objects.values())
             items += obj.getGuid() + "|";
         return items;
     }
@@ -494,8 +494,8 @@ public class Collector {
     public void removeFromCollector(Player P, int id, int qua) {
         if (qua <= 0)
             return;
-        Item CollectorObj = World.world.getGameObject(id);
-        Item PersoObj = P.getSimilarItem(CollectorObj);
+        FullItem CollectorObj = World.world.getGameObject(id);
+        FullItem PersoObj = P.getSimilarItem(CollectorObj);
         int newQua = CollectorObj.getQuantity() - qua;
         if (PersoObj == null)//Si le joueur n'avait aucun item similaire
         {
@@ -523,7 +523,7 @@ public class Collector {
                 //On envoie les packets
                 String str = "O+" + CollectorObj.getGuid() + "|"
                         + CollectorObj.getQuantity() + "|"
-                        + CollectorObj.getTemplate().getId() + "|"
+                        + CollectorObj.templateID() + "|"
                         + CollectorObj.encodeStats();
                 SocketManager.GAME_SEND_EsK_PACKET(P, str);
             }
@@ -553,7 +553,7 @@ public class Collector {
                 SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(P, PersoObj);
                 String str = "O+" + CollectorObj.getGuid() + "|"
                         + CollectorObj.getQuantity() + "|"
-                        + CollectorObj.getTemplate().getId() + "|"
+                        + CollectorObj.templateID() + "|"
                         + CollectorObj.encodeStats();
                 SocketManager.GAME_SEND_EsK_PACKET(P, str);
             }
@@ -599,7 +599,7 @@ public class Collector {
         return this.defenserId;
     }
 
-    public Collection<Item> getDrops() {
+    public Collection<FullItem> getDrops() {
         return this.objects.values();
     }
 }

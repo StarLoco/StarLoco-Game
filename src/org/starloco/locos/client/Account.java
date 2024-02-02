@@ -19,7 +19,7 @@ import org.starloco.locos.game.GameClient;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.hdv.BigStoreListing;
 import org.starloco.locos.kernel.Main;
-import org.starloco.locos.item.Item;
+import org.starloco.locos.item.FullItem;
 
 import java.util.*;
 import java.util.function.Function;
@@ -46,7 +46,7 @@ public class Account {
     private byte state;
     private String lastVoteIP;
     private long heureVote;
-    private final List<Item> bank = new ArrayList<>();
+    private final List<FullItem> bank = new ArrayList<>();
     private final List<Integer> friends = new ArrayList<>();
     private final List<Integer> enemys = new ArrayList<>();
     private final Map<Integer, List<BigStoreListing>> hdvsItems;
@@ -199,7 +199,7 @@ public class Account {
         return mutePseudo;
     }
 
-    public List<Item> getBank() {
+    public List<FullItem> getBank() {
         return bank;
     }
 
@@ -207,7 +207,7 @@ public class Account {
         StringBuilder str = new StringBuilder();
         if (this.bank.isEmpty())
             return "";
-        for (Item item : this.bank)
+        for (FullItem item : this.bank)
             str.append(item.getGuid()).append("|");
         return str.toString();
     }
@@ -527,7 +527,7 @@ public class Account {
             if (!items.equals("")) {
                 for (String item : items.split("\\|")) {
                     if (!item.equals("")) {
-                        Item obj = World.world.getGameObject(Integer.parseInt(item));
+                        FullItem obj = World.world.getGameObject(Integer.parseInt(item));
                         if (obj != null)
                             this.bank.add(obj);
                     }

@@ -4,13 +4,13 @@ import com.mysql.jdbc.Statement;
 import com.zaxxer.hikari.HikariDataSource;
 import org.starloco.locos.database.data.FunctionDAO;
 import org.starloco.locos.game.world.World;
-import org.starloco.locos.item.Item;
+import org.starloco.locos.item.FullItem;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class ObjectData extends FunctionDAO<Item> {
+public class ObjectData extends FunctionDAO<FullItem> {
 
     public ObjectData(HikariDataSource dataSource) {
         super(dataSource, "world_objects");
@@ -29,8 +29,8 @@ public class ObjectData extends FunctionDAO<Item> {
                     int puit = result.getInt("puit");
 
                     if (quantity == 0) continue;
-                    Item object = World.world.newObjet(id, template, quantity, position, stats, puit);
-                    if (object.getTemplate() == null)
+                    FullItem object = World.world.newObjet(id, template, quantity, position, stats, puit);
+                    if (object.template() == null)
                         this.delete(object);
                     else
                         World.world.addGameObject(object);
@@ -42,7 +42,7 @@ public class ObjectData extends FunctionDAO<Item> {
     }
 
     @Override
-    public Item load(int id) {
+    public FullItem load(int id) {
         try {
             return getData("SELECT * FROM " + getTableName() + " WHERE `id` IN (" + id + ");", result -> {
                 if(!result.next()) return null;
@@ -53,7 +53,7 @@ public class ObjectData extends FunctionDAO<Item> {
                 int puit = result.getInt("puit");
 
                 if (quantity > 0) {
-                    Item object = World.world.newObjet(result.getInt("id"), template, quantity, position, stats, puit);
+                    FullItem object = World.world.newObjet(result.getInt("id"), template, quantity, position, stats, puit);
                     World.world.addGameObject(object);
                     return object;
                 }
@@ -67,12 +67,12 @@ public class ObjectData extends FunctionDAO<Item> {
     }
 
     @Override
-    public boolean insert(Item entity) {
+    public boolean insert(FullItem entity) {
         PreparedStatement statement = null;
         boolean ok = true;
         try {
             statement = this.getConnection().prepareStatement("INSERT INTO " + getTableName() + " (`template`, `quantity`, `position`, `stats`, `puit`) VALUES (?, ?, ?, ?, ?);", Statement.RETURN_GENERATED_KEYS);
-            statement.setInt(1, entity.getTemplate().getId());
+            statement.setInt(1, entity.template().getId());
             statement.setInt(2, entity.getQuantity());
             statement.setInt(3, entity.getPosition());
             statement.setString(4, entity.parseToSave());
@@ -100,7 +100,7 @@ public class ObjectData extends FunctionDAO<Item> {
     }
 
     @Override
-    public void delete(Item entity) {
+    public void delete(FullItem entity) {
         PreparedStatement p = null;
         try {
             p = getPreparedStatement("DELETE FROM " + getTableName() + " WHERE id = ?;");
@@ -114,11 +114,11 @@ public class ObjectData extends FunctionDAO<Item> {
     }
 
     @Override
-    public void update(Item entity) {
+    public void update(FullItem entity) {
         PreparedStatement p = null;
         try {
             p = getPreparedStatement("UPDATE " + getTableName() + " SET `template` = ?, `quantity` = ?, `position` = ?, `puit` = ?, `stats` = ? WHERE `id` = ?;");
-            p.setInt(1, entity.getTemplate().getId());
+            p.setInt(1, entity.template().getId());
             p.setInt(2, entity.getQuantity());
             p.setInt(3, entity.getPosition());
             p.setInt(4, entity.getPuit());
@@ -144,7 +144,7 @@ public class ObjectData extends FunctionDAO<Item> {
                     int quantity = result.getInt("quantity");
 
                     if (quantity > 0) {
-                        Item object = World.world.newObjet(result.getInt("id"), result.getInt("template"), quantity,
+                        FullItem object = World.world.newObjet(result.getInt("id"), result.getInt("template"), quantity,
                                 result.getInt("position"), result.getString("stats"), result.getInt("puit"));
                         World.world.addGameObject(object);
                     }

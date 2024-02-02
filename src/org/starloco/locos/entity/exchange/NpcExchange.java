@@ -10,7 +10,7 @@ import org.starloco.locos.entity.mount.Mount;
 import org.starloco.locos.entity.npc.NpcTemplate;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.Constant;
-import org.starloco.locos.item.Item;
+import org.starloco.locos.item.FullItem;
 import org.starloco.locos.item.ItemTemplate;
 
 import java.util.ArrayList;
@@ -95,7 +95,7 @@ public class NpcExchange {
                 couple.second = 0;//On met la quantité a 0 pour éviter les problemes
                 continue;
             }
-            Item obj = World.world.getGameObject(couple.first);
+            FullItem obj = World.world.getGameObject(couple.first);
             if ((obj.getQuantity() - couple.second) < 1) {
                 this.player.removeItem(couple.first);
                 if (this.auction != null) {
@@ -116,16 +116,16 @@ public class NpcExchange {
 
         for (World.Couple<Integer, Integer> couple1 : items2) {
             if (couple1.second == 0) continue;
-            if (World.world.getObjTemplate(couple1.first) == null) continue;
-            ItemTemplate t = World.world.getObjTemplate(couple1.first);
+            if (World.world.getItemTemplate(couple1.first) == null) continue;
+            ItemTemplate t = World.world.getItemTemplate(couple1.first);
 
-            Item obj1 = t.createNewItem(couple1.second, false);
+            FullItem obj1 = t.createNewItem(couple1.second, false);
             if (this.player.addItem(obj1, true, false))
                 World.world.addGameObject(obj1);
 
-            if (t.getType() == Constant.ITEM_TYPE_CERTIF_MONTURE) {
+            if (t.getTypeID() == Constant.ITEM_TYPE_CERTIF_MONTURE) {
                 //obj.setMountStats(this.getPlayer(), null);
-                Mount mount = new Mount(Constant.getMountColorByParchoTemplate(obj1.getTemplate().getId()), this.player.getId(), false);
+                Mount mount = new Mount(Constant.getMountColorByParchoTemplate(obj1.template().getId()), this.player.getId(), false);
                 obj1.clearStats();
                 obj1.getStats().addOneStat(995, (mount.getId()));
                 obj1.getTxtStat().put(996, this.player.getName());
@@ -212,7 +212,7 @@ public class NpcExchange {
     public synchronized void putAllGiveItem() {
         List<World.Couple<Integer, Integer>> itemsTemplates = items1.stream()
                 // Get template ID for each object
-                .map(i -> new World.Couple<>(World.world.getGameObject(i.first).getTemplate().getId(), i.second))
+                .map(i -> new World.Couple<>(World.world.getGameObject(i.first).template().getId(), i.second))
                 .collect(Collectors.toList());
 
         if (kamas1 != 0) {
@@ -229,7 +229,7 @@ public class NpcExchange {
             return;
         }
 
-        String str = outcome.first + "|" + outcome.second + "|" + outcome.first + "|" + World.world.getObjTemplate(outcome.first).getStrTemplate();
+        String str = outcome.first + "|" + outcome.second + "|" + outcome.first + "|" + World.world.getItemTemplate(outcome.first).getStrTemplate();
         if (outcome.first == 0) {
             this.kamas2 = outcome.second;
         } else {

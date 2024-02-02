@@ -25,7 +25,7 @@ import org.starloco.locos.hdv.BigStoreListing;
 import org.starloco.locos.job.JobStat;
 import org.starloco.locos.kernel.Config;
 import org.starloco.locos.kernel.Constant;
-import org.starloco.locos.item.Item;
+import org.starloco.locos.item.FullItem;
 import org.starloco.locos.item.ItemSet;
 import org.starloco.locos.item.ItemTemplate;
 import org.starloco.locos.guild.Guild;
@@ -51,7 +51,7 @@ public class SocketManager {
         }
     }
 
-    public static void GAME_SEND_UPDATE_ITEM(Player P, Item obj) // Utilis� pour tours bonbon
+    public static void GAME_SEND_UPDATE_ITEM(Player P, FullItem obj) // Utilis� pour tours bonbon
     {
         String packet = "OC|" + obj.encodeItem();
         send(P, packet);
@@ -132,7 +132,7 @@ public class SocketManager {
     }
 
     public static void GAME_SEND_UPDATE_OBJECT_DISPLAY_PACKET(Player perso,
-                                                              Item item) {
+                                                              FullItem item) {
         send(perso, "OCO" + item.encodeItem());
     }
 
@@ -150,7 +150,7 @@ public class SocketManager {
             StringBuilder packet = new StringBuilder();
             int color1 = perso.getColor1(), color2 = perso.getColor2(), color3 = perso.getColor3();
             if (perso.getObjetByPos(Constant.ITEM_POS_MALEDICTION) != null) {
-                if (perso.getObjetByPos(Constant.ITEM_POS_MALEDICTION).getTemplate().getId() == 10838) {
+                if (perso.getObjetByPos(Constant.ITEM_POS_MALEDICTION).template().getId() == 10838) {
                     color1 = 16342021;
                     color2 = 16342021;
                     color3 = 16342021;
@@ -1115,13 +1115,13 @@ public class SocketManager {
         send(out, packet);
     }
 
-    public static void GAME_SEND_OBJECT_QUANTITY_PACKET(Player out, Item obj) {
+    public static void GAME_SEND_OBJECT_QUANTITY_PACKET(Player out, FullItem obj) {
 
         String packet = "OQ" + obj.getGuid() + "|" + obj.getQuantity();
         send(out, packet);
     }
 
-    public static void GAME_SEND_OAKO_PACKET(Player out, Item obj) {
+    public static void GAME_SEND_OAKO_PACKET(Player out, FullItem obj) {
         String packet = "OAKO" + obj.encodeItem();
         send(out, packet);
     }
@@ -1141,7 +1141,7 @@ public class SocketManager {
         send(out, packet);
     }
 
-    public static void GAME_SEND_OBJET_MOVE_PACKET(Player out, Item obj) {
+    public static void GAME_SEND_OBJET_MOVE_PACKET(Player out, FullItem obj) {
         String packet = "OM" + obj.getGuid() + "|";
         if (obj.getPosition() != Constant.ITEM_POS_NO_EQUIPED)
             packet += obj.getPosition();
@@ -1858,7 +1858,7 @@ public class SocketManager {
 
     public static void GAME_SEND_EHP_PACKET(Player out, int id) //Packet d'envoie du prix moyen du template (En r�ponse a un packet EHP)
     {
-        ItemTemplate template = World.world.getObjTemplate(id);
+        ItemTemplate template = World.world.getItemTemplate(id);
         if (template != null)
             send(out, "EHP" + id + "|" + template.getAvgPrice());
     }

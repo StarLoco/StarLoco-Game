@@ -10,7 +10,7 @@ import org.starloco.locos.game.world.World;
 import org.starloco.locos.game.world.World.Couple;
 import org.starloco.locos.kernel.Constant;
 import org.starloco.locos.kernel.Logging;
-import org.starloco.locos.item.Item;
+import org.starloco.locos.item.FullItem;
 import org.starloco.locos.item.ItemTemplate;
 
 import java.util.ArrayList;
@@ -33,8 +33,8 @@ public class PlayerExchange extends Exchange {
             for (Couple<Integer, Integer> couple : items2) {
                 if (couple.second == 0)
                     continue;
-                Item obj = World.world.getGameObject(couple.first);
-                newpods += obj.getTemplate().getPod() * couple.second;
+                FullItem obj = World.world.getGameObject(couple.first);
+                newpods += obj.template().getPod() * couple.second;
             }
             if (newpods == 0) {
                 return true;
@@ -42,8 +42,8 @@ public class PlayerExchange extends Exchange {
             for (Couple<Integer, Integer> couple : items1) {
                 if (couple.second == 0)
                     continue;
-                Item obj = World.world.getGameObject(couple.first);
-                oldpods += obj.getTemplate().getPod() * couple.second;
+                FullItem obj = World.world.getGameObject(couple.first);
+                oldpods += obj.template().getPod() * couple.second;
             }
             if ((newpods + pods - oldpods) > podsmax) {
                 // Erreur 70
@@ -57,8 +57,8 @@ public class PlayerExchange extends Exchange {
             for (Couple<Integer, Integer> couple : items1) {
                 if (couple.second == 0)
                     continue;
-                Item obj = World.world.getGameObject(couple.first);
-                newpods += obj.getTemplate().getPod() * couple.second;
+                FullItem obj = World.world.getGameObject(couple.first);
+                newpods += obj.template().getPod() * couple.second;
             }
             if (newpods == 0) {
                 return true;
@@ -66,8 +66,8 @@ public class PlayerExchange extends Exchange {
             for (Couple<Integer, Integer> couple : items2) {
                 if (couple.second == 0)
                     continue;
-                Item obj = World.world.getGameObject(couple.first);
-                oldpods += obj.getTemplate().getPod() * couple.second;
+                FullItem obj = World.world.getGameObject(couple.first);
+                oldpods += obj.template().getPod() * couple.second;
             }
             if ((newpods + pods - oldpods) > podsmax) {
                 SocketManager.GAME_SEND_Im_PACKET(this.player2, "170");
@@ -155,7 +155,7 @@ public class PlayerExchange extends Exchange {
             str += this.player1.getName() + " : ";
             for (Couple<Integer, Integer> couple1 : items1) {
                 str += ", ["
-                        + World.world.getGameObject(couple1.first).getTemplate().getId()
+                        + World.world.getGameObject(couple1.first).template().getId()
                         + "@" + couple1.first + ";" + couple1.second + "]";
             }
             str += " avec " + kamas1 + " K.\n";
@@ -166,7 +166,7 @@ public class PlayerExchange extends Exchange {
             str += "Avec " + this.player2.getName();
             for (Couple<Integer, Integer> couple2 : items2) {
                 str += ", ["
-                        + World.world.getGameObject(couple2.first).getTemplate().getId()
+                        + World.world.getGameObject(couple2.first).template().getId()
                         + "@" + couple2.first + ";" + couple2.second + "]";
             }
             str += " avec " + kamas2 + " K.";
@@ -192,7 +192,7 @@ public class PlayerExchange extends Exchange {
                 couple.second = 0;//On met la quantit� a 0 pour �viter les problemes
                 continue;
             }
-            Item obj = World.world.getGameObject(couple.first);
+            FullItem obj = World.world.getGameObject(couple.first);
             if ((obj.getQuantity() - couple.second) < 1)//S'il ne reste plus d'item apres l'�change
             {
                 this.player1.removeItem(couple.first);
@@ -203,7 +203,7 @@ public class PlayerExchange extends Exchange {
             } else {
                 obj.setQuantity(obj.getQuantity() - couple.second);
                 SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(this.player1, obj);
-                Item newObj = obj.getClone(couple.second, true);
+                FullItem newObj = obj.getClone(couple.second, true);
                 if (this.player2.addItem(newObj, true, false))//Si le joueur n'avait pas d'item similaire
                     World.world.addGameObject(newObj);//On ajoute l'item au World
             }
@@ -235,7 +235,7 @@ public class PlayerExchange extends Exchange {
         ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this.player2);
     }
 
-    protected void giveObject(Couple<Integer, Integer> couple, Item object) {
+    protected void giveObject(Couple<Integer, Integer> couple, FullItem object) {
         if(object == null) return;
         if ((object.getQuantity() - couple.second) < 1) {
             this.player2.removeItem(couple.first);
@@ -245,7 +245,7 @@ public class PlayerExchange extends Exchange {
         } else {
             object.setQuantity(object.getQuantity() - couple.second);
             SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(this.player2, object);
-            Item newObj = object.getClone(couple.second, true);
+            FullItem newObj = object.getClone(couple.second, true);
             if (this.player1.addItem(newObj, true, false)) World.world.addGameObject(newObj);
         }
     }
@@ -254,7 +254,7 @@ public class PlayerExchange extends Exchange {
         ok1 = false;
         ok2 = false;
 
-        Item obj = World.world.getGameObject(guid);
+        FullItem obj = World.world.getGameObject(guid);
         int i = 0;
 
         if (this.player1.getId() == pguid)
@@ -273,21 +273,21 @@ public class PlayerExchange extends Exchange {
         if (this instanceof CraftSecure) {
             ArrayList<ItemTemplate> tmp = new ArrayList<>();
             for (Couple<Integer, Integer> couple : this.items1) {
-                Item _tmp = World.world.getGameObject(couple.first);
+                FullItem _tmp = World.world.getGameObject(couple.first);
                 if (_tmp == null)
                     continue;
-                if (!tmp.contains(_tmp.getTemplate()))
-                    tmp.add(_tmp.getTemplate());
+                if (!tmp.contains(_tmp.template()))
+                    tmp.add(_tmp.template());
             }
             for (Couple<Integer, Integer> couple : this.items2) {
-                Item _tmp = World.world.getGameObject(couple.first);
+                FullItem _tmp = World.world.getGameObject(couple.first);
                 if (_tmp == null)
                     continue;
-                if (!tmp.contains(_tmp.getTemplate()))
-                    tmp.add(_tmp.getTemplate());
+                if (!tmp.contains(_tmp.template()))
+                    tmp.add(_tmp.template());
             }
 
-            if (!tmp.contains(obj.getTemplate())) {
+            if (!tmp.contains(obj.template())) {
                 if (tmp.size() + 1 > ((CraftSecure) this).getMaxCase()) {
                     SocketManager.GAME_SEND_MESSAGE((this.player1.getId() == pguid) ? this.player1 : this.player2, "Impossible d'ajouter plus d'ingrédients.", "B9121B");
                     return;
@@ -295,7 +295,7 @@ public class PlayerExchange extends Exchange {
             }
         }
 
-        String add = "|" + obj.getTemplate().getId() + "|"
+        String add = "|" + obj.template().getId() + "|"
                 + obj.encodeStats();
         SocketManager.GAME_SEND_EXCHANGE_OK(this.player1.getGameClient(), ok1, this.player1.getId());
         SocketManager.GAME_SEND_EXCHANGE_OK(this.player2.getGameClient(), ok1, this.player1.getId());
@@ -346,9 +346,9 @@ public class PlayerExchange extends Exchange {
         SocketManager.GAME_SEND_EXCHANGE_OK(this.player1.getGameClient(), ok2, this.player2.getId());
         SocketManager.GAME_SEND_EXCHANGE_OK(this.player2.getGameClient(), ok2, this.player2.getId());
 
-        Item object = World.world.getGameObject(guid);
+        FullItem object = World.world.getGameObject(guid);
         if (object == null) return;
-        String add = "|" + object.getTemplate().getId() + "|" + object.encodeStats();
+        String add = "|" + object.template().getId() + "|" + object.encodeStats();
 
         if (i == 1) {
             Couple<Integer, Integer> couple = getCoupleInList(items1, guid);
@@ -451,7 +451,7 @@ public class PlayerExchange extends Exchange {
         }
 
         public synchronized void apply() {
-            Item objetToChange = null;
+            FullItem objetToChange = null;
             for (Couple<Integer, Integer> couple : items1) {
                 if (couple.second == 0)
                     continue;
@@ -462,7 +462,7 @@ public class PlayerExchange extends Exchange {
                     couple.second = 0;//On met la quantit� a 0 pour �viter les problemes
                     continue;
                 }
-                Item obj = World.world.getGameObject(couple.first);
+                FullItem obj = World.world.getGameObject(couple.first);
                 objetToChange = obj;
                 if ((obj.getQuantity() - couple.second) < 1)//S'il ne reste plus d'item apres l'�change
                 {
@@ -478,15 +478,15 @@ public class PlayerExchange extends Exchange {
             for (Couple<Integer, Integer> couple1 : items2) {
                 if (couple1.second == 0)
                     continue;
-                if (World.world.getObjTemplate(couple1.first) == null)
+                if (World.world.getItemTemplate(couple1.first) == null)
                     continue;
                 if (World.world.getGameObject(objetToChange.getGuid()) == null)
                     continue;
-                Item obj1 = null;
-                if (World.world.getObjTemplate(couple1.first).getType() == 18)
-                    obj1 = World.world.getObjTemplate(couple1.first).createNewFamilier(objetToChange);
-                if (World.world.getObjTemplate(couple1.first).getType() == 77)
-                    obj1 = World.world.getObjTemplate(couple1.first).createNewCertificat(objetToChange);
+                FullItem obj1 = null;
+                if (World.world.getItemTemplate(couple1.first).getTypeID() == 18)
+                    obj1 = World.world.getItemTemplate(couple1.first).createNewFamilier(objetToChange);
+                if (World.world.getItemTemplate(couple1.first).getTypeID() == 77)
+                    obj1 = World.world.getItemTemplate(couple1.first).createNewCertificat(objetToChange);
 
                 if (obj1 == null)
                     continue;
@@ -523,15 +523,15 @@ public class PlayerExchange extends Exchange {
             if (verifIfAlonePets() || verifIfAloneParcho()) {
                 if (items1.size() == 1) {
                     int id = -1;
-                    Item objet = null;
+                    FullItem objet = null;
                     for (Couple<Integer, Integer> i : items1) {
                         if (World.world.getGameObject(i.first) == null)
                             continue;
                         objet = World.world.getGameObject(i.first);
-                        if (World.world.getGameObject(i.first).getTemplate().getType() == 18) {
-                            id = Constant.getParchoByIdPets(World.world.getGameObject(i.first).getTemplate().getId());
-                        } else if (World.world.getGameObject(i.first).getTemplate().getType() == 77) {
-                            id = Constant.getPetsByIdParcho(World.world.getGameObject(i.first).getTemplate().getId());
+                        if (World.world.getGameObject(i.first).template().getTypeID() == 18) {
+                            id = Constant.getParchoByIdPets(World.world.getGameObject(i.first).template().getId());
+                        } else if (World.world.getGameObject(i.first).template().getTypeID() == 77) {
+                            id = Constant.getPetsByIdParcho(World.world.getGameObject(i.first).template().getId());
                         }
                     }
                     if (id == -1)
@@ -577,15 +577,15 @@ public class PlayerExchange extends Exchange {
             if (verifIfAlonePets()) {
                 if (items1.size() == 1) {
                     int id = -1;
-                    Item objet = null;
+                    FullItem objet = null;
                     for (Couple<Integer, Integer> i : items1) {
                         if (World.world.getGameObject(i.first) == null)
                             continue;
                         objet = World.world.getGameObject(i.first);
-                        if (World.world.getGameObject(i.first).getTemplate().getType() == 18) {
-                            id = Constant.getParchoByIdPets(World.world.getGameObject(i.first).getTemplate().getId());
-                        } else if (World.world.getGameObject(i.first).getTemplate().getType() == 77) {
-                            id = Constant.getPetsByIdParcho(World.world.getGameObject(i.first).getTemplate().getId());
+                        if (World.world.getGameObject(i.first).template().getTypeID() == 18) {
+                            id = Constant.getParchoByIdPets(World.world.getGameObject(i.first).template().getId());
+                        } else if (World.world.getGameObject(i.first).template().getTypeID() == 77) {
+                            id = Constant.getPetsByIdParcho(World.world.getGameObject(i.first).template().getId());
                         }
                     }
                     if (id == -1)
@@ -610,14 +610,14 @@ public class PlayerExchange extends Exchange {
 
         public boolean verifIfAlonePets() {
             for (Couple<Integer, Integer> i : items1)
-                if (World.world.getGameObject(i.first).getTemplate().getType() != 18)
+                if (World.world.getGameObject(i.first).template().getTypeID() != 18)
                     return false;
             return true;
         }
 
         public boolean verifIfAloneParcho() {
             for (Couple<Integer, Integer> i : items1)
-                if (World.world.getGameObject(i.first).getTemplate().getType() != 77)
+                if (World.world.getGameObject(i.first).template().getTypeID() != 77)
                     return false;
             return true;
         }
@@ -720,8 +720,8 @@ public class PlayerExchange extends Exchange {
 
         public synchronized void apply() {
             for (Couple<Integer, Integer> item : items1) {
-                Item object = World.world.getGameObject(item.first);
-                if (object.getTemplate().getId() == 8012) {
+                FullItem object = World.world.getGameObject(item.first);
+                if (object.template().getId() == 8012) {
                     if ((object.getQuantity() - item.second) < 1) {
                         perso.removeItem(item.first);
                         item.second = object.getQuantity();
@@ -731,7 +731,7 @@ public class PlayerExchange extends Exchange {
                         SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(perso, object);
                     }
                 } else {
-                    PetEntry pet = World.world.getPetsEntry(item.first);
+                    PetEntry pet = World.world.getPetsEntry_legacy(item.first);
                     if (pet != null) {
                         pet.resurrection();
                         SocketManager.GAME_SEND_UPDATE_OBJECT_DISPLAY_PACKET(this.perso, object);
@@ -765,15 +765,15 @@ public class PlayerExchange extends Exchange {
             if (verification()) {
                 if (items1.size() == 2) {
                     int id = -1;
-                    Item objet = null;
+                    FullItem objet = null;
 
                     for (Couple<Integer, Integer> i : items1) {
                         objet = World.world.getGameObject(i.first);
 
                         if (objet == null)
                             continue;
-                        if (objet.getTemplate().getType() == 90) {
-                            PetEntry pet = World.world.getPetsEntry(i.first);
+                        if (objet.template().getTypeID() == 90) {
+                            PetEntry pet = World.world.getPetsEntry_legacy(i.first);
                             if(pet != null) {
                                 id = pet.getTemplate();
                                 break;
@@ -824,15 +824,15 @@ public class PlayerExchange extends Exchange {
             if (verification()) {
                 if (items1.size() == 2) {
                     int id = -1;
-                    Item objet = null;
+                    FullItem objet = null;
 
                     for (Couple<Integer, Integer> i : items1) {
                         objet = World.world.getGameObject(i.first);
 
                         if (objet == null)
                             continue;
-                        if (objet.getTemplate().getType() == 90) {
-                            id = World.world.getPetsEntry(i.first).getTemplate();
+                        if (objet.template().getTypeID() == 90) {
+                            id = World.world.getPetsEntry_legacy(i.first).getTemplate();
                             break;
                         }
                     }
@@ -861,8 +861,8 @@ public class PlayerExchange extends Exchange {
         public boolean verification() {
             boolean verif = true;
             for (Couple<Integer, Integer> item : items1) {
-                Item object = World.world.getGameObject(item.first);
-                if ((object.getTemplate().getId() != 8012 && object.getTemplate().getType() != 90)
+                FullItem object = World.world.getGameObject(item.first);
+                if ((object.template().getId() != 8012 && object.template().getTypeID() != 90)
                         || item.second > 1)
                     verif = false;
             }

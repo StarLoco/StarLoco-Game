@@ -6,7 +6,7 @@ import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.database.data.FunctionDAO;
 import org.starloco.locos.entity.monster.MonsterGroup;
 import org.starloco.locos.game.world.World;
-import org.starloco.locos.item.Item;
+import org.starloco.locos.item.FullItem;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -143,9 +143,9 @@ public class HeroicMobsGroupsData extends FunctionDAO<Object> {
         try {
             getData("SELECT * FROM `heroic_mobs_groups_fix`;", result -> {
                 while (result.next()) {
-                    ArrayList<Item> objects = new ArrayList<>();
+                    ArrayList<FullItem> objects = new ArrayList<>();
                     for (String value : result.getString("objects").split(",")) {
-                        final Item object = World.world.getGameObject(Integer.parseInt(value));
+                        final FullItem object = World.world.getGameObject(Integer.parseInt(value));
                         if (object != null)
                             objects.add(object);
                     }
@@ -187,7 +187,7 @@ public class HeroicMobsGroupsData extends FunctionDAO<Object> {
     public void updateFix() {
         PreparedStatement prepare = null;
         try {
-            for(Map.Entry<String, ArrayList<Item>> entry : GameMap.fixMobGroupObjects.entrySet()) {
+            for(Map.Entry<String, ArrayList<FullItem>> entry : GameMap.fixMobGroupObjects.entrySet()) {
                 String[] split = entry.getKey().split(",");
                 final StringBuilder objects = new StringBuilder();
                 entry.getValue().stream().filter(object -> object != null).forEach(object -> objects.append(objects.toString().isEmpty() ? "" : ",").append(object.getGuid()));

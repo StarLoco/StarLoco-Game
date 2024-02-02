@@ -38,8 +38,8 @@ public class ItemHash {
     public final String strStats;
     public final String hash;
 
-    public ItemHash(Item item) {
-        this.templateId = item.getTemplate().getId();
+    public ItemHash(FullItem item) {
+        this.templateId = item.template().getId();
         this.strStats = item.encodeStats();
         this.hash = hash(this.templateId, item.getStats(), item.getTxtStat());
     }

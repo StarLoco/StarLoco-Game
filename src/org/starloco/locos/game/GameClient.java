@@ -71,7 +71,7 @@ import org.starloco.locos.kernel.Constant;
 import org.starloco.locos.kernel.Logging;
 import org.starloco.locos.kernel.Main;
 import org.starloco.locos.lang.LangEnum;
-import org.starloco.locos.item.Item;
+import org.starloco.locos.item.FullItem;
 import org.starloco.locos.item.ItemTemplate;
 import org.starloco.locos.item.entity.Fragment;
 import org.starloco.locos.item.entity.SoulStone;
@@ -345,30 +345,30 @@ public class GameClient {
             return;
         }
 
-        final Item mimibiote = this.player.getItemTemplate(Constant.ID_TEMPLATE_MIMIBIOTE);
+        final FullItem mimibiote = this.player.getItemTemplate(Constant.ID_TEMPLATE_MIMIBIOTE);
         if(mimibiote == null) return;
 
-        final Item itemToKeep = World.world.getGameObject(idItemToKeep);
-        final Item itemToDelete = World.world.getGameObject(idItemToDelete);
+        final FullItem itemToKeep = World.world.getGameObject(idItemToKeep);
+        final FullItem itemToDelete = World.world.getGameObject(idItemToDelete);
 
         if(itemToKeep == null || itemToDelete == null) return;
         if(!this.player.hasItemGuid(idItemToKeep) || !this.player.hasItemGuid(idItemToDelete)) return;
         if(itemToDelete.getPosition() != Constant.ITEM_POS_NO_EQUIPED || itemToKeep.getPosition() != Constant.ITEM_POS_NO_EQUIPED) return;
         if(itemToKeep.isMimibiote() || itemToDelete.isMimibiote()) return;
-        if(itemToKeep.getTemplate().getLevel() < itemToDelete.getTemplate().getLevel()) return;
-        if(itemToKeep.getTemplate().getType() != itemToDelete.getTemplate().getType()) return;
-        if(!Constant.isTypeForMimibiote(itemToKeep.getTemplate().getType())) return;
+        if(itemToKeep.template().getLevel() < itemToDelete.template().getLevel()) return;
+        if(itemToKeep.template().getTypeID() != itemToDelete.template().getTypeID()) return;
+        if(!Constant.isTypeForMimibiote(itemToKeep.template().getTypeID())) return;
 
 
         // OK
         final String guid = Integer.toHexString(itemToDelete.getGuid());
-        final String id = Integer.toHexString(itemToDelete.getTemplate().getId());
+        final String id = Integer.toHexString(itemToDelete.template().getId());
         itemToKeep.addTxtStat(Constant.STATS_MIMIBIOTE, guid+";"+id); // setModification est dedans
         this.player.removeItem(idItemToDelete, 1, true, false);
         this.player.removeItem(mimibiote.getGuid(), 1, true, true);
         SocketManager.GAME_SEND_UPDATE_ITEM(player, itemToKeep);
-        SocketManager.GAME_SEND_Im_PACKET(this.player, "022;" + 1 + "~" + itemToDelete.getTemplate().getId());
-        SocketManager.GAME_SEND_Im_PACKET(this.player, "022;" + 1 + "~" + mimibiote.getTemplate().getId());
+        SocketManager.GAME_SEND_Im_PACKET(this.player, "022;" + 1 + "~" + itemToDelete.template().getId());
+        SocketManager.GAME_SEND_Im_PACKET(this.player, "022;" + 1 + "~" + mimibiote.template().getId());
 
     }
 
@@ -386,14 +386,14 @@ public class GameClient {
             return;
         }
 
-        final Item item = World.world.getGameObject(idItem);
+        final FullItem item = World.world.getGameObject(idItem);
         if(item == null) return;
         if(!this.player.hasItemGuid(idItem)) return;
         if(!item.isMimibiote()) return;
 
-        final Item mimibiote = World.world.getObjTemplate(Constant.ID_TEMPLATE_MIMIBIOTE).createNewItem(1, false);
+        final FullItem mimibiote = World.world.getItemTemplate(Constant.ID_TEMPLATE_MIMIBIOTE).createNewItem(1, false);
         final int idApparat = Integer.parseInt(item.getTxtStat().get(Constant.STATS_MIMIBIOTE).split(";")[0], 16);
-        final Item apparat = World.world.getGameObject(idApparat);
+        final FullItem apparat = World.world.getGameObject(idApparat);
 
         if(apparat == null)
         {
@@ -409,8 +409,8 @@ public class GameClient {
         if(item.getPosition() != Constant.ITEM_POS_NO_EQUIPED)
             SocketManager.GAME_SEND_ON_EQUIP_ITEM(this.player.getCurMap(), this.player);
 
-        SocketManager.GAME_SEND_Im_PACKET(this.player, "021;" + 1 + "~" + apparat.getTemplate().getId());
-        SocketManager.GAME_SEND_Im_PACKET(this.player, "021;" + 1 + "~" + mimibiote.getTemplate().getId());
+        SocketManager.GAME_SEND_Im_PACKET(this.player, "021;" + 1 + "~" + apparat.template().getId());
+        SocketManager.GAME_SEND_Im_PACKET(this.player, "021;" + 1 + "~" + mimibiote.template().getId());
     }
 
     private void addCharacter(String packet) {
@@ -535,7 +535,7 @@ public class GameClient {
             for (String object : gifts.split(";")) {
                 if(object.isEmpty()) continue;
                 int id = Integer.parseInt(object.split(",")[0]), qua = Integer.parseInt(object.split(",")[1]);
-                ItemTemplate template = World.world.getObjTemplate(id);
+                ItemTemplate template = World.world.getItemTemplate(id);
                 if(template != null) {
                     if (data.isEmpty()) {
                         data = "1~" + Integer.toString(id, 16) + "~" + Integer.toString(qua, 16) + "~~" + template.getStrTemplate();
@@ -572,27 +572,27 @@ public class GameClient {
 
             if (id == template) {
                 int qua = Integer.parseInt(split[1]), jp = Integer.parseInt(split[2]);
-                Item obj;
+                FullItem obj;
 
                 List<Integer> objNeedAttach = Arrays.asList(26001, 26002, 26003, 26004, 26005);
                 if (qua == 1) {
-                    obj = World.world.getObjTemplate(template).createNewItem(qua, (jp == 1));
-                    if (objNeedAttach.contains(obj.getTemplate().getId()))
+                    obj = World.world.getItemTemplate(template).createNewItem(qua, (jp == 1));
+                    if (objNeedAttach.contains(obj.template().getId()))
                         obj.attachToPlayer(player);
                     if (player.addItem(obj, true, false))
                         World.world.addGameObject(obj);
-                    if(obj.getTemplate().getType() == Constant.ITEM_TYPE_CERTIF_MONTURE)
+                    if(obj.template().getTypeID() == Constant.ITEM_TYPE_CERTIF_MONTURE)
                         obj.setMountStats(player, null, true).setToMax();
                     String str1 = id + "," + qua + "," + jp, str2 = id + "," + qua + "," + jp + ";", str3 = ";" + id + "," + qua + "," + jp;
 
                     gifts = gifts.replace(str2, "").replace(str3, "").replace(str1, "");
                 } else {
-                    obj = World.world.getObjTemplate(template).createNewItem(1, (jp == 1));
-                    if (objNeedAttach.contains(obj.getTemplate().getId()))
+                    obj = World.world.getItemTemplate(template).createNewItem(1, (jp == 1));
+                    if (objNeedAttach.contains(obj.template().getId()))
                         obj.attachToPlayer(player);
                     if (player.addItem(obj, true, false))
                         World.world.addGameObject(obj);
-                    if(obj.getTemplate().getType() == Constant.ITEM_TYPE_CERTIF_MONTURE)
+                    if(obj.template().getTypeID() == Constant.ITEM_TYPE_CERTIF_MONTURE)
                         obj.setMountStats(player, null, true).setToMax();
 
                     String str1 = id + "," + qua + "," + jp, str2 = id + "," + qua + "," + jp + ";", str3 = ";" + id + "," + qua + "," + jp;
@@ -816,7 +816,7 @@ public class GameClient {
                 if (Logging.USE_LOG)
                     Logging.getInstance().write("DefaultMessage", this.player.getName() + " > Map " + this.player.getCurMap().getId() + " > " + msg);
                 if (this.player.getObjetByPos(Constant.ITEM_POS_ROLEPLAY_BUFF) != null)
-                    if (this.player.getObjetByPos(Constant.ITEM_POS_ROLEPLAY_BUFF).getTemplate().getId() == 10844)
+                    if (this.player.getObjetByPos(Constant.ITEM_POS_ROLEPLAY_BUFF).template().getId() == 10844)
                         msg = Formulas.translateMsg(msg);
                 if (this.player.getFight() == null) {
                     SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(this.player.getCurMap(), "", this.player.getId(), this.player.getName(), msg);
@@ -841,7 +841,7 @@ public class GameClient {
                 msg = packet.split("\\|", 2)[1];
                 lastMsg = msg;
                 if (this.player.getObjetByPos(Constant.ITEM_POS_ROLEPLAY_BUFF) != null)
-                    if (this.player.getObjetByPos(Constant.ITEM_POS_ROLEPLAY_BUFF).getTemplate().getId() == 10844)
+                    if (this.player.getObjetByPos(Constant.ITEM_POS_ROLEPLAY_BUFF).template().getId() == 10844)
                         msg = Formulas.translateMsg(msg);
                 SocketManager.GAME_SEND_cMK_PACKET_INCARNAM_CHAT("^", this.player.getId(), this.player.getName(), msg);
 
@@ -858,7 +858,7 @@ public class GameClient {
                         Logging.getInstance().write("TeamMessage", this.player.getName()
                                 + " > " + this.player.getFight() + " > " + msg);
                     if (this.player.getObjetByPos(Constant.ITEM_POS_ROLEPLAY_BUFF) != null)
-                        if (this.player.getObjetByPos(Constant.ITEM_POS_ROLEPLAY_BUFF).getTemplate().getId() == 10844)
+                        if (this.player.getObjetByPos(Constant.ITEM_POS_ROLEPLAY_BUFF).template().getId() == 10844)
                             msg = Formulas.translateMsg(msg);
                     SocketManager.GAME_SEND_cMK_PACKET_TO_FIGHT(this.player.getFight(), team, "#", this.player.getId(), this.player.getName(), msg);
                 }
@@ -874,7 +874,7 @@ public class GameClient {
                     Logging.getInstance().write("PartyMessage", this.player.getName()
                             + " > " + this.player.getParty() + " > " + msg);
                 if (this.player.getObjetByPos(Constant.ITEM_POS_ROLEPLAY_BUFF) != null)
-                    if (this.player.getObjetByPos(Constant.ITEM_POS_ROLEPLAY_BUFF).getTemplate().getId() == 10844)
+                    if (this.player.getObjetByPos(Constant.ITEM_POS_ROLEPLAY_BUFF).template().getId() == 10844)
                         msg = Formulas.translateMsg(msg);
                 SocketManager.GAME_SEND_cMK_PACKET_TO_GROUP(this.player.getParty(), "$", this.player.getId(), this.player.getName(), msg);
                 break;
@@ -905,7 +905,7 @@ public class GameClient {
                     if (Logging.USE_LOG)
                         Logging.getInstance().write("TradeMessage", this.player.getName() + " > " + msg);
                     if (this.player.getObjetByPos(Constant.ITEM_POS_ROLEPLAY_BUFF) != null)
-                        if (this.player.getObjetByPos(Constant.ITEM_POS_ROLEPLAY_BUFF).getTemplate().getId() == 10844)
+                        if (this.player.getObjetByPos(Constant.ITEM_POS_ROLEPLAY_BUFF).template().getId() == 10844)
                             msg = Formulas.translateMsg(msg);
                     SocketManager.GAME_SEND_cMK_PACKET_TO_ALL(this.player, ":", this.player.getId(), this.player.getName(), msg);
                 }
@@ -947,7 +947,7 @@ public class GameClient {
                         Logging.getInstance().write("RecruitmentMessage", this.player.getName()
                                 + " > " + msg);
                     if (this.player.getObjetByPos(Constant.ITEM_POS_ROLEPLAY_BUFF) != null)
-                        if (this.player.getObjetByPos(Constant.ITEM_POS_ROLEPLAY_BUFF).getTemplate().getId() == 10844)
+                        if (this.player.getObjetByPos(Constant.ITEM_POS_ROLEPLAY_BUFF).template().getId() == 10844)
                             msg = Formulas.translateMsg(msg);
                     SocketManager.GAME_SEND_cMK_PACKET_TO_ALL(this.player, "?", this.player.getId(), this.player.getName(), msg);
                 }
@@ -962,7 +962,7 @@ public class GameClient {
                     Logging.getInstance().write("GuildMessage", this.player.getName()
                             + " > " + this.player.getGuild().getName() + " > " + msg);
                 if (this.player.getObjetByPos(Constant.ITEM_POS_ROLEPLAY_BUFF) != null)
-                    if (this.player.getObjetByPos(Constant.ITEM_POS_ROLEPLAY_BUFF).getTemplate().getId() == 10844)
+                    if (this.player.getObjetByPos(Constant.ITEM_POS_ROLEPLAY_BUFF).template().getId() == 10844)
                         msg = Formulas.translateMsg(msg);
                 SocketManager.GAME_SEND_cMK_PACKET_TO_GUILD(this.player.getGuild(), "%", this.player.getId(), this.player.getName(), msg);
                 break;
@@ -991,7 +991,7 @@ public class GameClient {
                     Logging.getInstance().write("AlignMessage", this.player.getName()
                             + " > " + msg);
                 if (this.player.getObjetByPos(Constant.ITEM_POS_ROLEPLAY_BUFF) != null)
-                    if (this.player.getObjetByPos(Constant.ITEM_POS_ROLEPLAY_BUFF).getTemplate().getId() == 10844)
+                    if (this.player.getObjetByPos(Constant.ITEM_POS_ROLEPLAY_BUFF).template().getId() == 10844)
                         msg = Formulas.translateMsg(msg);
                 SocketManager.GAME_SEND_cMK_PACKET_TO_ALIGN("!", this.player.getId(), this.player.getName(), msg, this.player);
                 break;
@@ -1028,7 +1028,7 @@ public class GameClient {
                     if (Logging.USE_LOG)
                         Logging.getInstance().write("PrivateMessage", this.player.getName() + " ? " + target.getName() + " > " + msg);
                     if (this.player.getObjetByPos(Constant.ITEM_POS_ROLEPLAY_BUFF) != null)
-                        if (this.player.getObjetByPos(Constant.ITEM_POS_ROLEPLAY_BUFF).getTemplate().getId() == 10844)
+                        if (this.player.getObjetByPos(Constant.ITEM_POS_ROLEPLAY_BUFF).template().getId() == 10844)
                             msg = Formulas.translateMsg(msg);
 
                     SocketManager.GAME_SEND_cMK_PACKET(this.player, "T", target.getId(), target.getName(), msg);
@@ -1517,7 +1517,7 @@ public class GameClient {
                     }
                     price = seller.getStoreItems().get(itemID) * qua;
                     int price2 = seller.getStoreItems().get(itemID);
-                    Item itemStore = World.world.getGameObject(itemID);
+                    FullItem itemStore = World.world.getGameObject(itemID);
                     if (itemStore == null)
                         return;
                     if (price > this.player.getKamas())
@@ -1534,7 +1534,7 @@ public class GameClient {
                         itemStore.setQuantity(itemStore.getQuantity() - qua);
                         seller.addStoreItem(itemStore.getGuid(), price2);
 
-                        Item clone = itemStore.getClone(qua, true);
+                        FullItem clone = itemStore.getClone(qua, true);
                         if (this.player.addItem(clone, true, false))
                             World.world.addGameObject(clone);
                     } else {
@@ -1579,7 +1579,7 @@ public class GameClient {
                 }
 
                 SaleOffer offer = optOffer.get();
-                if (offer.itemTemplate.getType() == 18 && qua > 1) {
+                if (offer.itemTemplate.getTypeID() == 18 && qua > 1) {
                     this.player.sendMessage(this.player.getLang().trans("game.gameclient.buy.fami"));
                     return;
                 }
@@ -1634,12 +1634,12 @@ public class GameClient {
                 Optional<Account> seller = Optional.ofNullable(World.world.ensureAccountLoaded(entry.getOwner()));
 
                 String name = seller.map(Account::getName).orElse("undefined");
-                Item obj = entry.getGameObject();
+                FullItem obj = entry.getGameObject();
 
                 try {
                     Logging.getInstance().write("Object", "BuyHdv : "
                         + player.getName() + " : achat de "
-                        + obj.getTemplate().getName() + "(" + obj.getGuid() + ") x"
+                        + obj.template().getName() + "(" + obj.getGuid() + ") x"
                         + obj.getQuantity() + " venant du compte "
                         + name);
                 } catch(Exception ex) { ex.printStackTrace(); }
@@ -1648,8 +1648,8 @@ public class GameClient {
                     SocketManager.GAME_SEND_Im_PACKET(p, "065;"
                         + price
                         + "~"
-                        + obj.getTemplate().getId()
-                        + "~" + obj.getTemplate().getId() + "~1");
+                        + obj.template().getId()
+                        + "~" + obj.template().getId() + "~1");
                     DatabaseManager.get(PlayerData.class).update(p);
                 });
 
@@ -1732,7 +1732,7 @@ public class GameClient {
             Fragment fragment = new Fragment("");
 
             for (Couple<Integer, Integer> couple : ((BreakingObject) value).getObjects()) {
-                Item object = this.player.getItems().get(couple.first);
+                FullItem object = this.player.getItems().get(couple.first);
 
                 if (object == null || couple.second < 1 || object.getQuantity() < couple.second) {
                     this.player.send("Ea3");
@@ -1740,7 +1740,7 @@ public class GameClient {
                 }
 
                 for (int k = couple.second; k > 0; k--) {
-                    int type = object.getTemplate().getType();
+                    int type = object.template().getTypeID();
                     if (type > 11 && type < 16 && type > 23 && type != 81 && type != 82)
                         continue;
                     for (Map.Entry<Integer, Integer> entry1 : object.getStats().getEffects().entrySet()) {
@@ -1748,7 +1748,7 @@ public class GameClient {
                         for (Rune rune : Rune.runes) {
                             if (entry1.getKey() == rune.getCharacteristic()) {
                                 if (rune.getId() == 1557 || rune.getId() == 1558 || rune.getId() == 7438) {
-                                    double puissance = 1.5 * (Math.pow(object.getTemplate().getLevel(), 2.0) / Math.pow(rune.getWeight(), (5.0 / 4.0))) + ((jet - 1) / rune.getWeight()) * (66.66 - 1.5 * (Math.pow(object.getTemplate().getLevel(), 2.0) / Math.pow(rune.getWeight(), (55.0 / 4.0))));
+                                    double puissance = 1.5 * (Math.pow(object.template().getLevel(), 2.0) / Math.pow(rune.getWeight(), (5.0 / 4.0))) + ((jet - 1) / rune.getWeight()) * (66.66 - 1.5 * (Math.pow(object.template().getLevel(), 2.0) / Math.pow(rune.getWeight(), (55.0 / 4.0))));
                                     int chance = (int) Math.ceil(puissance);
 
                                     if (chance > 66) chance = 66;
@@ -1823,7 +1823,7 @@ public class GameClient {
                                 int qua = Integer.parseInt(infos[1]);
                                 int price = Integer.parseInt(infos[2]);
 
-                                Item obj = this.player.getItems().get(guid);
+                                FullItem obj = this.player.getItems().get(guid);
                                 if (obj == null)
                                     return;
                                 if (qua <= 0 || obj.isAttach())
@@ -1847,7 +1847,7 @@ public class GameClient {
 
                                 if (qua <= 0)
                                     return;
-                                Item obj = World.world.getGameObject(guid);
+                                FullItem obj = World.world.getGameObject(guid);
                                 if (obj == null)
                                     return;
                                 if (qua < 0)
@@ -1916,7 +1916,7 @@ public class GameClient {
                             if (guid <= 0 || qua <= 0)
                                 return;
 
-                            Item obj = World.world.getGameObject(guid);
+                            FullItem obj = World.world.getGameObject(guid);
                             if (obj == null)
                                 return;
 
@@ -1945,7 +1945,7 @@ public class GameClient {
                             if (!this.player.hasItemGuid(id))
                                 return;
 
-                            Item object = this.player.getItems().get(id);
+                            FullItem object = this.player.getItems().get(id);
 
                             if (object == null || object.isAttach())
                                 return;
@@ -1954,7 +1954,7 @@ public class GameClient {
                             if (qua > object.getQuantity())
                                 qua = object.getQuantity();
 
-                            int type = object.getTemplate().getType();
+                            int type = object.template().getTypeID();
 
                             SocketManager.SEND_EMK_MOVE_ITEM(this, 'O', "+", id + "|" + breakingObject.addObject(id, qua));
                         } catch (NumberFormatException e) {
@@ -1968,7 +1968,7 @@ public class GameClient {
                             int id = Integer.parseInt(infos[0]);
                             int qua = Integer.parseInt(infos[1]);
 
-                            Item object = World.world.getGameObject(id);
+                            FullItem object = World.world.getGameObject(id);
 
                             if (object == null)
                                 return;
@@ -2044,7 +2044,7 @@ public class GameClient {
                                 int quaInExch = ((NpcExchange) this.player.getExchangeAction().getValue()).getQuaItem(guid, false);
 
                                 if (!this.player.hasItemGuid(guid)) return;
-                                Item obj = this.player.getItems().get(guid);
+                                FullItem obj = this.player.getItems().get(guid);
                                 if (obj == null) return;
 
                                 if (qua > obj.getQuantity() - quaInExch)
@@ -2071,7 +2071,7 @@ public class GameClient {
                                 if (!this.player.hasItemGuid(guid))
                                     return;
 
-                                Item obj = World.world.getGameObject(guid);
+                                FullItem obj = World.world.getGameObject(guid);
                                 if (obj == null)
                                     return;
                                 if (qua > ((NpcExchange) this.player.getExchangeAction().getValue()).getQuaItem(guid, false))
@@ -2111,7 +2111,7 @@ public class GameClient {
 
                                 if (!this.player.hasItemGuid(guid))
                                     return;
-                                Item obj = this.player.getItems().get(guid);
+                                FullItem obj = this.player.getItems().get(guid);
                                 if (obj == null)
                                     return;
 
@@ -2138,7 +2138,7 @@ public class GameClient {
                                 if (!this.player.hasItemGuid(guid))
                                     return;
 
-                                Item obj = World.world.getGameObject(guid);
+                                FullItem obj = World.world.getGameObject(guid);
                                 if (obj == null)
                                     return;
                                 if (qua > ((PlayerExchange.NpcExchangePets) this.player.getExchangeAction().getValue()).getQuaItem(guid, false))
@@ -2182,7 +2182,7 @@ public class GameClient {
 
                                 if (!this.player.hasItemGuid(guid))
                                     return;
-                                Item obj = World.world.getGameObject(guid);
+                                FullItem obj = World.world.getGameObject(guid);
                                 if (obj == null)
                                     return;
 
@@ -2209,7 +2209,7 @@ public class GameClient {
                                 if (!this.player.hasItemGuid(guid))
                                     return;
 
-                                Item obj = World.world.getGameObject(guid);
+                                FullItem obj = World.world.getGameObject(guid);
                                 if (obj == null)
                                     return;
                                 if (qua > ((PlayerExchange.NpcRessurectPets) this.player.getExchangeAction().getValue()).getQuaItem(guid, false))
@@ -2316,7 +2316,7 @@ public class GameClient {
                             return;
                         }
 
-                        Item obj = World.world.getGameObject(itmID);//R?cup?re l'item
+                        FullItem obj = World.world.getGameObject(itmID);//R?cup?re l'item
                         if (obj == null || obj.isAttach()) return;
 
                         this.player.addKamas(taxe * -1);//Retire le montant de la taxe au this.playernnage
@@ -2336,7 +2336,7 @@ public class GameClient {
                         } else {
                             obj.setQuantity(obj.getQuantity() - rAmount);
                             SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(this.player, obj);
-                            Item newObj = obj.getClone(rAmount, true);
+                            FullItem newObj = obj.getClone(rAmount, true);
                             World.world.addGameObject(newObj);
                             obj = newObj;
                         }
@@ -2472,7 +2472,7 @@ public class GameClient {
                                 break;
 
                             case '-'://Retirer de la banque
-                                Item object = World.world.getGameObject(guid);
+                                FullItem object = World.world.getGameObject(guid);
                                 if(object != null) {
                                     if (object.getTxtStat().containsKey(Constant.STATS_OWNER_1)) {
                                         Player player = World.world.getPlayerByName(object.getTxtStat().get(Constant.STATS_OWNER_1));
@@ -2572,7 +2572,7 @@ public class GameClient {
 
                                     if (!this.player.hasItemGuid(guid))
                                         return;
-                                    Item obj = this.player.getItems().get(guid);
+                                    FullItem obj = this.player.getItems().get(guid);
                                     if (obj == null)
                                         return;
                                     if (qua > obj.getQuantity() - quaInExch)
@@ -2599,7 +2599,7 @@ public class GameClient {
                                 if (!this.player.hasItemGuid(guid))
                                     return;
 
-                                Item obj = this.player.getItems().get(guid);
+                                FullItem obj = this.player.getItems().get(guid);
                                 if (obj == null)
                                     return;
                                 if (qua > ((PlayerExchange) this.player.getExchangeAction().getValue()).getQuaItem(guid, this.player.getId()))
@@ -2764,7 +2764,7 @@ public class GameClient {
                         return;
                     }
 
-                    Item object = World.world.getGameObject(id);
+                    FullItem object = World.world.getGameObject(id);
                     Mount mount = World.world.getMountById(object.getStats().getEffect(995));
 
                     if(mount == null){
@@ -2980,7 +2980,7 @@ public class GameClient {
                 if (jobs == null || jobs.isEmpty())
                     return;
 
-                Item object = player.getObjetByPos(Constant.ITEM_POS_ARME);
+                FullItem object = player.getObjetByPos(Constant.ITEM_POS_ARME);
 
                 if (object == null) {
                     this.player.send("BN");
@@ -2991,7 +2991,7 @@ public class GameClient {
                 for (Job job : jobs) {
                     if (job.getSkills().isEmpty())
                         continue;
-                    if (!job.isValidTool(object.getTemplate().getId()))
+                    if (!job.isValidTool(object.template().getId()))
                         continue;
 
                     for (GameCase cell : this.player.getCurMap().getCases()) {
@@ -3062,13 +3062,13 @@ public class GameClient {
                 List<Job> jobs = this.player.getJobs();
                 if (jobs == null || jobs.isEmpty()) return;
 
-                Item object = this.player.getObjetByPos(Constant.ITEM_POS_ARME);
+                FullItem object = this.player.getObjetByPos(Constant.ITEM_POS_ARME);
                 if (object == null) return;
 
                 boolean ok = false;
 
                 for (Job job : jobs) {
-                    if (job.getSkills().isEmpty() || !job.isValidTool(object.getTemplate().getId())) continue;
+                    if (job.getSkills().isEmpty() || !job.isValidTool(object.template().getId())) continue;
 //                    for (GameCase cell : this.player.getCurMap().getCases()) {
 //                        if (cell.getObject() != null) {
 //                            if (cell.getObject().getTemplate() != null) {
@@ -3423,14 +3423,14 @@ public class GameClient {
                 break;
             case ExchangeAction.IN_MOUNTPARK:
                 player.send("EV");
-                ArrayList<Item> objects = new ArrayList<>();
-                for(Item object : player.getItems().values()) {
+                ArrayList<FullItem> objects = new ArrayList<>();
+                for(FullItem object : player.getItems().values()) {
                     Mount mount = World.world.getMountById(object.getStats().getEffect(995));
 
-                    if(mount == null && object.getTemplate().getType() == Constant.ITEM_TYPE_CERTIF_MONTURE)
+                    if(mount == null && object.template().getTypeID() == Constant.ITEM_TYPE_CERTIF_MONTURE)
                         objects.add(object);
                 }
-                for(Item object : objects)
+                for(FullItem object : objects)
                     player.removeItem(object.getGuid(), object.getQuantity(), true, true);
                 break;
 
@@ -5672,7 +5672,7 @@ public class GameClient {
                 qua = Integer.parseInt(infos[1]);
             } catch (Exception ignored) {}
 
-            Item obj = this.player.getItems().get(guid);
+            FullItem obj = this.player.getItems().get(guid);
             if (obj == null || !this.player.hasItemGuid(guid) || qua <= 0
                     || this.player.getFight() != null || this.player.isAway()) {
                 //SocketManager.GAME_SEND_DELETE_OBJECT_FAILED_PACKET(this);
@@ -5712,7 +5712,7 @@ public class GameClient {
         if (guid == -1 || qua <= 0 || !this.player.hasItemGuid(guid)
                 || this.player.getFight() != null || this.player.isAway())
             return;
-        Item obj = this.player.getItems().get(guid);
+        FullItem obj = this.player.getItems().get(guid);
 
         if(obj.isAttach()) return;
 
@@ -5740,15 +5740,15 @@ public class GameClient {
             SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(this.player, guid);
         } else {
             obj.setQuantity(obj.getQuantity() - qua);
-            Item obj2 = obj.getClone(qua, true);
+            FullItem obj2 = obj.getClone(qua, true);
             obj2.setPosition(Constant.ITEM_POS_NO_EQUIPED);
             this.player.getCurMap().getCase(cellPosition).tryDropItem(obj2);
             SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(this.player, obj);
         }
         if (Logging.USE_LOG)
-            Logging.getInstance().write("Object", "Dropping : " + this.player.getName() + " a jet? [" + obj.getTemplate().getId() + "@" + obj.getGuid() + ";" + qua + "]");
+            Logging.getInstance().write("Object", "Dropping : " + this.player.getName() + " a jet? [" + obj.template().getId() + "@" + obj.getGuid() + ";" + qua + "]");
         SocketManager.GAME_SEND_Ow_PACKET(this.player);
-        SocketManager.GAME_SEND_GDO_PACKET_TO_MAP(this.player.getCurMap(), '+', this.player.getCurMap().getCase(cellPosition).getId(), obj.getTemplate().getId(), 0);
+        SocketManager.GAME_SEND_GDO_PACKET_TO_MAP(this.player.getCurMap(), '+', this.player.getCurMap().getCase(cellPosition).getId(), obj.template().getId(), 0);
         SocketManager.GAME_SEND_STATS_PACKET(this.player);
     }
 
@@ -5760,7 +5760,7 @@ public class GameClient {
                 quantity = Integer.parseInt(infos[2]);
             } catch (Exception ignored) {}
 
-            Item object = this.player.getItems().get(id);
+            FullItem object = this.player.getItems().get(id);
             if (object == null || player.getExchangeAction() != null)
                 return;
             if (this.player.getFight() != null)
@@ -5776,7 +5776,7 @@ public class GameClient {
 
             /* Feed mount **/
             if ((position == Constant.ITEM_POS_DRAGODINDE) && (this.player.getMount() != null)) {
-                if (object.getTemplate().getType() == 41) {
+                if (object.template().getTypeID() == 41) {
                     if (object.getQuantity() > 0) {
                         if (quantity > object.getQuantity())
                             quantity = object.getQuantity();
@@ -5801,18 +5801,18 @@ public class GameClient {
             /* End feed mount **/
 
             /* Feed pet **/
-            if (position == Constant.ITEM_POS_FAMILIER && object.getTemplate().getType() != Constant.ITEM_TYPE_FAMILIER && this.player.getObjetByPos(position) != null) {
-                Item pets = this.player.getObjetByPos(position);
-                Pet p = World.world.getPets(pets.getTemplate().getId());
+            if (position == Constant.ITEM_POS_FAMILIER && object.template().getTypeID() != Constant.ITEM_TYPE_FAMILIER && this.player.getObjetByPos(position) != null) {
+                FullItem pets = this.player.getObjetByPos(position);
+                Pet p = World.world.getPets(pets.template().getId());
                 if (p == null)
                     return;
-                if (p.getEpo() == object.getTemplate().getId()) {
-                    PetEntry pet = World.world.getPetsEntry(pets.getGuid());
-                    if (pet != null && p.getEpo() == object.getTemplate().getId())
+                if (p.getEpo() == object.template().getId()) {
+                    PetEntry pet = World.world.getPetsEntry_legacy(pets.getGuid());
+                    if (pet != null && p.getEpo() == object.template().getId())
                         pet.giveEpo(this.player);
                     return;
                 }
-                if (object.getTemplate().getId() != 2239 && !p.canEat(object.getTemplate().getId(), object.getTemplate().getType(), -1)) {
+                if (object.template().getId() != 2239 && !p.canEat(object.template().getId(), object.template().getTypeID(), -1)) {
                     SocketManager.GAME_SEND_Im_PACKET(this.player, "153");
                     return;
                 }
@@ -5825,11 +5825,11 @@ public class GameClient {
                     // ok
                 }
 
-                PetEntry MyPets = World.world.getPetsEntry(pets.getGuid());
+                PetEntry MyPets = World.world.getPetsEntry_legacy(pets.getGuid());
                 if (MyPets == null)
                     return;
                 if (p.getType() == 2 || p.getType() == 3
-                        || object.getTemplate().getId() == 2239) {
+                        || object.template().getId() == 2239) {
                     if (object.getQuantity() - 1 > 0) {//Si il en reste
                         object.setQuantity(object.getQuantity() - 1);
                         SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(this.player, object);
@@ -5839,10 +5839,10 @@ public class GameClient {
                         SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(this.player, object.getGuid());
                     }
 
-                    if (object.getTemplate().getId() == 2239)
+                    if (object.template().getId() == 2239)
                         MyPets.restoreLife(this.player);
                     else
-                        MyPets.eat(this.player, min, max, p.statsIdByEat(object.getTemplate().getId(), object.getTemplate().getType(), -1), object);
+                        MyPets.eat(this.player, min, max, p.statsIdByEat(object.template().getId(), object.template().getTypeID(), -1), object);
 
                     SocketManager.GAME_SEND_UPDATE_OBJECT_DISPLAY_PACKET(this.player, pets);
                     SocketManager.GAME_SEND_Ow_PACKET(this.player);
@@ -5855,7 +5855,7 @@ public class GameClient {
                 return;
             /* End feed pet **/
             } else {
-                ItemTemplate template = object.getTemplate();
+                ItemTemplate template = object.template();
                 int set = template.getPanoId();
 
                 if (set >= 81 && set <= 92 && position != Constant.ITEM_POS_NO_EQUIPED) {
@@ -5883,25 +5883,25 @@ public class GameClient {
                     }
                     this.player.removeObjectClass(template.getId());
                 }
-                if (!Constant.isValidPlaceForItem(object.getTemplate(), position) && position != Constant.ITEM_POS_NO_EQUIPED && object.getTemplate().getType() != 113)
+                if (!Constant.isValidPlaceForItem(object.template(), position) && position != Constant.ITEM_POS_NO_EQUIPED && object.template().getTypeID() != 113)
                     return;
 
 
-                if (!object.getTemplate().getConditions().contains("PP") && !object.getTemplate().getConditions().equalsIgnoreCase("") && !World.world.getConditionManager().validConditions(this.player, object.getTemplate().getConditions())) {
+                if (!object.template().getConditions().contains("PP") && !object.template().getConditions().equalsIgnoreCase("") && !World.world.getConditionManager().validConditions(this.player, object.template().getConditions())) {
                     SocketManager.GAME_SEND_Im_PACKET(this.player, "119|44"); // si le this.player ne v?rifie pas les conditions diverses
                     return;
                 }
-                Item shield = null, weapon = null;
+                FullItem shield = null, weapon = null;
                 if ((position == Constant.ITEM_POS_BOUCLIER && (weapon = this.player.getObjetByPos(Constant.ITEM_POS_ARME)) != null)
                         || (position == Constant.ITEM_POS_ARME && (shield = this.player.getObjetByPos(Constant.ITEM_POS_BOUCLIER)) != null)) {
                     if (weapon != null) {
-                        if (weapon.getTemplate().isTwoHanded()) {
+                        if (weapon.template().isTwoHanded()) {
                             this.player.unequipedObjet(weapon);
                             SocketManager.GAME_SEND_Im_PACKET(this.player, "119|44"); // si le this.player ne v?rifie pas les conditions diverses
                             return;
                         }
                     } else {
-                        if (object.getTemplate().isTwoHanded()) {
+                        if (object.template().isTwoHanded()) {
                             if(shield != null)
                                 player.unequipedObjet(shield);
                             SocketManager.GAME_SEND_Im_PACKET(this.player, "119|44"); // si le this.player ne v?rifie pas les conditions diverses
@@ -5911,21 +5911,21 @@ public class GameClient {
 
                 }
 
-                if (object.getTemplate().getLevel() > this.player.getLevel()) {// si le this.player n'a pas le level
+                if (object.template().getLevel() > this.player.getLevel()) {// si le this.player n'a pas le level
                     SocketManager.GAME_SEND_OAEL_PACKET(this);
                     return;
                 }
 
                 //On ne peut ?quiper 2 items de panoplies identiques, ou 2 Dofus identiques
-                if (position != Constant.ITEM_POS_NO_EQUIPED && (object.getTemplate().getPanoId() != -1 || object.getTemplate().getType() == Constant.ITEM_TYPE_DOFUS) && this.player.hasEquiped(object.getTemplate().getId()))
+                if (position != Constant.ITEM_POS_NO_EQUIPED && (object.template().getPanoId() != -1 || object.template().getTypeID() == Constant.ITEM_TYPE_DOFUS) && this.player.hasEquiped(object.template().getId()))
                     return;
 
                 // FIN DES VERIFS
 
-                Item exObj = this.player.getObjetByPos2(position);//Objet a l'ancienne position
-                int objGUID = object.getTemplate().getId();
+                FullItem exObj = this.player.getObjetByPos2(position);//Objet a l'ancienne position
+                int objGUID = object.template().getId();
                 // CODE OBVI
-                if (object.getTemplate().getType() == 113) {
+                if (object.template().getTypeID() == 113) {
                     if (exObj == null) {// si on place l'obvi sur un emplacement vide
                         SocketManager.send(this.player, "Im1161");
                         return;
@@ -5935,7 +5935,7 @@ public class GameClient {
                         return;
                     }
                     exObj.setObvijevanPos(object.getObvijevanPos()); // L'objet qui ?tait en place a maintenant un obvi
-                    DatabaseManager.get(ObvijevanData.class).insert(new Pair<>(exObj.getGuid(), object.getTemplate().getId()));
+                    DatabaseManager.get(ObvijevanData.class).insert(new Pair<>(exObj.getGuid(), object.template().getId()));
                     this.player.removeItem(object.getGuid(), 1, false, false); // on enl?ve l'existance de l'obvi en lui-m?me
                     SocketManager.send(this.player, "OR" + object.getGuid()); // on le pr?cise au client.
                     DatabaseManager.get(ObjectData.class).delete(object);
@@ -5952,7 +5952,7 @@ public class GameClient {
                         if (object.getQuantity() - quantity > 0)//Si il en reste
                         {
                             int newItemQua = object.getQuantity() - quantity;
-                            Item newItem = object.getClone(newItemQua, true);
+                            FullItem newItem = object.getClone(newItemQua, true);
                             this.player.addItem(newItem, false, false);
                             World.world.addGameObject(newItem);
                             object.setQuantity(quantity);
@@ -5967,9 +5967,9 @@ public class GameClient {
 
                 if (exObj != null)//S'il y avait d?ja un objet sur cette place on d?s?quipe
                 {
-                    Item obj2;
-                    ItemTemplate exObjTpl = exObj.getTemplate();
-                    int idSetExObj = exObj.getTemplate().getPanoId();
+                    FullItem obj2;
+                    ItemTemplate exObjTpl = exObj.template();
+                    int idSetExObj = exObj.template().getPanoId();
                     if ((obj2 = this.player.getSimilarItem(exObj)) != null)//On le poss?de deja
                     {
                         obj2.setQuantity(obj2.getQuantity()
@@ -6001,10 +6001,10 @@ public class GameClient {
                         SocketManager.GAME_SEND_OT_PACKET(this, -1);
 
                     //Si objet de panoplie
-                    if (exObj.getTemplate().getPanoId() > 0)
-                        SocketManager.GAME_SEND_OS_PACKET(this.player, exObj.getTemplate().getPanoId());
+                    if (exObj.template().getPanoId() > 0)
+                        SocketManager.GAME_SEND_OS_PACKET(this.player, exObj.template().getPanoId());
                 } else {
-                    Item obj2;
+                    FullItem obj2;
                     //On a un objet similaire
                     if ((obj2 = this.player.getSimilarItem(object)) != null) {
                         if (quantity > object.getQuantity())
@@ -6037,7 +6037,7 @@ public class GameClient {
                                     quantity = object.getQuantity();
 
                                 if (object.getQuantity() - quantity > 0) {//Si il en reste
-                                    Item newItem = object.getClone(object.getQuantity()
+                                    FullItem newItem = object.getClone(object.getQuantity()
                                             - quantity, true);
                                     newItem.setPosition(oldPos);
 
@@ -6058,7 +6058,7 @@ public class GameClient {
 
                                 if (object.getQuantity() - quantity > 0) {//Si il en reste
                                     int newItemQua = object.getQuantity() - quantity;
-                                    Item newItem = object.getClone(newItemQua, true);
+                                    FullItem newItem = object.getClone(newItemQua, true);
                                     if (this.player.addItem(newItem, true, false))
                                         World.world.addGameObject(newItem);
                                     object.setQuantity(quantity);
@@ -6069,7 +6069,7 @@ public class GameClient {
                     }
                 }
                 if (position == Constant.ITEM_POS_ARME) {
-                    switch (object.getTemplate().getId())
+                    switch (object.template().getId())
                     //Incarnation
                     {
                         case 9544: // Tourmenteur t?nebres
@@ -6101,11 +6101,11 @@ public class GameClient {
                             break;
                     }
                 } else {// Tourmenteur ; on d?morphe
-                    if (Constant.isIncarnationWeapon(object.getTemplate().getId()))
+                    if (Constant.isIncarnationWeapon(object.template().getId()))
                         this.player.unsetFullMorph();
                 }
 
-                if (object.getTemplate().getId() == 2157) {
+                if (object.template().getId() == 2157) {
                     if (position == Constant.ITEM_POS_COIFFE) {
                         this.player.setGfxId((this.player.getSexe() == 1) ? 8009 : 8006);
                         SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(this.player.getCurMap(), this.player.getId());
@@ -6118,7 +6118,7 @@ public class GameClient {
                         SocketManager.GAME_SEND_MESSAGE(this.player, this.player.getLang().trans("game.gameclient.movementobject.mercenaire.disable"));
                     }
                 }
-                if (object.getTemplate().getId() != 2157 && this.player.isMorphMercenaire() && position == Constant.ITEM_POS_COIFFE) {
+                if (object.template().getId() != 2157 && this.player.isMorphMercenaire() && position == Constant.ITEM_POS_COIFFE) {
                     this.player.setGfxId(this.player.getClasse() * 10 + this.player.getSexe());
                     SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(this.player.getCurMap(), this.player.getId());
                     SocketManager.GAME_SEND_ADD_PLAYER_TO_MAP(this.player.getCurMap(), this.player);
@@ -6166,18 +6166,18 @@ public class GameClient {
                 if (position == Constant.ITEM_POS_NO_EQUIPED && this.player.getObjetByPos(Constant.ITEM_POS_ARME) == null)
                     SocketManager.GAME_SEND_OT_PACKET(this, -1);
                 if (position == Constant.ITEM_POS_ARME && this.player.getObjetByPos(Constant.ITEM_POS_ARME) != null)
-                    this.player.getMetiers().entrySet().stream().filter(e -> e.getValue().getTemplate().isValidTool(this.player.getObjetByPos(Constant.ITEM_POS_ARME).getTemplate().getId())).forEach(e -> SocketManager.GAME_SEND_OT_PACKET(this, e.getValue().getTemplate().getId()));
+                    this.player.getMetiers().entrySet().stream().filter(e -> e.getValue().getTemplate().isValidTool(this.player.getObjetByPos(Constant.ITEM_POS_ARME).template().getId())).forEach(e -> SocketManager.GAME_SEND_OT_PACKET(this, e.getValue().getTemplate().getId()));
 
 
                 //Si objet de panoplie
-                if (object.getTemplate().getPanoId() > 0)
-                    SocketManager.GAME_SEND_OS_PACKET(this.player, object.getTemplate().getPanoId());
+                if (object.template().getPanoId() > 0)
+                    SocketManager.GAME_SEND_OS_PACKET(this.player, object.template().getPanoId());
                 if (this.player.getFight() != null)
                     SocketManager.GAME_SEND_ON_EQUIP_ITEM_FIGHT(this.player, this.player.getFight().getFighterByPerso(this.player), this.player.getFight());
             }
 
             // Start craft secure show/hide
-            if (position == Constant.ITEM_POS_ARME || (position == Constant.ITEM_POS_NO_EQUIPED && object.getTemplate().getPACost() > 0)) {
+            if (position == Constant.ITEM_POS_ARME || (position == Constant.ITEM_POS_NO_EQUIPED && object.template().getPACost() > 0)) {
                 this.player.refreshCraftSecure(true);
             }
             // End craft secure show/hide
@@ -6250,21 +6250,21 @@ public class GameClient {
             return;
         if (target != null && target.isAway())
             return;
-        Item obj = this.player.getItems().get(guid);
+        FullItem obj = this.player.getItems().get(guid);
         if (obj == null)
             return;
-        ItemTemplate T = obj.getTemplate();
-        if (T.getLevel() > this.player.getLevel() || (!obj.getTemplate().getConditions().equalsIgnoreCase("") && !World.world.getConditionManager().validConditions(this.player, obj.getTemplate().getConditions()))) {
+        ItemTemplate T = obj.template();
+        if (T.getLevel() > this.player.getLevel() || (!obj.template().getConditions().equalsIgnoreCase("") && !World.world.getConditionManager().validConditions(this.player, obj.template().getConditions()))) {
             SocketManager.GAME_SEND_Im_PACKET(this.player, "119|43");
             return;
         }
         T.applyAction(this.player, target, guid, cellID, quantity);
-        if (T.getType() == Constant.ITEM_TYPE_PAIN || T.getType() == Constant.ITEM_TYPE_VIANDE_COMESTIBLE) {
+        if (T.getTypeID() == Constant.ITEM_TYPE_PAIN || T.getTypeID() == Constant.ITEM_TYPE_VIANDE_COMESTIBLE) {
             if (target != null)
                 SocketManager.GAME_SEND_eUK_PACKET_TO_MAP(target.getCurMap(), target.getId(), 17);
             else
                 SocketManager.GAME_SEND_eUK_PACKET_TO_MAP(this.player.getCurMap(), this.player.getId(), 17);
-        } else if (T.getType() == Constant.ITEM_TYPE_BIERE) {
+        } else if (T.getTypeID() == Constant.ITEM_TYPE_BIERE) {
             if (target != null)
                 SocketManager.GAME_SEND_eUK_PACKET_TO_MAP(target.getCurMap(), target.getId(), 18);
             else
@@ -6284,12 +6284,12 @@ public class GameClient {
         }
         if ((guid == -1) || (!this.player.hasItemGuid(guid)))
             return;
-        Item obj = this.player.getItems().get(guid);
+        FullItem obj = this.player.getItems().get(guid);
         int idOBVI = DatabaseManager.get(ObvijevanData.class).load(obj.getGuid()).getFirst();
 
         if (idOBVI == -1) {
             DatabaseManager.get(ObvijevanData.class).delete(new Pair<>(obj.getGuid(), obj.getGuid()));
-            switch (obj.getTemplate().getType()) {
+            switch (obj.template().getTypeID()) {
                 case 1:
                     idOBVI = 9255;
                     break;
@@ -6308,8 +6308,8 @@ public class GameClient {
             }
         }
 
-        ItemTemplate t = World.world.getObjTemplate(idOBVI);
-        Item obV = t.createNewItem(1, true);
+        ItemTemplate t = World.world.getItemTemplate(idOBVI);
+        FullItem obV = t.createNewItem(1, true);
         String obviStats = obj.getObvijevanStatsOnly();
         if (obviStats.equals("")) {
             SocketManager.GAME_SEND_MESSAGE(this.player, "Erreur d'obvijevan numero: 3. Merci de nous le signaler si le probleme est grave.", "000000");
@@ -6340,8 +6340,8 @@ public class GameClient {
 
         if ((guid == -1) || (!this.player.hasItemGuid(guid)))
             return;
-        Item obj = this.player.getItems().get(guid);
-        Item objVictime = World.world.getGameObject(victime);
+        FullItem obj = this.player.getItems().get(guid);
+        FullItem objVictime = World.world.getGameObject(victime);
         obj.obvijevanNourir(objVictime);
 
         int qua = objVictime.getQuantity();
@@ -6370,7 +6370,7 @@ public class GameClient {
         }
         if ((guid == -1) || (!this.player.hasItemGuid(guid)))
             return;
-        Item obj = this.player.getItems().get(guid);
+        FullItem obj = this.player.getItems().get(guid);
         if ((val >= 21) || (val <= 0))
             return;
 
@@ -6816,8 +6816,8 @@ public class GameClient {
         }
 
         int item = MP.getCellAndObject().get(cell);
-        ItemTemplate t = World.world.getObjTemplate(item);
-        Item obj = t.createNewItem(1, false); // creation de l'item au stats incorrecte
+        ItemTemplate t = World.world.getItemTemplate(item);
+        FullItem obj = t.createNewItem(1, false); // creation de l'item au stats incorrecte
 
         int statNew = 0;// on vas chercher la valeur de la resistance de l'item
         for (Map.Entry<Integer, Map<Integer, Integer>> entry : MP.getObjDurab().entrySet()) {
@@ -7109,7 +7109,7 @@ public class GameClient {
             if (SM.getTemplate().getId() != 36)
                 return false;
             int dis = PathFinding.getDistanceBetween(this.player.getCurMap(), Integer.parseInt(packet.split(";")[0]), this.player.getCurCell().getId());
-            int dist = JobConstant.getDistCanne(this.player.getObjetByPos(Constant.ITEM_POS_ARME).getTemplate().getId());
+            int dist = JobConstant.getDistCanne(this.player.getObjetByPos(Constant.ITEM_POS_ARME).template().getId());
             if (dis <= dist)
                 return true;
         } catch (Exception e) {

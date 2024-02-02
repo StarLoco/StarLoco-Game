@@ -8,7 +8,7 @@ import org.starloco.locos.database.data.login.PlayerData;
 import org.starloco.locos.entity.monster.Monster;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.Constant;
-import org.starloco.locos.item.Item;
+import org.starloco.locos.item.FullItem;
 import org.starloco.locos.item.entity.SoulStone;
 import org.starloco.locos.util.Pair;
 
@@ -48,7 +48,7 @@ public class BigStore {
     private static final Comparator<BigStoreListing> priceASC = (o1, o2) -> o1.getPrice() - o2.getPrice();
     private static final DecimalFormat pattern = new DecimalFormat("0.0");
     // defaultCategoryFilter returns true if categoryId == template.type
-    private static final CategoryFilter defaultCategoryFilter = (c, e) -> c == e.getGameObject().getTemplate().getType();
+    private static final CategoryFilter defaultCategoryFilter = (c, e) -> c == e.getGameObject().template().getTypeID();
 
     private final int hdvId;
     private final float taxe;
@@ -157,14 +157,14 @@ public class BigStore {
             case 125:
                 return (BigStoreListing e) -> SoulStone.safeCast(e.getGameObject()).map(SoulStone::getMonsterIDs).orElse(Stream.empty());
             default:
-                return (BigStoreListing e) -> Stream.of(e.getGameObject().getTemplate().getId());
+                return (BigStoreListing e) -> Stream.of(e.getGameObject().template().getId());
         }
 
     }
 
     public boolean addEntry(BigStoreListing toAdd) {
         toAdd.setHdvId(this.getHdvId());
-        Item obj = Objects.requireNonNull(toAdd.getGameObject());
+        FullItem obj = Objects.requireNonNull(toAdd.getGameObject());
         synchronized (listingsLock) {
             // If it doesn't have a guid yet, save it and get one
             if(toAdd.getId() == -1) {
@@ -175,7 +175,7 @@ public class BigStore {
                 }
             }
 
-            Pair<Integer, String> key = new Pair<>(obj.getTemplate().getId(), obj.encodeStats());
+            Pair<Integer, String> key = new Pair<>(obj.template().getId(), obj.encodeStats());
             int lineId = statHashToLineID.computeIfAbsent(key, (ignored) -> {
                 int id = nextLineID.getAndIncrement();
                 lineIDToItemDesc.put(id, key);
@@ -203,7 +203,7 @@ public class BigStore {
             if(!listing.isPresent() || !this.listings.contains(listing.get())) return false;
             if(!deleteListing(listing.get())) return false;
 
-            Item obj = listing.get().getGameObject();
+            FullItem obj = listing.get().getGameObject();
             if (account.getCurrentPlayer().addObjetSimiler(obj, true, -1)) {
                 World.world.removeGameObject(obj.getGuid());
             } else {
@@ -240,10 +240,10 @@ public class BigStore {
                     Optional<Account> prevOwner = Optional.ofNullable(World.world.ensureAccountLoaded(e.getOwner()));
                     prevOwner.ifPresent(p -> p.setBankKamas(p.getBankKamas() + price));
 
-                    Item obj = e.getGameObject();
+                    FullItem obj = e.getGameObject();
                     newOwner.addItem(obj, true, false);
                     obj.setPosition(Constant.ITEM_POS_NO_EQUIPED);
-                    obj.getTemplate().newSold(e.getLotSize().amount, price);
+                    obj.template().newSold(e.getLotSize().amount, price);
 
                     deleteListing(e);
                     return e;

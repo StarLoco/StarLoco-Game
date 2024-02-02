@@ -8,7 +8,7 @@ import org.starloco.locos.database.data.FunctionDAO;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.hdv.BigStore;
 import org.starloco.locos.hdv.BigStoreListing;
-import org.starloco.locos.item.Item;
+import org.starloco.locos.item.FullItem;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -26,7 +26,7 @@ public class BigStoreListingData extends FunctionDAO<BigStoreListing> {
                 while (result.next()) {
                     BigStore bigStore = World.world.getHdv(result.getInt("map"));
                     if (bigStore != null) {
-                        Item object = World.world.getGameObject(result.getInt("itemID"));
+                        FullItem object = World.world.getGameObject(result.getInt("itemID"));
                         if (object == null) {
                             this.delete(new BigStoreListing(result.getInt("id"), 0, (byte) 0, 0, null));
                             continue;
@@ -71,7 +71,7 @@ public class BigStoreListingData extends FunctionDAO<BigStoreListing> {
                     }
                 }
             }
-            DatabaseManager.get(ObjectTemplateData.class).update(entity.getGameObject().getTemplate());
+            DatabaseManager.get(ObjectTemplateData.class).update(entity.getGameObject().template());
         } catch (SQLException e) {
             ok = false;
             super.sendError(e);
@@ -89,9 +89,9 @@ public class BigStoreListingData extends FunctionDAO<BigStoreListing> {
             p.setInt(1, entity.getId());
             execute(p);
 
-            Item object = entity.getGameObject();
+            FullItem object = entity.getGameObject();
             if (object != null) {
-                ((ObjectTemplateData) DatabaseManager.get(ObjectTemplateData.class)).update(object.getTemplate());
+                ((ObjectTemplateData) DatabaseManager.get(ObjectTemplateData.class)).update(object.template());
             }
         } catch (SQLException e) {
             super.sendError(e);

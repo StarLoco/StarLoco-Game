@@ -9,7 +9,7 @@ import org.starloco.locos.game.world.World;
 import org.starloco.locos.game.world.World.Couple;
 import org.starloco.locos.job.JobStat;
 import org.starloco.locos.kernel.Constant;
-import org.starloco.locos.item.Item;
+import org.starloco.locos.item.FullItem;
 import org.starloco.locos.other.Action;
 import org.starloco.locos.quest.QuestProgress;
 
@@ -92,7 +92,7 @@ public class ConditionParser {
             jep.addVariable("MA", perso.getAlignMap());//Pandala
             if (req.contains("PSB"))
                 jep.addVariable("PSB", perso.getAccount().getPoints());//Points Boutique
-            jep.addVariable("CF", (perso.getObjetByPos(Constant.ITEM_POS_PNJ_SUIVEUR) == null ? -1 : perso.getObjetByPos(Constant.ITEM_POS_PNJ_SUIVEUR).getTemplate().getId()));//Personnage suiveur
+            jep.addVariable("CF", (perso.getObjetByPos(Constant.ITEM_POS_PNJ_SUIVEUR) == null ? -1 : perso.getObjetByPos(Constant.ITEM_POS_PNJ_SUIVEUR).template().getId()));//Personnage suiveur
             //Autre
             jep.addVariable("Ps", perso.getAlignment());//Alignement
             jep.addVariable("Pa", perso.getALvl());
@@ -544,17 +544,17 @@ public class ConditionParser {
         return copyCond;
     }
 
-    public boolean stackIfSimilar(Item item, Item newItem, boolean stack) {
+    public boolean stackIfSimilar(FullItem item, FullItem newItem, boolean stack) {
         if(item.getTxtStat().get(Constant.STATS_MIMIBIOTE) != null || newItem.getTxtStat().get(Constant.STATS_MIMIBIOTE) != null)
             return false;
 
-        switch (item.getTemplate().getId()) {
+        switch (item.template().getId()) {
             case 10275:
-                if (item.getTemplate().getId() == newItem.getTemplate().getId())
+                if (item.template().getId() == newItem.template().getId())
                     return true;
                 break;
             case 8378:
-                if (item.getTemplate().getId() == newItem.getTemplate().getId())
+                if (item.template().getId() == newItem.template().getId())
                     return false;
                 break;
         }
@@ -572,15 +572,15 @@ public class ConditionParser {
         }
 
 
-        return item.getTemplate().getId() == newItem.getTemplate().getId() && stack && item.isSameStats(newItem) && !Constant.isIncarnationWeapon(newItem.getTemplate().getId())
-                && newItem.getTemplate().getType() != Constant.ITEM_TYPE_CERTIFICAT_CHANIL
-                && newItem.getTemplate().getType() != Constant.ITEM_TYPE_PIERRE_AME_PLEINE
-                && newItem.getTemplate().getType() != Constant.ITEM_TYPE_OBJET_ELEVAGE
-                && newItem.getTemplate().getType() != Constant.ITEM_TYPE_CERTIF_MONTURE
-                && newItem.getTemplate().getType() != Constant.ITEM_TYPE_OBJET_VIVANT
-                && newItem.getTemplate().getType() != Constant.ITEM_TYPE_FAMILIER
-                && newItem.getTemplate().getType() != Constant.ITEM_TYPE_FANTOME_FAMILIER
-                && (newItem.getTemplate().getType() != Constant.ITEM_TYPE_QUETES || Constant.isFlacGelee(item.getTemplate().getId()) || Constant.isDoplon(item.getTemplate().getId()))
+        return item.template().getId() == newItem.template().getId() && stack && item.isSameStats(newItem) && !Constant.isIncarnationWeapon(newItem.template().getId())
+                && newItem.template().getTypeID() != Constant.ITEM_TYPE_CERTIFICAT_CHANIL
+                && newItem.template().getTypeID() != Constant.ITEM_TYPE_PIERRE_AME_PLEINE
+                && newItem.template().getTypeID() != Constant.ITEM_TYPE_OBJET_ELEVAGE
+                && newItem.template().getTypeID() != Constant.ITEM_TYPE_CERTIF_MONTURE
+                && newItem.template().getTypeID() != Constant.ITEM_TYPE_OBJET_VIVANT
+                && newItem.template().getTypeID() != Constant.ITEM_TYPE_FAMILIER
+                && newItem.template().getTypeID() != Constant.ITEM_TYPE_FANTOME_FAMILIER
+                && (newItem.template().getTypeID() != Constant.ITEM_TYPE_QUETES || Constant.isFlacGelee(item.template().getId()) || Constant.isDoplon(item.template().getId()))
                 && item.getPosition() == Constant.ITEM_POS_NO_EQUIPED;
     }
 }

@@ -32,7 +32,7 @@ public class DropData extends FunctionDAO<World.Drop> {
                         action = action.split(":")[0];
                     }
 
-                    if (World.world.getObjTemplate(result.getInt("objectId")) != null && MT != null) {
+                    if (World.world.getItemTemplate(result.getInt("objectId")) != null && MT != null) {
                         MT.addDrop(new World.Drop(result.getInt("objectId"), percents, result.getInt("ceil"), Integer.parseInt(action), result.getInt("level"), condition));
                     } else {
                         if (MT == null && result.getInt("monsterId") == 0) {
