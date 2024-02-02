@@ -1,7 +1,7 @@
 package org.starloco.locos.fight.spells;
 
 import org.starloco.locos.area.map.GameCase;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.player.Player;
 import org.starloco.locos.common.Formulas;
 import org.starloco.locos.common.PathFinding;
 import org.starloco.locos.common.SocketManager;

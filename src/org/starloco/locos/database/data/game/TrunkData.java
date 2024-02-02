@@ -4,7 +4,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.lang.NotImplementedException;
 import org.starloco.locos.entity.map.House;
 import org.starloco.locos.entity.map.Trunk;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.player.Player;
 import org.starloco.locos.database.data.FunctionDAO;
 import org.starloco.locos.game.world.World;
 

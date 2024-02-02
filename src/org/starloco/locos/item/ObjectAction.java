@@ -1,11 +1,11 @@
-package org.starloco.locos.object;
+package org.starloco.locos.item;
 
 import org.starloco.locos.area.Area;
 import org.starloco.locos.area.SubArea;
 import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.entity.map.House;
 import org.starloco.locos.entity.map.MountPark;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.player.Player;
 import org.starloco.locos.common.Formulas;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.database.DatabaseManager;
@@ -25,8 +25,8 @@ import org.starloco.locos.guild.Guild;
 import org.starloco.locos.job.JobStat;
 import org.starloco.locos.kernel.Config;
 import org.starloco.locos.kernel.Constant;
-import org.starloco.locos.object.entity.Fragment;
-import org.starloco.locos.object.entity.SoulStone;
+import org.starloco.locos.item.entity.Fragment;
+import org.starloco.locos.item.entity.SoulStone;
 import org.starloco.locos.other.Action;
 
 import java.util.ArrayList;
@@ -50,7 +50,7 @@ public class ObjectAction {
     }
 
     public void apply(Player player0, Player target, int objet, int cellid) {
-        GameObject object = World.world.getGameObject(objet);
+        Item object = World.world.getGameObject(objet);
 
         if (object == null) {
             SocketManager.GAME_SEND_MESSAGE(player0, "Error object null. Merci de prévenir un administrateur est d'indiquer le message.");
@@ -301,7 +301,7 @@ public class ObjectAction {
                             return;
                         }
 
-                        GameObject obj = World.world.getGameObject(objet);
+                        Item obj = World.world.getGameObject(objet);
 
                         if(obj != null) {
                             int spell = obj.getStats().get(Constant.STATS_FORGET_ONE_LEVEL_SPELL);
@@ -366,7 +366,7 @@ public class ObjectAction {
                         obj = World.world.getGameObject(objet);
                         if (obj == null)
                             return;
-                        GameObject object0 = player.getObjetByPos(Constant.ITEM_POS_FAMILIER);
+                        Item object0 = player.getObjetByPos(Constant.ITEM_POS_FAMILIER);
                         if (object0 == null)
                             return;
                         PetEntry pets = World.world.getPetsEntry(object0.getGuid());
@@ -734,7 +734,7 @@ public class ObjectAction {
                         break;
 
                     case 34://Fm cac
-                        GameObject gameObject = player.getObjetByPos(Constant.ITEM_POS_ARME);
+                        Item gameObject = player.getObjetByPos(Constant.ITEM_POS_ARME);
 
                         if(gameObject == null) {
                             player.sendMessage(player.getLang().trans("objet.objectaction.fmcac.noequip"));
@@ -798,13 +798,13 @@ public class ObjectAction {
                     case 36://Coffre
                         if (player0.getFight() != null || player0.getLevel() == 1) return;
                         int tour = 0;
-                        List<ObjectTemplate> objects = new ArrayList<>();
+                        List<ItemTemplate> objects = new ArrayList<>();
                         int nbrMaxItem = 0;
                         for (String i : arg.split(";")) {
                             tour ++;
                             switch (tour){
                                 case 1:
-                                    List<ObjectTemplate> templates = new ArrayList<>();
+                                    List<ItemTemplate> templates = new ArrayList<>();
                                     final int maxLvl = player.getLevel() > 150 ? 150 : player.getLevel();
                                     final int minLvl = player.getLevel() > 150 ? 120 : (player.getLevel()-30 <= 0) ? 1 : player.getLevel()-30;
 
@@ -826,7 +826,7 @@ public class ObjectAction {
                             }
                         }
 
-                        for (ObjectTemplate template : objects) {
+                        for (ItemTemplate template : objects) {
                             if (nbrMaxItem > 0){
                                 obj = template.createNewItem(1, true);
                                 nbrMaxItem--;
@@ -842,8 +842,8 @@ public class ObjectAction {
                         break;
                     case 37: // Coffre divers
                         if (player0.getFight() != null) return;
-                        ObjectTemplate template = null;
-                        List<ObjectTemplate> templates = new ArrayList<>();
+                        ItemTemplate template = null;
+                        List<ItemTemplate> templates = new ArrayList<>();
                         boolean max = false;
                         switch (Integer.parseInt(arg)){
                             case 2: //Sort
@@ -925,24 +925,24 @@ public class ObjectAction {
         }
     }
 
-    private boolean haveEffect(int id, GameObject gameObject, Player player) {
+    private boolean haveEffect(int id, Item item, Player player) {
         if (player.getFight() != null) return true;
         switch (id) {
             case 8378://Fragment magique.
-                for (World.Couple<Integer, Integer> couple : ((Fragment) gameObject).getRunes()) {
-                    ObjectTemplate objectTemplate = World.world.getObjTemplate(couple.first);
+                for (World.Couple<Integer, Integer> couple : ((Fragment) item).getRunes()) {
+                    ItemTemplate itemTemplate = World.world.getObjTemplate(couple.first);
 
-                    if (objectTemplate == null)
+                    if (itemTemplate == null)
                         continue;
 
-                    GameObject newGameObject = objectTemplate.createNewItem(couple.second, true);
+                    Item newItem = itemTemplate.createNewItem(couple.second, true);
 
-                    if (newGameObject == null)
+                    if (newItem == null)
                         continue;
 
-                    if (!player.addObjetSimiler(newGameObject, true, -1)) {
-                        World.world.addGameObject(newGameObject);
-                        player.addItem(newGameObject, true);
+                    if (!player.addObjetSimiler(newItem, true, -1)) {
+                        World.world.addGameObject(newItem);
+                        player.addItem(newItem, true);
                     }
                 }
                 send = true;

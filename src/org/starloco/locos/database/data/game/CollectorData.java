@@ -3,7 +3,7 @@ package org.starloco.locos.database.data.game;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.lang.NotImplementedException;
 import org.starloco.locos.area.map.GameMap;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.player.Player;
 import org.starloco.locos.database.data.FunctionDAO;
 import org.starloco.locos.entity.Collector;
 import org.starloco.locos.game.world.World;

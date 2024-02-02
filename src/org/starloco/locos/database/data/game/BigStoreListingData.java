@@ -8,7 +8,7 @@ import org.starloco.locos.database.data.FunctionDAO;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.hdv.BigStore;
 import org.starloco.locos.hdv.BigStoreListing;
-import org.starloco.locos.object.GameObject;
+import org.starloco.locos.item.Item;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -26,7 +26,7 @@ public class BigStoreListingData extends FunctionDAO<BigStoreListing> {
                 while (result.next()) {
                     BigStore bigStore = World.world.getHdv(result.getInt("map"));
                     if (bigStore != null) {
-                        GameObject object = World.world.getGameObject(result.getInt("itemID"));
+                        Item object = World.world.getGameObject(result.getInt("itemID"));
                         if (object == null) {
                             this.delete(new BigStoreListing(result.getInt("id"), 0, (byte) 0, 0, null));
                             continue;
@@ -89,7 +89,7 @@ public class BigStoreListingData extends FunctionDAO<BigStoreListing> {
             p.setInt(1, entity.getId());
             execute(p);
 
-            GameObject object = entity.getGameObject();
+            Item object = entity.getGameObject();
             if (object != null) {
                 ((ObjectTemplateData) DatabaseManager.get(ObjectTemplateData.class)).update(object.getTemplate());
             }

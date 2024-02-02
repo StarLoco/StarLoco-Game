@@ -1,7 +1,7 @@
 package org.starloco.locos.event.type;
 
 import org.starloco.locos.area.map.GameMap;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.player.Player;
 import org.starloco.locos.event.IEvent;
 
 /**

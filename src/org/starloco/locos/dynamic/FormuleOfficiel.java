@@ -1,6 +1,6 @@
 package org.starloco.locos.dynamic;
 
-import org.starloco.locos.client.Player;
+import org.starloco.locos.player.Player;
 import org.starloco.locos.entity.Collector;
 import org.starloco.locos.fight.CollectorFighter;
 import org.starloco.locos.fight.Fighter;

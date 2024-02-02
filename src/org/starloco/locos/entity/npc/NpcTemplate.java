@@ -3,12 +3,12 @@ package org.starloco.locos.entity.npc;
 import org.classdump.luna.Conversions;
 import org.classdump.luna.Table;
 import org.classdump.luna.impl.DefaultTable;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.player.Player;
 import org.starloco.locos.database.data.game.SaleOffer;
 import org.starloco.locos.database.data.game.SaleOffer.Currency;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.game.world.World.Couple;
-import org.starloco.locos.object.ObjectTemplate;
+import org.starloco.locos.item.ItemTemplate;
 import org.starloco.locos.script.DataScriptVM;
 import org.starloco.locos.script.ScriptVM;
 
@@ -123,7 +123,7 @@ public class NpcTemplate {
         return offers.stream().map(o -> {
             Table t = (Table) o;
             int itemID = rawInt(t,"item");
-            ObjectTemplate item = World.world.getObjTemplate(itemID);
+            ItemTemplate item = World.world.getObjTemplate(itemID);
             if(item==null) throw new IllegalArgumentException(String.format("unknown item template #%d", itemID));
 
             int price = rawOptionalInt(t, "price", item.getPrice());
@@ -209,7 +209,7 @@ public class NpcTemplate {
             if (!sales.equals("")) {
                 for (String obj : sales.split(",")) {
                     try {
-                        ObjectTemplate template = World.world.getObjTemplate(Integer.parseInt(obj));
+                        ItemTemplate template = World.world.getObjTemplate(Integer.parseInt(obj));
                         if (template != null)
                             this.sales.add(new SaleOffer(template, template.getPrice()));
                     } catch (NumberFormatException e) {
@@ -258,11 +258,11 @@ public class NpcTemplate {
             return path;
         }
 
-        public List<ObjectTemplate> getAllItem() {
+        public List<ItemTemplate> getAllItem() {
             return sales.stream().map(o -> o.itemTemplate).collect(Collectors.toList());
         }
 
-        public boolean addItemVendor(ObjectTemplate template) {
+        public boolean addItemVendor(ItemTemplate template) {
             if (sales.stream().anyMatch(o -> o.itemTemplate == template))
                 return false;
             sales.add(new SaleOffer(template));

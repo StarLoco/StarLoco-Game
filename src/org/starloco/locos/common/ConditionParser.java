@@ -3,13 +3,13 @@ package org.starloco.locos.common;
 import com.singularsys.jep.Jep;
 import com.singularsys.jep.JepException;
 import org.starloco.locos.area.map.GameMap;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.player.Player;
 import org.starloco.locos.fight.spells.SpellEffect;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.game.world.World.Couple;
 import org.starloco.locos.job.JobStat;
 import org.starloco.locos.kernel.Constant;
-import org.starloco.locos.object.GameObject;
+import org.starloco.locos.item.Item;
 import org.starloco.locos.other.Action;
 import org.starloco.locos.quest.QuestProgress;
 
@@ -544,7 +544,7 @@ public class ConditionParser {
         return copyCond;
     }
 
-    public boolean stackIfSimilar(GameObject item, GameObject newItem, boolean stack) {
+    public boolean stackIfSimilar(Item item, Item newItem, boolean stack) {
         if(item.getTxtStat().get(Constant.STATS_MIMIBIOTE) != null || newItem.getTxtStat().get(Constant.STATS_MIMIBIOTE) != null)
             return false;
 

@@ -3,19 +3,16 @@ package org.starloco.locos.area.map;
 import org.starloco.locos.area.Area;
 import org.starloco.locos.area.SubArea;
 import org.starloco.locos.anims.Animation;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.player.Player;
 import org.starloco.locos.common.CryptManager;
 import org.starloco.locos.entity.monster.MobGroupDef;
 import org.starloco.locos.entity.monster.MonsterGrade;
 import org.starloco.locos.fight.Fight;
 import org.starloco.locos.fight.Fighter;
 import org.starloco.locos.game.world.World;
-import org.starloco.locos.script.DataScriptVM;
 import org.starloco.locos.util.Pair;
 
 
-import javax.swing.text.html.Option;
-import javax.xml.crypto.Data;
 import java.util.*;
 import java.util.stream.Collectors;
 

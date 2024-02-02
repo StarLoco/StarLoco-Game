@@ -1,10 +1,11 @@
-package org.starloco.locos.client;
+package org.starloco.locos.player;
 
 import org.starloco.locos.area.Area;
 import org.starloco.locos.area.SubArea;
 import org.starloco.locos.area.map.Actor;
 import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.area.map.GameMap;
+import org.starloco.locos.client.Account;
 import org.starloco.locos.entity.map.House;
 import org.starloco.locos.entity.map.MountPark;
 import org.starloco.locos.entity.map.Trunk;
@@ -48,10 +49,10 @@ import org.starloco.locos.kernel.Constant;
 import org.starloco.locos.kernel.Main;
 import org.starloco.locos.kernel.Reboot;
 import org.starloco.locos.lang.LangEnum;
-import org.starloco.locos.object.GameObject;
-import org.starloco.locos.object.ItemHash;
-import org.starloco.locos.object.ObjectSet;
-import org.starloco.locos.object.ObjectTemplate;
+import org.starloco.locos.item.Item;
+import org.starloco.locos.item.ItemHash;
+import org.starloco.locos.item.ItemSet;
+import org.starloco.locos.item.ItemTemplate;
 import org.starloco.locos.other.Action;
 import org.starloco.locos.guild.Guild;
 import org.starloco.locos.quest.QuestProgress;
@@ -143,7 +144,7 @@ public class Player implements Scripted<SPlayer>, Actor {
     private Party party;
     private int duelId = -1;
     private Map<Integer, SpellEffect> buffs = new HashMap<>();
-    private final Map<Integer, GameObject> objects = new HashMap<>();
+    private final Map<Integer, Item> objects = new HashMap<>();
     private Pair<Integer,Integer> _savePos;
     private int _emoteActive = 0;
     private int savestat;
@@ -435,7 +436,7 @@ public class Player implements Scripted<SPlayer>, Actor {
                         continue;
                     }
 
-                    GameObject obj = World.world.getGameObject(guid);
+                    Item obj = World.world.getGameObject(guid);
                     if (obj == null)
                         continue;
 
@@ -496,7 +497,7 @@ public class Player implements Scripted<SPlayer>, Actor {
                 continue;
             }
 
-            GameObject obj = World.world.getGameObject(guid);
+            Item obj = World.world.getGameObject(guid);
             if (obj != null)
                 objects.put(obj.getGuid(), obj);
         }
@@ -736,7 +737,7 @@ public class Player implements Scripted<SPlayer>, Actor {
             this.deleteItem(guid);
         }
 
-        GameObject obj = World.world.getObjTemplate(objTemplate).createNewRoleplayBuff();
+        Item obj = World.world.getObjTemplate(objTemplate).createNewRoleplayBuff();
         this.addItem(obj, false, false);
         World.world.addGameObject(obj);
         SocketManager.GAME_SEND_ALTER_GM_PACKET(this.getCurMap(), this);
@@ -765,7 +766,7 @@ public class Player implements Scripted<SPlayer>, Actor {
                 break;
         }
 
-        GameObject obj = World.world.getObjTemplate(id).createNewBenediction(turn);
+        Item obj = World.world.getObjTemplate(id).createNewBenediction(turn);
         this.addItem(obj, false, false);
         World.world.addGameObject(obj);
         SocketManager.GAME_SEND_ALTER_GM_PACKET(this.getCurMap(), this);
@@ -793,7 +794,7 @@ public class Player implements Scripted<SPlayer>, Actor {
             this.deleteItem(guid);
         }
 
-        GameObject obj = World.world.getObjTemplate(objTemplate).createNewMalediction();
+        Item obj = World.world.getObjTemplate(objTemplate).createNewMalediction();
         this.addItem(obj, false, false);
         World.world.addGameObject(obj);
         if (this.getFight() != null) {
@@ -815,7 +816,7 @@ public class Player implements Scripted<SPlayer>, Actor {
             return;
         }
 
-        GameObject obj = World.world.getObjTemplate(id).createNewFollowPnj(1);
+        Item obj = World.world.getObjTemplate(id).createNewFollowPnj(1);
         if (obj != null)
             if (this.addItem(obj, false, false))
                 World.world.addGameObject(obj);
@@ -852,7 +853,7 @@ public class Player implements Scripted<SPlayer>, Actor {
                 break;
         }
 
-        GameObject obj = World.world.getObjTemplate(id).createNewCandy(turn);
+        Item obj = World.world.getObjTemplate(id).createNewCandy(turn);
         this.addItem(obj, false, false);
         World.world.addGameObject(obj);
         SocketManager.GAME_SEND_Ow_PACKET(this);
@@ -861,7 +862,7 @@ public class Player implements Scripted<SPlayer>, Actor {
     }
 
     public void calculTurnCandy() {
-        GameObject obj = getObjetByPos(Constant.ITEM_POS_BONBON);
+        Item obj = getObjetByPos(Constant.ITEM_POS_BONBON);
         if (obj != null) {
             obj.getStats().addOneStat(Constant.STATS_TURN, -1);
             if (obj.getStats().getEffect(Constant.STATS_TURN) <= 0) {
@@ -1832,7 +1833,7 @@ public class Player implements Scripted<SPlayer>, Actor {
             SocketManager.GAME_SEND_JX_PACKET(this, list);
             //Packet JO (Job Option)
             SocketManager.GAME_SEND_JO_PACKET(this, list);
-            GameObject obj = getObjetByPos(Constant.ITEM_POS_ARME);
+            Item obj = getObjetByPos(Constant.ITEM_POS_ARME);
             if (obj != null)
                 for (JobStat sm : list)
                     if (sm.getTemplate().isValidTool(obj.getTemplate().getId()))
@@ -1881,7 +1882,7 @@ public class Player implements Scripted<SPlayer>, Actor {
         //Actualisation dans la DB
         DatabaseManager.get(AccountData.class).updateLastConnection(getAccount());
         SocketManager.GAME_SEND_MESSAGE(this, Config.startMessage.isEmpty() ? this.getLang().trans("client.player.onjoingame.startmessage") : Config.startMessage);
-        for (GameObject object : this.objects.values()) {
+        for (Item object : this.objects.values()) {
             if (object.getTemplate().getType() == Constant.ITEM_TYPE_FAMILIER) {
                 PetEntry p = World.world.getPetsEntry(object.getGuid());
                 Pet pets = World.world.getPets(object.getTemplate().getId());
@@ -2052,7 +2053,7 @@ public class Player implements Scripted<SPlayer>, Actor {
     public String getGMStuffString() {
         StringBuilder str = new StringBuilder();
 
-        GameObject object = getObjetByPos(Constant.ITEM_POS_ARME);
+        Item object = getObjetByPos(Constant.ITEM_POS_ARME);
 
         if (object != null)
             str.append(Integer.toHexString(object.getAppearanceTemplateId()));
@@ -2215,20 +2216,20 @@ public class Player implements Scripted<SPlayer>, Actor {
         Stats stats = new Stats(false, null);
         ArrayList<Integer> itemSetApplied = new ArrayList<>();
         synchronized(objects) {
-            for (GameObject gameObject : new ArrayList<>(this.objects.values())) {
-                byte position = (byte) gameObject.getPosition();
+            for (Item item : new ArrayList<>(this.objects.values())) {
+                byte position = (byte) item.getPosition();
                 if (position != Constant.ITEM_POS_NO_EQUIPED) {
                     if (position >= 35 && position <= 48)
                         continue;
 
-                    stats = Stats.cumulStat(stats, gameObject.getStats());
-                    int id = gameObject.getTemplate().getPanoId();
+                    stats = Stats.cumulStat(stats, item.getStats());
+                    int id = item.getTemplate().getPanoId();
 
                     if (id > 0 && !itemSetApplied.contains(id)) {
                         itemSetApplied.add(id);
-                        ObjectSet objectSet = World.world.getItemSet(id);
-                        if (objectSet != null)
-                            stats = Stats.cumulStat(stats, objectSet.getBonusStatByItemNumb(this.getNumbEquipedItemOfPanoplie(id)));
+                        ItemSet itemSet = World.world.getItemSet(id);
+                        if (itemSet != null)
+                            stats = Stats.cumulStat(stats, itemSet.getBonusStatByItemNumb(this.getNumbEquipedItemOfPanoplie(id)));
                     }
                 }
             }
@@ -2325,7 +2326,7 @@ public class Player implements Scripted<SPlayer>, Actor {
     public int getPodUsed() {
         int pod = 0;
 
-        for (Entry<Integer, GameObject> entry : objects.entrySet()) {
+        for (Entry<Integer, Item> entry : objects.entrySet()) {
             if(entry.getValue() != null)
                 pod += entry.getValue().getTemplate().getPod() * entry.getValue().getQuantity();
         }
@@ -2514,8 +2515,8 @@ public class Player implements Scripted<SPlayer>, Actor {
         StringBuilder str = new StringBuilder();
         if (objects.isEmpty())
             return "";
-        for (Entry<Integer, GameObject> entry : objects.entrySet()) {
-            GameObject obj = entry.getValue();
+        for (Entry<Integer, Item> entry : objects.entrySet()) {
+            Item obj = entry.getValue();
             if (obj == null)
                 continue;
             str.append(obj.getGuid()).append("|");
@@ -2528,16 +2529,16 @@ public class Player implements Scripted<SPlayer>, Actor {
         this.addItem(World.world.getObjTemplate(templateId), quantity, useMax, display);
     }
 
-    public void addItem(ObjectTemplate template, int quantity, boolean useMax, boolean display) {
-        GameObject item = template.createNewItem(quantity, useMax);
+    public void addItem(ItemTemplate template, int quantity, boolean useMax, boolean display) {
+        Item item = template.createNewItem(quantity, useMax);
         if (this.addItem(item, true, display)) {
             World.world.addGameObject(item);
         }
     }
 
-    public boolean addItem(GameObject newItem, boolean stack, boolean display) {
+    public boolean addItem(Item newItem, boolean stack, boolean display) {
         synchronized (objects) {
-            for (GameObject item : objects.values()) {
+            for (Item item : objects.values()) {
                 if (World.world.getConditionManager().stackIfSimilar(item, newItem, stack)) {
                     item.setQuantity(item.getQuantity() + newItem.getQuantity());
                     if (isOnline) {
@@ -2555,7 +2556,7 @@ public class Player implements Scripted<SPlayer>, Actor {
         return true;
     }
 
-    public void addItem(GameObject item, boolean display) {
+    public void addItem(Item item, boolean display) {
         this.objects.put(item.getGuid(), item);
         if(isOnline) {
             SocketManager.GAME_SEND_OAKO_PACKET(this, item);
@@ -2565,11 +2566,11 @@ public class Player implements Scripted<SPlayer>, Actor {
         }
     }
 
-    public boolean addObjetSimiler(GameObject objet, boolean hasSimiler, int oldID) {
-        ObjectTemplate objModelo = objet.getTemplate();
+    public boolean addObjetSimiler(Item objet, boolean hasSimiler, int oldID) {
+        ItemTemplate objModelo = objet.getTemplate();
         if (hasSimiler) {
-            for (Entry<Integer, GameObject> entry : objects.entrySet()) {
-                GameObject obj = entry.getValue();
+            for (Entry<Integer, Item> entry : objects.entrySet()) {
+                Item obj = entry.getValue();
                 if (obj.getPosition() == -1 && obj.getGuid() != oldID
                         && obj.getTemplate().getId() == objModelo.getId()
                         && obj.getStats().isSameStats(objet.getStats())
@@ -2583,7 +2584,7 @@ public class Player implements Scripted<SPlayer>, Actor {
         return false;
     }
 
-    public Map<Integer, GameObject> getItems() {
+    public Map<Integer, Item> getItems() {
         return objects;
     }
 
@@ -2591,7 +2592,7 @@ public class Player implements Scripted<SPlayer>, Actor {
         StringBuilder str = new StringBuilder();
         if (objects.isEmpty())
             return "";
-        for (GameObject obj : objects.values()) {
+        for (Item obj : objects.values()) {
             str.append(obj.encodeItem());
         }
         return str.toString();
@@ -2630,7 +2631,7 @@ public class Player implements Scripted<SPlayer>, Actor {
         if (qua <= 0)
             return;
 
-        GameObject object = objects.get(guid);
+        Item object = objects.get(guid);
         if (object.getQuantity() < qua)//Si il a moins d'item que ce qu'on veut Del
             qua = object.getQuantity();
 
@@ -2661,7 +2662,7 @@ public class Player implements Scripted<SPlayer>, Actor {
 
     public void removeItem(int guid, int nombre, boolean send,
                            boolean deleteFromWorld) {
-        GameObject obj;
+        Item obj;
         synchronized(objects) {
             obj = objects.get(guid);
         }
@@ -2700,16 +2701,16 @@ public class Player implements Scripted<SPlayer>, Actor {
         World.world.removeGameObject(guid);
     }
 
-    public GameObject getObjetByPos(int pos) {
+    public Item getObjetByPos(int pos) {
         if (pos == Constant.ITEM_POS_NO_EQUIPED)
             return null;
         synchronized(objects) {
-            for (GameObject gameObject : this.objects.values()) {
-                if (gameObject.getPosition() == pos && pos == Constant.ITEM_POS_FAMILIER) {
-                    if (gameObject.getTxtStat().isEmpty()) return null;
-                    else if (World.world.getPetsEntry(gameObject.getGuid()) == null) return null;
+            for (Item item : this.objects.values()) {
+                if (item.getPosition() == pos && pos == Constant.ITEM_POS_FAMILIER) {
+                    if (item.getTxtStat().isEmpty()) return null;
+                    else if (World.world.getPetsEntry(item.getGuid()) == null) return null;
                 }
-                if (gameObject.getPosition() == pos) return gameObject;
+                if (item.getPosition() == pos) return item;
             }
         }
 
@@ -2717,12 +2718,12 @@ public class Player implements Scripted<SPlayer>, Actor {
     }
 
     //TODO: Delete s'te fonction.
-    public GameObject getObjetByPos2(int pos) {
+    public Item getObjetByPos2(int pos) {
         if (pos == Constant.ITEM_POS_NO_EQUIPED)
             return null;
 
-        for (Entry<Integer, GameObject> entry : objects.entrySet()) {
-            GameObject obj = entry.getValue();
+        for (Entry<Integer, Item> entry : objects.entrySet()) {
+            Item obj = entry.getValue();
 
             if (obj.getPosition() == pos)
                 return obj;
@@ -2857,24 +2858,24 @@ public class Player implements Scripted<SPlayer>, Actor {
         return true;
     }
 
-    public GameObject getSimilarItem(GameObject exGameObject) {
-        if (exGameObject.getTemplate().getId() == 8378)
+    public Item getSimilarItem(Item exItem) {
+        if (exItem.getTemplate().getId() == 8378)
             return null;
         synchronized(objects) {
-            for (GameObject gameObject : this.objects.values())
-                if (gameObject.getTemplate().getId() == exGameObject.getTemplate().getId()
-                        && World.world.getConditionManager().stackIfSimilar(gameObject, exGameObject, true)
-                        && gameObject.getStats().isSameStats(exGameObject.getStats()) && gameObject.getGuid() != exGameObject.getGuid()
-                        && !Constant.isIncarnationWeapon(exGameObject.getTemplate().getId())
-                        && exGameObject.getTemplate().getType() != Constant.ITEM_TYPE_CERTIFICAT_CHANIL
-                        && exGameObject.getTemplate().getType() != Constant.ITEM_TYPE_PIERRE_AME_PLEINE
-                        && gameObject.getTemplate().getType() != Constant.ITEM_TYPE_OBJET_ELEVAGE
-                        && gameObject.getTemplate().getType() != Constant.ITEM_TYPE_CERTIF_MONTURE
-                        && (exGameObject.getTemplate().getType() != Constant.ITEM_TYPE_QUETES || Constant.isFlacGelee(gameObject.getTemplate().getId()))
-                        && !Constant.isCertificatDopeuls(gameObject.getTemplate().getId()) &&
-                        gameObject.getTemplate().getType() != Constant.ITEM_TYPE_FAMILIER &&
-                        gameObject.getTemplate().getType() != Constant.ITEM_TYPE_OBJET_VIVANT && gameObject.getPosition() == Constant.ITEM_POS_NO_EQUIPED)
-                    return gameObject;
+            for (Item item : this.objects.values())
+                if (item.getTemplate().getId() == exItem.getTemplate().getId()
+                        && World.world.getConditionManager().stackIfSimilar(item, exItem, true)
+                        && item.getStats().isSameStats(exItem.getStats()) && item.getGuid() != exItem.getGuid()
+                        && !Constant.isIncarnationWeapon(exItem.getTemplate().getId())
+                        && exItem.getTemplate().getType() != Constant.ITEM_TYPE_CERTIFICAT_CHANIL
+                        && exItem.getTemplate().getType() != Constant.ITEM_TYPE_PIERRE_AME_PLEINE
+                        && item.getTemplate().getType() != Constant.ITEM_TYPE_OBJET_ELEVAGE
+                        && item.getTemplate().getType() != Constant.ITEM_TYPE_CERTIF_MONTURE
+                        && (exItem.getTemplate().getType() != Constant.ITEM_TYPE_QUETES || Constant.isFlacGelee(item.getTemplate().getId()))
+                        && !Constant.isCertificatDopeuls(item.getTemplate().getId()) &&
+                        item.getTemplate().getType() != Constant.ITEM_TYPE_FAMILIER &&
+                        item.getTemplate().getType() != Constant.ITEM_TYPE_OBJET_VIVANT && item.getPosition() == Constant.ITEM_POS_NO_EQUIPED)
+                    return item;
         }
 
         return null;
@@ -2920,7 +2921,7 @@ public class Player implements Scripted<SPlayer>, Actor {
             //Packet JO (Job Option)
             SocketManager.GAME_SEND_JO_PACKET(this, list);
 
-            GameObject obj = getObjetByPos(Constant.ITEM_POS_ARME);
+            Item obj = getObjetByPos(Constant.ITEM_POS_ARME);
             if (obj != null)
                 if (sm.getTemplate().isValidTool(obj.getTemplate().getId()))
                     SocketManager.GAME_SEND_OT_PACKET(getAccount().getGameClient(), m.getId());
@@ -2945,9 +2946,9 @@ public class Player implements Scripted<SPlayer>, Actor {
         return true;
     }
 
-    public void unequipedObjet(GameObject o) {
+    public void unequipedObjet(Item o) {
         o.setPosition(Constant.ITEM_POS_NO_EQUIPED);
-        ObjectTemplate oTpl = o.getTemplate();
+        ItemTemplate oTpl = o.getTemplate();
         int idSetExObj = oTpl.getPanoId();
         if ((idSetExObj >= 81 && idSetExObj <= 92)
                 || (idSetExObj >= 201 && idSetExObj <= 212)) {
@@ -2969,8 +2970,8 @@ public class Player implements Scripted<SPlayer>, Actor {
     public void verifEquiped() {
         if (this.getMorphMode())
             return;
-        GameObject arme = this.getObjetByPos(Constant.ITEM_POS_ARME);
-        GameObject bouclier = this.getObjetByPos(Constant.ITEM_POS_BOUCLIER);
+        Item arme = this.getObjetByPos(Constant.ITEM_POS_ARME);
+        Item bouclier = this.getObjetByPos(Constant.ITEM_POS_BOUCLIER);
         if (arme != null) {
             if (arme.getTemplate().isTwoHanded() && bouclier != null) {
                 this.unequipedObjet(arme);
@@ -2991,7 +2992,7 @@ public class Player implements Scripted<SPlayer>, Actor {
     }
 
     public boolean hasEquiped(int id) {
-        for (GameObject object : objects.values())
+        for (Item object : objects.values())
             if (object.getTemplate() != null && object.getTemplate().getId() == id && object.getPosition() != Constant.ITEM_POS_NO_EQUIPED)
                 return true;
         return false;
@@ -3033,7 +3034,7 @@ public class Player implements Scripted<SPlayer>, Actor {
     public int getNumbEquipedItemOfPanoplie(int panID) {
         int nb = 0;
 
-        for (Entry<Integer, GameObject> i : objects.entrySet()) {
+        for (Entry<Integer, Item> i : objects.entrySet()) {
             //On ignore les objets non �quip�s
             if (i.getValue().getPosition() == Constant.ITEM_POS_NO_EQUIPED)
                 continue;
@@ -3417,7 +3418,7 @@ public class Player implements Scripted<SPlayer>, Actor {
 
     public String parseBankPacket() {
         StringBuilder packet = new StringBuilder();
-        for (GameObject entry : getAccount().getBank())
+        for (Item entry : getAccount().getBank())
             packet.append("O").append(entry.encodeItem()).append(";");
         if (getBankKamas() != 0)
             packet.append("G").append(getBankKamas());
@@ -3438,7 +3439,7 @@ public class Player implements Scripted<SPlayer>, Actor {
     public void addInBank(int guid, int qua, boolean outside) {
         if (qua <= 0)
             return;
-        GameObject PersoObj = World.world.getGameObject(guid);
+        Item PersoObj = World.world.getGameObject(guid);
 
         if (!outside && this.objects == null) return;
 
@@ -3449,7 +3450,7 @@ public class Player implements Scripted<SPlayer>, Actor {
             return;
 
         Account account = getAccount();
-        GameObject BankObj = getSimilarBankItem(PersoObj);
+        Item BankObj = getSimilarBankItem(PersoObj);
         int newQua = PersoObj.getQuantity() - qua;
         if (BankObj == null) // Ajout d'un nouvel objet dans la banque
         {
@@ -3511,26 +3512,26 @@ public class Player implements Scripted<SPlayer>, Actor {
         DatabaseManager.get(BankData.class).update(getAccount());
     }
 
-    private GameObject getSimilarBankItem(GameObject exGameObject) {
+    private Item getSimilarBankItem(Item exItem) {
         Account account = getAccount();
         if(account.getBank() != null)
-            for (GameObject gameObject : account.getBank())
-                if (gameObject != null && World.world.getConditionManager().stackIfSimilar(gameObject, exGameObject, true))
-                    return gameObject;
+            for (Item item : account.getBank())
+                if (item != null && World.world.getConditionManager().stackIfSimilar(item, exItem, true))
+                    return item;
         return null;
     }
 
     public void removeFromBank(int guid, int qua) {
         if (qua <= 0)
             return;
-        GameObject BankObj = World.world.getGameObject(guid);
+        Item BankObj = World.world.getGameObject(guid);
 
         //Si le joueur n'a pas l'item dans sa banque ...
         int index = getAccount().getBank().indexOf(BankObj);
         if (index == -1)
             return;
 
-        GameObject PersoObj = getSimilarItem(BankObj);
+        Item PersoObj = getSimilarItem(BankObj);
         int newQua = BankObj.getQuantity() - qua;
 
         if (PersoObj == null)//Si le joueur n'avait aucun item similaire
@@ -3689,11 +3690,11 @@ public class Player implements Scripted<SPlayer>, Actor {
     public boolean removeItemByTemplateId(int templateId, int count, boolean display) {
         // TODO: Rewrite this function to be fail-safe
         // Currently, if we try to remove 10 items but the user only has 9, it removes 9 items then fails.
-        ArrayList<GameObject> remove = new ArrayList<>();
+        ArrayList<Item> remove = new ArrayList<>();
         int tempCount = count;
 
         //on verifie pour chaque objet
-        for (GameObject item : new ArrayList<>(objects.values())) {
+        for (Item item : new ArrayList<>(objects.values())) {
             //Si mauvais TemplateID, on passe
             if (item.getTemplate().getId() != templateId)
                 continue;
@@ -3728,7 +3729,7 @@ public class Player implements Scripted<SPlayer>, Actor {
                         remove.add(item);
                     }
 
-                    for (GameObject o : remove) {
+                    for (Item o : remove) {
                         //on supprime de l'inventaire et du Monde
 
                         objects.remove(o.getGuid());
@@ -3930,7 +3931,7 @@ public class Player implements Scripted<SPlayer>, Actor {
         }
 
         _onMount = !_onMount;
-        GameObject obj = getObjetByPos(Constant.ITEM_POS_FAMILIER);
+        Item obj = getObjetByPos(Constant.ITEM_POS_FAMILIER);
 
         if (_onMount && obj != null) {
             obj.setPosition(Constant.ITEM_POS_NO_EQUIPED);
@@ -4355,7 +4356,7 @@ public class Player implements Scripted<SPlayer>, Actor {
     }
 
     public boolean hasItemTemplate(int i, int q, boolean equipped) {
-        for (GameObject obj : objects.values()) {
+        for (Item obj : objects.values()) {
             if (!equipped && obj.getPosition() != Constant.ITEM_POS_NO_EQUIPED)
                 continue;
             if (obj.getTemplate().getId() != i)
@@ -4367,7 +4368,7 @@ public class Player implements Scripted<SPlayer>, Actor {
     }
 
     public boolean hasItemType(int type) {
-        for (GameObject obj : objects.values()) {
+        for (Item obj : objects.values()) {
             if (obj.getPosition() != Constant.ITEM_POS_NO_EQUIPED)
                 continue;
             if (obj.getTemplate().getType() == type)
@@ -4377,8 +4378,8 @@ public class Player implements Scripted<SPlayer>, Actor {
         return false;
     }
 
-    public GameObject getItemTemplate(int i, int q) {
-        for (GameObject obj : objects.values()) {
+    public Item getItemTemplate(int i, int q) {
+        for (Item obj : objects.values()) {
             if (obj.getPosition() != Constant.ITEM_POS_NO_EQUIPED)
                 continue;
             if (obj.getTemplate().getId() != i)
@@ -4389,9 +4390,9 @@ public class Player implements Scripted<SPlayer>, Actor {
         return null;
     }
 
-    public GameObject getItemTemplate(int i) {
+    public Item getItemTemplate(int i) {
 
-        for (GameObject obj : objects.values()) {
+        for (Item obj : objects.values()) {
             if (obj.getTemplate().getId() != i)
                 continue;
             return obj;
@@ -4401,7 +4402,7 @@ public class Player implements Scripted<SPlayer>, Actor {
     }
 
     public int getNbItemTemplate(int i) {
-        for (GameObject obj : objects.values()) {
+        for (Item obj : objects.values()) {
             if (obj.getTemplate().getId() != i)
                 continue;
             return obj.getQuantity();
@@ -4441,7 +4442,7 @@ public class Player implements Scripted<SPlayer>, Actor {
         boolean isFirstDf = true;
         boolean isFirstFA = true;
 
-        for (GameObject obj : objects.values()) {
+        for (Item obj : objects.values()) {
             if (obj.getPosition() == Constant.ITEM_POS_NO_EQUIPED)
                 continue;
             if (obj.getPosition() == Constant.ITEM_POS_AMULETTE) {
@@ -4647,8 +4648,8 @@ public class Player implements Scripted<SPlayer>, Actor {
         return _isOK;
     }
 
-    public List<GameObject> getEquippedObjects() {
-        List<GameObject> objects = new ArrayList<>();
+    public List<Item> getEquippedObjects() {
+        List<Item> objects = new ArrayList<>();
         synchronized(objects) {
             this.objects.values().stream().filter(object -> object.getPosition() != -1 && object.getPosition() < 34).forEach(objects::add);
         }
@@ -4740,8 +4741,8 @@ public class Player implements Scripted<SPlayer>, Actor {
             this.kamas = 0;
             //this._metiers.clear();
             if(this._mount != null) {
-                for(GameObject gameObject : this._mount.getObjects().values())
-                    World.world.removeGameObject(gameObject.getGuid());
+                for(Item item : this._mount.getObjects().values())
+                    World.world.removeGameObject(item.getGuid());
                 this._mount.getObjects().clear();
 
                 this.setMount(null);
@@ -4874,7 +4875,7 @@ public class Player implements Scripted<SPlayer>, Actor {
         if (_storeItems.isEmpty())
             return "";
         for (Entry<Integer, Integer> obj : _storeItems.entrySet()) {
-            GameObject O = World.world.getGameObject(obj.getKey());
+            Item O = World.world.getGameObject(obj.getKey());
             if (O == null)
                 continue;
             //O.getPoidOfBaseItem(O.getPlayerId());
@@ -4889,7 +4890,7 @@ public class Player implements Scripted<SPlayer>, Actor {
             return 0;
         int total = 0;
         for (Entry<Integer, Integer> obj : _storeItems.entrySet()) {
-            GameObject O = World.world.getGameObject(obj.getKey());
+            Item O = World.world.getGameObject(obj.getKey());
             if (O != null) {
                 int qua = O.getQuantity();
                 int poidBase1 = O.getTemplate().getPod() * qua;
@@ -4909,7 +4910,7 @@ public class Player implements Scripted<SPlayer>, Actor {
     }
 
     public void addInStore(int ObjID, int price, int qua) {
-        GameObject PersoObj = World.world.getGameObject(ObjID);
+        Item PersoObj = World.world.getGameObject(ObjID);
         //Si le joueur n'a pas l'item dans son sac ...
         if (_storeItems.get(ObjID) != null) {
                 _storeItems.remove(ObjID);
@@ -4929,7 +4930,7 @@ public class Player implements Scripted<SPlayer>, Actor {
         if (PersoObj.getPosition() != Constant.ITEM_POS_NO_EQUIPED)
             return;
 
-        GameObject SimilarObj = getSimilarStoreItem(PersoObj);
+        Item SimilarObj = getSimilarStoreItem(PersoObj);
         int newQua = PersoObj.getQuantity() - qua;
         if (SimilarObj == null)//S'il n'y pas d'item du meme Template
         {
@@ -4994,25 +4995,25 @@ public class Player implements Scripted<SPlayer>, Actor {
         DatabaseManager.get(PlayerData.class).update(this);
     }
 
-    private GameObject getSimilarStoreItem(GameObject exGameObject) {
+    private Item getSimilarStoreItem(Item exItem) {
         for (Integer id : _storeItems.keySet()) {
-            GameObject gameObject = World.world.getGameObject(id);
-            if (World.world.getConditionManager().stackIfSimilar(gameObject, exGameObject, true))
-                return gameObject;
+            Item item = World.world.getGameObject(id);
+            if (World.world.getConditionManager().stackIfSimilar(item, exItem, true))
+                return item;
         }
 
         return null;
     }
 
     public void removeFromStore(int guid, int qua) {
-        GameObject SimilarObj = World.world.getGameObject(guid);
+        Item SimilarObj = World.world.getGameObject(guid);
         //Si le joueur n'a pas l'item dans son store ...
         if (_storeItems.get(guid) == null) {
             GameServer.a();
             return;
         }
 
-        GameObject PersoObj = getSimilarItem(SimilarObj);
+        Item PersoObj = getSimilarItem(SimilarObj);
         int newQua = SimilarObj.getQuantity() - qua;
         if (PersoObj == null)//Si le joueur n'avait aucun item similaire
         {
@@ -5546,10 +5547,10 @@ public class Player implements Scripted<SPlayer>, Actor {
 
     public void refreshObjectsClass() {
         for (int position = 2; position < 8; position++) {
-            GameObject object = getObjetByPos(position);
+            Item object = getObjetByPos(position);
 
             if(object != null) {
-                ObjectTemplate template = object.getTemplate();
+                ItemTemplate template = object.getTemplate();
                 int set = object.getTemplate().getPanoId();
 
                 if (template != null && set >= 81 && set <= 92) {
@@ -5584,7 +5585,7 @@ public class Player implements Scripted<SPlayer>, Actor {
     public int storeAllBuy() {
         int total = 0;
         for (Entry<Integer, Integer> value : _storeItems.entrySet()) {
-            GameObject O = World.world.getGameObject(value.getKey());
+            Item O = World.world.getGameObject(value.getKey());
             int multiple = O.getQuantity();
             int add = value.getValue() * multiple;
             total += add;
@@ -5865,7 +5866,7 @@ public class Player implements Scripted<SPlayer>, Actor {
         for (Player player : this.getCurMap().getPlayers()) {
             if(player == null) continue;
 
-            GameObject object = player.getObjetByPos(Constant.ITEM_POS_ARME);
+            Item object = player.getObjetByPos(Constant.ITEM_POS_ARME);
             if (object == null) {
                 if (unequip) {
                     for(Player target : this.getCurMap().getPlayers())
@@ -6049,7 +6050,7 @@ public class Player implements Scripted<SPlayer>, Actor {
 
     public boolean addItemShortcutSend(int position, int itemID) {
         // Ensure user owns items
-        GameObject item = objects.get(itemID);
+        Item item = objects.get(itemID);
         if(item == null) return false;
 
         ItemHash hash = new ItemHash(item);

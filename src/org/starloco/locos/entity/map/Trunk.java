@@ -2,7 +2,7 @@
 package org.starloco.locos.entity.map;
 
 import org.starloco.locos.client.Account;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.player.Player;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.database.DatabaseManager;
 import org.starloco.locos.database.data.game.BankData;
@@ -11,7 +11,7 @@ import org.starloco.locos.database.data.login.PlayerData;
 import org.starloco.locos.game.action.ExchangeAction;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.Constant;
-import org.starloco.locos.object.GameObject;
+import org.starloco.locos.item.Item;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,7 +29,7 @@ public class Trunk {
     private int ownerId;
     private long kamas;
     private Player player = null;
-    private Map<Integer, GameObject> object = new HashMap<>();
+    private Map<Integer, Item> object = new HashMap<>();
 
     public Trunk(int id, int houseId, int mapId, int cellId) {
         this.id = id;
@@ -93,7 +93,7 @@ public class Trunk {
             String[] infos = item.split(":");
             int guid = Integer.parseInt(infos[0]);
 
-            GameObject obj = World.world.getGameObject(guid);
+            Item obj = World.world.getGameObject(guid);
             if (obj == null)
                 continue;
             this.object.put(obj.getGuid(), obj);
@@ -164,11 +164,11 @@ public class Trunk {
         this.player = player;
     }
 
-    public Map<Integer, GameObject> getObject() {
+    public Map<Integer, Item> getObject() {
         return object;
     }
 
-    public void setObject(Map<Integer, GameObject> object) {
+    public void setObject(Map<Integer, Item> object) {
         this.object = object;
     }
 
@@ -206,7 +206,7 @@ public class Trunk {
     public String parseToTrunkPacket() {
         StringBuilder packet = new StringBuilder();
 
-        for (GameObject obj : this.object.values())
+        for (Item obj : this.object.values())
             packet.append("O").append(obj.encodeItem()).append(";");
         if (getKamas() != 0)
             packet.append("G").append(getKamas());
@@ -225,7 +225,7 @@ public class Trunk {
             return;
         }
 
-        GameObject PersoObj = World.world.getGameObject(guid);
+        Item PersoObj = World.world.getGameObject(guid);
         if (PersoObj == null)
             return;
         if(PersoObj.isAttach()) return;
@@ -238,7 +238,7 @@ public class Trunk {
         if (PersoObj.getPosition() != Constant.ITEM_POS_NO_EQUIPED)
             return;
 
-        GameObject TrunkObj = getSimilarTrunkItem(PersoObj);
+        Item TrunkObj = getSimilarTrunkItem(PersoObj);
         int newQua = PersoObj.getQuantity() - qua;
         if (TrunkObj == null)//S'il n'y pas d'item du meme Template
         {
@@ -312,7 +312,7 @@ public class Trunk {
             return;
         if (((Trunk) P.getExchangeAction().getValue()).getId() != getId())
             return;
-        GameObject TrunkObj = World.world.getGameObject(guid);
+        Item TrunkObj = World.world.getGameObject(guid);
         if (TrunkObj == null)
             return;
         //Si le joueur n'a pas l'item dans son coffre
@@ -320,7 +320,7 @@ public class Trunk {
         if (this.object.get(guid) == null)
             return;
 
-        GameObject PersoObj = P.getSimilarItem(TrunkObj);
+        Item PersoObj = P.getSimilarItem(TrunkObj);
         String str = "";
         int newQua = TrunkObj.getQuantity() - qua;
 
@@ -393,8 +393,8 @@ public class Trunk {
         ((PlayerData) DatabaseManager.get(PlayerData.class)).update(P);
     }
 
-    private GameObject getSimilarTrunkItem(GameObject obj) {
-        for (GameObject object : this.object.values())
+    private Item getSimilarTrunkItem(Item obj) {
+        for (Item object : this.object.values())
             if(World.world.getConditionManager().stackIfSimilar(object, obj, true))
                 return object;
         return null;
@@ -402,15 +402,15 @@ public class Trunk {
 
     public String parseTrunkObjetsToDB() {
         StringBuilder str = new StringBuilder();
-        for (Entry<Integer, GameObject> entry : this.object.entrySet()) {
-            GameObject obj = entry.getValue();
+        for (Entry<Integer, Item> entry : this.object.entrySet()) {
+            Item obj = entry.getValue();
             str.append(obj.getGuid()).append("|");
         }
         return str.toString();
     }
 
     public void moveTrunkToBank(Account Cbank) {
-        for (Entry<Integer, GameObject> obj : this.object.entrySet())
+        for (Entry<Integer, Item> obj : this.object.entrySet())
             Cbank.getBank().add(obj.getValue());
         this.object.clear();
         ((TrunkData) DatabaseManager.get(TrunkData.class)).update(this);

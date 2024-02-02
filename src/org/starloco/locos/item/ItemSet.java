@@ -1,22 +1,22 @@
-package org.starloco.locos.object;
+package org.starloco.locos.item;
 
 import org.starloco.locos.client.other.Stats;
 import org.starloco.locos.game.world.World;
 
 import java.util.ArrayList;
 
-public class ObjectSet {
+public class ItemSet {
 
     private int id;
     private ArrayList<Stats> effects = new ArrayList<>();
-    private ArrayList<ObjectTemplate> itemTemplates = new ArrayList<>();
+    private ArrayList<ItemTemplate> itemTemplates = new ArrayList<>();
 
-    public ObjectSet(int id, String items, String bonuses) {
+    public ItemSet(int id, String items, String bonuses) {
         this.id = id;
 
         for (String str : items.split(",")) {
             try {
-                ObjectTemplate obj = World.world.getObjTemplate(Integer.parseInt(str.trim()));
+                ItemTemplate obj = World.world.getObjTemplate(Integer.parseInt(str.trim()));
                 if (obj == null)
                     continue;
                 this.itemTemplates.add(obj);
@@ -56,7 +56,7 @@ public class ObjectSet {
         return effects.get(numb - 1);
     }
 
-    public ArrayList<ObjectTemplate> getItemTemplates() {
+    public ArrayList<ItemTemplate> getItemTemplates() {
         return this.itemTemplates;
     }
 }

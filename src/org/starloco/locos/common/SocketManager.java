@@ -7,7 +7,7 @@ import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.area.map.MapData;
 import org.starloco.locos.entity.map.MountPark;
 import org.starloco.locos.entity.map.Trunk;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.player.Player;
 import org.starloco.locos.client.other.Party;
 import org.starloco.locos.database.data.game.ExperienceTables;
 import org.starloco.locos.database.data.game.SaleOffer;
@@ -25,9 +25,9 @@ import org.starloco.locos.hdv.BigStoreListing;
 import org.starloco.locos.job.JobStat;
 import org.starloco.locos.kernel.Config;
 import org.starloco.locos.kernel.Constant;
-import org.starloco.locos.object.GameObject;
-import org.starloco.locos.object.ObjectSet;
-import org.starloco.locos.object.ObjectTemplate;
+import org.starloco.locos.item.Item;
+import org.starloco.locos.item.ItemSet;
+import org.starloco.locos.item.ItemTemplate;
 import org.starloco.locos.guild.Guild;
 import org.starloco.locos.guild.GuildMember;
 import org.starloco.locos.util.Pair;
@@ -51,7 +51,7 @@ public class SocketManager {
         }
     }
 
-    public static void GAME_SEND_UPDATE_ITEM(Player P, GameObject obj) // Utilis� pour tours bonbon
+    public static void GAME_SEND_UPDATE_ITEM(Player P, Item obj) // Utilis� pour tours bonbon
     {
         String packet = "OC|" + obj.encodeItem();
         send(P, packet);
@@ -132,7 +132,7 @@ public class SocketManager {
     }
 
     public static void GAME_SEND_UPDATE_OBJECT_DISPLAY_PACKET(Player perso,
-                                                              GameObject item) {
+                                                              Item item) {
         send(perso, "OCO" + item.encodeItem());
     }
 
@@ -1115,13 +1115,13 @@ public class SocketManager {
         send(out, packet);
     }
 
-    public static void GAME_SEND_OBJECT_QUANTITY_PACKET(Player out, GameObject obj) {
+    public static void GAME_SEND_OBJECT_QUANTITY_PACKET(Player out, Item obj) {
 
         String packet = "OQ" + obj.getGuid() + "|" + obj.getQuantity();
         send(out, packet);
     }
 
-    public static void GAME_SEND_OAKO_PACKET(Player out, GameObject obj) {
+    public static void GAME_SEND_OAKO_PACKET(Player out, Item obj) {
         String packet = "OAKO" + obj.encodeItem();
         send(out, packet);
     }
@@ -1141,7 +1141,7 @@ public class SocketManager {
         send(out, packet);
     }
 
-    public static void GAME_SEND_OBJET_MOVE_PACKET(Player out, GameObject obj) {
+    public static void GAME_SEND_OBJET_MOVE_PACKET(Player out, Item obj) {
         String packet = "OM" + obj.getGuid() + "|";
         if (obj.getPosition() != Constant.ITEM_POS_NO_EQUIPED)
             packet += obj.getPosition();
@@ -1549,11 +1549,11 @@ public class SocketManager {
             packet.append("-").append(pano);
         else {
             packet.append("+").append(pano).append("|");
-            ObjectSet IS = World.world.getItemSet(pano);
+            ItemSet IS = World.world.getItemSet(pano);
             if (IS != null) {
                 StringBuilder items = new StringBuilder();
                 //Pour chaque objet de la pano
-                for (ObjectTemplate OT : IS.getItemTemplates()) {
+                for (ItemTemplate OT : IS.getItemTemplates()) {
                     //Si le joueur l'a �quip�
                     if (perso.hasEquiped(OT.getId())) {
                         //On l'ajoute au packet
@@ -1858,7 +1858,7 @@ public class SocketManager {
 
     public static void GAME_SEND_EHP_PACKET(Player out, int id) //Packet d'envoie du prix moyen du template (En r�ponse a un packet EHP)
     {
-        ObjectTemplate template = World.world.getObjTemplate(id);
+        ItemTemplate template = World.world.getObjTemplate(id);
         if (template != null)
             send(out, "EHP" + id + "|" + template.getAvgPrice());
     }

@@ -1,7 +1,7 @@
 package org.starloco.locos.auction;
 
-import org.starloco.locos.client.Player;
-import org.starloco.locos.object.GameObject;
+import org.starloco.locos.player.Player;
+import org.starloco.locos.item.Item;
 
 /**
  * Created by Locos on 31/01/2018.
@@ -11,9 +11,9 @@ public class Auction {
     private int price;
     private byte retry;
     private Player owner, customer;
-    private GameObject object;
+    private Item object;
 
-    public Auction(int price, Player owner, GameObject object, byte retry) {
+    public Auction(int price, Player owner, Item object, byte retry) {
         this.price = price;
         this.retry = retry;
         this.owner = owner;
@@ -36,11 +36,11 @@ public class Auction {
         this.customer = customer;
     }
 
-    public GameObject getObject() {
+    public Item getObject() {
         return object;
     }
 
-    public void setObject(GameObject object) {
+    public void setObject(Item object) {
         this.object = object;
     }
 

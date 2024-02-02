@@ -1,7 +1,7 @@
 package org.starloco.locos.hdv;
 
 import org.starloco.locos.game.world.World;
-import org.starloco.locos.object.GameObject;
+import org.starloco.locos.item.Item;
 
 public class BigStoreListing {
     private int id;
@@ -10,17 +10,17 @@ public class BigStoreListing {
     private final int owner;
     private final int price;
     private final BigStoreListingLotSize lotSize;
-    private final GameObject gameObject;
+    private final Item item;
 
-    public BigStoreListing(int price, byte amount, int owner, GameObject gameObject) {
-        this(-1, price, amount, owner, gameObject);
+    public BigStoreListing(int price, byte amount, int owner, Item item) {
+        this(-1, price, amount, owner, item);
     }
 
-    public BigStoreListing(int id, int price, byte amount, int owner, GameObject gameObject) {
+    public BigStoreListing(int id, int price, byte amount, int owner, Item item) {
         this.id = id;
         this.price = price;
         this.lotSize = BigStoreListingLotSize.fromValue(amount);
-        this.gameObject = gameObject;
+        this.item = item;
         this.owner = owner;
     }
 
@@ -59,8 +59,8 @@ public class BigStoreListing {
         return this.lotSize;
     }
 
-    public GameObject getGameObject() {
-        return this.gameObject;
+    public Item getGameObject() {
+        return this.item;
     }
 
     public String parseToEL() {

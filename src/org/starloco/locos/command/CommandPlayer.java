@@ -1,7 +1,7 @@
 package org.starloco.locos.command;
 
 import org.starloco.locos.auction.AuctionManager;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.player.Player;
 import org.starloco.locos.client.other.Party;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.event.EventManager;
@@ -10,7 +10,7 @@ import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.Config;
 import org.starloco.locos.kernel.Constant;
 import org.starloco.locos.kernel.Logging;
-import org.starloco.locos.object.GameObject;
+import org.starloco.locos.item.Item;
 import org.starloco.locos.util.TimerWaiter;
 
 import java.text.SimpleDateFormat;
@@ -177,7 +177,7 @@ public class CommandPlayer {
 
         boolean bank = info.length >= 2 && info[1].equalsIgnoreCase("bank");
 
-        for (GameObject object : new ArrayList<>(bank ? player.getAccount().getBank() : player.getItems().values())) {
+        for (Item object : new ArrayList<>(bank ? player.getAccount().getBank() : player.getItems().values())) {
             if(info.length == 2) {
                 if (object == null || object.getTemplate() == null || !object.getTemplate().getStrTemplate().isEmpty())
                     continue;
@@ -247,12 +247,12 @@ public class CommandPlayer {
     private static boolean commandTransfertWithMaster(Player player, String msg) {
         String[] info = msg.split(" ");
         if(info.length == 1 && player.getParty() != null && player.getParty().getMaster() != null && player.getParty().getMaster().getId() == player.getId()) {
-            final List<GameObject> objects = new ArrayList<>();
+            final List<Item> objects = new ArrayList<>();
             player.getParty().getPlayers().stream()
                     .filter(follower -> follower.getFight() == null && follower.getGameClient() != null && player.getParty().isWithTheMaster(follower, false, false))
                     .forEach(follower -> {
                         follower.getGameClient().clearAllPanels(null);
-                        for(GameObject object : new ArrayList<>(follower.getItems().values())) {
+                        for(Item object : new ArrayList<>(follower.getItems().values())) {
                             if(object != null) {
                                 if (object.getPosition() != -1 || object.getTemplate().isAnEquipment(true, null))
                                     continue;
@@ -278,7 +278,7 @@ public class CommandPlayer {
                         }
                     });
             TimerWaiter.addNext(() -> {
-                for(GameObject object : objects) {
+                for(Item object : objects) {
                     if(!player.addItem(object, true, false))
                         World.world.removeGameObject(object.getGuid());
                 }

@@ -5,7 +5,6 @@ import org.classdump.luna.impl.DefaultTable;
 import org.classdump.luna.impl.DefaultUserdata;
 import org.classdump.luna.impl.ImmutableTable;
 import org.starloco.locos.client.Account;
-import org.starloco.locos.client.Player;
 import org.starloco.locos.script.types.MetaTables;
 
 public class SAccount extends DefaultUserdata<Account> {

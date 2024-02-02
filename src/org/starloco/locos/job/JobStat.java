@@ -1,10 +1,8 @@
 package org.starloco.locos.job;
 
-import org.starloco.locos.entity.map.InteractiveObject;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.player.Player;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.database.data.game.ExperienceTables;
-import org.starloco.locos.game.action.GameAction;
 import org.starloco.locos.game.world.World;
 
 import java.util.ArrayList;

@@ -4,13 +4,13 @@ import com.mysql.jdbc.Statement;
 import com.zaxxer.hikari.HikariDataSource;
 import org.starloco.locos.database.data.FunctionDAO;
 import org.starloco.locos.game.world.World;
-import org.starloco.locos.object.GameObject;
+import org.starloco.locos.item.Item;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class ObjectData extends FunctionDAO<GameObject> {
+public class ObjectData extends FunctionDAO<Item> {
 
     public ObjectData(HikariDataSource dataSource) {
         super(dataSource, "world_objects");
@@ -29,7 +29,7 @@ public class ObjectData extends FunctionDAO<GameObject> {
                     int puit = result.getInt("puit");
 
                     if (quantity == 0) continue;
-                    GameObject object = World.world.newObjet(id, template, quantity, position, stats, puit);
+                    Item object = World.world.newObjet(id, template, quantity, position, stats, puit);
                     if (object.getTemplate() == null)
                         this.delete(object);
                     else
@@ -42,7 +42,7 @@ public class ObjectData extends FunctionDAO<GameObject> {
     }
 
     @Override
-    public GameObject load(int id) {
+    public Item load(int id) {
         try {
             return getData("SELECT * FROM " + getTableName() + " WHERE `id` IN (" + id + ");", result -> {
                 if(!result.next()) return null;
@@ -53,7 +53,7 @@ public class ObjectData extends FunctionDAO<GameObject> {
                 int puit = result.getInt("puit");
 
                 if (quantity > 0) {
-                    GameObject object = World.world.newObjet(result.getInt("id"), template, quantity, position, stats, puit);
+                    Item object = World.world.newObjet(result.getInt("id"), template, quantity, position, stats, puit);
                     World.world.addGameObject(object);
                     return object;
                 }
@@ -67,7 +67,7 @@ public class ObjectData extends FunctionDAO<GameObject> {
     }
 
     @Override
-    public boolean insert(GameObject entity) {
+    public boolean insert(Item entity) {
         PreparedStatement statement = null;
         boolean ok = true;
         try {
@@ -100,7 +100,7 @@ public class ObjectData extends FunctionDAO<GameObject> {
     }
 
     @Override
-    public void delete(GameObject entity) {
+    public void delete(Item entity) {
         PreparedStatement p = null;
         try {
             p = getPreparedStatement("DELETE FROM " + getTableName() + " WHERE id = ?;");
@@ -114,7 +114,7 @@ public class ObjectData extends FunctionDAO<GameObject> {
     }
 
     @Override
-    public void update(GameObject entity) {
+    public void update(Item entity) {
         PreparedStatement p = null;
         try {
             p = getPreparedStatement("UPDATE " + getTableName() + " SET `template` = ?, `quantity` = ?, `position` = ?, `puit` = ?, `stats` = ? WHERE `id` = ?;");
@@ -144,7 +144,7 @@ public class ObjectData extends FunctionDAO<GameObject> {
                     int quantity = result.getInt("quantity");
 
                     if (quantity > 0) {
-                        GameObject object = World.world.newObjet(result.getInt("id"), result.getInt("template"), quantity,
+                        Item object = World.world.newObjet(result.getInt("id"), result.getInt("template"), quantity,
                                 result.getInt("position"), result.getString("stats"), result.getInt("puit"));
                         World.world.addGameObject(object);
                     }

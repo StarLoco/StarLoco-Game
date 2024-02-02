@@ -7,11 +7,10 @@ import org.starloco.locos.anims.Animation;
 import org.starloco.locos.area.Area;
 import org.starloco.locos.area.SubArea;
 import org.starloco.locos.area.map.GameMap;
-import org.starloco.locos.area.map.MapData;
 import org.starloco.locos.area.map.ScriptMapData;
 import org.starloco.locos.entity.map.*;
 import org.starloco.locos.client.Account;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.player.Player;
 import org.starloco.locos.client.other.Stats;
 import org.starloco.locos.common.ConditionParser;
 import org.starloco.locos.common.CryptManager;
@@ -33,11 +32,11 @@ import org.starloco.locos.hdv.BigStoreListing;
 import org.starloco.locos.job.Job;
 import org.starloco.locos.kernel.Constant;
 import org.starloco.locos.kernel.Main;
-import org.starloco.locos.object.GameObject;
-import org.starloco.locos.object.ObjectSet;
-import org.starloco.locos.object.ObjectTemplate;
-import org.starloco.locos.object.entity.Fragment;
-import org.starloco.locos.object.entity.SoulStone;
+import org.starloco.locos.item.Item;
+import org.starloco.locos.item.ItemSet;
+import org.starloco.locos.item.ItemTemplate;
+import org.starloco.locos.item.entity.Fragment;
+import org.starloco.locos.item.entity.SoulStone;
 import org.starloco.locos.guild.Guild;
 import org.starloco.locos.script.DataScriptVM;
 import org.starloco.locos.script.Scripted;
@@ -60,12 +59,12 @@ public class World implements Scripted<SWorld> {
     private final Map<Integer, Player> players = new HashMap<>();
     private final Map<Integer, GameMap> maps = new ConcurrentHashMap<>();
     private final Map<Integer, ScriptMapData> mapsData = new ConcurrentHashMap<>();
-    private final Map<Integer, GameObject> objects = new ConcurrentHashMap<>();
+    private final Map<Integer, Item> objects = new ConcurrentHashMap<>();
 
     private volatile ExperienceTables experiences;
 
     private final Map<Integer, Spell> spells = new HashMap<>();
-    private final Map<Integer, ObjectTemplate> ObjTemplates = new HashMap<>();
+    private final Map<Integer, ItemTemplate> ObjTemplates = new HashMap<>();
     private final Map<Integer, Monster> MobTemplates = new HashMap<>();
     private final Map<Integer, NpcTemplate> npcsTemplate = new HashMap<>();
     private final Map<Integer, Mount> Dragodindes = new HashMap<>();
@@ -73,7 +72,7 @@ public class World implements Scripted<SWorld> {
     private final Map<Integer, SubArea> subAreas = new HashMap<>();
     private final Map<Integer, Job> Jobs = new HashMap<>();
     private final Map<Integer, ArrayList<Couple<Integer, Integer>>> Crafts = new HashMap<>();
-    private final Map<Integer, ObjectSet> ItemSets = new HashMap<>();
+    private final Map<Integer, ItemSet> ItemSets = new HashMap<>();
     private final Map<Integer, Guild> Guildes = new HashMap<>();
     private final Map<Integer, BigStore> Hdvs = new HashMap<>();
     private final Map<Integer, Map<Integer, List<BigStoreListing>>> hdvsItems = new HashMap<>();
@@ -219,18 +218,18 @@ public class World implements Scripted<SWorld> {
     //endregion
 
     //region Objects data
-    public CopyOnWriteArrayList<GameObject> getGameObjects() {
+    public CopyOnWriteArrayList<Item> getGameObjects() {
         return new CopyOnWriteArrayList<>(objects.values());
     }
 
-    public void addGameObject(GameObject gameObject) {
-        if (gameObject != null && !this.objects.containsKey(gameObject.getGuid())) {
-            objects.put(gameObject.getGuid(), gameObject);
+    public void addGameObject(Item item) {
+        if (item != null && !this.objects.containsKey(item.getGuid())) {
+            objects.put(item.getGuid(), item);
         }
     }
 
-    public GameObject getGameObject(int id) {
-        GameObject object = objects.get(id);
+    public Item getGameObject(int id) {
+        Item object = objects.get(id);
         if (object == null) {
             object = DatabaseManager.get(ObjectData.class).load(id);
         }
@@ -249,7 +248,7 @@ public class World implements Scripted<SWorld> {
         return spells;
     }
 
-    public Map<Integer, ObjectTemplate> getObjectsTemplates() {
+    public Map<Integer, ItemTemplate> getObjectsTemplates() {
         return ObjTemplates;
     }
 
@@ -717,16 +716,16 @@ public class World implements Scripted<SWorld> {
         return spells.get(id);
     }
 
-    public void addObjTemplate(ObjectTemplate obj) {
+    public void addObjTemplate(ItemTemplate obj) {
         ObjTemplates.put(obj.getId(), obj);
     }
 
-    public ObjectTemplate getObjTemplate(int id) {
+    public ItemTemplate getObjTemplate(int id) {
         return ObjTemplates.get(id);
     }
 
-    public ArrayList<ObjectTemplate> getEtherealWeapons(int level) {
-        ArrayList<ObjectTemplate> array = new ArrayList<>();
+    public ArrayList<ItemTemplate> getEtherealWeapons(int level) {
+        ArrayList<ItemTemplate> array = new ArrayList<>();
         final int levelMin = (level - 5 < 0 ? 0 : level - 5), levelMax = level + 5;
         getObjectsTemplates().values().stream().filter(objectTemplate -> objectTemplate != null && objectTemplate.getStrTemplate().contains("32c#")
                 && (levelMin < objectTemplate.getLevel() && objectTemplate.getLevel() < levelMax) && objectTemplate.getType() != 93).forEach(array::add);
@@ -858,11 +857,11 @@ public class World implements Scripted<SWorld> {
     }
 
 
-    public void addItemSet(ObjectSet itemSet) {
+    public void addItemSet(ItemSet itemSet) {
         ItemSets.put(itemSet.getId(), itemSet);
     }
 
-    public ObjectSet getItemSet(int tID) {
+    public ItemSet getItemSet(int tID) {
         return ItemSets.get(tID);
     }
 
@@ -954,12 +953,12 @@ public class World implements Scripted<SWorld> {
     public void unloadPerso(int g) {
         Player toRem = players.get(g);
         if (!toRem.getItems().isEmpty())
-            for (Entry<Integer, GameObject> curObj : toRem.getItems().entrySet())
+            for (Entry<Integer, Item> curObj : toRem.getItems().entrySet())
                 objects.remove(curObj.getKey());
 
     }
 
-    public GameObject newObjet(int id, int template, int qua, int pos, String stats, int puit) {
+    public Item newObjet(int id, int template, int qua, int pos, String stats, int puit) {
         if (getObjTemplate(template) == null) {
             return null;
         }
@@ -972,13 +971,13 @@ public class World implements Scripted<SWorld> {
             try {
                 Map<Integer, String> txtStat = new HashMap<>();
                 txtStat.put(Constant.STATS_DATE, stats.substring(3) + "");
-                return new GameObject(id, template, qua, Constant.ITEM_POS_NO_EQUIPED, new Stats(false, null), new ArrayList<>(), new HashMap<>(), txtStat, puit);
+                return new Item(id, template, qua, Constant.ITEM_POS_NO_EQUIPED, new Stats(false, null), new ArrayList<>(), new HashMap<>(), txtStat, puit);
             } catch (Exception e) {
                 e.printStackTrace();
-                return new GameObject(id, template, qua, pos, stats, 0);
+                return new Item(id, template, qua, pos, stats, 0);
             }
         } else {
-            return new GameObject(id, template, qua, pos, stats, 0);
+            return new Item(id, template, qua, pos, stats, 0);
         }
     }
 
@@ -1039,7 +1038,7 @@ public class World implements Scripted<SWorld> {
         return hdvsItems.get(compteID);
     }
 
-    public Collection<ObjectTemplate> getObjTemplates() {
+    public Collection<ItemTemplate> getObjTemplates() {
         return ObjTemplates.values();
     }
 

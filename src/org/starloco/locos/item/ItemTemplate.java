@@ -1,6 +1,6 @@
-package org.starloco.locos.object;
+package org.starloco.locos.item;
 
-import org.starloco.locos.client.Player;
+import org.starloco.locos.player.Player;
 import org.starloco.locos.client.other.Stats;
 import org.starloco.locos.common.Formulas;
 import org.starloco.locos.common.SocketManager;
@@ -11,11 +11,11 @@ import org.starloco.locos.entity.pet.PetEntry;
 import org.starloco.locos.fight.spells.SpellEffect;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.Constant;
-import org.starloco.locos.object.entity.SoulStone;
+import org.starloco.locos.item.entity.SoulStone;
 
 import java.util.*;
 
-public class ObjectTemplate {
+public class ItemTemplate {
 
     private int id;
     private String strTemplate;
@@ -38,9 +38,9 @@ public class ObjectTemplate {
         return id + "";
     }
 
-    public ObjectTemplate(int id, String strTemplate, String name, int type,
-                          int level, int pod, int price, int panoId, String conditions,
-                          String armesInfos, int sold, int avgPrice, int points, int newPrice) {
+    public ItemTemplate(int id, String strTemplate, String name, int type,
+                        int level, int pod, int price, int panoId, String conditions,
+                        String armesInfos, int sold, int avgPrice, int points, int newPrice) {
         this.id = id;
         this.strTemplate = strTemplate;
         this.name = name;
@@ -250,8 +250,8 @@ public class ObjectTemplate {
         return onUseActions == null ? new ArrayList<>() : onUseActions;
     }
 
-    public GameObject createNewCertificat(GameObject obj) {
-        GameObject item = null;
+    public Item createNewCertificat(Item obj) {
+        Item item = null;
         if (getType() == Constant.ITEM_TYPE_CERTIFICAT_CHANIL) {
             PetEntry myPets = World.world.getPetsEntry(obj.getGuid());
             Map<Integer, String> txtStat = new HashMap<>();
@@ -266,7 +266,7 @@ public class ObjectTemplate {
                 txtStat.put(Constant.STATS_PETS_EPO, actualStat.get(Constant.STATS_PETS_EPO));
             if (actualStat.containsKey(Constant.STATS_PETS_REPAS))
                 txtStat.put(Constant.STATS_PETS_REPAS, actualStat.get(Constant.STATS_PETS_REPAS));
-            item = new GameObject(-1, getId(), 1, Constant.ITEM_POS_NO_EQUIPED, obj.getStats(), new ArrayList<>(), new HashMap<>(), txtStat, 0);
+            item = new Item(-1, getId(), 1, Constant.ITEM_POS_NO_EQUIPED, obj.getStats(), new ArrayList<>(), new HashMap<>(), txtStat, 0);
             ((ObjectData) DatabaseManager.get(ObjectData.class)).insert(item);
             ((PetData) DatabaseManager.get(PetData.class)).delete(World.world.getPetsEntry(obj.getGuid()));
             World.world.removePetsEntry(obj.getGuid());
@@ -274,10 +274,10 @@ public class ObjectTemplate {
         return item;
     }
 //TODO: PRendre example ici !!!!
-    public GameObject createNewFamilier(GameObject obj) {
+    public Item createNewFamilier(Item obj) {
         Map<Integer, String> stats = new HashMap<>();
         stats.putAll(obj.getTxtStat());
-        GameObject object = new GameObject(-1, getId(), 1, Constant.ITEM_POS_NO_EQUIPED, obj.getStats(), new ArrayList<>(), new HashMap<>(), stats, 0);
+        Item object = new Item(-1, getId(), 1, Constant.ITEM_POS_NO_EQUIPED, obj.getStats(), new ArrayList<>(), new HashMap<>(), stats, 0);
 
         if(((ObjectData) DatabaseManager.get(ObjectData.class)).insert(object)) {
             PetEntry petEntry = new PetEntry(object.getGuid(), getId(), System.currentTimeMillis(), 0, Integer.parseInt(stats.get(Constant.STATS_PETS_PDV), 16), Integer.parseInt(stats.get(Constant.STATS_PETS_POIDS), 16), !stats.containsKey(Constant.STATS_PETS_EPO));
@@ -290,63 +290,63 @@ public class ObjectTemplate {
         return null;
     }
 
-    public GameObject createNewBenediction(int turn) {
+    public Item createNewBenediction(int turn) {
         Stats stats = generateNewStatsFromTemplate(getStrTemplate(), true);
         stats.addOneStat(Constant.STATS_TURN, turn);
-        GameObject item = new GameObject(-1, getId(), 1, Constant.ITEM_POS_BENEDICTION, stats, new ArrayList<>(), new HashMap<>(), new HashMap<>(), 0);
+        Item item = new Item(-1, getId(), 1, Constant.ITEM_POS_BENEDICTION, stats, new ArrayList<>(), new HashMap<>(), new HashMap<>(), 0);
         if(((ObjectData) DatabaseManager.get(ObjectData.class)).insert(item))
             return item;
         return null;
     }
 
-    public GameObject createNewMalediction() {
+    public Item createNewMalediction() {
         Stats stats = generateNewStatsFromTemplate(getStrTemplate(), true);
         stats.addOneStat(Constant.STATS_TURN, 1);
-        GameObject object = new GameObject(-1, getId(), 1, Constant.ITEM_POS_MALEDICTION, stats, new ArrayList<>(), new HashMap<>(), new HashMap<>(), 0);
+        Item object = new Item(-1, getId(), 1, Constant.ITEM_POS_MALEDICTION, stats, new ArrayList<>(), new HashMap<>(), new HashMap<>(), 0);
         if(((ObjectData) DatabaseManager.get(ObjectData.class)).insert(object))
             return object;
         return null;
     }
 
-    public GameObject createNewRoleplayBuff() {
+    public Item createNewRoleplayBuff() {
         Stats stats = generateNewStatsFromTemplate(getStrTemplate(), true);
         stats.addOneStat(Constant.STATS_TURN, 1);
-        GameObject object = new GameObject(-1, getId(), 1, Constant.ITEM_POS_ROLEPLAY_BUFF, stats, new ArrayList<>(), new HashMap<>(), new HashMap<>(), 0);
+        Item object = new Item(-1, getId(), 1, Constant.ITEM_POS_ROLEPLAY_BUFF, stats, new ArrayList<>(), new HashMap<>(), new HashMap<>(), 0);
         if(((ObjectData) DatabaseManager.get(ObjectData.class)).insert(object))
             return object;
         return null;
     }
 
-    public GameObject createNewCandy(int turn) {
+    public Item createNewCandy(int turn) {
         Stats stats = generateNewStatsFromTemplate(getStrTemplate(), true);
         stats.addOneStat(Constant.STATS_TURN, turn);
-        GameObject item = new GameObject(-1, getId(), 1, Constant.ITEM_POS_BONBON, stats, new ArrayList<>(), new HashMap<>(), new HashMap<>(), 0);
+        Item item = new Item(-1, getId(), 1, Constant.ITEM_POS_BONBON, stats, new ArrayList<>(), new HashMap<>(), new HashMap<>(), 0);
         if(((ObjectData) DatabaseManager.get(ObjectData.class)).insert(item))
             return item;
         return null;
     }
 
-    public GameObject createNewFollowPnj(int turn) {
+    public Item createNewFollowPnj(int turn) {
         Stats stats = generateNewStatsFromTemplate(getStrTemplate(), true);
         stats.addOneStat(Constant.STATS_TURN, turn);
         stats.addOneStat(148, 0);
-        GameObject item = new GameObject(id, getId(), 1, Constant.ITEM_POS_PNJ_SUIVEUR, stats, new ArrayList<>(), new HashMap<>(), new HashMap<>(), 0);
+        Item item = new Item(id, getId(), 1, Constant.ITEM_POS_PNJ_SUIVEUR, stats, new ArrayList<>(), new HashMap<>(), new HashMap<>(), 0);
         if(((ObjectData) DatabaseManager.get(ObjectData.class)).insert(item))
             return item;
         return null;
     }
 
-    public GameObject createNewItem(int qua, boolean useMax) {
-        GameObject item;
+    public Item createNewItem(int qua, boolean useMax) {
+        Item item;
         if (getType() == Constant.ITEM_TYPE_QUETES && (Constant.isCertificatDopeuls(getId()) || getId() == 6653)) {
             Map<Integer, String> txtStat = new HashMap<>();
             txtStat.put(Constant.STATS_DATE, System.currentTimeMillis() + "");
-            item = new GameObject(-1, getId(), qua, Constant.ITEM_POS_NO_EQUIPED, new Stats(false, null), new ArrayList<>(), new HashMap<>(), txtStat, 0);
+            item = new Item(-1, getId(), qua, Constant.ITEM_POS_NO_EQUIPED, new Stats(false, null), new ArrayList<>(), new HashMap<>(), txtStat, 0);
         }  else if (getType() == Constant.ITEM_TYPE_FAMILIER) {
             String jet = World.world.getPets(this.getId()).getJet();
             Stats stats =  useMax ? generateNewStatsFromTemplate(jet, true) : new Stats(false, null);
 
-            item = new GameObject(-1, getId(), 1, Constant.ITEM_POS_NO_EQUIPED, stats, new ArrayList<>(), new HashMap<>(), World.world.getPets(getId()).generateNewtxtStatsForPets(), 0);
+            item = new Item(-1, getId(), 1, Constant.ITEM_POS_NO_EQUIPED, stats, new ArrayList<>(), new HashMap<>(), World.world.getPets(getId()).generateNewtxtStatsForPets(), 0);
             if(((ObjectData) DatabaseManager.get(ObjectData.class)).insert(item)) {
                 PetEntry pet = new PetEntry(item.getGuid(), getId(), System.currentTimeMillis(), 0, 10, 0, false);
                 World.world.addPetsEntry(pet);
@@ -355,15 +355,15 @@ public class ObjectTemplate {
             }
             return null;
         } else if(getType() == Constant.ITEM_TYPE_CERTIF_MONTURE) {
-            item = new GameObject(-1, getId(), qua, Constant.ITEM_POS_NO_EQUIPED, generateNewStatsFromTemplate(getStrTemplate(), useMax), getEffectTemplate(getStrTemplate()), new HashMap<>(), new HashMap<>(), 0);
+            item = new Item(-1, getId(), qua, Constant.ITEM_POS_NO_EQUIPED, generateNewStatsFromTemplate(getStrTemplate(), useMax), getEffectTemplate(getStrTemplate()), new HashMap<>(), new HashMap<>(), 0);
         } else {
             if (getType() == Constant.ITEM_TYPE_OBJET_ELEVAGE) {
-                item = new GameObject(-1, getId(), qua, Constant.ITEM_POS_NO_EQUIPED, new Stats(false, null), new ArrayList<>(), new HashMap<>(), getStringResistance(getStrTemplate()), 0);
+                item = new Item(-1, getId(), qua, Constant.ITEM_POS_NO_EQUIPED, new Stats(false, null), new ArrayList<>(), new HashMap<>(), getStringResistance(getStrTemplate()), 0);
             } else if (Constant.isIncarnationWeapon(getId())) {
                 Map<Integer, Integer> Stats = new HashMap<>();
                 Stats.put(Constant.ERR_STATS_XP, 0);
                 Stats.put(Constant.STATS_NIVEAU, 1);
-                item = new GameObject(-1, getId(), qua, Constant.ITEM_POS_NO_EQUIPED, generateNewStatsFromTemplate(getStrTemplate(), useMax), getEffectTemplate(getStrTemplate()), Stats, new HashMap<>(), 0);
+                item = new Item(-1, getId(), qua, Constant.ITEM_POS_NO_EQUIPED, generateNewStatsFromTemplate(getStrTemplate(), useMax), getEffectTemplate(getStrTemplate()), Stats, new HashMap<>(), 0);
             } else {
                 Map<Integer, String> Stat = new HashMap<>();
                 switch (getType()) {
@@ -384,7 +384,7 @@ public class ObjectTemplate {
                         }
                         break;
                 }
-                item = new GameObject(-1, getId(), qua, Constant.ITEM_POS_NO_EQUIPED, generateNewStatsFromTemplate(getStrTemplate(), useMax), getEffectTemplate(getStrTemplate()), new HashMap<>(), Stat, 0);
+                item = new Item(-1, getId(), qua, Constant.ITEM_POS_NO_EQUIPED, generateNewStatsFromTemplate(getStrTemplate(), useMax), getEffectTemplate(getStrTemplate()), new HashMap<>(), Stat, 0);
                 item.getSpellStats().addAll(this.getSpellStatsTemplate());
             }
         }
@@ -393,15 +393,15 @@ public class ObjectTemplate {
         return null;
     }
 
-    public GameObject createNewItemWithoutDuplication(Collection<GameObject> objects, int qua, boolean useMax) {
+    public Item createNewItemWithoutDuplication(Collection<Item> objects, int qua, boolean useMax) {
         int id = -1;
-        GameObject item;
+        Item item;
         if (getType() == Constant.ITEM_TYPE_QUETES && (Constant.isCertificatDopeuls(getId()) || getId() == 6653)) {
             Map<Integer, String> txtStat = new HashMap<>();
             txtStat.put(Constant.STATS_DATE, System.currentTimeMillis() + "");
-            item = new GameObject(id, getId(), qua, Constant.ITEM_POS_NO_EQUIPED, new Stats(false, null), new ArrayList<>(), new HashMap<>(), txtStat, 0);
+            item = new Item(id, getId(), qua, Constant.ITEM_POS_NO_EQUIPED, new Stats(false, null), new ArrayList<>(), new HashMap<>(), txtStat, 0);
         } else if (getType() == Constant.ITEM_TYPE_FAMILIER) {
-            item = new GameObject(id, getId(), 1, Constant.ITEM_POS_NO_EQUIPED, (useMax ? generateNewStatsFromTemplate(World.world.getPets(this.getId()).getJet(), false) : new Stats(false, null)), new ArrayList<>(), new HashMap<>(), World.world.getPets(getId()).generateNewtxtStatsForPets(), 0);
+            item = new Item(id, getId(), 1, Constant.ITEM_POS_NO_EQUIPED, (useMax ? generateNewStatsFromTemplate(World.world.getPets(this.getId()).getJet(), false) : new Stats(false, null)), new ArrayList<>(), new HashMap<>(), World.world.getPets(getId()).generateNewtxtStatsForPets(), 0);
             //Ajouter du Pets_data SQL et World
             if(((ObjectData) DatabaseManager.get(ObjectData.class)).insert(item)) {
                 PetEntry pet = new PetEntry(item.getGuid(), getId(), System.currentTimeMillis(), 0, 10, 0, false);
@@ -411,15 +411,15 @@ public class ObjectTemplate {
             }
             return null;
         } else if(getType() == Constant.ITEM_TYPE_CERTIF_MONTURE) {
-            item = new GameObject(id, getId(), qua, Constant.ITEM_POS_NO_EQUIPED, generateNewStatsFromTemplate(getStrTemplate(), useMax), getEffectTemplate(getStrTemplate()), new HashMap<>(), new HashMap<>(), 0);
+            item = new Item(id, getId(), qua, Constant.ITEM_POS_NO_EQUIPED, generateNewStatsFromTemplate(getStrTemplate(), useMax), getEffectTemplate(getStrTemplate()), new HashMap<>(), new HashMap<>(), 0);
         } else {
             if (getType() == Constant.ITEM_TYPE_OBJET_ELEVAGE) {
-                item = new GameObject(id, getId(), qua, Constant.ITEM_POS_NO_EQUIPED, new Stats(false, null), new ArrayList<>(), new HashMap<>(), getStringResistance(getStrTemplate()), 0);
+                item = new Item(id, getId(), qua, Constant.ITEM_POS_NO_EQUIPED, new Stats(false, null), new ArrayList<>(), new HashMap<>(), getStringResistance(getStrTemplate()), 0);
             } else if (Constant.isIncarnationWeapon(getId())) {
                 Map<Integer, Integer> Stats = new HashMap<>();
                 Stats.put(Constant.ERR_STATS_XP, 0);
                 Stats.put(Constant.STATS_NIVEAU, 1);
-                item = new GameObject(id, getId(), qua, Constant.ITEM_POS_NO_EQUIPED, generateNewStatsFromTemplate(getStrTemplate(), useMax), getEffectTemplate(getStrTemplate()), Stats, new HashMap<>(), 0);
+                item = new Item(id, getId(), qua, Constant.ITEM_POS_NO_EQUIPED, generateNewStatsFromTemplate(getStrTemplate(), useMax), getEffectTemplate(getStrTemplate()), Stats, new HashMap<>(), 0);
             } else {
                 Map<Integer, String> Stat = new HashMap<>();
                 switch (getType()) {
@@ -442,12 +442,12 @@ public class ObjectTemplate {
                         }
                         break;
                 }
-                item = new GameObject(id, getId(), qua, Constant.ITEM_POS_NO_EQUIPED, generateNewStatsFromTemplate(getStrTemplate(), useMax), getEffectTemplate(getStrTemplate()), new HashMap<Integer, Integer>(), Stat, 0);
+                item = new Item(id, getId(), qua, Constant.ITEM_POS_NO_EQUIPED, generateNewStatsFromTemplate(getStrTemplate(), useMax), getEffectTemplate(getStrTemplate()), new HashMap<Integer, Integer>(), Stat, 0);
                 item.getSpellStats().addAll(this.getSpellStatsTemplate());
             }
         }
 
-        for(GameObject object : objects) {
+        for(Item object : objects) {
             if (World.world.getConditionManager().stackIfSimilar(object, item, true)) {
                 object.setQuantity(object.getQuantity() + item.getQuantity());
                 return object;

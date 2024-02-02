@@ -1,6 +1,6 @@
 package org.starloco.locos.entity.exchange;
 
-import org.starloco.locos.client.Player;
+import org.starloco.locos.player.Player;
 import org.starloco.locos.common.Formulas;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.game.world.World;
@@ -10,7 +10,7 @@ import org.starloco.locos.job.JobConstant;
 import org.starloco.locos.job.JobStat;
 import org.starloco.locos.kernel.Config;
 import org.starloco.locos.kernel.Constant;
-import org.starloco.locos.object.GameObject;
+import org.starloco.locos.item.Item;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -108,7 +108,7 @@ public class CraftSecure extends PlayerExchange {
                 if (couple.second == 0)
                     continue;
 
-                GameObject object = World.world.getGameObject(couple.first);
+                Item object = World.world.getGameObject(couple.first);
 
                 if (object == null)
                     continue;
@@ -164,7 +164,7 @@ public class CraftSecure extends PlayerExchange {
     }
 
     public void setPayItems(byte type, boolean adding, int guid, int quantity) {
-        GameObject object = World.world.getGameObject(guid);
+        Item object = World.world.getGameObject(guid);
 
         if (object == null)
             return;
@@ -185,7 +185,7 @@ public class CraftSecure extends PlayerExchange {
         }
     }
 
-    private void addItem(GameObject object, int quantity, byte type) {
+    private void addItem(Item object, int quantity, byte type) {
         if (object.getQuantity() < quantity)
             quantity = object.getQuantity();
 
@@ -205,7 +205,7 @@ public class CraftSecure extends PlayerExchange {
         this.player1.send("Ep" + type + ";O+" + object.getGuid() + "|" + quantity + add);
     }
 
-    private void removeItem(GameObject object, int quantity, byte type) {
+    private void removeItem(Item object, int quantity, byte type) {
         ArrayList<Couple<Integer, Integer>> items = (type == 1 ? this.payItems : this.payItemsIfSuccess);
         Couple<Integer, Integer> couple = getCoupleInList(items, object.getGuid());
 

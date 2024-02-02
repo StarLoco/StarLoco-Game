@@ -7,7 +7,7 @@ import org.classdump.luna.impl.ImmutableTable;
 import org.classdump.luna.lib.ArgumentIterator;
 import org.classdump.luna.runtime.LuaFunction;
 import org.starloco.locos.area.map.GameMap;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.player.Player;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.entity.monster.MobGroupDef;
 import org.starloco.locos.entity.monster.MonsterGroup;
@@ -18,8 +18,8 @@ import org.starloco.locos.game.world.World;
 import org.starloco.locos.job.Job;
 import org.starloco.locos.job.JobStat;
 import org.starloco.locos.kernel.Constant;
-import org.starloco.locos.object.GameObject;
-import org.starloco.locos.object.ObjectTemplate;
+import org.starloco.locos.item.Item;
+import org.starloco.locos.item.ItemTemplate;
 import org.starloco.locos.quest.QuestProgress;
 import org.starloco.locos.script.DataScriptVM;
 import org.starloco.locos.script.ScriptVM;
@@ -482,7 +482,7 @@ public class SPlayer extends DefaultUserdata<Player> {
         int pos = args.nextInt();
         return p.getEquippedObjects().stream()
                 .filter(i -> i.getPosition() == pos)
-                .findFirst().map(GameObject::scripted)
+                .findFirst().map(Item::scripted)
                 .orElse(null);
     }
 
@@ -495,7 +495,7 @@ public class SPlayer extends DefaultUserdata<Player> {
     private static SItem getItem(Player p, ArgumentIterator args) {
         int itemID = args.nextInt();
         int quantity = args.nextOptionalInt(1);
-        GameObject item = p.getItemTemplate(itemID, quantity);
+        Item item = p.getItemTemplate(itemID, quantity);
         if(item == null) {
             // No item return null
             return null;
@@ -523,8 +523,8 @@ public class SPlayer extends DefaultUserdata<Player> {
             .anyMatch(i -> i.getPosition() == pos);
         if(posAlreadyFilled) return false;
 
-        ObjectTemplate tmpl = World.world.getObjTemplate(itemID);
-        GameObject item = tmpl.createNewItem(quantity, isPerfect);
+        ItemTemplate tmpl = World.world.getObjTemplate(itemID);
+        Item item = tmpl.createNewItem(quantity, isPerfect);
         item.setPosition(pos);
 
         p.addItem(item, pos==Constant.ITEM_POS_NO_EQUIPED, display);

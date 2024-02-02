@@ -3,7 +3,7 @@ package org.starloco.locos.fight;
 import org.classdump.luna.impl.ImmutableTable;
 import org.starloco.locos.area.map.Actor;
 import org.starloco.locos.area.map.GameCase;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.player.Player;
 import org.starloco.locos.client.other.Stats;
 import org.starloco.locos.common.Formulas;
 import org.starloco.locos.common.PathFinding;

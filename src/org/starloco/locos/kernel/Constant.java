@@ -5,13 +5,13 @@ import java.util.Map;
 
 import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.area.map.GameMap;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.player.Player;
 import org.starloco.locos.client.other.Stats;
 import org.starloco.locos.common.Formulas;
 import org.starloco.locos.entity.mount.Mount;
 import org.starloco.locos.fight.spells.Spell.SortStats;
 import org.starloco.locos.game.world.World;
-import org.starloco.locos.object.ObjectTemplate;
+import org.starloco.locos.item.ItemTemplate;
 import org.starloco.locos.util.RandomStats;
 
 public class Constant {
@@ -48,7 +48,6 @@ public class Constant {
     public static final int FIGHT_TYPE_ROYAL = 6;
 
 
-    //Percepteur
     public static final int FIGHT_STATE_INIT = 1;
     public static final int FIGHT_STATE_PLACE = 2;
     public static final int FIGHT_STATE_ACTIVE = 3;
@@ -2150,7 +2149,7 @@ public class Constant {
         return stats;
     }
 
-    public static ObjectTemplate getParchoTemplateByMountColor(int color) {
+    public static ItemTemplate getParchoTemplateByMountColor(int color) {
         switch (color) {
             //Ammande sauvage
             case 2:
@@ -2374,7 +2373,7 @@ public class Constant {
     public static int getMountColorByParchoTemplate(int templateId) {
         if(templateId == 7806) {
             int color = -1;
-            ObjectTemplate template = null;
+            ItemTemplate template = null;
             while(template == null) {
                 color = Formulas.getRandomValue(2, 88);
                 template = getParchoTemplateByMountColor(color);
@@ -2382,7 +2381,7 @@ public class Constant {
             return color;
         }
         for (int a = 1; a < 100; a++) {
-            ObjectTemplate template = getParchoTemplateByMountColor(a);
+            ItemTemplate template = getParchoTemplateByMountColor(a);
             if (template != null) {
                 if (template.getId() == templateId) {
                     return a;
@@ -2392,7 +2391,7 @@ public class Constant {
         return -1;
     }
 
-    public static boolean isValidPlaceForItem(ObjectTemplate template, int place) {
+    public static boolean isValidPlaceForItem(ItemTemplate template, int place) {
         if (template.getType() == 41 && place == ITEM_POS_DRAGODINDE)
             return true;
 

@@ -1,6 +1,6 @@
 package org.starloco.locos.game.action.type;
 
-import org.starloco.locos.client.Player;
+import org.starloco.locos.player.Player;
 import org.starloco.locos.game.action.ExchangeAction;
 
 import java.util.function.BiConsumer;

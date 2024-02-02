@@ -1,8 +1,8 @@
-package org.starloco.locos.object.entity;
+package org.starloco.locos.item.entity;
 
 import org.starloco.locos.database.DatabaseManager;
 import org.starloco.locos.database.data.login.ObjectData;
-import org.starloco.locos.object.GameObject;
+import org.starloco.locos.item.Item;
 import org.starloco.locos.util.Pair;
 
 import java.util.ArrayList;
@@ -11,7 +11,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class SoulStone extends GameObject {
+public class SoulStone extends Item {
 
     private ArrayList<Pair<Integer, Integer>> monsters;
 
@@ -56,7 +56,7 @@ public class SoulStone extends GameObject {
         }
     }
 
-    public static Optional<SoulStone> safeCast(GameObject obj) {
+    public static Optional<SoulStone> safeCast(Item obj) {
         if(obj instanceof SoulStone) return Optional.of((SoulStone) obj);
         return Optional.empty();
     }

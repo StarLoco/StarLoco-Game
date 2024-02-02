@@ -1,15 +1,15 @@
 package org.starloco.locos.hdv;
 
 import org.starloco.locos.client.Account;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.player.Player;
 import org.starloco.locos.database.DatabaseManager;
 import org.starloco.locos.database.data.game.BigStoreListingData;
 import org.starloco.locos.database.data.login.PlayerData;
 import org.starloco.locos.entity.monster.Monster;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.Constant;
-import org.starloco.locos.object.GameObject;
-import org.starloco.locos.object.entity.SoulStone;
+import org.starloco.locos.item.Item;
+import org.starloco.locos.item.entity.SoulStone;
 import org.starloco.locos.util.Pair;
 
 import java.text.DecimalFormat;
@@ -164,7 +164,7 @@ public class BigStore {
 
     public boolean addEntry(BigStoreListing toAdd) {
         toAdd.setHdvId(this.getHdvId());
-        GameObject obj = Objects.requireNonNull(toAdd.getGameObject());
+        Item obj = Objects.requireNonNull(toAdd.getGameObject());
         synchronized (listingsLock) {
             // If it doesn't have a guid yet, save it and get one
             if(toAdd.getId() == -1) {
@@ -203,7 +203,7 @@ public class BigStore {
             if(!listing.isPresent() || !this.listings.contains(listing.get())) return false;
             if(!deleteListing(listing.get())) return false;
 
-            GameObject obj = listing.get().getGameObject();
+            Item obj = listing.get().getGameObject();
             if (account.getCurrentPlayer().addObjetSimiler(obj, true, -1)) {
                 World.world.removeGameObject(obj.getGuid());
             } else {
@@ -240,7 +240,7 @@ public class BigStore {
                     Optional<Account> prevOwner = Optional.ofNullable(World.world.ensureAccountLoaded(e.getOwner()));
                     prevOwner.ifPresent(p -> p.setBankKamas(p.getBankKamas() + price));
 
-                    GameObject obj = e.getGameObject();
+                    Item obj = e.getGameObject();
                     newOwner.addItem(obj, true, false);
                     obj.setPosition(Constant.ITEM_POS_NO_EQUIPED);
                     obj.getTemplate().newSold(e.getLotSize().amount, price);

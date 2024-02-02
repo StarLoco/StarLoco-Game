@@ -1,7 +1,7 @@
 package org.starloco.locos.event;
 
 import org.starloco.locos.area.map.GameCase;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.player.Player;
 
 /**
  * Created by Locos on 02/10/2016.

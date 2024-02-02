@@ -3,9 +3,8 @@ package org.starloco.locos.script;
 import org.classdump.luna.Table;
 import org.classdump.luna.impl.DefaultTable;
 import org.classdump.luna.runtime.LuaFunction;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.player.Player;
 import org.starloco.locos.quest.QuestInfo;
-import org.starloco.locos.script.proxy.SPlayer;
 
 public class EventHandlers extends DefaultTable {
     private final DataScriptVM vm;

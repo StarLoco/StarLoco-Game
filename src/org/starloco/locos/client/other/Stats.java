@@ -1,6 +1,6 @@
 package org.starloco.locos.client.other;
 
-import org.starloco.locos.client.Player;
+import org.starloco.locos.player.Player;
 import org.starloco.locos.guild.Guild;
 import org.starloco.locos.kernel.Constant;
 

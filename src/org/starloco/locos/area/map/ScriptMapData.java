@@ -3,7 +3,7 @@ package org.starloco.locos.area.map;
 import org.classdump.luna.Table;
 import org.classdump.luna.runtime.LuaFunction;
 import org.starloco.locos.anims.Animation;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.player.Player;
 import org.starloco.locos.entity.monster.MobGroupDef;
 import org.starloco.locos.entity.monster.MonsterGrade;
 import org.starloco.locos.fight.Fight;

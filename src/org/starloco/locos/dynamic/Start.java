@@ -1,12 +1,8 @@
 package org.starloco.locos.dynamic;
 
 import org.starloco.locos.area.map.GameMap;
-import org.starloco.locos.area.map.MapData;
-import org.starloco.locos.client.Player;
-import org.starloco.locos.common.PathFinding;
-import org.starloco.locos.common.SocketManager;
+import org.starloco.locos.player.Player;
 import org.starloco.locos.entity.npc.Npc;
-import org.starloco.locos.game.world.World;
 
 import java.util.HashMap;
 import java.util.Map;

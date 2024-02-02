@@ -1,13 +1,13 @@
 package org.starloco.locos.entity.pet;
 
-import org.starloco.locos.client.Player;
+import org.starloco.locos.player.Player;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.database.DatabaseManager;
 import org.starloco.locos.database.data.login.ObjectData;
 import org.starloco.locos.database.data.login.PetData;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.Constant;
-import org.starloco.locos.object.GameObject;
+import org.starloco.locos.item.Item;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -102,7 +102,7 @@ public class PetEntry {
 		 * PETIT WABBIT = 3U de poids b2 = 8U de poids 70 = 8U de poids le reste
 		 * a 1U de poids
 		 */
-        GameObject obj = World.world.getGameObject(this.objectId);
+        Item obj = World.world.getGameObject(this.objectId);
         if (obj == null)
             return 0;
         int cumul = 0;
@@ -142,7 +142,7 @@ public class PetEntry {
     }
 
     public void looseFight(Player player) {
-        GameObject obj = World.world.getGameObject(this.objectId);
+        Item obj = World.world.getGameObject(this.objectId);
         if (obj == null)
             return;
         Pet pets = World.world.getPets(obj.getTemplate().getId());
@@ -178,8 +178,8 @@ public class PetEntry {
         ((PetData) DatabaseManager.get(PetData.class)).update(this);
     }
 
-    public void eat(Player p, int min, int max, int statsID, GameObject feed) {
-        GameObject obj = World.world.getGameObject(this.objectId);
+    public void eat(Player p, int min, int max, int statsID, Item feed) {
+        Item obj = World.world.getGameObject(this.objectId);
         if (obj == null)
             return;
         Pet pets = World.world.getPets(obj.getTemplate().getId());
@@ -306,7 +306,7 @@ public class PetEntry {
     }
 
     public void eatSouls(Player p, Map<Integer, Integer> souls) {
-        GameObject obj = World.world.getGameObject(this.objectId);
+        Item obj = World.world.getGameObject(this.objectId);
         if (obj == null)
             return;
         Pet pet = World.world.getPets(obj.getTemplate().getId());
@@ -368,7 +368,7 @@ public class PetEntry {
     }
 
     public void updatePets(Player p, int max) {
-        GameObject obj = World.world.getGameObject(this.objectId);
+        Item obj = World.world.getGameObject(this.objectId);
         if (obj == null)
             return;
         Pet pets = World.world.getPets(obj.getTemplate().getId());
@@ -425,7 +425,7 @@ public class PetEntry {
     }
 
     public void resurrection() {
-        GameObject obj = World.world.getGameObject(this.objectId);
+        Item obj = World.world.getGameObject(this.objectId);
         if (obj == null)
             return;
 
@@ -443,7 +443,7 @@ public class PetEntry {
     }
 
     public void restoreLife(Player p) {
-        GameObject obj = World.world.getGameObject(this.objectId);
+        Item obj = World.world.getGameObject(this.objectId);
         if (obj == null)
             return;
         Pet pets = World.world.getPets(obj.getTemplate().getId());
@@ -469,7 +469,7 @@ public class PetEntry {
     }
 
     public void giveEpo(Player p) {
-        GameObject obj = World.world.getGameObject(this.objectId);
+        Item obj = World.world.getGameObject(this.objectId);
         if (obj == null)
             return;
         Pet pets = World.world.getPets(obj.getTemplate().getId());

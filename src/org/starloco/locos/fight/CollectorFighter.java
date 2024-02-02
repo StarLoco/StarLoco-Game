@@ -3,7 +3,7 @@ package org.starloco.locos.fight;
 import org.starloco.locos.client.other.Stats;
 import org.starloco.locos.entity.Collector;
 import org.starloco.locos.fight.spells.Spell;
-import org.starloco.locos.object.GameObject;
+import org.starloco.locos.item.Item;
 
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -74,7 +74,7 @@ public class CollectorFighter extends Fighter {
         );
     }
 
-    Collection<GameObject> collectorDrops() { return collector.getDrops(); }
+    Collection<Item> collectorDrops() { return collector.getDrops(); }
 
     @Override
     public Collector getCollector() {

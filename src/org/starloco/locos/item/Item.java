@@ -1,6 +1,6 @@
-package org.starloco.locos.object;
+package org.starloco.locos.item;
 
-import org.starloco.locos.client.Player;
+import org.starloco.locos.player.Player;
 import org.starloco.locos.client.other.Stats;
 import org.starloco.locos.common.Formulas;
 import org.starloco.locos.common.SocketManager;
@@ -14,16 +14,16 @@ import org.starloco.locos.game.world.World.Couple;
 import org.starloco.locos.job.JobAction;
 import org.starloco.locos.kernel.Constant;
 import org.starloco.locos.kernel.Logging;
-import org.starloco.locos.object.entity.Fragment;
+import org.starloco.locos.item.entity.Fragment;
 import org.starloco.locos.script.proxy.SItem;
 
 import java.util.*;
 import java.util.Map.Entry;
 
-public class GameObject {
+public class Item {
     private final SItem scriptVal;
 
-    protected ObjectTemplate template;
+    protected ItemTemplate template;
     protected int quantity = 1;
     protected int position = Constant.ITEM_POS_NO_EQUIPED;
     protected int guid;
@@ -36,7 +36,7 @@ public class GameObject {
     private Map<Integer, String> txtStats = new HashMap<>();
     private Map<Integer, Integer> soulEaterStats = new HashMap<>();
 
-    public GameObject(int Guid, int template, int qua, int pos, String strStats, int puit) {
+    public Item(int Guid, int template, int qua, int pos, String strStats, int puit) {
         this.scriptVal = new SItem(this);
         this.guid = Guid;
         this.template = World.world.getObjTemplate(template);
@@ -48,7 +48,7 @@ public class GameObject {
         this.parseStringToStats(strStats);
     }
 
-    public GameObject(int Guid) {
+    public Item(int Guid) {
         this.scriptVal = new SItem(this);
         this.guid = Guid;
         this.template = World.world.getObjTemplate(8378);
@@ -57,7 +57,7 @@ public class GameObject {
         this.puit = 0;
     }
 
-    public GameObject(int Guid, int template, int qua, int pos, Stats stats, ArrayList<SpellEffect> effects, Map<Integer, Integer> _SoulStat, Map<Integer, String> _txtStats, int puit) {
+    public Item(int Guid, int template, int qua, int pos, Stats stats, ArrayList<SpellEffect> effects, Map<Integer, Integer> _SoulStat, Map<Integer, String> _txtStats, int puit) {
         this.scriptVal = new SItem(this);
         this.guid = Guid;
         this.template = World.world.getObjTemplate(template);
@@ -72,7 +72,7 @@ public class GameObject {
         this.puit = puit;
     }
 
-    public GameObject getClone(int qua, boolean insert) {
+    public Item getClone(int qua, boolean insert) {
         Map<Integer, Integer> maps = new HashMap<>();
         maps.putAll(this.getStats().getEffects());
         Stats newStats = new Stats(maps);
@@ -80,7 +80,7 @@ public class GameObject {
         for(SpellEffect effect : this.getEffects())
             effects.add(effect.clone());
 
-        GameObject object = new GameObject(-1, this.getTemplate().getId(), qua, insert ? Constant.ITEM_POS_NO_EQUIPED : this.getPosition(), newStats, effects, this.getSoulStat(), this.getTxtStat(), this.getPuit());
+        Item object = new Item(-1, this.getTemplate().getId(), qua, insert ? Constant.ITEM_POS_NO_EQUIPED : this.getPosition(), newStats, effects, this.getSoulStat(), this.getTxtStat(), this.getPuit());
         if(insert)
             if(((ObjectData) DatabaseManager.get(ObjectData.class)).insert(object))
                 return object;
@@ -285,7 +285,7 @@ public class GameObject {
         this.position = position;
     }
 
-    public ObjectTemplate getTemplate() {
+    public ItemTemplate getTemplate() {
         return template;
     }
 
@@ -670,7 +670,7 @@ public class GameObject {
         return upPacket;
     }
 
-    public void obvijevanNourir(GameObject obj) {
+    public void obvijevanNourir(Item obj) {
         if (obj == null)
             return;
         for (Entry<Integer, Integer> entry : Stats.getEffects().entrySet()) {
@@ -719,7 +719,7 @@ public class GameObject {
     }
 
     public String getObvijevanStatsOnly() {
-        GameObject obj = this.getClone(1, true);
+        Item obj = this.getClone(1, true);
         obj.removeAll_ExepteObvijevanStats();
         return obj.parseStatsStringSansUserObvi();
     }
@@ -869,7 +869,7 @@ public class GameObject {
     }
 
     /** FM TOUT POURRI **/
-    public String parseStringStatsEC_FM(GameObject obj, double poid, int carac) {
+    public String parseStringStatsEC_FM(Item obj, double poid, int carac) {
         String stats = "";
         boolean first = false;
         double perte = 0.0;
@@ -981,7 +981,7 @@ public class GameObject {
     }
 
 
-    public String parseFMStatsString(String statsstr, GameObject obj, int add,
+    public String parseFMStatsString(String statsstr, Item obj, int add,
                                      boolean negatif) {
         String stats = "";
         boolean isFirst = true;
@@ -1079,7 +1079,7 @@ public class GameObject {
         return !trouve;
     }
 
-    public boolean isSameStats(GameObject newObj) {
+    public boolean isSameStats(Item newObj) {
         boolean effects = true, check = false;
         for(SpellEffect effect0 : this.Effects) {
             for(SpellEffect effect1 : newObj.Effects) {

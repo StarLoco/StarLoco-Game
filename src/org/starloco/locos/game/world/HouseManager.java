@@ -3,7 +3,7 @@ package org.starloco.locos.game.world;
 import org.starloco.locos.entity.map.House;
 import org.starloco.locos.entity.map.Trunk;
 import org.starloco.locos.client.Account;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.player.Player;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.database.DatabaseManager;
 import org.starloco.locos.database.data.game.HouseData;

@@ -5,12 +5,12 @@ import org.apache.commons.lang.NotImplementedException;
 import org.starloco.locos.database.data.FunctionDAO;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.Main;
-import org.starloco.locos.object.ObjectTemplate;
+import org.starloco.locos.item.ItemTemplate;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-public class ObjectTemplateData extends FunctionDAO<ObjectTemplate> {
+public class ObjectTemplateData extends FunctionDAO<ItemTemplate> {
     public ObjectTemplateData(HikariDataSource dataSource) {
         super(dataSource, "item_template");
     }
@@ -20,14 +20,14 @@ public class ObjectTemplateData extends FunctionDAO<ObjectTemplate> {
         try {
             getData("SELECT * FROM " + getTableName() + ";", result -> {
                 while (result.next()) {
-                    ObjectTemplate template = World.world.getObjTemplate(result.getInt("id"));
+                    ItemTemplate template = World.world.getObjTemplate(result.getInt("id"));
                     if (template != null) {
                         template.setInfos(result.getString("statsTemplate"), result.getString("name"), result.getInt("type"),
                                 result.getInt("level"), result.getInt("pod"), result.getInt("prix"), result.getInt("panoplie"),
                                 result.getString("conditions"), result.getString("armesInfos"), result.getInt("sold"), result.getInt("avgPrice"),
                                 result.getInt("points"), result.getInt("newPrice"));
                     } else {
-                        World.world.addObjTemplate(new ObjectTemplate(result.getInt("id"), result.getString("statsTemplate"),
+                        World.world.addObjTemplate(new ItemTemplate(result.getInt("id"), result.getString("statsTemplate"),
                                 result.getString("name"), result.getInt("type"), result.getInt("level"), result.getInt("pod"),
                                 result.getInt("prix"), result.getInt("panoplie"), result.getString("conditions"), result.getString("armesInfos"),
                                 result.getInt("sold"), result.getInt("avgPrice"), result.getInt("points"), result.getInt("newPrice")));
@@ -41,22 +41,22 @@ public class ObjectTemplateData extends FunctionDAO<ObjectTemplate> {
     }
 
     @Override
-    public ObjectTemplate load(int id) {
+    public ItemTemplate load(int id) {
         throw new NotImplementedException();
     }
 
     @Override
-    public boolean insert(ObjectTemplate entity) {
+    public boolean insert(ItemTemplate entity) {
         throw new NotImplementedException();
     }
 
     @Override
-    public void delete(ObjectTemplate entity) {
+    public void delete(ItemTemplate entity) {
         throw new NotImplementedException();
     }
 
     @Override
-    public void update(ObjectTemplate entity) {
+    public void update(ItemTemplate entity) {
         PreparedStatement p = null;
         try {
             p = getPreparedStatement("UPDATE " + getTableName() + " SET sold = ?,avgPrice = ? WHERE id = ?");

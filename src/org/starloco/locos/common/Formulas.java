@@ -3,7 +3,7 @@ package org.starloco.locos.common;
 import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.area.map.OrthogonalProj;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.player.Player;
 import org.starloco.locos.fight.Fight;
 import org.starloco.locos.fight.Fighter;
 import org.starloco.locos.fight.PlayerFighter;
@@ -14,7 +14,7 @@ import org.starloco.locos.game.world.World.Couple;
 import org.starloco.locos.guild.GuildMember;
 import org.starloco.locos.kernel.Config;
 import org.starloco.locos.kernel.Constant;
-import org.starloco.locos.object.GameObject;
+import org.starloco.locos.item.Item;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -758,7 +758,7 @@ public class Formulas {
         return Math.round(rkamas * Config.rateKamas);
     }
 
-    public static Couple<Integer, Integer> decompPierreAme(GameObject toDecomp) {
+    public static Couple<Integer, Integer> decompPierreAme(Item toDecomp) {
         Couple<Integer, Integer> toReturn;
         String[] stats = toDecomp.encodeStats().split("#");
         int lvlMax = Integer.parseInt(stats[3], 16);

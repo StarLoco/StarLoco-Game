@@ -2,7 +2,7 @@ package org.starloco.locos.entity.mount;
 
 import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.entity.map.MountPark;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.player.Player;
 import org.starloco.locos.client.other.Stats;
 import org.starloco.locos.common.Formulas;
 import org.starloco.locos.common.PathFinding;
@@ -13,7 +13,7 @@ import org.starloco.locos.database.data.login.MountData;
 import org.starloco.locos.game.scheduler.Updatable;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.Constant;
-import org.starloco.locos.object.GameObject;
+import org.starloco.locos.item.Item;
 import org.starloco.locos.util.TimerWaiter;
 
 import java.util.ArrayList;
@@ -60,7 +60,7 @@ public class Mount {
     private int couple;
 	
 	private Stats stats = new Stats();
-	private java.util.Map<Integer, GameObject> objects = new HashMap<>();
+	private java.util.Map<Integer, Item> objects = new HashMap<>();
 	private List<Integer> capacitys = new ArrayList<>(2);
 
 	public Mount(int color, int owner, boolean savage) {
@@ -164,9 +164,9 @@ public class Mount {
 		for(String str : objects.split(";")) {
 			if(str.isEmpty()) continue;
 			try {
-				GameObject gameObject = World.world.getGameObject(Integer.parseInt(str));
-				if(gameObject != null)
-					this.objects.put(gameObject.getGuid(), gameObject);
+				Item item = World.world.getGameObject(Integer.parseInt(str));
+				if(item != null)
+					this.objects.put(item.getGuid(), item);
 			} catch (Exception e) {
 			 	e.printStackTrace();
 			}
@@ -437,7 +437,7 @@ public class Mount {
 	}
 	//endregion getter/setter
 	
-	public java.util.Map<Integer, GameObject> getObjects() {
+	public java.util.Map<Integer, Item> getObjects() {
 		return objects;
 	}
 	
@@ -477,8 +477,8 @@ public class Mount {
 	
 	public int getActualPods() {
 		int pods = 0;
-		for(GameObject gameObject : this.objects.values())
-			pods += gameObject.getTemplate().getPod() * gameObject.getQuantity();
+		for(Item item : this.objects.values())
+			pods += item.getTemplate().getPod() * item.getQuantity();
 		return pods;
 	}
 	
@@ -937,7 +937,7 @@ public class Mount {
 	public void addObject(int guid, int qua, Player P) {
 		if(qua <= 0)
 			return;
-		GameObject playerObj = World.world.getGameObject(guid);
+		Item playerObj = World.world.getGameObject(guid);
 		if(playerObj == null) return;
 		//Si le joueur n'a pas l'item dans son sac ...
 		if(P.getItems().get(guid) == null)
@@ -950,7 +950,7 @@ public class Mount {
 		//Si c'est un item equipe ...
 		if(playerObj.getPosition() != Constant.ITEM_POS_NO_EQUIPED)return;
 		
-		GameObject TrunkObj = this.getSimilarObject(playerObj);
+		Item TrunkObj = this.getSimilarObject(playerObj);
 		int newQua = playerObj.getQuantity() - qua;
 		if(TrunkObj == null)//S'il n'y pas d'item du meme Template
 		{
@@ -1008,14 +1008,14 @@ public class Mount {
 	public void removeObject(int guid, int qua, Player P) {
 		if(qua <= 0)
 			return;
-		GameObject TrunkObj = World.world.getGameObject(guid);
+		Item TrunkObj = World.world.getGameObject(guid);
 		//Si le joueur n'a pas l'item dans son coffre
 		if(this.objects.get(guid) == null)
 		{
 			return;
 		}
 		
-		GameObject playerObj = P.getSimilarItem(TrunkObj);
+		Item playerObj = P.getSimilarItem(TrunkObj);
 		String str = "";
 		int newQua = TrunkObj.getQuantity() - qua;
 		
@@ -1082,11 +1082,11 @@ public class Mount {
 		SocketManager.GAME_SEND_EsK_PACKET(P, str);
 	}
 	
-	private GameObject getSimilarObject(GameObject obj) {
-		for(GameObject gameObject : this.objects.values())
-			if(gameObject.getTemplate().getType() != 85)
-				if(gameObject.getTemplate().getId() == obj.getTemplate().getId() && World.world.getConditionManager().stackIfSimilar(gameObject, obj, true) && gameObject.getStats().isSameStats(obj.getStats()))
-					return gameObject;
+	private Item getSimilarObject(Item obj) {
+		for(Item item : this.objects.values())
+			if(item.getTemplate().getType() != 85)
+				if(item.getTemplate().getId() == obj.getTemplate().getId() && World.world.getConditionManager().stackIfSimilar(item, obj, true) && item.getStats().isSameStats(obj.getStats()))
+					return item;
 		return null;
 	}
 	
@@ -1123,15 +1123,15 @@ public class Mount {
 	
 	public String parseToMountObjects() {
 		StringBuilder packet = new StringBuilder();
-		for(GameObject obj : this.objects.values())
+		for(Item obj : this.objects.values())
 			packet.append("O").append(obj.encodeItem()).append(";");
 		return packet.toString();
 	}
 	
 	public String parseObjectsToString() {
 		String str = "";
-		for(GameObject gameObject : this.objects.values())
-			str += (str.isEmpty() ? "" : ";") + gameObject.getGuid();
+		for(Item item : this.objects.values())
+			str += (str.isEmpty() ? "" : ";") + item.getGuid();
 		return str;
 	}
 	

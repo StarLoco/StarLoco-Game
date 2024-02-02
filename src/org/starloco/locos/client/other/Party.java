@@ -1,7 +1,7 @@
 package org.starloco.locos.client.other;
 
 import org.starloco.locos.area.map.GameCase;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.player.Player;
 import org.starloco.locos.common.PathFinding;
 import org.starloco.locos.common.SocketManager;
 

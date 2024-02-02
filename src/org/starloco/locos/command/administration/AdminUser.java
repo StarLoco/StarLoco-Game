@@ -1,7 +1,7 @@
 package org.starloco.locos.command.administration;
 
 import org.starloco.locos.client.Account;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.player.Player;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.game.GameClient;
 import org.starloco.locos.kernel.Config;

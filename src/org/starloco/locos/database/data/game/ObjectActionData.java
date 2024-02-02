@@ -5,8 +5,8 @@ import org.apache.commons.lang.NotImplementedException;
 import org.starloco.locos.database.data.FunctionDAO;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.Main;
-import org.starloco.locos.object.ObjectAction;
-import org.starloco.locos.object.ObjectTemplate;
+import org.starloco.locos.item.ObjectAction;
+import org.starloco.locos.item.ItemTemplate;
 
 import java.sql.SQLException;
 
@@ -22,7 +22,7 @@ public class ObjectActionData extends FunctionDAO<ObjectAction> {
             getData("SELECT * FROM " + getTableName() + ";", result -> {
                 while (result.next()) {
                     int id = result.getInt("template");
-                    ObjectTemplate template = World.world.getObjTemplate(id);
+                    ItemTemplate template = World.world.getObjTemplate(id);
 
                     if (template != null)
                         template.addAction(new ObjectAction(result.getString("type"), result.getString("args"), ""));

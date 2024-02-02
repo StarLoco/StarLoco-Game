@@ -2,7 +2,7 @@ package org.starloco.locos.auction;
 
 import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.client.Account;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.player.Player;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.database.DatabaseManager;
 import org.starloco.locos.database.data.game.AuctionData;
@@ -10,7 +10,7 @@ import org.starloco.locos.entity.exchange.NpcExchange;
 import org.starloco.locos.entity.npc.Npc;
 import org.starloco.locos.game.scheduler.Updatable;
 import org.starloco.locos.game.world.World;
-import org.starloco.locos.object.GameObject;
+import org.starloco.locos.item.Item;
 import org.starloco.locos.util.TimerWaiter;
 
 import java.text.SimpleDateFormat;
@@ -46,7 +46,7 @@ public class AuctionManager extends Updatable<Void> {
         return auctions;
     }
 
-    public void talk(String key, GameObject object, boolean tradeTalk, Object... params) {
+    public void talk(String key, Item object, boolean tradeTalk, Object... params) {
         GameMap map = World.world.getMap(this.map);
         Npc npc = map.getNpcByTemplateId(9605);
 
@@ -83,7 +83,7 @@ public class AuctionManager extends Updatable<Void> {
         player.send("cMK|" + npc.getId() + "|Commissaire|" + msg + "|");
     }
 
-    private String getTalkStringObject(GameObject object, String msg) {
+    private String getTalkStringObject(Item object, String msg) {
         return "°0" + msg + "|" + object.getTemplate().getId() + "!" + object.encodeStats();
     }
 
@@ -174,7 +174,7 @@ public class AuctionManager extends Updatable<Void> {
     private void stop() {
         if(this.currentIsAvailable()) {
             Player target = this.current.getCustomer();
-            final GameObject object = this.current.getObject();
+            final Item object = this.current.getObject();
 
             if (target != null) {
                 target.addInBank(object.getGuid(), object.getQuantity(), true);
@@ -279,7 +279,7 @@ public class AuctionManager extends Updatable<Void> {
                         if (count == 100) break;
                         count++;
 
-                        GameObject object = auction.getObject();
+                        Item object = auction.getObject();
                         String str = object.getGuid() + "|" + object.getQuantity() + "|" + object.getTemplate().getId() + "|" +
                                 auction.getObject().encodeStats() + ",3db#0#0#0#" + auction.getOwner().getName() + ",c2#" + Integer.toHexString(auction.getPrice()) + "#0#0#0";
 
@@ -318,7 +318,7 @@ public class AuctionManager extends Updatable<Void> {
         player.sendTypeMessage("Auction", player.getLang().trans("game.auction.auctionmanager.infos.3"));
     }
 
-    public boolean onPlayerChangeItemInNpcExchange(Player player, GameObject object) {
+    public boolean onPlayerChangeItemInNpcExchange(Player player, Item object) {
         if(!this.isValid(player)) return false;
         if(object != null && object.getTemplate() != null && object.getTemplate().getLevel() <= 50) return true;
         if(player.getExchangeAction() != null) {

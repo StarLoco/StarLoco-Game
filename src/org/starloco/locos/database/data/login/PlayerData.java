@@ -4,7 +4,7 @@ import com.mysql.jdbc.Statement;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.lang.NotImplementedException;
 import org.starloco.locos.client.Account;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.player.Player;
 import org.starloco.locos.database.DatabaseManager;
 
 import org.starloco.locos.database.data.FunctionDAO;

@@ -1,4 +1,4 @@
-package org.starloco.locos.object;
+package org.starloco.locos.item;
 
 import org.starloco.locos.client.other.Stats;
 import org.starloco.locos.util.Pair;
@@ -38,7 +38,7 @@ public class ItemHash {
     public final String strStats;
     public final String hash;
 
-    public ItemHash(GameObject item) {
+    public ItemHash(Item item) {
         this.templateId = item.getTemplate().getId();
         this.strStats = item.encodeStats();
         this.hash = hash(this.templateId, item.getStats(), item.getTxtStat());

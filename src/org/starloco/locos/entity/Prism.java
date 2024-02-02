@@ -3,7 +3,7 @@ package org.starloco.locos.entity;
 import org.starloco.locos.area.Area;
 import org.starloco.locos.area.SubArea;
 import org.starloco.locos.area.map.GameMap;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.player.Player;
 import org.starloco.locos.client.other.Stats;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.fight.Fight;

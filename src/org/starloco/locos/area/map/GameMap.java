@@ -6,7 +6,7 @@ import org.starloco.locos.area.Area;
 import org.starloco.locos.area.SubArea;
 import org.starloco.locos.entity.map.InteractiveObject;
 import org.starloco.locos.entity.map.MountPark;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.player.Player;
 import org.starloco.locos.client.other.Party;
 import org.starloco.locos.common.Formulas;
 import org.starloco.locos.common.PathFinding;
@@ -29,8 +29,7 @@ import org.starloco.locos.fight.Fighter;
 import org.starloco.locos.game.scheduler.Updatable;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.*;
-import org.starloco.locos.object.GameObject;
-import org.starloco.locos.script.DataScriptVM;
+import org.starloco.locos.item.Item;
 import org.starloco.locos.script.proxy.SMap;
 import org.starloco.locos.util.Pair;
 import org.starloco.locos.util.TimerWaiter;
@@ -44,7 +43,7 @@ import java.util.stream.Stream;
 
 public class GameMap {
 
-    public static final Map<String, ArrayList<GameObject>> fixMobGroupObjects = new HashMap<>();
+    public static final Map<String, ArrayList<Item>> fixMobGroupObjects = new HashMap<>();
     public static final Updatable<ArrayList<RespawnGroup>> updatable = new Updatable<ArrayList<RespawnGroup>>(30000) {
         private final ArrayList<RespawnGroup> groups = new ArrayList<>();
 
@@ -151,7 +150,7 @@ public class GameMap {
 
     // Make those private once GameCase is gone
     ConcurrentHashMap<Integer, Set<Actor>> actors = new ConcurrentHashMap<>();
-    ConcurrentHashMap<Integer, GameObject> droppedItems = new ConcurrentHashMap<>();
+    ConcurrentHashMap<Integer, Item> droppedItems = new ConcurrentHashMap<>();
 
     Map<Integer, InteractiveObject> interactiveObjects;
     // end: Make those private once GameCase is gone
@@ -1489,7 +1488,7 @@ public class GameMap {
         if (cell.getDroppedItem(false) != null) {
             if (!Main.mapAsBlocked) {
                 synchronized (cell) {
-                    GameObject obj = cell.getDroppedItem(true);
+                    Item obj = cell.getDroppedItem(true);
 
                     if (obj != null) {
                         if (Logging.USE_LOG)

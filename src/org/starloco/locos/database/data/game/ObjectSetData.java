@@ -4,11 +4,11 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.lang.NotImplementedException;
 import org.starloco.locos.database.data.FunctionDAO;
 import org.starloco.locos.game.world.World;
-import org.starloco.locos.object.ObjectSet;
+import org.starloco.locos.item.ItemSet;
 
 import java.sql.SQLException;
 
-public class ObjectSetData extends FunctionDAO<ObjectSet> {
+public class ObjectSetData extends FunctionDAO<ItemSet> {
     public ObjectSetData(HikariDataSource dataSource) {
         super(dataSource, "itemsets");
     }
@@ -18,7 +18,7 @@ public class ObjectSetData extends FunctionDAO<ObjectSet> {
         try {
             getData("SELECT * FROM " + getTableName() + ";", result -> {
                 while (result.next()) {
-                    World.world.addItemSet(new ObjectSet(result.getInt("id"), result.getString("items"), result.getString("bonus")));
+                    World.world.addItemSet(new ItemSet(result.getInt("id"), result.getString("items"), result.getString("bonus")));
                 }
             });
         } catch (SQLException e) {
@@ -27,22 +27,22 @@ public class ObjectSetData extends FunctionDAO<ObjectSet> {
     }
 
     @Override
-    public ObjectSet load(int id) {
+    public ItemSet load(int id) {
         throw new NotImplementedException();
     }
 
     @Override
-    public boolean insert(ObjectSet entity) {
+    public boolean insert(ItemSet entity) {
         throw new NotImplementedException();
     }
 
     @Override
-    public void delete(ObjectSet entity) {
+    public void delete(ItemSet entity) {
         throw new NotImplementedException();
     }
 
     @Override
-    public void update(ObjectSet entity) {
+    public void update(ItemSet entity) {
         throw new NotImplementedException();
     }
 

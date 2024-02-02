@@ -3,38 +3,38 @@ package org.starloco.locos.script.proxy;
 import org.classdump.luna.impl.DefaultUserdata;
 import org.classdump.luna.impl.ImmutableTable;
 import org.classdump.luna.lib.ArgumentIterator;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.player.Player;
 import org.starloco.locos.common.SocketManager;
-import org.starloco.locos.object.GameObject;
+import org.starloco.locos.item.Item;
 import org.starloco.locos.script.types.MetaTables;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-public class SItem  extends DefaultUserdata<GameObject> {
+public class SItem  extends DefaultUserdata<Item> {
     private static final ImmutableTable META_TABLE= MetaTables.MetaTable(MetaTables.ReflectIndexTable(SItem.class));
 
-    public SItem(GameObject userValue) {
+    public SItem(Item userValue) {
         super(META_TABLE, userValue);
     }
 
     @SuppressWarnings("unused")
-    private static int guid(GameObject item) {
+    private static int guid(Item item) {
         return item.getGuid();
     }
 
     @SuppressWarnings("unused")
-    private static int id(GameObject item) {
+    private static int id(Item item) {
         return item.getTemplate().getId();
     }
 
     @SuppressWarnings("unused")
-    private static int type(GameObject item) {
+    private static int type(Item item) {
         return item.getTemplate().getType();
     }
 
     @SuppressWarnings("unused")
-    private static long dateStatTS(GameObject item, ArgumentIterator args) {
+    private static long dateStatTS(Item item, ArgumentIterator args) {
         int statID = args.nextInt();
 
         String val = item.getTxtStat().get(statID);
@@ -46,7 +46,7 @@ public class SItem  extends DefaultUserdata<GameObject> {
     }
 
     @SuppressWarnings("unused")
-    private static boolean hasTxtStat(GameObject item, ArgumentIterator args) {
+    private static boolean hasTxtStat(Item item, ArgumentIterator args) {
         int stat = args.nextInt();
         String val = args.nextString().toString();
 
@@ -58,7 +58,7 @@ public class SItem  extends DefaultUserdata<GameObject> {
     }
 
     @SuppressWarnings("unused")
-    private static boolean consumeTxtStat(GameObject item, ArgumentIterator args) {
+    private static boolean consumeTxtStat(Item item, ArgumentIterator args) {
         Player player = args.nextUserdata("SPlayer", SPlayer.class).getUserValue();
         int stat = args.nextInt();
         String val = args.nextString().toString();

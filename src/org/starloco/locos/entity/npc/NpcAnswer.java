@@ -1,6 +1,6 @@
 package org.starloco.locos.entity.npc;
 
-import org.starloco.locos.client.Player;
+import org.starloco.locos.player.Player;
 import org.starloco.locos.other.Action;
 
 import java.util.ArrayList;

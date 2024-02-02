@@ -27,7 +27,7 @@ import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.auction.AuctionManager;
 import org.starloco.locos.client.Account;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.player.Player;
 import org.starloco.locos.client.other.Party;
 import org.starloco.locos.command.CommandAdmin;
 import org.starloco.locos.command.CommandPlayer;
@@ -71,10 +71,10 @@ import org.starloco.locos.kernel.Constant;
 import org.starloco.locos.kernel.Logging;
 import org.starloco.locos.kernel.Main;
 import org.starloco.locos.lang.LangEnum;
-import org.starloco.locos.object.GameObject;
-import org.starloco.locos.object.ObjectTemplate;
-import org.starloco.locos.object.entity.Fragment;
-import org.starloco.locos.object.entity.SoulStone;
+import org.starloco.locos.item.Item;
+import org.starloco.locos.item.ItemTemplate;
+import org.starloco.locos.item.entity.Fragment;
+import org.starloco.locos.item.entity.SoulStone;
 import org.starloco.locos.util.TimerWaiter;
 import org.starloco.locos.util.generator.NameGenerator;
 
@@ -345,11 +345,11 @@ public class GameClient {
             return;
         }
 
-        final GameObject mimibiote = this.player.getItemTemplate(Constant.ID_TEMPLATE_MIMIBIOTE);
+        final Item mimibiote = this.player.getItemTemplate(Constant.ID_TEMPLATE_MIMIBIOTE);
         if(mimibiote == null) return;
 
-        final GameObject itemToKeep = World.world.getGameObject(idItemToKeep);
-        final GameObject itemToDelete = World.world.getGameObject(idItemToDelete);
+        final Item itemToKeep = World.world.getGameObject(idItemToKeep);
+        final Item itemToDelete = World.world.getGameObject(idItemToDelete);
 
         if(itemToKeep == null || itemToDelete == null) return;
         if(!this.player.hasItemGuid(idItemToKeep) || !this.player.hasItemGuid(idItemToDelete)) return;
@@ -386,14 +386,14 @@ public class GameClient {
             return;
         }
 
-        final GameObject item = World.world.getGameObject(idItem);
+        final Item item = World.world.getGameObject(idItem);
         if(item == null) return;
         if(!this.player.hasItemGuid(idItem)) return;
         if(!item.isMimibiote()) return;
 
-        final GameObject mimibiote = World.world.getObjTemplate(Constant.ID_TEMPLATE_MIMIBIOTE).createNewItem(1, false);
+        final Item mimibiote = World.world.getObjTemplate(Constant.ID_TEMPLATE_MIMIBIOTE).createNewItem(1, false);
         final int idApparat = Integer.parseInt(item.getTxtStat().get(Constant.STATS_MIMIBIOTE).split(";")[0], 16);
-        final GameObject apparat = World.world.getGameObject(idApparat);
+        final Item apparat = World.world.getGameObject(idApparat);
 
         if(apparat == null)
         {
@@ -535,7 +535,7 @@ public class GameClient {
             for (String object : gifts.split(";")) {
                 if(object.isEmpty()) continue;
                 int id = Integer.parseInt(object.split(",")[0]), qua = Integer.parseInt(object.split(",")[1]);
-                ObjectTemplate template = World.world.getObjTemplate(id);
+                ItemTemplate template = World.world.getObjTemplate(id);
                 if(template != null) {
                     if (data.isEmpty()) {
                         data = "1~" + Integer.toString(id, 16) + "~" + Integer.toString(qua, 16) + "~~" + template.getStrTemplate();
@@ -572,7 +572,7 @@ public class GameClient {
 
             if (id == template) {
                 int qua = Integer.parseInt(split[1]), jp = Integer.parseInt(split[2]);
-                GameObject obj;
+                Item obj;
 
                 List<Integer> objNeedAttach = Arrays.asList(26001, 26002, 26003, 26004, 26005);
                 if (qua == 1) {
@@ -1517,7 +1517,7 @@ public class GameClient {
                     }
                     price = seller.getStoreItems().get(itemID) * qua;
                     int price2 = seller.getStoreItems().get(itemID);
-                    GameObject itemStore = World.world.getGameObject(itemID);
+                    Item itemStore = World.world.getGameObject(itemID);
                     if (itemStore == null)
                         return;
                     if (price > this.player.getKamas())
@@ -1534,7 +1534,7 @@ public class GameClient {
                         itemStore.setQuantity(itemStore.getQuantity() - qua);
                         seller.addStoreItem(itemStore.getGuid(), price2);
 
-                        GameObject clone = itemStore.getClone(qua, true);
+                        Item clone = itemStore.getClone(qua, true);
                         if (this.player.addItem(clone, true, false))
                             World.world.addGameObject(clone);
                     } else {
@@ -1634,7 +1634,7 @@ public class GameClient {
                 Optional<Account> seller = Optional.ofNullable(World.world.ensureAccountLoaded(entry.getOwner()));
 
                 String name = seller.map(Account::getName).orElse("undefined");
-                GameObject obj = entry.getGameObject();
+                Item obj = entry.getGameObject();
 
                 try {
                     Logging.getInstance().write("Object", "BuyHdv : "
@@ -1732,7 +1732,7 @@ public class GameClient {
             Fragment fragment = new Fragment("");
 
             for (Couple<Integer, Integer> couple : ((BreakingObject) value).getObjects()) {
-                GameObject object = this.player.getItems().get(couple.first);
+                Item object = this.player.getItems().get(couple.first);
 
                 if (object == null || couple.second < 1 || object.getQuantity() < couple.second) {
                     this.player.send("Ea3");
@@ -1823,7 +1823,7 @@ public class GameClient {
                                 int qua = Integer.parseInt(infos[1]);
                                 int price = Integer.parseInt(infos[2]);
 
-                                GameObject obj = this.player.getItems().get(guid);
+                                Item obj = this.player.getItems().get(guid);
                                 if (obj == null)
                                     return;
                                 if (qua <= 0 || obj.isAttach())
@@ -1847,7 +1847,7 @@ public class GameClient {
 
                                 if (qua <= 0)
                                     return;
-                                GameObject obj = World.world.getGameObject(guid);
+                                Item obj = World.world.getGameObject(guid);
                                 if (obj == null)
                                     return;
                                 if (qua < 0)
@@ -1916,7 +1916,7 @@ public class GameClient {
                             if (guid <= 0 || qua <= 0)
                                 return;
 
-                            GameObject obj = World.world.getGameObject(guid);
+                            Item obj = World.world.getGameObject(guid);
                             if (obj == null)
                                 return;
 
@@ -1945,7 +1945,7 @@ public class GameClient {
                             if (!this.player.hasItemGuid(id))
                                 return;
 
-                            GameObject object = this.player.getItems().get(id);
+                            Item object = this.player.getItems().get(id);
 
                             if (object == null || object.isAttach())
                                 return;
@@ -1968,7 +1968,7 @@ public class GameClient {
                             int id = Integer.parseInt(infos[0]);
                             int qua = Integer.parseInt(infos[1]);
 
-                            GameObject object = World.world.getGameObject(id);
+                            Item object = World.world.getGameObject(id);
 
                             if (object == null)
                                 return;
@@ -2044,7 +2044,7 @@ public class GameClient {
                                 int quaInExch = ((NpcExchange) this.player.getExchangeAction().getValue()).getQuaItem(guid, false);
 
                                 if (!this.player.hasItemGuid(guid)) return;
-                                GameObject obj = this.player.getItems().get(guid);
+                                Item obj = this.player.getItems().get(guid);
                                 if (obj == null) return;
 
                                 if (qua > obj.getQuantity() - quaInExch)
@@ -2071,7 +2071,7 @@ public class GameClient {
                                 if (!this.player.hasItemGuid(guid))
                                     return;
 
-                                GameObject obj = World.world.getGameObject(guid);
+                                Item obj = World.world.getGameObject(guid);
                                 if (obj == null)
                                     return;
                                 if (qua > ((NpcExchange) this.player.getExchangeAction().getValue()).getQuaItem(guid, false))
@@ -2111,7 +2111,7 @@ public class GameClient {
 
                                 if (!this.player.hasItemGuid(guid))
                                     return;
-                                GameObject obj = this.player.getItems().get(guid);
+                                Item obj = this.player.getItems().get(guid);
                                 if (obj == null)
                                     return;
 
@@ -2138,7 +2138,7 @@ public class GameClient {
                                 if (!this.player.hasItemGuid(guid))
                                     return;
 
-                                GameObject obj = World.world.getGameObject(guid);
+                                Item obj = World.world.getGameObject(guid);
                                 if (obj == null)
                                     return;
                                 if (qua > ((PlayerExchange.NpcExchangePets) this.player.getExchangeAction().getValue()).getQuaItem(guid, false))
@@ -2182,7 +2182,7 @@ public class GameClient {
 
                                 if (!this.player.hasItemGuid(guid))
                                     return;
-                                GameObject obj = World.world.getGameObject(guid);
+                                Item obj = World.world.getGameObject(guid);
                                 if (obj == null)
                                     return;
 
@@ -2209,7 +2209,7 @@ public class GameClient {
                                 if (!this.player.hasItemGuid(guid))
                                     return;
 
-                                GameObject obj = World.world.getGameObject(guid);
+                                Item obj = World.world.getGameObject(guid);
                                 if (obj == null)
                                     return;
                                 if (qua > ((PlayerExchange.NpcRessurectPets) this.player.getExchangeAction().getValue()).getQuaItem(guid, false))
@@ -2316,7 +2316,7 @@ public class GameClient {
                             return;
                         }
 
-                        GameObject obj = World.world.getGameObject(itmID);//R?cup?re l'item
+                        Item obj = World.world.getGameObject(itmID);//R?cup?re l'item
                         if (obj == null || obj.isAttach()) return;
 
                         this.player.addKamas(taxe * -1);//Retire le montant de la taxe au this.playernnage
@@ -2336,7 +2336,7 @@ public class GameClient {
                         } else {
                             obj.setQuantity(obj.getQuantity() - rAmount);
                             SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(this.player, obj);
-                            GameObject newObj = obj.getClone(rAmount, true);
+                            Item newObj = obj.getClone(rAmount, true);
                             World.world.addGameObject(newObj);
                             obj = newObj;
                         }
@@ -2472,7 +2472,7 @@ public class GameClient {
                                 break;
 
                             case '-'://Retirer de la banque
-                                GameObject object = World.world.getGameObject(guid);
+                                Item object = World.world.getGameObject(guid);
                                 if(object != null) {
                                     if (object.getTxtStat().containsKey(Constant.STATS_OWNER_1)) {
                                         Player player = World.world.getPlayerByName(object.getTxtStat().get(Constant.STATS_OWNER_1));
@@ -2572,7 +2572,7 @@ public class GameClient {
 
                                     if (!this.player.hasItemGuid(guid))
                                         return;
-                                    GameObject obj = this.player.getItems().get(guid);
+                                    Item obj = this.player.getItems().get(guid);
                                     if (obj == null)
                                         return;
                                     if (qua > obj.getQuantity() - quaInExch)
@@ -2599,7 +2599,7 @@ public class GameClient {
                                 if (!this.player.hasItemGuid(guid))
                                     return;
 
-                                GameObject obj = this.player.getItems().get(guid);
+                                Item obj = this.player.getItems().get(guid);
                                 if (obj == null)
                                     return;
                                 if (qua > ((PlayerExchange) this.player.getExchangeAction().getValue()).getQuaItem(guid, this.player.getId()))
@@ -2764,7 +2764,7 @@ public class GameClient {
                         return;
                     }
 
-                    GameObject object = World.world.getGameObject(id);
+                    Item object = World.world.getGameObject(id);
                     Mount mount = World.world.getMountById(object.getStats().getEffect(995));
 
                     if(mount == null){
@@ -2980,7 +2980,7 @@ public class GameClient {
                 if (jobs == null || jobs.isEmpty())
                     return;
 
-                GameObject object = player.getObjetByPos(Constant.ITEM_POS_ARME);
+                Item object = player.getObjetByPos(Constant.ITEM_POS_ARME);
 
                 if (object == null) {
                     this.player.send("BN");
@@ -3062,7 +3062,7 @@ public class GameClient {
                 List<Job> jobs = this.player.getJobs();
                 if (jobs == null || jobs.isEmpty()) return;
 
-                GameObject object = this.player.getObjetByPos(Constant.ITEM_POS_ARME);
+                Item object = this.player.getObjetByPos(Constant.ITEM_POS_ARME);
                 if (object == null) return;
 
                 boolean ok = false;
@@ -3423,14 +3423,14 @@ public class GameClient {
                 break;
             case ExchangeAction.IN_MOUNTPARK:
                 player.send("EV");
-                ArrayList<GameObject> objects = new ArrayList<>();
-                for(GameObject object : player.getItems().values()) {
+                ArrayList<Item> objects = new ArrayList<>();
+                for(Item object : player.getItems().values()) {
                     Mount mount = World.world.getMountById(object.getStats().getEffect(995));
 
                     if(mount == null && object.getTemplate().getType() == Constant.ITEM_TYPE_CERTIF_MONTURE)
                         objects.add(object);
                 }
-                for(GameObject object : objects)
+                for(Item object : objects)
                     player.removeItem(object.getGuid(), object.getQuantity(), true, true);
                 break;
 
@@ -5672,7 +5672,7 @@ public class GameClient {
                 qua = Integer.parseInt(infos[1]);
             } catch (Exception ignored) {}
 
-            GameObject obj = this.player.getItems().get(guid);
+            Item obj = this.player.getItems().get(guid);
             if (obj == null || !this.player.hasItemGuid(guid) || qua <= 0
                     || this.player.getFight() != null || this.player.isAway()) {
                 //SocketManager.GAME_SEND_DELETE_OBJECT_FAILED_PACKET(this);
@@ -5712,7 +5712,7 @@ public class GameClient {
         if (guid == -1 || qua <= 0 || !this.player.hasItemGuid(guid)
                 || this.player.getFight() != null || this.player.isAway())
             return;
-        GameObject obj = this.player.getItems().get(guid);
+        Item obj = this.player.getItems().get(guid);
 
         if(obj.isAttach()) return;
 
@@ -5740,7 +5740,7 @@ public class GameClient {
             SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(this.player, guid);
         } else {
             obj.setQuantity(obj.getQuantity() - qua);
-            GameObject obj2 = obj.getClone(qua, true);
+            Item obj2 = obj.getClone(qua, true);
             obj2.setPosition(Constant.ITEM_POS_NO_EQUIPED);
             this.player.getCurMap().getCase(cellPosition).tryDropItem(obj2);
             SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(this.player, obj);
@@ -5760,7 +5760,7 @@ public class GameClient {
                 quantity = Integer.parseInt(infos[2]);
             } catch (Exception ignored) {}
 
-            GameObject object = this.player.getItems().get(id);
+            Item object = this.player.getItems().get(id);
             if (object == null || player.getExchangeAction() != null)
                 return;
             if (this.player.getFight() != null)
@@ -5802,7 +5802,7 @@ public class GameClient {
 
             /* Feed pet **/
             if (position == Constant.ITEM_POS_FAMILIER && object.getTemplate().getType() != Constant.ITEM_TYPE_FAMILIER && this.player.getObjetByPos(position) != null) {
-                GameObject pets = this.player.getObjetByPos(position);
+                Item pets = this.player.getObjetByPos(position);
                 Pet p = World.world.getPets(pets.getTemplate().getId());
                 if (p == null)
                     return;
@@ -5855,7 +5855,7 @@ public class GameClient {
                 return;
             /* End feed pet **/
             } else {
-                ObjectTemplate template = object.getTemplate();
+                ItemTemplate template = object.getTemplate();
                 int set = template.getPanoId();
 
                 if (set >= 81 && set <= 92 && position != Constant.ITEM_POS_NO_EQUIPED) {
@@ -5891,7 +5891,7 @@ public class GameClient {
                     SocketManager.GAME_SEND_Im_PACKET(this.player, "119|44"); // si le this.player ne v?rifie pas les conditions diverses
                     return;
                 }
-                GameObject shield = null, weapon = null;
+                Item shield = null, weapon = null;
                 if ((position == Constant.ITEM_POS_BOUCLIER && (weapon = this.player.getObjetByPos(Constant.ITEM_POS_ARME)) != null)
                         || (position == Constant.ITEM_POS_ARME && (shield = this.player.getObjetByPos(Constant.ITEM_POS_BOUCLIER)) != null)) {
                     if (weapon != null) {
@@ -5922,7 +5922,7 @@ public class GameClient {
 
                 // FIN DES VERIFS
 
-                GameObject exObj = this.player.getObjetByPos2(position);//Objet a l'ancienne position
+                Item exObj = this.player.getObjetByPos2(position);//Objet a l'ancienne position
                 int objGUID = object.getTemplate().getId();
                 // CODE OBVI
                 if (object.getTemplate().getType() == 113) {
@@ -5952,7 +5952,7 @@ public class GameClient {
                         if (object.getQuantity() - quantity > 0)//Si il en reste
                         {
                             int newItemQua = object.getQuantity() - quantity;
-                            GameObject newItem = object.getClone(newItemQua, true);
+                            Item newItem = object.getClone(newItemQua, true);
                             this.player.addItem(newItem, false, false);
                             World.world.addGameObject(newItem);
                             object.setQuantity(quantity);
@@ -5967,8 +5967,8 @@ public class GameClient {
 
                 if (exObj != null)//S'il y avait d?ja un objet sur cette place on d?s?quipe
                 {
-                    GameObject obj2;
-                    ObjectTemplate exObjTpl = exObj.getTemplate();
+                    Item obj2;
+                    ItemTemplate exObjTpl = exObj.getTemplate();
                     int idSetExObj = exObj.getTemplate().getPanoId();
                     if ((obj2 = this.player.getSimilarItem(exObj)) != null)//On le poss?de deja
                     {
@@ -6004,7 +6004,7 @@ public class GameClient {
                     if (exObj.getTemplate().getPanoId() > 0)
                         SocketManager.GAME_SEND_OS_PACKET(this.player, exObj.getTemplate().getPanoId());
                 } else {
-                    GameObject obj2;
+                    Item obj2;
                     //On a un objet similaire
                     if ((obj2 = this.player.getSimilarItem(object)) != null) {
                         if (quantity > object.getQuantity())
@@ -6037,7 +6037,7 @@ public class GameClient {
                                     quantity = object.getQuantity();
 
                                 if (object.getQuantity() - quantity > 0) {//Si il en reste
-                                    GameObject newItem = object.getClone(object.getQuantity()
+                                    Item newItem = object.getClone(object.getQuantity()
                                             - quantity, true);
                                     newItem.setPosition(oldPos);
 
@@ -6058,7 +6058,7 @@ public class GameClient {
 
                                 if (object.getQuantity() - quantity > 0) {//Si il en reste
                                     int newItemQua = object.getQuantity() - quantity;
-                                    GameObject newItem = object.getClone(newItemQua, true);
+                                    Item newItem = object.getClone(newItemQua, true);
                                     if (this.player.addItem(newItem, true, false))
                                         World.world.addGameObject(newItem);
                                     object.setQuantity(quantity);
@@ -6250,10 +6250,10 @@ public class GameClient {
             return;
         if (target != null && target.isAway())
             return;
-        GameObject obj = this.player.getItems().get(guid);
+        Item obj = this.player.getItems().get(guid);
         if (obj == null)
             return;
-        ObjectTemplate T = obj.getTemplate();
+        ItemTemplate T = obj.getTemplate();
         if (T.getLevel() > this.player.getLevel() || (!obj.getTemplate().getConditions().equalsIgnoreCase("") && !World.world.getConditionManager().validConditions(this.player, obj.getTemplate().getConditions()))) {
             SocketManager.GAME_SEND_Im_PACKET(this.player, "119|43");
             return;
@@ -6284,7 +6284,7 @@ public class GameClient {
         }
         if ((guid == -1) || (!this.player.hasItemGuid(guid)))
             return;
-        GameObject obj = this.player.getItems().get(guid);
+        Item obj = this.player.getItems().get(guid);
         int idOBVI = DatabaseManager.get(ObvijevanData.class).load(obj.getGuid()).getFirst();
 
         if (idOBVI == -1) {
@@ -6308,8 +6308,8 @@ public class GameClient {
             }
         }
 
-        ObjectTemplate t = World.world.getObjTemplate(idOBVI);
-        GameObject obV = t.createNewItem(1, true);
+        ItemTemplate t = World.world.getObjTemplate(idOBVI);
+        Item obV = t.createNewItem(1, true);
         String obviStats = obj.getObvijevanStatsOnly();
         if (obviStats.equals("")) {
             SocketManager.GAME_SEND_MESSAGE(this.player, "Erreur d'obvijevan numero: 3. Merci de nous le signaler si le probleme est grave.", "000000");
@@ -6340,8 +6340,8 @@ public class GameClient {
 
         if ((guid == -1) || (!this.player.hasItemGuid(guid)))
             return;
-        GameObject obj = this.player.getItems().get(guid);
-        GameObject objVictime = World.world.getGameObject(victime);
+        Item obj = this.player.getItems().get(guid);
+        Item objVictime = World.world.getGameObject(victime);
         obj.obvijevanNourir(objVictime);
 
         int qua = objVictime.getQuantity();
@@ -6370,7 +6370,7 @@ public class GameClient {
         }
         if ((guid == -1) || (!this.player.hasItemGuid(guid)))
             return;
-        GameObject obj = this.player.getItems().get(guid);
+        Item obj = this.player.getItems().get(guid);
         if ((val >= 21) || (val <= 0))
             return;
 
@@ -6816,8 +6816,8 @@ public class GameClient {
         }
 
         int item = MP.getCellAndObject().get(cell);
-        ObjectTemplate t = World.world.getObjTemplate(item);
-        GameObject obj = t.createNewItem(1, false); // creation de l'item au stats incorrecte
+        ItemTemplate t = World.world.getObjTemplate(item);
+        Item obj = t.createNewItem(1, false); // creation de l'item au stats incorrecte
 
         int statNew = 0;// on vas chercher la valeur de la resistance de l'item
         for (Map.Entry<Integer, Map<Integer, Integer>> entry : MP.getObjDurab().entrySet()) {

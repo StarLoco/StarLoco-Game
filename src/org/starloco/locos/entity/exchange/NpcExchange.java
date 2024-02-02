@@ -2,7 +2,7 @@ package org.starloco.locos.entity.exchange;
 
 import org.starloco.locos.auction.Auction;
 import org.starloco.locos.auction.AuctionManager;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.player.Player;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.database.DatabaseManager;
 import org.starloco.locos.database.data.login.PlayerData;
@@ -10,8 +10,8 @@ import org.starloco.locos.entity.mount.Mount;
 import org.starloco.locos.entity.npc.NpcTemplate;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.Constant;
-import org.starloco.locos.object.GameObject;
-import org.starloco.locos.object.ObjectTemplate;
+import org.starloco.locos.item.Item;
+import org.starloco.locos.item.ItemTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -95,7 +95,7 @@ public class NpcExchange {
                 couple.second = 0;//On met la quantité a 0 pour éviter les problemes
                 continue;
             }
-            GameObject obj = World.world.getGameObject(couple.first);
+            Item obj = World.world.getGameObject(couple.first);
             if ((obj.getQuantity() - couple.second) < 1) {
                 this.player.removeItem(couple.first);
                 if (this.auction != null) {
@@ -117,9 +117,9 @@ public class NpcExchange {
         for (World.Couple<Integer, Integer> couple1 : items2) {
             if (couple1.second == 0) continue;
             if (World.world.getObjTemplate(couple1.first) == null) continue;
-            ObjectTemplate t = World.world.getObjTemplate(couple1.first);
+            ItemTemplate t = World.world.getObjTemplate(couple1.first);
 
-            GameObject obj1 = t.createNewItem(couple1.second, false);
+            Item obj1 = t.createNewItem(couple1.second, false);
             if (this.player.addItem(obj1, true, false))
                 World.world.addGameObject(obj1);
 

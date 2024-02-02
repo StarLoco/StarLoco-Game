@@ -3,9 +3,9 @@ package org.starloco.locos.client;
 import org.starloco.locos.database.data.game.QuestProgressData;
 import org.starloco.locos.kernel.Config;
 import org.starloco.locos.kernel.Constant;
+import org.starloco.locos.player.Player;
 import org.starloco.locos.quest.QuestProgress;
 import org.starloco.locos.script.proxy.SAccount;
-import org.starloco.locos.script.proxy.SPlayer;
 import org.starloco.locos.util.Pair;
 import org.starloco.locos.command.administration.Group;
 import org.starloco.locos.common.SocketManager;
@@ -19,7 +19,7 @@ import org.starloco.locos.game.GameClient;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.hdv.BigStoreListing;
 import org.starloco.locos.kernel.Main;
-import org.starloco.locos.object.GameObject;
+import org.starloco.locos.item.Item;
 
 import java.util.*;
 import java.util.function.Function;
@@ -46,7 +46,7 @@ public class Account {
     private byte state;
     private String lastVoteIP;
     private long heureVote;
-    private final List<GameObject> bank = new ArrayList<>();
+    private final List<Item> bank = new ArrayList<>();
     private final List<Integer> friends = new ArrayList<>();
     private final List<Integer> enemys = new ArrayList<>();
     private final Map<Integer, List<BigStoreListing>> hdvsItems;
@@ -199,7 +199,7 @@ public class Account {
         return mutePseudo;
     }
 
-    public List<GameObject> getBank() {
+    public List<Item> getBank() {
         return bank;
     }
 
@@ -207,8 +207,8 @@ public class Account {
         StringBuilder str = new StringBuilder();
         if (this.bank.isEmpty())
             return "";
-        for (GameObject gameObject : this.bank)
-            str.append(gameObject.getGuid()).append("|");
+        for (Item item : this.bank)
+            str.append(item.getGuid()).append("|");
         return str.toString();
     }
 
@@ -527,7 +527,7 @@ public class Account {
             if (!items.equals("")) {
                 for (String item : items.split("\\|")) {
                     if (!item.equals("")) {
-                        GameObject obj = World.world.getGameObject(Integer.parseInt(item));
+                        Item obj = World.world.getGameObject(Integer.parseInt(item));
                         if (obj != null)
                             this.bank.add(obj);
                     }

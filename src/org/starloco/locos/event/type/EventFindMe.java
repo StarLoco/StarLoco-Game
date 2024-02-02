@@ -4,11 +4,11 @@ import org.starloco.locos.area.Area;
 import org.starloco.locos.area.SubArea;
 import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.area.map.GameMap;
-import org.starloco.locos.client.Player;
+import org.starloco.locos.player.Player;
 import org.starloco.locos.common.Formulas;
 import org.starloco.locos.event.EventManager;
 import org.starloco.locos.game.world.World;
-import org.starloco.locos.object.GameObject;
+import org.starloco.locos.item.Item;
 import org.starloco.locos.util.TimerWaiter;
 
 import java.util.ArrayList;
@@ -21,7 +21,7 @@ public class EventFindMe extends Event {
 
     private GameMap map;
     private GameCase cell;
-    private GameObject object;
+    private Item object;
     private int count = 0;
     private long time;
 

@@ -1,6 +1,6 @@
 package org.starloco.locos.job;
 
-import org.starloco.locos.client.Player;
+import org.starloco.locos.player.Player;
 import org.starloco.locos.common.Formulas;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.fight.spells.SpellEffect;
@@ -11,8 +11,8 @@ import org.starloco.locos.job.maging.Rune;
 import org.starloco.locos.kernel.Config;
 import org.starloco.locos.kernel.Constant;
 import org.starloco.locos.kernel.Logging;
-import org.starloco.locos.object.GameObject;
-import org.starloco.locos.object.ObjectTemplate;
+import org.starloco.locos.item.Item;
+import org.starloco.locos.item.ItemTemplate;
 import org.starloco.locos.util.RandomStats;
 
 import java.util.*;
@@ -87,9 +87,9 @@ public class JobAction {
         this.jobCraft = new JobCraft(this, P);
     }
 
-    private int addCraftObject(Player player, GameObject newObj) {
-        for (Entry<Integer, GameObject> entry : player.getItems().entrySet()) {
-            GameObject obj = entry.getValue();
+    private int addCraftObject(Player player, Item newObj) {
+        for (Entry<Integer, Item> entry : player.getItems().entrySet()) {
+            Item obj = entry.getValue();
             if (obj.getTemplate().getId() == newObj.getTemplate().getId() && obj.getTxtStat().equals(newObj.getTxtStat())
                     && obj.getStats().isSameStats(newObj.getStats()) && obj.getPosition() == Constant.ITEM_POS_NO_EQUIPED) {
                 obj.setQuantity(obj.getQuantity() + newObj.getQuantity());//On ajoute QUA item a la quantit� de l'objet existant
@@ -124,10 +124,10 @@ public class JobAction {
 
         for (ArrayList<Couple<Integer, Integer>> entry : list.values()) {
             for (Couple<Integer, Integer> couple : entry) {
-                GameObject object = World.world.getGameObject(couple.first);
+                Item object = World.world.getGameObject(couple.first);
                 if (object != null) {
-                    ObjectTemplate objectTemplate = object.getTemplate();
-                    if (objectTemplate != null && objectTemplate.getId() != 7508) size++;
+                    ItemTemplate itemTemplate = object.getTemplate();
+                    if (itemTemplate != null && itemTemplate.getId() != 7508) size++;
                 }
             }
         }
@@ -176,19 +176,19 @@ public class JobAction {
                     return false;
                 }
 
-                GameObject gameObject = World.world.getGameObject(e.first);
-                if (gameObject == null) {
+                Item item = World.world.getGameObject(e.first);
+                if (item == null) {
                     SocketManager.GAME_SEND_Ec_PACKET(player, "EI");
                     SocketManager.GAME_SEND_Ec_PACKET(this.player, "EI");
                     return false;
                 }
-                if (gameObject.getQuantity() < e.second) {
+                if (item.getQuantity() < e.second) {
                     SocketManager.GAME_SEND_Ec_PACKET(player, "EI");
                     SocketManager.GAME_SEND_Ec_PACKET(this.player, "EI");
                     return false;
                 }
 
-                int newQua = gameObject.getQuantity() - e.second;
+                int newQua = item.getQuantity() - e.second;
 
                 if (newQua < 0)
                     return false;
@@ -198,17 +198,17 @@ public class JobAction {
                     World.world.removeGameObject(e.first);
                     SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(player, e.first);
                 } else {
-                    gameObject.setQuantity(newQua);
-                    SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(player, gameObject);
+                    item.setQuantity(newQua);
+                    SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(player, item);
                 }
 
-                if(items.containsKey(gameObject.getTemplate().getId())) {
-                    int template = gameObject.getTemplate().getId();
+                if(items.containsKey(item.getTemplate().getId())) {
+                    int template = item.getTemplate().getId();
                     int quantity = e.second + items.get(template);
                     items.remove(template);
                     items.put(template, quantity);
                 } else {
-                    items.put(gameObject.getTemplate().getId(), e.second);
+                    items.put(item.getTemplate().getId(), e.second);
                 }
             }
         }
@@ -242,7 +242,7 @@ public class JobAction {
             SocketManager.GAME_SEND_IO_PACKET_TO_MAP(this.player.getCurMap(), this.player.getId(), "-" + template);
             SocketManager.GAME_SEND_Im_PACKET(this.player, "0118");
         } else {
-            GameObject newObj = World.world.getObjTemplate(template).createNewItem(1, false);
+            Item newObj = World.world.getObjTemplate(template).createNewItem(1, false);
             if (signed) newObj.addTxtStat(988, this.player.getName());
             int guid = this.addCraftObject(receiver, newObj);
             if(guid == -1) guid = newObj.getGuid();
@@ -292,7 +292,7 @@ public class JobAction {
                 return;
             }
 
-            GameObject obj = World.world.getGameObject(e.getKey());
+            Item obj = World.world.getGameObject(e.getKey());
 
             if (obj == null) {
                 SocketManager.GAME_SEND_Ec_PACKET(this.player, "EI");
@@ -367,7 +367,7 @@ public class JobAction {
                 SocketManager.GAME_SEND_IO_PACKET_TO_MAP(this.player.getCurMap(), this.player.getId(), "-" + templateId);
                 SocketManager.GAME_SEND_Im_PACKET(this.player, "0118");
             } else {
-                GameObject newObj = World.world.getObjTemplate(templateId).createNewItemWithoutDuplication(this.player.getItems().values(), 1, false);
+                Item newObj = World.world.getObjTemplate(templateId).createNewItemWithoutDuplication(this.player.getItems().values(), 1, false);
                 if(newObj != null) {
                     if (this.player.getItems().get(newObj.getGuid()) == null) {
                         if (this.player.addItem(newObj, true, false))
@@ -405,7 +405,7 @@ public class JobAction {
                 return;
             }
 
-            GameObject newObj = World.world.getObjTemplate(templateId).createNewItemWithoutDuplication(this.player.getItems().values(), 1, false);
+            Item newObj = World.world.getObjTemplate(templateId).createNewItemWithoutDuplication(this.player.getItems().values(), 1, false);
 
             if(newObj != null) {
                 if (this.player.getItems().get(newObj.getGuid()) == null) {
@@ -438,7 +438,7 @@ public class JobAction {
     /* ********FM TOUT POURRI*************/
     private synchronized boolean craftMaging(boolean isRepeat, Player receiver, Map<Player, ArrayList<Couple<Integer, Integer>>> items) {
         boolean isSigningRune = false;
-        GameObject objectFm = null, signingRune = null, runeOrPotion = null;
+        Item objectFm = null, signingRune = null, runeOrPotion = null;
         int lvlElementRune = 0, statId = -1, lvlQuaStatsRune = 0, statsAdd = 0, deleteID = -1, poid = 0, idRune = 0;
         boolean bonusRune = false;
         String statsObjectFm = "-1";
@@ -455,7 +455,7 @@ public class JobAction {
         }
 
         for (int id : ingredients.keySet()) {
-            GameObject object = World.world.getGameObject(id);
+            Item object = World.world.getGameObject(id);
 
             if(object == null) {
                 if(!this.player.hasItemGuid(id) || (secure && !this.player.hasItemGuid(id) && !receiver.hasItemGuid(id))) {
@@ -1021,7 +1021,7 @@ public class JobAction {
                         objectFm = object;
                         SocketManager.GAME_SEND_EXCHANGE_OTHER_MOVE_OK_FM(player.getGameClient(), 'O', "+", objectFm.getGuid() + "|" + 1);
                         deleteID = id;
-                        GameObject newObj = objectFm.getClone(1, true); // Cr�ation d'un clone avec un nouveau identifiant
+                        Item newObj = objectFm.getClone(1, true); // Cr�ation d'un clone avec un nouveau identifiant
 
                         if (objectFm.getQuantity() > 1) { // S'il y avait plus d'un objet
                             int newQuant = objectFm.getQuantity() - 1; // On supprime celui que l'on a ajout�
@@ -1063,7 +1063,7 @@ public class JobAction {
             this.ingredients.remove(deleteID);
         }
 
-        final ObjectTemplate template = objectFm.getTemplate();
+        final ItemTemplate template = objectFm.getTemplate();
         ArrayList<Integer> chances = new ArrayList<>();
 
         int chance, lvlJob = SM.get_lvl(), currentWeightTotal = 1, pwrPerte;
@@ -1423,7 +1423,7 @@ public class JobAction {
     }
 
     //region usefull function for fm
-    private void decrementObjectQuantity(Player player, GameObject object) {
+    private void decrementObjectQuantity(Player player, Item object) {
         if (object != null) {
             int newQua = object.getQuantity() - 1;
             if (newQua <= 0) {
@@ -1436,7 +1436,7 @@ public class JobAction {
         }
     }
 
-    public static int getStatBaseMaxs(ObjectTemplate objMod, String statsModif) {
+    public static int getStatBaseMaxs(ItemTemplate objMod, String statsModif) {
         String[] split = objMod.getStrTemplate().split(",");
         for (String s : split) {
             String[] stats = s.split("#");
@@ -1452,7 +1452,7 @@ public class JobAction {
         return 0;
     }
 
-    public static int getStatBaseMins(ObjectTemplate objMod, String statsModif) {
+    public static int getStatBaseMins(ItemTemplate objMod, String statsModif) {
         String[] split = objMod.getStrTemplate().split(",");
         for (String s : split) {
             String[] stats = s.split("#");
@@ -1615,7 +1615,7 @@ public class JobAction {
         return alt;
     }
 
-    public static int currentWeithStats(GameObject obj, String statsModif) {
+    public static int currentWeithStats(Item obj, String statsModif) {
         for (Entry<Integer, Integer> entry : obj.getStats().getEffects().entrySet()) {
             int statID = entry.getKey();
             if (Integer.toHexString(statID).toLowerCase().compareTo(statsModif.toLowerCase()) > 0) {
@@ -1670,7 +1670,7 @@ public class JobAction {
         return 0;
     }
 
-    public static int currentStats(GameObject obj, String statsModif) {
+    public static int currentStats(Item obj, String statsModif) {
         for (Entry<Integer, Integer> entry : obj.getStats().getEffects().entrySet()) {
             int statID = entry.getKey();
             if (Integer.toHexString(statID).toLowerCase().compareTo(statsModif.toLowerCase()) > 0) {
@@ -1681,7 +1681,7 @@ public class JobAction {
         return 0;
     }
 
-    public static int currentTotalWeigthBase(String statsModelo, GameObject obj) {
+    public static int currentTotalWeigthBase(String statsModelo, Item obj) {
         if (statsModelo.equalsIgnoreCase(""))
             return 0;
         int Weigth = 0;
@@ -1765,7 +1765,7 @@ public class JobAction {
     }
 
     public static int getBaseMaxJet(int templateID, String statsModif) {
-        ObjectTemplate t = World.world.getObjTemplate(templateID);
+        ItemTemplate t = World.world.getObjTemplate(templateID);
         String[] splitted = t.getStrTemplate().split(",");
         for (String s : splitted) {
             String[] stats = s.split("#");
@@ -1782,7 +1782,7 @@ public class JobAction {
         return 0;
     }
 
-    public static int getActualJet(GameObject obj, String statsModif) {
+    public static int getActualJet(Item obj, String statsModif) {
         for (Entry<Integer, Integer> entry : obj.getStats().getEffects().entrySet()) {
             if (Integer.toHexString(entry.getKey()).compareTo(statsModif) > 0)//Effets inutiles
             {
@@ -1795,7 +1795,7 @@ public class JobAction {
         return 0;
     }
 
-    public static byte viewActualStatsItem(GameObject obj, String stats)//retourne vrai si le stats est actuellement sur l'item
+    public static byte viewActualStatsItem(Item obj, String stats)//retourne vrai si le stats est actuellement sur l'item
     {
         if (!obj.encodeStats().isEmpty()) {
             for (Entry<Integer, Integer> entry : obj.getStats().getEffects().entrySet()) {
@@ -1832,7 +1832,7 @@ public class JobAction {
         }
     }
 
-    public static byte viewBaseStatsItem(GameObject obj, String ItemStats)//retourne vrai si le stats existe de base sur l'item
+    public static byte viewBaseStatsItem(Item obj, String ItemStats)//retourne vrai si le stats existe de base sur l'item
     {
 
         String[] splitted = obj.getTemplate().getStrTemplate().split(",");
@@ -2168,7 +2168,7 @@ public class JobAction {
 
     //region Old craft with new formulas
     private synchronized void craftMaging1(boolean isReapeat, int repeat) {
-        GameObject gameObject = null, runeObject = null, potionObject = null, signingObject = null;
+        Item item = null, runeObject = null, potionObject = null, signingObject = null;
 
         //region Vérification de craft
         /* Type : 26 = potion pour les cac
@@ -2176,11 +2176,11 @@ public class JobAction {
            Signature : Type 50 ou Id 7508 */
 
         for(int id : this.ingredients.keySet()) {
-            GameObject object = World.world.getGameObject(id);
+            Item object = World.world.getGameObject(id);
             int type = object.getTemplate().getType();
 
-            if(gameObject == null && this.isAvailableObject(this.getJobStat().getTemplate().getId(), type)) {
-                gameObject = object;
+            if(item == null && this.isAvailableObject(this.getJobStat().getTemplate().getId(), type)) {
+                item = object;
             } else if(runeObject == null && type == 78)
                 runeObject = object;
             else if(potionObject == null && type == 26)
@@ -2189,11 +2189,11 @@ public class JobAction {
                 signingObject = object;
         }
 
-        if(gameObject == null || (runeObject == null && potionObject == null)) {
+        if(item == null || (runeObject == null && potionObject == null)) {
             GameClient.leaveExchange(this.player);
             return;
         }
-        if(this.analyzeObject(gameObject)) {
+        if(this.analyzeObject(item)) {
             player.sendMessage("Impossible d'FM ce type d'objet pour le moment (avec faiblesses)");
             return;
         }
@@ -2210,8 +2210,8 @@ public class JobAction {
             }
 
             //region Initialisation des variables principales
-            String[] originalSplitStats = gameObject.getTemplate().getStrTemplate().split(",");
-            String[] actualObjectSplitStats = gameObject.encodeStats().split(","); // Liste toutes les stats originale de l'objet
+            String[] originalSplitStats = item.getTemplate().getStrTemplate().split(",");
+            String[] actualObjectSplitStats = item.encodeStats().split(","); // Liste toutes les stats originale de l'objet
 
             String concernedOriginalJet = null, concernedActualJet = null; // Jet originale concerner
             float PWRGmin = 0, PWRGactual = 0, PWRGmax = 0;
@@ -2236,7 +2236,7 @@ public class JobAction {
                 if (rune != null) PWRGactual += this.getPWR(rune, jet, (byte) 1);
 
                 if (id == runeTemplate.getCharacteristic()) { // Si l'ID de la stats est égale à l'ID de la stats de la rune
-                    concernedActualJet = String.valueOf(gameObject.getStats().getEffect(Integer.parseInt(jet.split("#")[0], 16))); // On met la ligne concerner a jour
+                    concernedActualJet = String.valueOf(item.getStats().getEffect(Integer.parseInt(jet.split("#")[0], 16))); // On met la ligne concerner a jour
                 }
 
                 boolean exist = false;
@@ -2436,12 +2436,12 @@ public class JobAction {
                 int newQuantity = this.ingredients.get(runeObject.getGuid()) - 1;
                 this.player.removeItemByTemplateId(runeObject.getTemplate().getId(), 1, false);
 
-                int winXP = Formulas.calculXpWinFm(gameObject.getTemplate().getLevel(), (int) Math.floor(runeTemplate.getWeight())) * Config.rateJob;
+                int winXP = Formulas.calculXpWinFm(item.getTemplate().getLevel(), (int) Math.floor(runeTemplate.getWeight())) * Config.rateJob;
                 if (winXP > 0) this.SM.addXp(this.player, winXP);
                 this.player.send("JX|" + this.SM.getTemplate().getId() + ";" + this.SM.get_lvl() + ";" + this.SM.getXpString(";") + ";");
 
-                GameObject newObject = gameObject.getClone(1,true);
-                this.player.removeItem(gameObject.getGuid(), 1, true, gameObject.getQuantity() == 1);
+                Item newObject = item.getClone(1,true);
+                this.player.removeItem(item.getGuid(), 1, true, item.getQuantity() == 1);
 
                 if (signingObject != null) {
                     this.player.removeItemByTemplateId(signingObject.getTemplate().getId(), 1, false);
@@ -2476,7 +2476,7 @@ public class JobAction {
             }
             //endregion
 
-            int puit = gameObject.getPuit();
+            int puit = item.getPuit();
             float PWGLoose = PWGRune;
             if(this.player.getGroup() != null)
                 player.sendMessage("Puit before : " + puit);
@@ -2498,7 +2498,7 @@ public class JobAction {
                 if(actualObjectSplitStats.length == 1 && (actualObjectSplitStats[0].isEmpty() || Short.parseShort(actualObjectSplitStats[0].split("#")[0], 16) == runeTemplate.getCharacteristic()))
                     cancel = true;
 
-                int winXP = Formulas.calculXpWinFm(gameObject.getTemplate().getLevel(), (int) Math.floor(runeTemplate.getWeight())) * Config.rateJob;
+                int winXP = Formulas.calculXpWinFm(item.getTemplate().getLevel(), (int) Math.floor(runeTemplate.getWeight())) * Config.rateJob;
                 if (winXP > 0) this.SM.addXp(this.player, winXP);
 
                 if(!cancel) {
@@ -2527,14 +2527,14 @@ public class JobAction {
                             blacklist.add(id);
                         } else {
                             int puitLoose = Formulas.getRandomValue(1, (int) (Math.ceil(PWGLoose / PWRJetRune)));
-                            int old = gameObject.getStats().get(id);
-                            int value = gameObject.getStats().addOneStat(id, -puitLoose);
+                            int old = item.getStats().get(id);
+                            int value = item.getStats().addOneStat(id, -puitLoose);
                             old = old - puitLoose;
 
                             PWGLoose = PWGLoose - (PWRGJet - (rune.getWeight() * value));
                             if(old < 0) PWGLoose += -old * rune.getWeight();
                         }
-                        actualObjectSplitStats = gameObject.encodeStats().split(",");
+                        actualObjectSplitStats = item.encodeStats().split(",");
                         stats = getStatsToLoose(runeTemplate, actualObjectSplitStats, originalSplitStats, blacklist);
                     }
 
@@ -2558,13 +2558,13 @@ public class JobAction {
                     float PWRGJet = this.getPWR(rune, jet, (byte) 1);
 
                     int puitLoose = Formulas.getRandomValue(1, (int) (Math.ceil(PWGLoose / PWRJetRune)));
-                    int old = gameObject.getStats().get(id);
-                    int value = gameObject.getStats().addOneStat(id, -puitLoose);
+                    int old = item.getStats().get(id);
+                    int value = item.getStats().addOneStat(id, -puitLoose);
                     old = old - puitLoose;
 
                     PWGLoose = PWGLoose - (PWRGJet - (rune.getWeight() * value));
                     if(old < 0) PWGLoose += -old * rune.getWeight();
-                    actualObjectSplitStats = gameObject.encodeStats().split(",");
+                    actualObjectSplitStats = item.encodeStats().split(",");
                     stats = getStatsToLoose(runeTemplate, actualObjectSplitStats, originalSplitStats, null);
                 }
 
@@ -2577,7 +2577,7 @@ public class JobAction {
             int newQuantity = this.ingredients.get(runeObject.getGuid()) - 1;
             this.player.removeItemByTemplateId(runeObject.getTemplate().getId(), 1, false);
 
-            GameObject newObject = gameObject.getClone(1, true);
+            Item newObject = item.getClone(1, true);
 
             if(puit < 0) puit = 0;
             newObject.setPuit(puit);
@@ -2602,7 +2602,7 @@ public class JobAction {
                 this.player.send("Im0117");//La magie n'opère pas..
             }
 
-            this.player.removeItem(gameObject.getGuid(), 1, true, true);
+            this.player.removeItem(item.getGuid(), 1, true, true);
             if(this.player.addItem(newObject, false, false))
                 World.world.addGameObject(newObject);
 
@@ -2612,7 +2612,7 @@ public class JobAction {
 
             this.player.send("IO" + this.player.getId() + "|-" + newObject.getTemplate().getId()); // Icon tête joueur :  +/-
 
-            this.player.send("EMKO-" + gameObject.getGuid() + "|1");
+            this.player.send("EMKO-" + item.getGuid() + "|1");
             this.ingredients.clear();
 
             this.player.send("EMKO+" + newObject.getGuid() + "|1");
@@ -2634,8 +2634,8 @@ public class JobAction {
         //endregion
     }
 
-    private boolean analyzeObject(GameObject gameObject) {
-        for(Entry<Integer, Integer> stat : gameObject.getStats().getEffects().entrySet()) {
+    private boolean analyzeObject(Item item) {
+        for(Entry<Integer, Integer> stat : item.getStats().getEffects().entrySet()) {
             switch(stat.getKey()) {
                 case Constant.STATS_REM_PA:
                 case Constant.STATS_REM_PM:

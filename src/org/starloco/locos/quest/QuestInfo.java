@@ -5,7 +5,6 @@ import java.util.List;
 
 public class QuestInfo {
     public final List<Integer> objectives;
-
     public final boolean isAccountBound, isRepeatable;
     public final Integer previous;
     public final Integer next;
