@@ -33,7 +33,7 @@ public class FullItem implements Item {
     protected int obvijevanPos;
     protected int obvijevanLook;
     protected int puit;
-    private Stats Stats = new Stats();
+    private Stats stats;
     private ArrayList<SpellEffect> Effects = new ArrayList<>();
     private ArrayList<String> SortStats = new ArrayList<>();
     private Map<Integer, String> txtStats = new HashMap<>();
@@ -47,7 +47,7 @@ public class FullItem implements Item {
         this.position = pos;
         this.puit = puit;
 
-        Stats = new Stats();
+        stats = new Stats();
         this.parseStringToStats(strStats);
     }
 
@@ -66,7 +66,7 @@ public class FullItem implements Item {
         this.templateID = template;
         this.quantity = qua;
         this.position = pos;
-        this.Stats = stats;
+        this.stats = stats;
         this.Effects = effects;
         this.soulEaterStats = _SoulStat;
         this.txtStats = _txtStats;
@@ -120,6 +120,7 @@ public class FullItem implements Item {
     public void parseStringToStats(String strStats) {
         if(!this.type().hasStats) return;
 
+        this.stats = new Stats();
         String dj1 = "";
         if (!strStats.equalsIgnoreCase("")) {
             for (String split : strStats.split(",")) {
@@ -232,7 +233,7 @@ public class FullItem implements Item {
                     if (!follow2)
                         continue;//Si c'�tait un effet Actif d'arme ou une signature
 
-                    Stats.addOneStat(id, Integer.parseInt(stats[1], 16));
+                    this.stats.addOneStat(id, Integer.parseInt(stats[1], 16));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -254,11 +255,11 @@ public class FullItem implements Item {
     }
 
     public Stats getStats() {
-        return Stats;
+        return stats;
     }
 
     public void setStats(Stats SS) {
-        Stats = SS;
+        stats = SS;
     }
 
     public ArrayList<String> getSpellStats() {
@@ -478,7 +479,7 @@ public class FullItem implements Item {
             isFirst = false;
         }
 
-        for (Entry<Integer, Integer> entry : Stats.getEffects().entrySet()) {
+        for (Entry<Integer, Integer> entry : this.stats.getEffects().entrySet()) {
 
             int statID = entry.getKey();
             if ((template().getPanoId() >= 81 && template().getPanoId() <= 92)
@@ -631,7 +632,7 @@ public class FullItem implements Item {
             stats.append(Integer.toHexString(Constant.STATS_PETS_SOUL)).append("#").append(Integer.toHexString(entry.getKey())).append("#").append("0").append("#").append(Integer.toHexString(entry.getValue()));
             isFirst = false;
         }
-        for (Entry<Integer, Integer> entry : Stats.getEffects().entrySet()) {
+        for (Entry<Integer, Integer> entry : this.stats.getEffects().entrySet()) {
             if (!isFirst)
                 stats.append(",");
 
@@ -667,7 +668,7 @@ public class FullItem implements Item {
     public void obvijevanNourir(FullItem obj) {
         if (obj == null)
             return;
-        for (Entry<Integer, Integer> entry : Stats.getEffects().entrySet()) {
+        for (Entry<Integer, Integer> entry : stats.getEffects().entrySet()) {
             if (entry.getKey().intValue() != 974) // on ne boost que la stat de l'exp�rience de l'obvi
                 continue;
             if (entry.getValue().intValue() > 500) // si le boost a une valeur sup�rieure � 500 (irr�aliste)
@@ -678,7 +679,7 @@ public class FullItem implements Item {
     }
 
     public void obvijevanChangeStat(int statID, int val) {
-        for (Entry<Integer, Integer> entry : Stats.getEffects().entrySet()) {
+        for (Entry<Integer, Integer> entry : stats.getEffects().entrySet()) {
             if (entry.getKey().intValue() != statID)
                 continue;
             entry.setValue(Integer.valueOf(val));
@@ -689,27 +690,27 @@ public class FullItem implements Item {
         setObvijevanPos(0);
         setObvijevanLook(0);
         org.starloco.locos.client.other.Stats StatsSansObvi = new Stats();
-        for (Entry<Integer, Integer> entry : Stats.getEffects().entrySet()) {
+        for (Entry<Integer, Integer> entry : stats.getEffects().entrySet()) {
             int statID = entry.getKey().intValue();
             if ((statID == 970) || (statID == 971) || (statID == 972)
                     || (statID == 973) || (statID == 974))
                 continue;
             StatsSansObvi.addOneStat(statID, entry.getValue().intValue());
         }
-        Stats = StatsSansObvi;
+        stats = StatsSansObvi;
     }
 
     public void removeAll_ExepteObvijevanStats() {
         setObvijevanPos(0);
         org.starloco.locos.client.other.Stats StatsSansObvi = new Stats();
-        for (Entry<Integer, Integer> entry : Stats.getEffects().entrySet()) {
+        for (Entry<Integer, Integer> entry : stats.getEffects().entrySet()) {
             int statID = entry.getKey().intValue();
             if ((statID != 971) && (statID != 972) && (statID != 973)
                     && (statID != 974))
                 continue;
             StatsSansObvi.addOneStat(statID, entry.getValue().intValue());
         }
-        Stats = StatsSansObvi;
+        stats = StatsSansObvi;
     }
 
     public String getObvijevanStatsOnly() {
@@ -801,7 +802,7 @@ public class FullItem implements Item {
 
     public void clearStats() {
         //On vide l'item de tous ces effets
-        Stats = new Stats();
+        stats = new Stats();
         Effects.clear();
         txtStats.clear();
         SortStats.clear();
@@ -810,7 +811,7 @@ public class FullItem implements Item {
 
     public void refreshStatsObjet(String newsStats) {
         parseStringToStats(newsStats);
-        ((ObjectData) DatabaseManager.get(ObjectData.class)).update(this);
+        DatabaseManager.get(ObjectData.class).update(this);
     }
 
     public int getResistance(String statsTemplate) {
@@ -880,8 +881,8 @@ public class FullItem implements Item {
             }
             first = true;
         }
-        java.util.Map<Integer, Integer> statsObj = new java.util.HashMap<Integer, Integer>(obj.Stats.getEffects());
-        java.util.ArrayList<Integer> keys = new ArrayList<Integer>(obj.Stats.getEffects().keySet());
+        java.util.Map<Integer, Integer> statsObj = new java.util.HashMap<Integer, Integer>(obj.stats.getEffects());
+        java.util.ArrayList<Integer> keys = new ArrayList<Integer>(obj.stats.getEffects().keySet());
         Collections.shuffle(keys);
         int p = 0;
         int key = 0;
@@ -994,7 +995,7 @@ public class FullItem implements Item {
             isFirst = false;
         }
 
-        for (Entry<Integer, Integer> entry : obj.Stats.getEffects().entrySet()) {
+        for (Entry<Integer, Integer> entry : obj.stats.getEffects().entrySet()) {
             if (!isFirst)
                 stats += ",";
             if (Integer.toHexString(entry.getKey()).compareTo(statsstr) == 0) {
@@ -1204,6 +1205,12 @@ public class FullItem implements Item {
             return pet.getDeadTemplate();
         }).orElse(templateID);
     }
+
+    @Override
+    public Optional<Stats> stats() {
+        return Optional.ofNullable(this.stats);
+    }
+
     public SItem scripted() {
         return this.scriptVal;
     }

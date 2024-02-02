@@ -220,8 +220,8 @@ public class ItemTemplate {
             if (actualStat.containsKey(Constant.STATS_PETS_REPAS))
                 txtStat.put(Constant.STATS_PETS_REPAS, actualStat.get(Constant.STATS_PETS_REPAS));
             item = new FullItem(-1, getId(), 1, Constant.ITEM_POS_NO_EQUIPED, obj.getStats(), new ArrayList<>(), new HashMap<>(), txtStat, 0);
-            ((ObjectData) DatabaseManager.get(ObjectData.class)).insert(item);
-            ((PetData) DatabaseManager.get(PetData.class)).delete(World.world.getPetsEntry_legacy(obj.getGuid()));
+            DatabaseManager.get(ObjectData.class).insert(item);
+            DatabaseManager.get(PetData.class).delete(World.world.getPetsEntry_legacy(obj.getGuid()));
             World.world.removePetsEntry(obj.getGuid());
         }
         return item;
@@ -232,10 +232,10 @@ public class ItemTemplate {
         stats.putAll(obj.getTxtStat());
         FullItem object = new FullItem(-1, getId(), 1, Constant.ITEM_POS_NO_EQUIPED, obj.getStats(), new ArrayList<>(), new HashMap<>(), stats, 0);
 
-        if(((ObjectData) DatabaseManager.get(ObjectData.class)).insert(object)) {
+        if(DatabaseManager.get(ObjectData.class).insert(object)) {
             PetEntry petEntry = new PetEntry(object.getGuid(), getId(), System.currentTimeMillis(), 0, Integer.parseInt(stats.get(Constant.STATS_PETS_PDV), 16), Integer.parseInt(stats.get(Constant.STATS_PETS_POIDS), 16), !stats.containsKey(Constant.STATS_PETS_EPO));
 
-            if (((PetData) DatabaseManager.get(PetData.class)).insert(petEntry)) {
+            if (DatabaseManager.get(PetData.class).insert(petEntry)) {
                 World.world.addPetsEntry(petEntry);
                 return object;
             }
@@ -247,7 +247,7 @@ public class ItemTemplate {
         Stats stats = generateNewStatsFromTemplate(getStrTemplate(), true);
         stats.addOneStat(Constant.STATS_TURN, turn);
         FullItem item = new FullItem(-1, getId(), 1, Constant.ITEM_POS_BENEDICTION, stats, new ArrayList<>(), new HashMap<>(), new HashMap<>(), 0);
-        if(((ObjectData) DatabaseManager.get(ObjectData.class)).insert(item))
+        if(DatabaseManager.get(ObjectData.class).insert(item))
             return item;
         return null;
     }
@@ -256,7 +256,7 @@ public class ItemTemplate {
         Stats stats = generateNewStatsFromTemplate(getStrTemplate(), true);
         stats.addOneStat(Constant.STATS_TURN, 1);
         FullItem object = new FullItem(-1, getId(), 1, Constant.ITEM_POS_MALEDICTION, stats, new ArrayList<>(), new HashMap<>(), new HashMap<>(), 0);
-        if(((ObjectData) DatabaseManager.get(ObjectData.class)).insert(object))
+        if(DatabaseManager.get(ObjectData.class).insert(object))
             return object;
         return null;
     }
@@ -265,7 +265,7 @@ public class ItemTemplate {
         Stats stats = generateNewStatsFromTemplate(getStrTemplate(), true);
         stats.addOneStat(Constant.STATS_TURN, 1);
         FullItem object = new FullItem(-1, getId(), 1, Constant.ITEM_POS_ROLEPLAY_BUFF, stats, new ArrayList<>(), new HashMap<>(), new HashMap<>(), 0);
-        if(((ObjectData) DatabaseManager.get(ObjectData.class)).insert(object))
+        if(DatabaseManager.get(ObjectData.class).insert(object))
             return object;
         return null;
     }
@@ -274,7 +274,7 @@ public class ItemTemplate {
         Stats stats = generateNewStatsFromTemplate(getStrTemplate(), true);
         stats.addOneStat(Constant.STATS_TURN, turn);
         FullItem item = new FullItem(-1, getId(), 1, Constant.ITEM_POS_BONBON, stats, new ArrayList<>(), new HashMap<>(), new HashMap<>(), 0);
-        if(((ObjectData) DatabaseManager.get(ObjectData.class)).insert(item))
+        if(DatabaseManager.get(ObjectData.class).insert(item))
             return item;
         return null;
     }
@@ -284,7 +284,7 @@ public class ItemTemplate {
         stats.addOneStat(Constant.STATS_TURN, turn);
         stats.addOneStat(148, 0);
         FullItem item = new FullItem(id, getId(), 1, Constant.ITEM_POS_PNJ_SUIVEUR, stats, new ArrayList<>(), new HashMap<>(), new HashMap<>(), 0);
-        if(((ObjectData) DatabaseManager.get(ObjectData.class)).insert(item))
+        if(DatabaseManager.get(ObjectData.class).insert(item))
             return item;
         return null;
     }
@@ -300,10 +300,10 @@ public class ItemTemplate {
             Stats stats =  useMax ? generateNewStatsFromTemplate(jet, true) : new Stats(false, null);
 
             item = new FullItem(-1, getId(), 1, Constant.ITEM_POS_NO_EQUIPED, stats, new ArrayList<>(), new HashMap<>(), World.world.getPets(getId()).generateNewtxtStatsForPets(), 0);
-            if(((ObjectData) DatabaseManager.get(ObjectData.class)).insert(item)) {
+            if(DatabaseManager.get(ObjectData.class).insert(item)) {
                 PetEntry pet = new PetEntry(item.getGuid(), getId(), System.currentTimeMillis(), 0, 10, 0, false);
                 World.world.addPetsEntry(pet);
-                ((PetData) DatabaseManager.get(PetData.class)).insert(pet);
+                DatabaseManager.get(PetData.class).insert(pet);
                 return item;
             }
             return null;
@@ -341,7 +341,7 @@ public class ItemTemplate {
                 item.getSpellStats().addAll(this.getSpellStatsTemplate());
             }
         }
-        if(((ObjectData) DatabaseManager.get(ObjectData.class)).insert(item))
+        if(DatabaseManager.get(ObjectData.class).insert(item))
             return item;
         return null;
     }
@@ -356,10 +356,10 @@ public class ItemTemplate {
         } else if (getTypeID() == Constant.ITEM_TYPE_FAMILIER) {
             item = new FullItem(id, getId(), 1, Constant.ITEM_POS_NO_EQUIPED, (useMax ? generateNewStatsFromTemplate(World.world.getPets(this.getId()).getJet(), false) : new Stats(false, null)), new ArrayList<>(), new HashMap<>(), World.world.getPets(getId()).generateNewtxtStatsForPets(), 0);
             //Ajouter du Pets_data SQL et World
-            if(((ObjectData) DatabaseManager.get(ObjectData.class)).insert(item)) {
+            if(DatabaseManager.get(ObjectData.class).insert(item)) {
                 PetEntry pet = new PetEntry(item.getGuid(), getId(), System.currentTimeMillis(), 0, 10, 0, false);
                 World.world.addPetsEntry(pet);
-                ((PetData) DatabaseManager.get(PetData.class)).insert(pet);
+                DatabaseManager.get(PetData.class).insert(pet);
                 return item;
             }
             return null;
@@ -406,7 +406,7 @@ public class ItemTemplate {
                 return object;
             }
         }
-        ((ObjectData) DatabaseManager.get(ObjectData.class)).insert(item);
+        DatabaseManager.get(ObjectData.class).insert(item);
         return item;
     }
 
