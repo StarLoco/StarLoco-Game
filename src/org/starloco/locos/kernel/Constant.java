@@ -46,6 +46,7 @@ public class Constant {
     public static final int FIGHT_TYPE_PVM = 4;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            //PvM
     public static final int FIGHT_TYPE_PVT = 5;
     public static final int FIGHT_TYPE_ROYAL = 6;
+    public static final int FIGHT_TYPE_BOUFBAWL = 7;
 
 
     public static final int FIGHT_STATE_INIT = 1;
@@ -651,64 +652,64 @@ public class Constant {
         HashMap<Integer, SortStats> start = new HashMap<Integer, SortStats>();
         switch (classID) {
             case CLASS_FECA:
-                start.put(3, World.world.getSort(3).getStatsByLevel(1));//Attaque Naturelle
-                start.put(6, World.world.getSort(6).getStatsByLevel(1));//Armure Terrestre
-                start.put(17, World.world.getSort(17).getStatsByLevel(1));//Glyphe Agressif
+                start.put(3, World.world.getSort_Legacy(3).getStatsByLevel(1));//Attaque Naturelle
+                start.put(6, World.world.getSort_Legacy(6).getStatsByLevel(1));//Armure Terrestre
+                start.put(17, World.world.getSort_Legacy(17).getStatsByLevel(1));//Glyphe Agressif
                 break;
             case CLASS_SRAM:
-                start.put(61, World.world.getSort(61).getStatsByLevel(1));//Sournoiserie
-                start.put(72, World.world.getSort(72).getStatsByLevel(1));//Invisibilit�
-                start.put(65, World.world.getSort(65).getStatsByLevel(1));//Piege sournois
+                start.put(61, World.world.getSort_Legacy(61).getStatsByLevel(1));//Sournoiserie
+                start.put(72, World.world.getSort_Legacy(72).getStatsByLevel(1));//Invisibilit�
+                start.put(65, World.world.getSort_Legacy(65).getStatsByLevel(1));//Piege sournois
                 break;
             case CLASS_ENIRIPSA:
-                start.put(125, World.world.getSort(125).getStatsByLevel(1));//Mot Interdit
-                start.put(128, World.world.getSort(128).getStatsByLevel(1));//Mot de Frayeur
-                start.put(121, World.world.getSort(121).getStatsByLevel(1));//Mot Curatif
+                start.put(125, World.world.getSort_Legacy(125).getStatsByLevel(1));//Mot Interdit
+                start.put(128, World.world.getSort_Legacy(128).getStatsByLevel(1));//Mot de Frayeur
+                start.put(121, World.world.getSort_Legacy(121).getStatsByLevel(1));//Mot Curatif
                 break;
             case CLASS_ECAFLIP:
-                start.put(102, World.world.getSort(102).getStatsByLevel(1));//Pile ou Face
-                start.put(103, World.world.getSort(103).getStatsByLevel(1));//Chance d'ecaflip
-                start.put(105, World.world.getSort(105).getStatsByLevel(1));//Bond du felin
+                start.put(102, World.world.getSort_Legacy(102).getStatsByLevel(1));//Pile ou Face
+                start.put(103, World.world.getSort_Legacy(103).getStatsByLevel(1));//Chance d'ecaflip
+                start.put(105, World.world.getSort_Legacy(105).getStatsByLevel(1));//Bond du felin
                 break;
             case CLASS_CRA:
-                start.put(161, World.world.getSort(161).getStatsByLevel(1));//Fleche Magique
-                start.put(169, World.world.getSort(169).getStatsByLevel(1));//Fleche de Recul
-                start.put(164, World.world.getSort(164).getStatsByLevel(1));//Fleche Empoisonn�e(ex Fleche chercheuse)
+                start.put(161, World.world.getSort_Legacy(161).getStatsByLevel(1));//Fleche Magique
+                start.put(169, World.world.getSort_Legacy(169).getStatsByLevel(1));//Fleche de Recul
+                start.put(164, World.world.getSort_Legacy(164).getStatsByLevel(1));//Fleche Empoisonn�e(ex Fleche chercheuse)
                 break;
             case CLASS_IOP:
-                start.put(143, World.world.getSort(143).getStatsByLevel(1));//Intimidation
-                start.put(141, World.world.getSort(141).getStatsByLevel(1));//Pression
-                start.put(142, World.world.getSort(142).getStatsByLevel(1));//Bond
+                start.put(143, World.world.getSort_Legacy(143).getStatsByLevel(1));//Intimidation
+                start.put(141, World.world.getSort_Legacy(141).getStatsByLevel(1));//Pression
+                start.put(142, World.world.getSort_Legacy(142).getStatsByLevel(1));//Bond
                 break;
             case CLASS_SADIDA:
-                start.put(183, World.world.getSort(183).getStatsByLevel(1));//Ronce
-                start.put(200, World.world.getSort(200).getStatsByLevel(1));//Poison Paralysant
-                start.put(193, World.world.getSort(193).getStatsByLevel(1));//La bloqueuse
+                start.put(183, World.world.getSort_Legacy(183).getStatsByLevel(1));//Ronce
+                start.put(200, World.world.getSort_Legacy(200).getStatsByLevel(1));//Poison Paralysant
+                start.put(193, World.world.getSort_Legacy(193).getStatsByLevel(1));//La bloqueuse
                 break;
             case CLASS_OSAMODAS:
-                start.put(34, World.world.getSort(34).getStatsByLevel(1));//Invocation de tofu
-                start.put(21, World.world.getSort(21).getStatsByLevel(1));//Griffe Spectrale
-                start.put(23, World.world.getSort(23).getStatsByLevel(1));//Cri de l'ours
+                start.put(34, World.world.getSort_Legacy(34).getStatsByLevel(1));//Invocation de tofu
+                start.put(21, World.world.getSort_Legacy(21).getStatsByLevel(1));//Griffe Spectrale
+                start.put(23, World.world.getSort_Legacy(23).getStatsByLevel(1));//Cri de l'ours
                 break;
             case CLASS_XELOR:
-                start.put(82, World.world.getSort(82).getStatsByLevel(1));//Contre
-                start.put(81, World.world.getSort(81).getStatsByLevel(1));//Ralentissement
-                start.put(83, World.world.getSort(83).getStatsByLevel(1));//Aiguille
+                start.put(82, World.world.getSort_Legacy(82).getStatsByLevel(1));//Contre
+                start.put(81, World.world.getSort_Legacy(81).getStatsByLevel(1));//Ralentissement
+                start.put(83, World.world.getSort_Legacy(83).getStatsByLevel(1));//Aiguille
                 break;
             case CLASS_PANDAWA:
-                start.put(686, World.world.getSort(686).getStatsByLevel(1));//Picole
-                start.put(692, World.world.getSort(692).getStatsByLevel(1));//Gueule de bois
-                start.put(687, World.world.getSort(687).getStatsByLevel(1));//Poing enflamm�
+                start.put(686, World.world.getSort_Legacy(686).getStatsByLevel(1));//Picole
+                start.put(692, World.world.getSort_Legacy(692).getStatsByLevel(1));//Gueule de bois
+                start.put(687, World.world.getSort_Legacy(687).getStatsByLevel(1));//Poing enflamm�
                 break;
             case CLASS_ENUTROF:
-                start.put(51, World.world.getSort(51).getStatsByLevel(1));//Lancer de Piece
-                start.put(43, World.world.getSort(43).getStatsByLevel(1));//Lancer de Pelle
-                start.put(41, World.world.getSort(41).getStatsByLevel(1));//Sac anim�
+                start.put(51, World.world.getSort_Legacy(51).getStatsByLevel(1));//Lancer de Piece
+                start.put(43, World.world.getSort_Legacy(43).getStatsByLevel(1));//Lancer de Pelle
+                start.put(41, World.world.getSort_Legacy(41).getStatsByLevel(1));//Sac anim�
                 break;
             case CLASS_SACRIEUR:
-                start.put(432, World.world.getSort(432).getStatsByLevel(1));//Pied du Sacrieur
-                start.put(431, World.world.getSort(431).getStatsByLevel(1));//Chatiment Forc�
-                start.put(434, World.world.getSort(434).getStatsByLevel(1));//Attirance
+                start.put(432, World.world.getSort_Legacy(432).getStatsByLevel(1));//Pied du Sacrieur
+                start.put(431, World.world.getSort_Legacy(431).getStatsByLevel(1));//Chatiment Forc�
+                start.put(434, World.world.getSort_Legacy(434).getStatsByLevel(1));//Attirance
                 break;
         }
         return start;

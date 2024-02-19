@@ -712,8 +712,12 @@ public class World implements Scripted<SWorld> {
         spells.put(sort.getId(), sort);
     }
 
-    public Spell getSort(int id) {
+    public Spell getSort_Legacy(int id) {
         return spells.get(id);
+    }
+
+    public Optional<Spell> getSpell(int id) {
+        return Optional.ofNullable(spells.get(id));
     }
 
     public void addObjTemplate(ItemTemplate obj) {

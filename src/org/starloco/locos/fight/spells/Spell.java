@@ -1,6 +1,5 @@
 package org.starloco.locos.fight.spells;
 
-import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.area.map.GameCase;
 import org.starloco.locos.common.Formulas;
 import org.starloco.locos.common.PathFinding;
@@ -234,7 +233,7 @@ public class Spell {
         }
 
         public Spell getSpell() {
-            return World.world.getSort(spellID);
+            return World.world.getSort_Legacy(spellID);
         }
 
         public int getSpriteID() {
@@ -393,7 +392,7 @@ public class Spell {
                     List<GameCase> cells = PathFinding.getCellListFromAreaString(fight.getMap(), cell.getId(), perso.getCell().getId(), porteeType, POnum, isCC);
                     ArrayList<GameCase> finalCells = new ArrayList<GameCase>();
                     int TE = 0;
-                    Spell S = World.world.getSort(spellID);
+                    Spell S = World.world.getSort_Legacy(spellID);
                     // on prend le targetFlag corespondant au num de l'effet
 
                     if (S != null && S.getEffectTargetsCC() != null && S.getEffectTargetsCC().size() > num && isCC)

@@ -87,7 +87,7 @@ public class Glyph {
                 fight.onFighterDie(target, target);
             }
         } else {
-            Spell spell = World.world.getSort(this.spell);
+            Spell spell = World.world.getSort_Legacy(this.spell);
 
             for(Integer integer : spell.getEffectTargets())
                 if(integer == 2 && target == this.caster)

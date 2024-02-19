@@ -2,7 +2,6 @@ package org.starloco.locos.entity.monster;
 
 import org.starloco.locos.client.other.Stats;
 import org.starloco.locos.common.Formulas;
-import org.starloco.locos.fight.Fighter;
 import org.starloco.locos.fight.spells.Spell;
 import org.starloco.locos.fight.spells.SpellEffect;
 import org.starloco.locos.game.world.World;
@@ -12,7 +11,6 @@ import org.starloco.locos.script.proxy.SMobGrade;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Stream;
 
 public class MonsterGrade {
     private final static int baseSize = 90;
@@ -110,7 +108,7 @@ public class MonsterGrade {
                     continue;
                 }
 
-                Spell spell = World.world.getSort(id);
+                Spell spell = World.world.getSort_Legacy(id);
                 if (spell != null) {
                     Spell.SortStats spellStats = spell.getStatsByLevel(lvl);
                     if (spellStats != null) this.spells.put(id, spellStats);
@@ -157,7 +155,7 @@ public class MonsterGrade {
 
         for (String split : spells.toString().split(";")) {
             int id = Integer.parseInt(split.split(",")[0]);
-            this.spells.put(id, World.world.getSort(id).getStatsByLevel(Integer.parseInt(split.split(",")[1])));
+            this.spells.put(id, World.world.getSort_Legacy(id).getStatsByLevel(Integer.parseInt(split.split(",")[1])));
         }
     }
 

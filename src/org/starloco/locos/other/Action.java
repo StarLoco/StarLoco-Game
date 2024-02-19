@@ -207,7 +207,7 @@ public class Action {
             case -5://Apprendre un sort
                 try {
                     int sID = Integer.parseInt(args);
-                    if (World.world.getSort(sID) == null)
+                    if (World.world.getSort_Legacy(sID) == null)
                         return true;
                     player.learnSpell(sID, 1, true, true, true);
                 } catch (Exception e) {
@@ -530,7 +530,7 @@ public class Action {
                 try {
                     int sID = Integer.parseInt(args.split(",", 2)[0]);
                     int mapId = Integer.parseInt(args.split(",", 2)[1]);
-                    if (World.world.getSort(sID) == null)
+                    if (World.world.getSort_Legacy(sID) == null)
                         return true;
                     if (player.getCurMap().getId() != mapId)
                         return true;

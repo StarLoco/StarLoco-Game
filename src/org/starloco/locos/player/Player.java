@@ -1052,9 +1052,9 @@ public class Player implements Scripted<SPlayer>, Actor {
                 int id = Integer.parseInt(parts[0]);
                 int lvl = Integer.parseInt(parts[1]);
 
-                Spell.SortStats ss =  World.world.getSort(id).getStatsByLevel(lvl);
+                Spell.SortStats ss =  World.world.getSort_Legacy(id).getStatsByLevel(lvl);
                 if(ss == null) throw new IllegalStateException(String.format("player has unknown spell: %d/%d", id, lvl));
-                spells.put(id, World.world.getSort(id).getStatsByLevel(lvl));
+                spells.put(id, World.world.getSort_Legacy(id).getStatsByLevel(lvl));
 
                 if(parts.length < 3 || parts[2].equalsIgnoreCase("")) continue;
                 int position = World.world.getCryptManager().getIntByHashedValue(parts[2].charAt(0)); // may return -1
@@ -1394,7 +1394,7 @@ public class Player implements Scripted<SPlayer>, Actor {
         // Already in the state we want
         if(previousLevel==newLevel) return new EnsureSpellLevelResult(false, 0, 0, true);
 
-        Spell.SortStats ss = Optional.ofNullable(World.world.getSort(spell)).map(s -> s.getStatsByLevel(newLevel)).orElse(null);
+        Spell.SortStats ss = Optional.ofNullable(World.world.getSort_Legacy(spell)).map(s -> s.getStatsByLevel(newLevel)).orElse(null);
         if(ss==null) return new EnsureSpellLevelResult(false, 0, 0, false);
 
         int ptsDelta = 0;
@@ -1440,13 +1440,13 @@ public class Player implements Scripted<SPlayer>, Actor {
     }
 
     public void learnSpell(int spell, int level, int pos) {
-        if (World.world.getSort(spell).getStatsByLevel(level) == null) {
+        if (World.world.getSort_Legacy(spell).getStatsByLevel(level) == null) {
             GameServer.a();
             return;
         }
 
         if (!_sorts.containsKey(spell)) {
-            _sorts.put(spell, World.world.getSort(spell).getStatsByLevel(level));
+            _sorts.put(spell, World.world.getSort_Legacy(spell).getStatsByLevel(level));
             removeSpellShortcutAtPosition(pos);
             _sortsPlaces.remove(spell);
             _sortsPlaces.put(spell, pos);
@@ -1456,7 +1456,7 @@ public class Player implements Scripted<SPlayer>, Actor {
     }
 
     public boolean learnSpell(int spellID, int level, boolean save, boolean send, boolean learn) {
-        if (World.world.getSort(spellID).getStatsByLevel(level) == null) {
+        if (World.world.getSort_Legacy(spellID).getStatsByLevel(level) == null) {
             GameServer.a();
             return false;
         }
@@ -1465,7 +1465,7 @@ public class Player implements Scripted<SPlayer>, Actor {
             SocketManager.GAME_SEND_MESSAGE(this, this.getLang().trans("client.player.learnspell.exist"));
             return false;
         } else {
-            _sorts.put(spellID, World.world.getSort(spellID).getStatsByLevel(level));
+            _sorts.put(spellID, World.world.getSort_Legacy(spellID).getStatsByLevel(level));
             if (send) {
                 SocketManager.GAME_SEND_SPELL_LIST(this);
                 SocketManager.GAME_SEND_Im_PACKET(this, "03;" + spellID);
@@ -1477,7 +1477,7 @@ public class Player implements Scripted<SPlayer>, Actor {
     }
 
     public boolean unlearnSpell(int spell) {
-        if (World.world.getSort(spell) == null) {
+        if (World.world.getSort_Legacy(spell) == null) {
             GameServer.a();
             return false;
         }
@@ -1504,12 +1504,12 @@ public class Player implements Scripted<SPlayer>, Actor {
         if (ancLevel == 6)
             spellPoint = 5 + 10;
 
-        if (World.world.getSort(spellID).getStatsByLevel(level) == null) {
+        if (World.world.getSort_Legacy(spellID).getStatsByLevel(level) == null) {
             GameServer.a();
             return false;
         }
 
-        _sorts.put(Integer.valueOf(spellID), World.world.getSort(spellID).getStatsByLevel(level));
+        _sorts.put(Integer.valueOf(spellID), World.world.getSort_Legacy(spellID).getStatsByLevel(level));
         if (send) {
             SocketManager.GAME_SEND_SPELL_LIST(this);
             SocketManager.GAME_SEND_Im_PACKET(this, "0154;" + "<b>" + ancLevel
@@ -1528,7 +1528,7 @@ public class Player implements Scripted<SPlayer>, Actor {
         int AncLevel = getSortStatBySortIfHas(spellID).getLevel();
         if (AncLevel == 6)
             return false;
-        if (_spellPts >= AncLevel && World.world.getSort(spellID).getStatsByLevel(AncLevel + 1).getReqLevel() <= this.getLevel()) {
+        if (_spellPts >= AncLevel && World.world.getSort_Legacy(spellID).getStatsByLevel(AncLevel + 1).getReqLevel() <= this.getLevel()) {
             if (learnSpell(spellID, AncLevel + 1, true, false, false)) {
                 _spellPts -= AncLevel;
                 DatabaseManager.get(PlayerData.class).update(this);
@@ -1540,7 +1540,7 @@ public class Player implements Scripted<SPlayer>, Actor {
         //Pas le niveau ou pas les Points
         {
             if (_spellPts < AncLevel)
-                if (World.world.getSort(spellID).getStatsByLevel(AncLevel + 1).getReqLevel() > this.getLevel())
+                if (World.world.getSort_Legacy(spellID).getStatsByLevel(AncLevel + 1).getReqLevel() > this.getLevel())
                     return false;
         }
         return away;

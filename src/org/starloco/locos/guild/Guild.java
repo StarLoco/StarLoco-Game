@@ -108,7 +108,7 @@ public class Guild {
         SortStats SS = this.spells.get(id);
         if (SS != null && SS.getLevel() == 5)
             return;
-        this.spells.put(id, ((SS == null) ? World.world.getSort(id).getStatsByLevel(1) : World.world.getSort(id).getStatsByLevel(SS.getLevel() + 1)));
+        this.spells.put(id, ((SS == null) ? World.world.getSort_Legacy(id).getStatsByLevel(1) : World.world.getSort_Legacy(id).getStatsByLevel(SS.getLevel() + 1)));
     }
 
     public void unBoostSpell(int id) {
@@ -180,7 +180,7 @@ public class Guild {
 
     private void decompileSpell(String spells) {
         for (String split : spells.split("\\|"))
-            this.spells.put(Integer.parseInt(split.split(";")[0]), World.world.getSort(Integer.parseInt(split.split(";")[0])).getStatsByLevel(Integer.parseInt(split.split(";")[1])));
+            this.spells.put(Integer.parseInt(split.split(";")[0]), World.world.getSort_Legacy(Integer.parseInt(split.split(";")[0])).getStatsByLevel(Integer.parseInt(split.split(";")[1])));
     }
 
     public String compileSpell() {

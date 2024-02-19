@@ -265,7 +265,7 @@ public class ObjectAction {
                     case 6://Apprendre un sort.
                         if (player0.getFight() != null) return;
                         int id0 = Integer.parseInt(arg);
-                        if (World.world.getSort(id0) == null) {
+                        if (World.world.getSort_Legacy(id0) == null) {
                             isOk = false;
                             return;
                         }

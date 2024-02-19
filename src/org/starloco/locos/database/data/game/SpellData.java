@@ -25,7 +25,7 @@ public class SpellData extends FunctionDAO<Spell> {
 
                 while (result.next()) {
                     int id = result.getInt("id");
-                    Spell spell = World.world.getSort(id);
+                    Spell spell = World.world.getSort_Legacy(id);
 
                     SortStats l1 = parseSortStats(id, 1, result.getString("lvl1")), l2 = parseSortStats(id, 2, result.getString("lvl2")),
                             l3 = parseSortStats(id, 3, result.getString("lvl3")), l4 = parseSortStats(id, 4, result.getString("lvl4")), l5 = null, l6 = null;

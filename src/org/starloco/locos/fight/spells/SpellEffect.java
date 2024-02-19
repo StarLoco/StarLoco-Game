@@ -4057,9 +4057,9 @@ public class SpellEffect implements Cloneable {
 		String[] infos = args.split(";");
 		int spellID = Short.parseShort(infos[0]);
 		int level = Byte.parseByte(infos[1]);
-		String po = World.world.getSort(spell).getStatsByLevel(spellLvl).getPorteeType();
+		String po = World.world.getSort_Legacy(spell).getStatsByLevel(spellLvl).getPorteeType();
 		byte size = (byte) World.world.getCryptManager().getIntByHashedValue(po.charAt(1));
-		SortStats TS = World.world.getSort(spellID).getStatsByLevel(level);
+		SortStats TS = World.world.getSort_Legacy(spellID).getStatsByLevel(level);
 		Trap g = new Trap(fight, caster, cell, size, TS, spell);
 		fight.getTraps().add(g);
 		int unk = g.getColor();
@@ -4077,9 +4077,9 @@ public class SpellEffect implements Cloneable {
 		int spellID = Short.parseShort(infos[0]);
 		int level = Byte.parseByte(infos[1]);
 		byte duration = Byte.parseByte(infos[3]);
-		String po = World.world.getSort(spell).getStatsByLevel(spellLvl).getPorteeType();
+		String po = World.world.getSort_Legacy(spell).getStatsByLevel(spellLvl).getPorteeType();
 		byte size = (byte) World.world.getCryptManager().getIntByHashedValue(po.charAt(1));
-		SortStats TS = World.world.getSort(spellID).getStatsByLevel(level);
+		SortStats TS = World.world.getSort_Legacy(spellID).getStatsByLevel(level);
 		Glyph g = new Glyph(fight, caster, cell, size, TS, duration, spell);
 		fight.getGlyphs().add(g);
 		int unk = g.getColor();
@@ -4096,9 +4096,9 @@ public class SpellEffect implements Cloneable {
 		int spellID = Short.parseShort(infos[0]);
 		int level = Byte.parseByte(infos[1]);
 		byte duration = Byte.parseByte(infos[3]);
-		String po = World.world.getSort(spell).getStatsByLevel(spellLvl).getPorteeType();
+		String po = World.world.getSort_Legacy(spell).getStatsByLevel(spellLvl).getPorteeType();
 		byte size = (byte) World.world.getCryptManager().getIntByHashedValue(po.charAt(1));
-		SortStats TS = World.world.getSort(spellID).getStatsByLevel(level);
+		SortStats TS = World.world.getSort_Legacy(spellID).getStatsByLevel(level);
 		Glyph g = new Glyph(fight, caster, cell, size, TS, duration, spell);
 		fight.getGlyphs().add(g);
 		int unk = g.getColor();
@@ -4448,7 +4448,7 @@ public class SpellEffect implements Cloneable {
 		int spellID = Short.parseShort(infos[0]);
 		int level = Byte.parseByte(infos[1]);
 		byte duration = 1;
-		SortStats TS = World.world.getSort(spellID).getStatsByLevel(level);
+		SortStats TS = World.world.getSort_Legacy(spellID).getStatsByLevel(level);
 		GameCase celll = null;
 		int casenbr = 0;
 		boolean quatorze = false;
@@ -4502,7 +4502,7 @@ public class SpellEffect implements Cloneable {
 		int spellID = Short.parseShort(infos[0]);
 		int level = Byte.parseByte(infos[1]);
 		byte duration = 1;
-		SortStats TS = World.world.getSort(spellID).getStatsByLevel(level);
+		SortStats TS = World.world.getSort_Legacy(spellID).getStatsByLevel(level);
 		GameCase celll = null;
 		int casenbr = 0;
 		boolean quatorze = false;
@@ -4539,7 +4539,7 @@ public class SpellEffect implements Cloneable {
 		int spellID = Short.parseShort(infos[0]);
 		int level = Byte.parseByte(infos[1]);
 		byte duration = 100;
-		SortStats TS = World.world.getSort(spellID).getStatsByLevel(level);
+		SortStats TS = World.world.getSort_Legacy(spellID).getStatsByLevel(level);
 
 		if (cell.isWalkableFight() && !fight.isOccuped(cell.getId())) {
 			caster.getCell().removeFighter(caster);;

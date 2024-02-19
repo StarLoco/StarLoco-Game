@@ -59,7 +59,8 @@ import org.starloco.locos.util.TimerWaiter;
 import static org.starloco.locos.fight.MobFighter.ENUTROF_CHEST_ID;
 
 public class Fight {
-    private int id, state = 0, guildId = -1, type = -1;
+    private int id, state = 0, guildId = -1;
+    private final int type;
     /**
      * type/state -> byte
      **/
@@ -191,7 +192,7 @@ public class Fight {
         this.checkTimer = true;
         setMobGroup(group1);
         setMobGroup2(group2);
-        setType(Constant.FIGHT_TYPE_PVM); // (0: D�fie) 4: Pvm (1:PVP) (5:Perco)
+        this.type = Constant.FIGHT_TYPE_PVM; // (0: D�fie) 4: Pvm (1:PVP) (5:Perco)
         setId(id);
         this.map = rpMap.getMapCopy();
         this.mapOld = rpMap;
@@ -617,7 +618,7 @@ public class Fight {
         SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(perso.getCurMap(), "", -1, "Boumawa", "fight.fight.boufbwal.start.fight");
 
         launchTime = System.currentTimeMillis();
-        setType(7);
+        this.type = Constant.FIGHT_TYPE_BOUFBAWL;
         setId(id);
         setMap(perso.getCurMap().getMapCopy());
         this.mapOld = perso.getCurMap();
@@ -748,10 +749,6 @@ public class Fight {
     public int getType() {
 
         return type;
-    }
-
-    void setType(int type) {
-        this.type = type;
     }
 
     private int getSt1() {
@@ -1640,7 +1637,7 @@ public class Fight {
         List<Fighter> fighters = collection == null ? new ArrayList<>() : new ArrayList<>(collection);
         fighters.stream().filter(fighter -> fighter != null).forEach(fighter -> fighter.setIsDead(true));
 
-        if (type == 0) this.type = -1;
+        // WTF if (type == 0) this.type = -1;
         this.verifIfTeamAllDead();
     }
 
@@ -2520,7 +2517,7 @@ public class Fight {
             }
         }
         if (perso.getObjetByPos(Constant.ITEM_POS_ARME) == null) {
-            tryCastSpell(caster, World.world.getSort(0).getStatsByLevel(1), cellID);
+            tryCastSpell(caster, World.world.getSort_Legacy(0).getStatsByLevel(1), cellID);
         } else {
             FullItem arme = perso.getObjetByPos(Constant.ITEM_POS_ARME);
             // Pierre d'�mes = EC

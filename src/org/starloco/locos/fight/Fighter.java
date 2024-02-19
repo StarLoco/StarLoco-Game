@@ -681,7 +681,7 @@ public abstract  class Fighter implements Comparable<Fighter>, Scripted<Object>,
                     case 787: // Mot lotof
                         int id = Integer.parseInt(effect.getArgs().split(";")[0]);
                         int level = Integer.parseInt(effect.getArgs().split(";")[1]);
-                        Spell spell = World.world.getSort(id);
+                        Spell spell = World.world.getSort_Legacy(id);
 
                         for (SpellEffect e : spell.getStatsByLevel(level).getEffects()) {
                             if (e.getEffectID() == 89)

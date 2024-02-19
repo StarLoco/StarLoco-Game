@@ -53,62 +53,62 @@ public class Function {
         return 0;
     }
 
-    public boolean invoctantaIfPossible(Fight fight, Fighter fighter)
-    {
-        if (fight == null || fighter == null)
-            return false;
-        if (fighter.nbInvocation() >= 4)
-            return false;
-        Fighter nearest = getNearestEnnemy(fight, fighter, false);
-        if (nearest == null)
-            return false;
-        int nearestCell = fighter.getCell().getId();
-        int limit = 50;
-        int _loc0_ = 0;
-        SortStats spell = null;
-        if (fighter.haveState(36))
-        {
-
-            spell = World.world.getSort(1110).getStatsByLevel(5);
-            fighter.setState(36, 0);
-        }
-        if (fighter.haveState(37))
-        {
-            if(this.hasMobInFight(fight, 1091))
-                return false;
-            spell = World.world.getSort(1109).getStatsByLevel(5);
-            fighter.setState(37, 0);
-        }
-        if (fighter.haveState(38))
-        {
-            if(this.hasMobInFight(fight, 1092))
-                return false;
-            spell = World.world.getSort(1108).getStatsByLevel(5);
-            fighter.setState(38, 0);
-        }
-        if (fighter.haveState(35))
-        {
-            if(this.hasMobInFight(fight, 424))
-                return false;
-            spell = World.world.getSort(1107).getStatsByLevel(5);
-            fighter.setState(35, 0);
-        }
-        while (_loc0_++ < limit)
-        {
-            nearestCell = PathFinding.getNearestCellAround(fight.getMap(), nearestCell, nearest.getCell().getId(), null);
-        }
-        if (nearestCell == -1) {
-            nearestCell = PathFinding.getAvailableCellArround(fight, nearest.getCell().getId(), null);
-            if(nearestCell == 0)
-                return false;
-        }
-        if (spell == null)
-            return false;
-        int invoc = fight.tryCastSpell(fighter, spell, nearestCell);
-        if (invoc != 0)
-            return false;
-        return true;
-    }
+//    public boolean invoctantaIfPossible(Fight fight, Fighter fighter)
+//    {
+//        if (fight == null || fighter == null)
+//            return false;
+//        if (fighter.nbInvocation() >= 4)
+//            return false;
+//        Fighter nearest = getNearestEnnemy(fight, fighter, false);
+//        if (nearest == null)
+//            return false;
+//        int nearestCell = fighter.getCell().getId();
+//        int limit = 50;
+//        int _loc0_ = 0;
+//        SortStats spell = null;
+//        if (fighter.haveState(36))
+//        {
+//
+//            spell = World.world.getSort_Legacy(1110).getStatsByLevel(5);
+//            fighter.setState(36, 0);
+//        }
+//        if (fighter.haveState(37))
+//        {
+//            if(this.hasMobInFight(fight, 1091))
+//                return false;
+//            spell = World.world.getSort_Legacy(1109).getStatsByLevel(5);
+//            fighter.setState(37, 0);
+//        }
+//        if (fighter.haveState(38))
+//        {
+//            if(this.hasMobInFight(fight, 1092))
+//                return false;
+//            spell = World.world.getSort_Legacy(1108).getStatsByLevel(5);
+//            fighter.setState(38, 0);
+//        }
+//        if (fighter.haveState(35))
+//        {
+//            if(this.hasMobInFight(fight, 424))
+//                return false;
+//            spell = World.world.getSort_Legacy(1107).getStatsByLevel(5);
+//            fighter.setState(35, 0);
+//        }
+//        while (_loc0_++ < limit)
+//        {
+//            nearestCell = PathFinding.getNearestCellAround(fight.getMap(), nearestCell, nearest.getCell().getId(), null);
+//        }
+//        if (nearestCell == -1) {
+//            nearestCell = PathFinding.getAvailableCellArround(fight, nearest.getCell().getId(), null);
+//            if(nearestCell == 0)
+//                return false;
+//        }
+//        if (spell == null)
+//            return false;
+//        int invoc = fight.tryCastSpell(fighter, spell, nearestCell);
+//        if (invoc != 0)
+//            return false;
+//        return true;
+//    }
 
     public boolean hasMobInFight(Fight fight, int id) {
         for(Fighter fighter : fight.getFighters(7))
