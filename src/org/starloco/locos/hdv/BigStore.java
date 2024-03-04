@@ -45,7 +45,7 @@ public class BigStore {
         }
     }
 
-    private static final Comparator<BigStoreListing> priceASC = (o1, o2) -> o1.getPrice() - o2.getPrice();
+    private static final Comparator<BigStoreListing> priceASC = Comparator.comparingInt(BigStoreListing::getPrice);
     private static final DecimalFormat pattern = new DecimalFormat("0.0");
     // defaultCategoryFilter returns true if categoryId == template.type
     private static final CategoryFilter defaultCategoryFilter = (c, e) -> c == e.getGameObject().getTemplate().getType();
