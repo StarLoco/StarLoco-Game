@@ -305,14 +305,6 @@ function Player:openDocument(id, date) end
 ---@param quantity number
 function Player:showReceivedItem(actorID, quantity) end
 
----@param actorID number
----@param quantity number
-function Player:showReceivedItem(actorID, quantity) end
-
----@param actorID number
----@param quantity number
-function Player:showReceivedItem(actorID, quantity) end
-
 ---@param effectID number
 ---@return number
 function Player:baseStat(effectID) end
