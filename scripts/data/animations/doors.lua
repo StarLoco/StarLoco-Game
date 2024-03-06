@@ -10,12 +10,12 @@ local doorSG = function(inUseDuration, readyingDuration)
 end
 
 --- Minos Maze doors / levers
-RegisterAnimation(6570, AnimStates.NOT_READY, doorSG(600, 600))
-RegisterAnimation(6574, AnimStates.NOT_READY, doorSG(600, 600))
+AnimatedObjects.MinosMazeBlueDoor   = RegisterAnimation(6570, AnimStates.NOT_READY, doorSG(600, 600))
+AnimatedObjects.MinosMazeYellowDoor = RegisterAnimation(6574, AnimStates.NOT_READY, doorSG(600, 600))
 
 --- Sliding rock cave entrance
-RegisterAnimation(6550, AnimStates.NOT_READY, doorSG(3700, 4700))
-RegisterAnimation(6571, AnimStates.NOT_READY, doorSG(3700, 3333))
+AnimatedObjects.SlidingRock         = RegisterAnimation(6550, AnimStates.NOT_READY, doorSG(3700, 4700))
+AnimatedObjects.SlidingRockIncarnam = RegisterAnimation(6571, AnimStates.NOT_READY, doorSG(3700, 3333))
 
 --- Sliding mine cart
-RegisterAnimation(6553, AnimStates.NOT_READY, doorSG(8050, 666))
+AnimatedObjects.SlidingMineCart     = RegisterAnimation(6553, AnimStates.NOT_READY, doorSG(8050, 666))

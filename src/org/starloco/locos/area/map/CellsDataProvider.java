@@ -264,9 +264,20 @@ public interface CellsDataProvider {
 
             if(movementRaw(ov[0]) == val) return false;
 
-            apply(ov, (val & 0xF) << 2, 0x000000000000001CL);
+            apply(ov, (val & 0x7) << 2, 0x000000000000001CL);
 
             // TODO Optimize: Detect when changing value to base value
+
+            overrides.put(cellId, ov);
+            return true;
+        }
+
+        private boolean setGroundNum(int cellId, int val) {
+            long[] ov = overrides.computeIfAbsent(cellId, (k) -> new long[2]);
+
+            if(groundNumRaw(ov[0]) == val) return false;
+
+            apply(ov, (val & 0xF) << 13, 0x000000000003E000L);
 
             overrides.put(cellId, ov);
             return true;
@@ -299,6 +310,9 @@ public interface CellsDataProvider {
                     case "movement":
                         changed = setMovement(cellId, e.getValue());
                         break;
+                    case "groundnum":
+                        changed = setGroundNum(cellId, e.getValue());
+                        break;
                     default:
                         World.world.logger.warn("ignoring unknown cell override '{}'", e.getKey());
                 }
@@ -320,6 +334,12 @@ public interface CellsDataProvider {
                         break;
                     case "movement":
                         changed = setMovement(cellId, 0);
+                        break;
+                    case "interactive":
+                        changed = setInteractive(cellId, 0);
+                        break;
+                    case "groundnum":
+                        changed = setGroundNum(cellId, 0);
                         break;
                     default:
                         World.world.logger.warn("ignoring unknown cell override '{}'", key);
