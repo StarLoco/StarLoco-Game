@@ -2,7 +2,6 @@ package org.starloco.locos.area.map;
 
 import org.starloco.locos.common.CryptManager;
 import org.starloco.locos.game.world.World;
-import org.starloco.locos.util.Pair;
 
 import java.security.InvalidParameterException;
 import java.util.*;
@@ -283,6 +282,28 @@ public interface CellsDataProvider {
             return true;
         }
 
+        private boolean setObject1Num(int cellId, int val) {
+            long[] ov = overrides.computeIfAbsent(cellId, (k) -> new long[2]);
+
+            if(object1NumRaw(ov[0]) == val) return false;
+
+            apply(ov, (long) (val & 0x3FFF) << 27, 0x00003FFF80000000L);
+
+            overrides.put(cellId, ov);
+            return true;
+        }
+
+        private boolean setObject2Num(int cellId, int val) {
+            long[] ov = overrides.computeIfAbsent(cellId, (k) -> new long[2]);
+
+            if(object2NumRaw(ov[0]) == val) return false;
+
+            apply(ov, (long) (val & 0x3FFF) << 44, 0x3FFF800000000000L);
+
+            overrides.put(cellId, ov);
+            return true;
+        }
+
         private static void apply(long[] ov, long val, long mask) {
             // clear bits
             ov[0] &= ~mask;
@@ -313,6 +334,12 @@ public interface CellsDataProvider {
                     case "groundnum":
                         changed = setGroundNum(cellId, e.getValue());
                         break;
+                    case "o1num":
+                        changed = setObject1Num(cellId, e.getValue());
+                        break;
+                    case "o2num":
+                        changed = setObject2Num(cellId, e.getValue());
+                        break;
                     default:
                         World.world.logger.warn("ignoring unknown cell override '{}'", e.getKey());
                 }
@@ -340,6 +367,12 @@ public interface CellsDataProvider {
                         break;
                     case "groundnum":
                         changed = setGroundNum(cellId, 0);
+                        break;
+                    case "o1num":
+                        changed = setObject1Num(cellId, 0);
+                        break;
+                    case "o2num":
+                        changed = setObject2Num(cellId, 0);
                         break;
                     default:
                         World.world.logger.warn("ignoring unknown cell override '{}'", key);

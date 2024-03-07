@@ -49,9 +49,9 @@ public final class OrthogonalProj {
         int sum = x+y;
 
         return diff == 0        // Top
-                || sum == (w-1)<<1  // Right
-                || diff == (h-1) << 1 // Bottom
-                || sum == 0           // Left
-                ;
+            || sum == (w-1)<<1  // Right
+            || diff == (h-1) << 1 // Bottom
+            || sum == 0           // Left
+            ;
     }
 }
