@@ -169,6 +169,7 @@ public class ObjectAction {
                                     player.addXp((long) (val * Config.rateXp));
                                     SocketManager.GAME_SEND_STATS_PACKET(player);
                                     SocketManager.GAME_SEND_Im_PACKET(player, "08;" + val);
+                                    sureIsOk = true;
                                     break;
                                 case 614://Exp�rience m�tier.
                                     JobStat job = player.getMetierByID(Integer.parseInt(arg0.split(";")[1]));
@@ -187,10 +188,10 @@ public class ObjectAction {
                                     break;
                             }
                         }
-                        if (arg.split(",").length == 1)
-                            if (!isOk1 || !isOk2)
+                        if (arg.split(",").length <= 2)
+                            if (!isOk1 && !isOk2)
                                 isOk = false;
-                            else if (!isOk1 && !isOk2)
+                            else if (isOk1  || isOk2)
                                 isOk = false;
                         send = false;
                         break;
