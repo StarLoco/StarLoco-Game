@@ -5,3 +5,7 @@ logs
 Logs
 game.jar
 game.config.properties
+gradlew.bat
+gradlew
+.idea
+gradle/
