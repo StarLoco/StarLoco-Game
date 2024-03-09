@@ -5800,6 +5800,9 @@ public class GameClient {
             }
             /* End feed mount **/
 
+            // Pour equiper un item apres avoir desequiper l item a la meme position
+            boolean equipBack = false;
+
             /* Feed pet **/
             if (position == Constant.ITEM_POS_FAMILIER && object.getTemplate().getType() != Constant.ITEM_TYPE_FAMILIER && this.player.getObjetByPos(position) != null) {
                 GameObject pets = this.player.getObjetByPos(position);
@@ -5964,9 +5967,9 @@ public class GameClient {
                     DatabaseManager.get(PlayerData.class).update(this.player);
                     return; // on s'arr?te l? pour l'obvi
                 } // FIN DU CODE OBVI
-
                 if (exObj != null)//S'il y avait d?ja un objet sur cette place on d?s?quipe
                 {
+                    equipBack = exObj.getGuid() != object.getGuid();
                     GameObject obj2;
                     ObjectTemplate exObjTpl = exObj.getTemplate();
                     int idSetExObj = exObj.getTemplate().getPanoId();
@@ -6190,6 +6193,8 @@ public class GameClient {
 
             this.player.verifEquiped();
             DatabaseManager.get(PlayerData.class).update(this.player);
+            if(equipBack)
+                this.movementObject(packet);
         } catch (Exception e) {
             e.printStackTrace();
             SocketManager.GAME_SEND_DELETE_OBJECT_FAILED_PACKET(this);
