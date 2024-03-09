@@ -154,12 +154,10 @@ public class ObjectAction {
                                     sureIsOk = true;
                                     break;
                                 case 139://Energie.
-                                    if (player.getEnergy() == 10000) {
+                                    if (player.getEnergy() == Player.maxEnergy) {
                                         isOk2 = false;
                                         continue;
                                     }
-                                    if (player.getEnergy() + val > 10000)
-                                        val = 10000 - player.getEnergy();
                                     player.setEnergy(player.getEnergy() + val);
                                     SocketManager.GAME_SEND_STATS_PACKET(player);
                                     SocketManager.GAME_SEND_Im_PACKET(player, "07;" + val);

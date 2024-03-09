@@ -79,6 +79,8 @@ public class Player implements Scripted<SPlayer>, Actor {
     private static final int MIN_JOB_LVL_FOR_NEW_JOB = 30;
     private static final int MIN_JOB_FOR_SPECIALTY = 65;
 
+    public static final short maxEnergy = 10000;
+
     private final SPlayer scriptVal;
 
     public Stats stats;
@@ -515,7 +517,7 @@ public class Player implements Scripted<SPlayer>, Actor {
         int startMapID = Config.startMap > 0 ? (short) Config.startMap : Constant.getStartMap(classe);
         int startCellID = Config.startCell > 0 ? (short) Config.startCell : Constant.getStartCell(classe);
 
-        Player player = new Player(-1, name, -1, sexe, classe, color1, color2, color3, Config.startKamas, ((Config.startLevel - 1)), ((Config.startLevel - 1) * 5), 10000, Config.startLevel,
+        Player player = new Player(-1, name, -1, sexe, classe, color1, color2, color3, Config.startKamas, ((Config.startLevel - 1)), ((Config.startLevel - 1) * 5), Player.maxEnergy, Config.startLevel,
                 World.world.getExperiences().players.minXpAt(Config.startLevel), 100, Integer.parseInt(classe
                 + "" + sexe), (byte) 0, compte.getId(), new HashMap<>(), (byte) 1, (byte) 0, (byte) 0, "*#%!pi$:?",
                 (short)startMapID,
@@ -654,7 +656,7 @@ public class Player implements Scripted<SPlayer>, Actor {
     }
 
     public void setEnergy(int energy) {
-        this.energy = energy;
+        this.energy = energy > Player.maxEnergy ? Player.maxEnergy : energy;
     }
 
     public long getExp() {
@@ -2124,7 +2126,7 @@ public class Player implements Scripted<SPlayer>, Actor {
         Stats stats = this.getStats(), sutffStats = this.getStuffStats(), donStats = this.getDonsStats(), buffStats = this.getBuffsStats(), totalStats = this.getTotalStats(false);
 
         ASData.append(pdv).append(",").append(pdvMax).append("|");
-        ASData.append(this.getEnergy()).append(",10000|");
+        ASData.append(this.getEnergy()).append(","+Player.maxEnergy+"|");
         ASData.append(getInitiative()).append("|");
         ASData.append(stats.getEffect(Constant.STATS_ADD_PROS) + sutffStats.getEffect(Constant.STATS_ADD_PROS) + ((int) Math.ceil(totalStats.getEffect(Constant.STATS_ADD_CHAN) / 10)) + buffStats.getEffect(Constant.STATS_ADD_PROS) + ((int) Math.ceil(buffStats.getEffect(Constant.STATS_ADD_CHAN) / 10))).append("|");
         ASData.append(stats.getEffect(Constant.STATS_ADD_PA)).append(",").append(sutffStats.getEffect(Constant.STATS_ADD_PA)).append(",").append(donStats.getEffect(Constant.STATS_ADD_PA)).append(",").append(buffStats.getEffect(Constant.STATS_ADD_PA)).append(",").append(totalStats.getEffect(Constant.STATS_ADD_PA)).append("|");
@@ -4751,7 +4753,7 @@ public class Player implements Scripted<SPlayer>, Actor {
 
         this.isGhost = false;
         this.dead = 0;
-        this.setEnergy(10000);
+        this.setEnergy(Player.maxEnergy);
         this.setGfxId(Integer.parseInt(this.getClasse() + "" + this.getSexe()));
         this.setCanAggro(true);
         this.setAway(false);
