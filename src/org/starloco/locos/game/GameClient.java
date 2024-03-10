@@ -5890,8 +5890,8 @@ public class GameClient {
                     return;
 
 
-                if (!object.getTemplate().getConditions().contains("PP") && !object.getTemplate().getConditions().equalsIgnoreCase("") && !World.world.getConditionManager().validConditions(this.player, object.getTemplate().getConditions())) {
-                    SocketManager.GAME_SEND_Im_PACKET(this.player, "119|44"); // si le this.player ne v?rifie pas les conditions diverses
+                if (!World.world.getConditionManager().validConditions(this.player, object.getTemplate().getConditions())) {
+                    SocketManager.GAME_SEND_Im_PACKET(this.player, "119|44;"+object.getTemplate().getId()); // si le this.player ne v?rifie pas les conditions diverses
                     return;
                 }
                 GameObject shield = null, weapon = null;
