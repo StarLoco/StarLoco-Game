@@ -23,6 +23,8 @@ For running the project:
 This repository is intended for people who want to compile their own version.
 If you just want to run the project, use the [Docker](https://github.com/StarLoco/StarLoco/tree/main/docker) image
 
+Configuration file path can be specified with environment variable `STARLOCO_CONFIG_PATH`
+
 ## Contribute
 
 Feel free to open an issue or create a pull request.
