@@ -1,5 +1,5 @@
 # StarLoco - Game
-The most advanced public 1.39 dofus emulator written in Java 8.
+The most advanced public 1.39 dofus emulator written in Java 21.
 
 ## Summary
 - Requirements
@@ -10,12 +10,12 @@ The most advanced public 1.39 dofus emulator written in Java 8.
 ## Requirements
 
 To be able to compile this project, you'll need to be sure your computer has :
-- Java - JDK 8
+- Java - Amazon Corretto JDK 21
 
 We also recommend using IntelliJ IDEA with the emmyLUA plugin.
 
 For running the project:
-- Java - JRE 8
+- Java - Amazon Corretto 21
 - MariaDB
 
 ## Usage

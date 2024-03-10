@@ -1,6 +1,4 @@
 apply plugin: 'java'
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
 
 group 'org.starloco.locos'
 // Get version from git tag, fallback to git commit hash
@@ -14,6 +12,12 @@ compileJava.options.encoding = 'UTF-8'
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
 }
 
 sourceSets {
