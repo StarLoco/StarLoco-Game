@@ -1,6 +1,6 @@
 FROM amazoncorretto:21-alpine
 
-ENV STARLOCO_CONFIG_PATH /app/config/game.config.properties
+ENV STARLOCO_CONFIG_PATH=/app/config/game.config.properties
 
 COPY ./docker/init-game.sh /init-game.sh
 COPY ./docker/game.config.properties /embedded/game.config.properties

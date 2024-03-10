@@ -8,7 +8,7 @@ fi
 
 
 # check if scripts directory exists
-if ! test -f /app/scripts; then
+if ! test -f /app/scripts/Data.lua; then
   echo "Script directory does not exist, using default package"
   cp -r /embedded/scripts /app/
 fi
