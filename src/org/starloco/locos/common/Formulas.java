@@ -560,7 +560,7 @@ public class Formulas {
 
     public static int calculZaapCost(Player player, GameMap map1, GameMap map2) {
         return player.getAccount().isSubscribeWithoutCondition() ? 10 :
-                10 * (Math.abs(map2.getX() - map1.getX()) + Math.abs(map2.getY() - map1.getY()) - 1);
+                10 * Math.abs((Math.abs(map2.getX() - map1.getX()) + Math.abs(map2.getY() - map1.getY()) - 1));
     }
 
     public static int applyResistancesOnDamage(int elementID, int damage, Fighter target, boolean addPVPRes) {
