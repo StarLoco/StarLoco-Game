@@ -8,7 +8,9 @@ npc.customArtwork = 9093
 ---@param p Player
 ---@param answer number
 function npc:onTalk(p, answer)
-    if answer == 0 then p:ask(3794)
+    if answer == 0 then p:ask(3791, {3329, 3328})
+    elseif answer == 3328 then p:ask(3792, {3330})
+    elseif answer == 3329 then p:endDialog()
     end
 end
 
