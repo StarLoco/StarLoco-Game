@@ -476,7 +476,7 @@ public class SPlayer extends DefaultUserdata<Player> {
     }
     //endregion
 
-    //region Inventory/Gear
+    //region Inventory/CharacterGear
     @SuppressWarnings("unused")
     public static SItem gearAt(Player p, ArgumentIterator args) {
         int pos = args.nextInt();

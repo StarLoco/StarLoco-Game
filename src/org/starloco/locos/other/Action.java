@@ -9,7 +9,7 @@ import org.starloco.locos.client.other.Stats;
 import org.starloco.locos.common.Formulas;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.database.DatabaseManager;
-import org.starloco.locos.database.data.login.PlayerData;
+import org.starloco.locos.database.legacydata.login.PlayerData;
 import org.starloco.locos.entity.monster.MonsterGroup;
 import org.starloco.locos.entity.npc.Npc;
 import org.starloco.locos.entity.pet.PetEntry;

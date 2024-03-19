@@ -1,7 +1,7 @@
 package org.starloco.locos.object.entity;
 
 import org.starloco.locos.database.DatabaseManager;
-import org.starloco.locos.database.data.login.ObjectData;
+import org.starloco.locos.database.legacydata.login.ObjectData;
 import org.starloco.locos.game.world.World.Couple;
 import org.starloco.locos.object.GameObject;
 

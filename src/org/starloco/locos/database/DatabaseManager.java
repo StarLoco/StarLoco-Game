@@ -5,9 +5,9 @@ import ch.qos.logback.classic.Logger;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.slf4j.LoggerFactory;
-import org.starloco.locos.database.data.DAO;
-import org.starloco.locos.database.data.game.*;
-import org.starloco.locos.database.data.login.*;
+import org.starloco.locos.database.legacydata.DAO;
+import org.starloco.locos.database.legacydata.game.*;
+import org.starloco.locos.database.legacydata.login.*;
 import org.starloco.locos.kernel.Config;
 import org.starloco.locos.kernel.Main;
 
@@ -38,8 +38,10 @@ public class DatabaseManager {
         logger.trace("Reading database config");
         this.login = this.createHikariDataSource(Config.databaseLoginHost, String.valueOf(Config.databaseLoginPort), Config.databaseLoginName, Config.databaseLoginUser, Config.databaseLoginPass);
         logger.debug("Connection to the login database, ok");
+
         this.game = this.createHikariDataSource(Config.databaseGameHost, String.valueOf(Config.databaseGamePort), Config.databaseGameName, Config.databaseGameUser, Config.databaseGamePass);
         logger.debug("Connection to the game database, ok");
+
         this.initialize();
         logger.debug("All data have been initialized");
         logger.setLevel(Level.ERROR);

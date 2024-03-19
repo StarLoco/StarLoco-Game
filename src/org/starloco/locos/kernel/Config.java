@@ -17,8 +17,10 @@ public class Config {
     public static ExchangeClient exchangeClient;
 
     //database
-    public static String databaseLoginHost, databaseLoginUser, databaseLoginPass, databaseGameHost, databaseGameUser, databaseGamePass;
-    public static int databaseLoginPort, databaseGamePort;
+    public static String databaseLoginHost, databaseLoginUser, databaseLoginPass;
+    public static String databaseGameHost, databaseGameUser, databaseGamePass;
+    public static String databaseV2GameHost, databaseV2GameUser, databaseV2GamePass; // Redis
+    public static int databaseLoginPort, databaseGamePort, databaseV2GamePort;
     public static String databaseLoginName, databaseGameName;
 
     //network
@@ -75,6 +77,12 @@ public class Config {
             Config.databaseGameUser = properties.getProperty(Params.GAME_DB_USER.toString()); i++;
             Config.databaseGamePass = properties.getProperty(Params.GAME_DB_PASS.toString()); i++;
             Config.databaseGameName = properties.getProperty(Params.GAME_DB_NAME.toString()); i = 25;
+
+
+            Config.databaseV2GameHost = properties.getProperty(Params.GAME_V2_DB_HOST.toString()); i++;
+            Config.databaseV2GamePort = Integer.parseInt(properties.getProperty(Params.GAME_V2_DB_PORT.toString())); i++;
+            Config.databaseV2GameUser = properties.getProperty(Params.GAME_V2_DB_USER.toString()); i++;
+            Config.databaseV2GamePass = properties.getProperty(Params.GAME_V2_DB_PASS.toString()); i++;
 
             Config.gameIp = properties.getProperty(Params.GAME_IP.toString()); i++;
             Config.gamePort = Integer.parseInt(properties.getProperty(Params.GAME_PORT.toString())); i++;
@@ -165,6 +173,10 @@ public class Config {
                 .append(Params.GAME_DB_USER).append(" root\n")
                 .append(Params.GAME_DB_PASS).append(" \n")
                 .append(Params.GAME_DB_NAME).append(" starloco_game\n")
+                .append(Params.GAME_V2_DB_HOST).append(" 127.0.0.1\n")
+                .append(Params.GAME_V2_DB_PORT).append(" 6479\n")
+                .append(Params.GAME_V2_DB_USER).append(" root\n")
+                .append(Params.GAME_V2_DB_PASS).append(" \n")
                 .append("\n")
                 .append("#Game server\n")
                 .append(Params.GAME_IP).append(" 127.0.0.1\n")
@@ -268,6 +280,12 @@ public class Config {
         GAME_DB_USER("database.game.user"),
         GAME_DB_PASS("database.game.pass"),
         GAME_DB_NAME("database.game.name"),
+
+        GAME_V2_DB_HOST("database.v2.game.host"),
+
+        GAME_V2_DB_PORT("database.v2.game.port"),
+        GAME_V2_DB_USER("database.v2.game.user"),
+        GAME_V2_DB_PASS("database.v2.game.pass"),
         LOGIN_DB_HOST("database.login.host"),
         LOGIN_DB_PORT("database.login.port"),
         LOGIN_DB_USER("database.login.user"),

@@ -1,20 +1,19 @@
 package org.starloco.locos.client;
 
-import org.starloco.locos.database.data.game.QuestProgressData;
+import org.starloco.locos.database.legacydata.game.QuestProgressData;
 import org.starloco.locos.kernel.Config;
 import org.starloco.locos.kernel.Constant;
 import org.starloco.locos.quest.QuestProgress;
 import org.starloco.locos.script.proxy.SAccount;
-import org.starloco.locos.script.proxy.SPlayer;
 import org.starloco.locos.util.Pair;
 import org.starloco.locos.command.administration.Group;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.database.DatabaseManager;
-import org.starloco.locos.database.data.game.BankData;
-import org.starloco.locos.database.data.game.GiftData;
-import org.starloco.locos.database.data.login.AccountData;
-import org.starloco.locos.database.data.login.MountData;
-import org.starloco.locos.database.data.login.PlayerData;
+import org.starloco.locos.database.legacydata.game.BankData;
+import org.starloco.locos.database.legacydata.game.GiftData;
+import org.starloco.locos.database.legacydata.login.AccountData;
+import org.starloco.locos.database.legacydata.login.MountData;
+import org.starloco.locos.database.legacydata.login.PlayerData;
 import org.starloco.locos.game.GameClient;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.hdv.BigStoreListing;

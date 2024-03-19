@@ -15,7 +15,7 @@ import org.starloco.locos.anims.KeyFrame;
 import org.starloco.locos.area.map.ScriptMapData;
 import org.starloco.locos.command.administration.Command;
 import org.starloco.locos.command.administration.Group;
-import org.starloco.locos.database.data.game.ExperienceTables;
+import org.starloco.locos.database.legacydata.game.ExperienceTables;
 import org.starloco.locos.entity.map.InteractiveObjectTemplate;
 import org.starloco.locos.entity.npc.NpcTemplate;
 import org.starloco.locos.game.world.World;

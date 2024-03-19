@@ -3,7 +3,7 @@ package org.starloco.locos.fight;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.client.other.Stats;
 import org.starloco.locos.common.SocketManager;
-import org.starloco.locos.database.data.game.ExperienceTables;
+import org.starloco.locos.database.legacydata.game.ExperienceTables;
 import org.starloco.locos.entity.mount.Mount;
 import org.starloco.locos.fight.spells.Spell;
 import org.starloco.locos.game.world.World;

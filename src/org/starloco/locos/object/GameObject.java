@@ -5,7 +5,7 @@ import org.starloco.locos.client.other.Stats;
 import org.starloco.locos.common.Formulas;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.database.DatabaseManager;
-import org.starloco.locos.database.data.login.ObjectData;
+import org.starloco.locos.database.legacydata.login.ObjectData;
 import org.starloco.locos.entity.mount.Mount;
 import org.starloco.locos.entity.pet.PetEntry;
 import org.starloco.locos.fight.spells.SpellEffect;

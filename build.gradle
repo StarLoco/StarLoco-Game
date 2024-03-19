@@ -37,6 +37,7 @@ repositories {
 
 dependencies {
     implementation 'redis.clients:jedis:5.1.2'
+    implementation 'com.google.code.gson:gson:2.10.1'
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 }
 

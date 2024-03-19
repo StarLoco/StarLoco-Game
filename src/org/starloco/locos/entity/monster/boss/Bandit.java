@@ -3,7 +3,7 @@ package org.starloco.locos.entity.monster.boss;
 import org.starloco.locos.area.map.GameMap;
 import org.starloco.locos.common.Formulas;
 import org.starloco.locos.database.DatabaseManager;
-import org.starloco.locos.database.data.game.GangsterData;
+import org.starloco.locos.database.legacydata.game.GangsterData;
 import org.starloco.locos.entity.monster.Monster;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.util.TimerWaiter;

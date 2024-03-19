@@ -5,7 +5,7 @@ import org.starloco.locos.client.Account;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.database.DatabaseManager;
-import org.starloco.locos.database.data.game.AuctionData;
+import org.starloco.locos.database.legacydata.game.AuctionData;
 import org.starloco.locos.entity.exchange.NpcExchange;
 import org.starloco.locos.entity.npc.Npc;
 import org.starloco.locos.game.scheduler.Updatable;

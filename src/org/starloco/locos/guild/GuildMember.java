@@ -4,7 +4,7 @@ import org.joda.time.Days;
 import org.joda.time.LocalDate;
 import org.starloco.locos.client.Player;
 import org.starloco.locos.database.DatabaseManager;
-import org.starloco.locos.database.data.game.GuildMemberData;
+import org.starloco.locos.database.legacydata.game.GuildMemberData;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.Constant;
 

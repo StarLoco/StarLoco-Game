@@ -14,8 +14,8 @@ import org.starloco.locos.command.administration.Group;
 import org.starloco.locos.common.Formulas;
 import org.starloco.locos.common.SocketManager;
 import org.starloco.locos.database.DatabaseManager;
-import org.starloco.locos.database.data.game.*;
-import org.starloco.locos.database.data.login.*;
+import org.starloco.locos.database.legacydata.game.*;
+import org.starloco.locos.database.legacydata.login.*;
 import org.starloco.locos.entity.Collector;
 import org.starloco.locos.entity.monster.Monster;
 import org.starloco.locos.entity.monster.MonsterGrade;
@@ -2958,7 +2958,7 @@ public class CommandAdmin extends AdminUser {
             for (QuestObjective e : q.getObjectives()) {
                 q.update(p, true, e.getValidationType());
             }
-            ((PlayerData) DatabaseManager.get(PlayerData.class)).update(p);
+            ((CharacterData) DatabaseManager.get(CharacterData.class)).update(p);
             this.sendMessage("La quete a ete termine sur le personnage "
                     + perso + ".");
             return;
@@ -2994,7 +2994,7 @@ public class CommandAdmin extends AdminUser {
                 q.update(p, true, e.getValidationType());
                 break;
             }
-            ((PlayerData) DatabaseManager.get(PlayerData.class)).update(p);
+            ((CharacterData) DatabaseManager.get(CharacterData.class)).update(p);
             this.sendMessage("La quete est passe e l'etape suivante sur le personnage "
                     + perso + ".");
             return;
