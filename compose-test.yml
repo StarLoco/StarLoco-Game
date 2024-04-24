@@ -1,0 +1,72 @@
+version: "3.8"
+
+services:
+  # Game Database
+  starloco_redis:
+    # Use image redis/redis-stack-server in production
+    image: "redis/redis-stack"
+    restart: always
+    networks:
+      - starloco
+    ports:
+      - "127.0.0.1:6379:6379"
+    environment:
+      # Snapshot to disk every minute, or every 1000 writes. Also write the AOF to make sure we don't lose any data
+      REDIS_ARG: "--save 60 1000 --appendonly yes"
+    volumes:
+      - "db-game:/data/"
+  # SQL Database
+  starloco_mariadb:
+    image: mariadb:11.3
+    restart: always
+    networks:
+      - starloco
+    environment:
+      MYSQL_ROOT_PASSWORD: CYoEw5SaBv1kIk
+    ports:
+      - '127.0.0.1:3306:3306'
+    volumes:
+      - db-sql:/var/lib/mysql
+      - $PWD/db-init/:/docker-entrypoint-initdb.d/:ro
+    healthcheck:
+      test: ["CMD", "mariadb-admin" ,"ping", "-h", "localhost", '-uroot', '-p$$MYSQL_ROOT_PASSWORD']
+      timeout: 20s
+      retries: 10
+  # Login
+  starloco_login:
+    image: starloco/login:latest
+    restart: always
+    networks:
+      - starloco
+    ports:
+      - '450:450'
+    volumes:
+      - $PWD/config/login.config.properties:/app/login.config.properties
+    depends_on:
+      starloco_mariadb:
+        condition: service_healthy
+  # Game
+  starloco_game:
+    image: starloco/game:latest
+    restart: always
+    networks:
+      - starloco
+    ports:
+      - '5555:5555'
+    volumes:
+      - $PWD/config/:/app/config
+      - $PWD/scripts:/app/scripts
+    depends_on:
+      starloco_redis:
+        condition: service_started
+      starloco_mariadb:
+        condition: service_healthy
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile
+networks:
+  starloco:
+
+volumes:
+  db-sql:
+  db-game:

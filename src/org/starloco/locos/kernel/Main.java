@@ -54,7 +54,7 @@ public class Main {
 
         try {
             System.setOut(new PrintStream(System.out, true, "IBM850"));
-            if (!new File("Logs/Error").exists()) new File("Logs/Error").mkdir();
+            if (!new File("Logs/Error").exists()) new File("Logs/Error").mkdirs();
             System.setErr(new PrintStream(Files.newOutputStream(Paths.get("Logs/Error/" + new SimpleDateFormat("dd-MM-yyyy - HH-mm-ss", Locale.FRANCE).format(new Date()) + ".log"))));
         } catch (Exception e) {
             e.printStackTrace();
@@ -67,7 +67,8 @@ public class Main {
         Main.logger.info("You use " + System.getProperty("java.vendor") + " with the version " + System.getProperty("java.version"));
         Main.logger.debug("Starting of the server : " + new SimpleDateFormat("dd/MM/yyyy - HH:mm:ss", Locale.FRANCE).format(new Date()));
 
-        Config.verify("game.config.properties");
+        String configPath = System.getenv().getOrDefault("STARLOCO_CONFIG_PATH", "game.config.properties");
+        Config.verify(configPath);
         Logging.getInstance().initialize();
 
         // Database
