@@ -10,9 +10,9 @@ The most advanced public 1.39 dofus emulator written in Java 21.
 ## Requirements
 
 To be able to compile this project, you'll need to be sure your computer has :
-- Java - Amazon Corretto JDK 21
+- Javac from Amazon Corretto JDK 21
 
-We also recommend using IntelliJ IDEA with the emmyLUA plugin.
+We also recommend using IntelliJ IDEA with the emmyLUA plugin. If you decide to use Eclipse, you'll need to set it up to use Javac yourself.
 
 For running the project:
 - Java - Amazon Corretto 21
