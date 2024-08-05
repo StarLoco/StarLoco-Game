@@ -28,11 +28,11 @@ jobs:
           java-version: '21'
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: 8.8
       - name: Build with Gradle
-        run: ./gradlew jar
+        run: ls -la && ./gradlew jar
 
       - name: Upload JAR artifact
         uses: actions/upload-artifact@v2
