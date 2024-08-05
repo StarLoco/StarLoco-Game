@@ -24,8 +24,8 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v2
         with:
-          java-version: '8'
-          distribution: 'adopt'
+          java-version: '21'
+          distribution: 'corretto'
 
       - name: Build with Gradle
         uses: gradle/gradle-build-action@v2.4.2
