@@ -1,51 +1,48 @@
 package org.starloco.locos.common;
 
 import org.apache.commons.lang.StringEscapeUtils;
-import org.starloco.locos.area.map.GameCase;
-import org.starloco.locos.area.map.GameMap;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.*;
+import java.util.Arrays;
 
 public class CryptManager {
 
-    public final static char[] HASH = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p',
+    public final static char[] CELL_ENCODING_LOOKUP_TABLE = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p',
             'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L',
             'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '0', '1', '2', '3', '4', '5', '6', '7',
             '8', '9', '-', '_'};
+
+    private static final int[] CELL_DECODING_LOOKUP_TABLE = new int[128];
+
+    static {
+        // Initialize all elements to -1 indicating invalid characters
+        Arrays.fill(CELL_DECODING_LOOKUP_TABLE, -1);
+
+        // Populate the decoding lookup table based on CELL_ENCODING_LOOKUP_TABLE
+        for (int i = 0; i < CELL_ENCODING_LOOKUP_TABLE.length; i++) {
+            CELL_DECODING_LOOKUP_TABLE[CELL_ENCODING_LOOKUP_TABLE[i]] = i;
+        }
+    }
+
     private final char[] HEX_CHARS = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
 
     public static String cellID_To_Code(int cellID) {
-        return HASH[cellID>>6] + "" + HASH[cellID & 0x3F];
+        return CELL_ENCODING_LOOKUP_TABLE[cellID >> 6] + "" + CELL_ENCODING_LOOKUP_TABLE[cellID & 0x3F];
     }
 
     public int cellCode_To_ID(String cellCode) {
-
         char char1 = cellCode.charAt(0), char2 = cellCode.charAt(1);
-        int code1 = -1, code2 = -1, a = 0;
-
-        while (a < HASH.length) {
-            if (HASH[a] == char1)
-                code1 = a << 6;
-            if (HASH[a] == char2)
-                code2 = a;
-            if(code1 != -1 && code2 != -1)
-                return (code1 + code2);
-            a++;
-        }
-        throw new IllegalStateException("invalid cellCode passed to cellCode_To_ID");
+        int code1 = CELL_DECODING_LOOKUP_TABLE[char1] << 6, code2 = CELL_DECODING_LOOKUP_TABLE[char2];
+        return code1 + code2;
     }
 
     public static int getIntByHashedValue(char c) {
-        for (int a = 0; a < HASH.length; a++)
-            if (HASH[a] == c)
-                return a;
-        return -1;
+        return CELL_DECODING_LOOKUP_TABLE[c];
     }
 
     public static char getHashedValueByInt(int c) {
-        return HASH[c];
+        return CELL_ENCODING_LOOKUP_TABLE[c];
     }
 
     public String prepareMapDataKey(String key) {
@@ -74,7 +71,7 @@ public class CryptManager {
         }
 
         String[] strArray = new String[] {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F"};
-        return strArray[(num % 16)];
+        return strArray[(num & 0xF)];
     }
 
     public static String decryptMapData(String mapData, String key) throws UnsupportedEncodingException {
@@ -161,13 +158,13 @@ public class CryptManager {
     private int checksum(String data) {
         int result = 0;
         for(char c : data.toCharArray())
-            result += c % 16;
-        return result % 16;
+            result += c & 0xF;
+        return result & 0xF;
     }
 
     private String decimalToHexadecimal(int c) {
         if(c > 255) c = 255;
-        return HEX_CHARS[c / 16] + "" + HEX_CHARS[c % 16];
+        return HEX_CHARS[c >> 4] + "" + HEX_CHARS[c & 0xF];
     }
 
     private String encode(String input) {
@@ -175,8 +172,8 @@ public class CryptManager {
         for (char ch : input.toCharArray()) {
             if (isUnsafe(ch)) {
                 resultStr.append('%');
-                resultStr.append(toHex(ch / 16));
-                resultStr.append(toHex(ch % 16));
+                resultStr.append(toHex(ch >> 4));
+                resultStr.append(toHex(ch & 0xF));
             } else {
                 resultStr.append(ch);
             }
