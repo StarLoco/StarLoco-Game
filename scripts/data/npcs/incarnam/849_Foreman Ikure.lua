@@ -2,8 +2,8 @@ local npc = Npc(849, 9037)
 
 local learnJob = function (p, jobID, itemID)
     if not p:tryLearnJob(jobID) then
-        error("Failed to Learn Job")
         p:endDialog()
+        error("Failed to Learn Job")
         return
     end
     p:addItem(itemID)
