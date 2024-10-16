@@ -1,6 +1,6 @@
 package org.starloco.locos.eventbus;
 
-import net.engio.mbassy.listener.Handler;
+import org.starloco.locos.annotation.Handler;
 import org.starloco.locos.proto.AccountQueuePositionMessage;
 
 public class AccountEventHandler {

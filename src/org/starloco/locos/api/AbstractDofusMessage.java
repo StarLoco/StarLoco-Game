@@ -10,7 +10,6 @@ public abstract class AbstractDofusMessage {
     
     public AbstractDofusMessage() {
         this.output = new StringBuilder();
-        this.input = new StringBuilder();
     }
     
     public StringBuilder getOutput() {
