@@ -8,6 +8,8 @@ COPY ./scripts /embedded/scripts/
 
 COPY ./build/libs/game.jar /app/game.jar
 
+RUN chmod +x /init-game.sh
+
 VOLUME ["/app/config"]
 WORKDIR /app
 
