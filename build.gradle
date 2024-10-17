@@ -38,6 +38,7 @@ repositories {
 dependencies {
     implementation 'redis.clients:jedis:5.1.2'
     implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation group: 'org.reflections', name: 'reflections', version: '0.10.2'
 }
 
 jar {
