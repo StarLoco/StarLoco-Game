@@ -5,8 +5,11 @@ import org.slf4j.LoggerFactory;
 import org.starloco.locos.annotation.DofusMessage;
 import org.starloco.locos.api.AbstractDofusMessage;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 public class DofusMessageFactory {
@@ -26,16 +29,13 @@ public class DofusMessageFactory {
         }
     }
     
-    public static AbstractDofusMessage getMessage(String header) {
-        if(!messages.containsKey(header)) {
-            return null;
-        }
-        AbstractDofusMessage message = null;
-        try {
-            message = messages.get(header).newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
-        return message;
+    public static AbstractDofusMessage getMessage(String header){
+        return Optional.ofNullable(messages.get(header)).map(clazz -> {
+            try {
+                return clazz.getDeclaredConstructor().newInstance();
+            } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+                throw new RuntimeException(e);
+            }
+        }).orElse(null);
     }
 }

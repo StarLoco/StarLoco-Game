@@ -53,12 +53,10 @@ public class GameHandler implements IoHandler {
                             abstractDofusMessage.setClient(client);
                             LoggerFactory.getLogger(GameHandler.class).info("Receive message: {} with header: {}", abstractDofusMessage.getClass().getName(), p.substring(0, 2));
                             EventDispatcherFactory.dispatch(abstractDofusMessage);
-                        } else {
-                            client.parsePacket(p);
+                            return;
                         }
-                    } else {
-                        client.parsePacket(p);
                     }
+                    client.parsePacket(p);
                 } catch(Exception e) {
                     throw new Exception("Cannot process packet: "+p, e);
                 } finally {
