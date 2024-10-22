@@ -72,6 +72,9 @@ local Player = {}
 ---@return number
 function Player:id() end
 
+---@return Account
+function Player:account() end
+
 ---@return string
 function Player:name() end
 

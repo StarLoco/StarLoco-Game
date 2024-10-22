@@ -3,6 +3,7 @@ package org.starloco.locos.game;
 import org.apache.mina.core.service.IoHandler;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.starloco.locos.api.AbstractDofusMessage;
 import org.starloco.locos.factory.DofusMessageFactory;
@@ -12,7 +13,7 @@ import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.Config;
 
 public class GameHandler implements IoHandler {
-
+    private final static Logger logger = LoggerFactory.getLogger(GameHandler.class);
     private final static PacketFilter filter = new PacketFilter().activeSafeMode();
 
     @Override
@@ -51,7 +52,7 @@ public class GameHandler implements IoHandler {
                             abstractDofusMessage.setInput(new StringBuilder(p.substring(2)));
                             abstractDofusMessage.deserialize();
                             abstractDofusMessage.setClient(client);
-                            LoggerFactory.getLogger(GameHandler.class).info("Receive message: {} with header: {}", abstractDofusMessage.getClass().getName(), p.substring(0, 2));
+                            logger.info("Receive message: {} with header: {}", abstractDofusMessage.getClass().getName(), p.substring(0, 2));
                             EventDispatcherFactory.dispatch(abstractDofusMessage);
                             return;
                         }
