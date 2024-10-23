@@ -22,5 +22,3 @@ map.npcs = {
 map.onMovementEnd = {
 	[434] = moveEndTeleport(10331, 349),
 }
-
-

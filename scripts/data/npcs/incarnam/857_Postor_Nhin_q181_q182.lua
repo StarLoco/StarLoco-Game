@@ -16,6 +16,16 @@ function npc:onTalk(p, answer)
     local recipeQuest = QUESTS[recipeQuestID]
     local zaapQuest = QUESTS[zaapQuestID]
 
+    -- Vérifie si la quête zaapQuest est terminée
+    if zaapQuest:finishedBy(p) then
+        if answer == 0 then
+            -- Affiche un texte indiquant que tout est terminé
+            p:ask(3654)  -- Change le texte ici si nécessaire
+        end
+        return
+    end
+
+    -- Gestion de la quête recipeQuest
     if recipeQuest:availableTo(p) then
         p:ask(3654)
         return
@@ -40,6 +50,7 @@ function npc:onTalk(p, answer)
         elseif answer == 3225 then
             p:endDialog()
         elseif answer == 3226 then
+            recipeQuest:completeObjective(p, 745)
             if not p:getItem(recipeID) then
                 p:addItem(recipeID)
             end
@@ -48,15 +59,10 @@ function npc:onTalk(p, answer)
         return
     end
 
-    -- Cette section vérifie si la quête zaapQuest est déjà terminée
-    if zaapQuest:finishedBy(p) then
-        p:ask(3654)  -- Le PNJ répond "3654" si la quête est déjà terminée
-        return
-    end
-
-    if recipeQuest:finishedBy(p) then
+    -- Vérifie si recipeQuest est terminé et si zaapQuest peut être lancé
+    if recipeQuest:finishedBy(p) and not zaapQuest:ongoingFor(p) then
         if answer == 0 then
-            p:ask(3660, {3228; 3227})
+            p:ask(3660, {3228, 3227})
         elseif answer == 3228 then
             p:endDialog()
         elseif answer == 3227 then
@@ -67,15 +73,23 @@ function npc:onTalk(p, answer)
             p:ask(3663, {3231})
         elseif answer == 3231 then
             p:ask(3664)
-			p:addItem(8529)
-            zaapQuest:startFor(p, self.id)
+            if not p:getItem(8529) then
+                p:addItem(8529)
+            end
 
+            -- Lancement de la quête zaapQuest
+            if not zaapQuest:finishedBy(p) and not zaapQuest:ongoingFor(p) then
+                zaapQuest:startFor(p, self.id)
+            end
+            p:endDialog()
         end
+        return
     end
 
-    if answer == 0 then p:ask(3654)
+    -- Réponse par défaut
+    if answer == 0 then
+        p:ask(3654)
     end
-
 end
 
 RegisterNPCDef(npc)
