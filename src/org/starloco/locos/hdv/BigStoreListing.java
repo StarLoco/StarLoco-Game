@@ -9,7 +9,7 @@ public class BigStoreListing {
     private int lineId;
     private final int owner;
     private final int price;
-    private final byte amount; // Format : 0=1 1=10 2=100
+    private final BigStoreListingLotSize lotSize;
     private final GameObject gameObject;
 
     public BigStoreListing(int price, byte amount, int owner, GameObject gameObject) {
@@ -19,7 +19,7 @@ public class BigStoreListing {
     public BigStoreListing(int id, int price, byte amount, int owner, GameObject gameObject) {
         this.id = id;
         this.price = price;
-        this.amount = amount;
+        this.lotSize = BigStoreListingLotSize.fromValue(amount);
         this.gameObject = gameObject;
         this.owner = owner;
     }
@@ -55,16 +55,8 @@ public class BigStoreListing {
         return this.price;
     }
 
-    public byte getAmount() {
-        return this.amount;
-    }
-
-    /**
-     * Map (0,1,2) to (1,10,100)
-     * @return byte
-     */
-    public byte getAmountExp() {
-        return (byte)Math.pow(10, amount); //
+    public BigStoreListingLotSize getLotSize() {
+        return this.lotSize;
     }
 
     public GameObject getGameObject() {
@@ -74,17 +66,15 @@ public class BigStoreListing {
     public String parseToEL() {
         // For EL packet, we want to be able to identify each listing, so we return the listing ID
         StringBuilder toReturn = new StringBuilder();
-        int count = getAmountExp();
         int duration = World.world.getHdv(hdvId).getDuration();
-        toReturn.append(this.getId()).append(";").append(count).append(";").append(this.getGameObject().getTemplate().getId()).append(";").append(this.getGameObject().encodeStats()).append(";").append(this.price).append(";").append(duration);
+        toReturn.append(this.getId()).append(";").append(lotSize.amount).append(";").append(this.getGameObject().getTemplate().getId()).append(";").append(this.getGameObject().encodeStats()).append(";").append(this.price).append(";").append(duration);
         return toReturn.toString();
     }
 
     public String parseToEmK() {
         StringBuilder toReturn = new StringBuilder();
-        int count = getAmountExp();
         int duration = World.world.getHdv(hdvId).getDuration();
-        toReturn.append(this.getGameObject().getGuid()).append("|").append(count).append("|").append(this.getGameObject().getTemplate().getId()).append("|").append(this.getGameObject().encodeStats()).append("|").append(this.price).append("|").append(duration);
+        toReturn.append(this.getGameObject().getGuid()).append("|").append(lotSize.amount).append("|").append(this.getGameObject().getTemplate().getId()).append("|").append(this.getGameObject().encodeStats()).append("|").append(this.price).append("|").append(duration);
         return toReturn.toString();
     }
 }

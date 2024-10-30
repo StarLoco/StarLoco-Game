@@ -13,7 +13,7 @@ function npc:onTalk(p, answer)
     local quest = QUESTS[questID]
 
     if quest:availableTo(p) then
-        if answer == 0 then p:ask(3646, {3213, 3214, 3215})
+        if answer == 0 then p:ask(3646, {3213, 3215, 3214})
         elseif answer == 3213 then p:ask(3647, {3216})
         elseif answer == 3214 then p:ask(3647, {3216})
         elseif answer == 3215 then p:ask(3647, {3216})

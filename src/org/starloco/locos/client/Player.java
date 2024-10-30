@@ -79,6 +79,8 @@ public class Player implements Scripted<SPlayer>, Actor {
     private static final int MIN_JOB_LVL_FOR_NEW_JOB = 30;
     private static final int MIN_JOB_FOR_SPECIALTY = 65;
 
+    public static final short maxEnergy = 10000;
+
     private final SPlayer scriptVal;
 
     public Stats stats;
@@ -86,8 +88,6 @@ public class Player implements Scripted<SPlayer>, Actor {
     //Disponibilit�
     public boolean _isAbsent = false;
     public boolean _isInvisible = false;
-    //Double
-    public boolean _isClone = false;
     //Suiveur - Suivi
     public Map<Integer, Player> follower = new HashMap<>();
     public Player follow = null;
@@ -483,7 +483,7 @@ public class Player implements Scripted<SPlayer>, Actor {
         if (!stuff.equals("")) {
             if (stuff.charAt(stuff.length() - 1) == '|')
                 stuff = stuff.substring(0, stuff.length() - 1);
-            ((ObjectData) DatabaseManager.get(ObjectData.class)).loads(stuff.replace("|", ","));
+            DatabaseManager.get(ObjectData.class).loads(stuff.replace("|", ","));
         }
         for (String item : stuff.split("\\|")) {
             if (item.equals(""))
@@ -504,50 +504,6 @@ public class Player implements Scripted<SPlayer>, Actor {
         }
     }
 
-    //Clone double
-    public Player(int id, String name, int groupe, int sexe, int classe,
-                  int color1, int color2, int color3, int level, int _size,
-                  int _gfxid, Map<Integer, Integer> stats, String stuff,
-                  int pdvPer, byte seeAlign, int mount, int alvl, int alignement) {
-        this.scriptVal = null; // FIXME if we ever use scripts for fights
-
-        this.id = id;
-        this.name = name;
-        this.groupId = groupe;
-        this.sexe = sexe;
-        this.classe = classe;
-        this.color1 = color1;
-        this.color2 = color2;
-        this.color3 = color3;
-        this.level = level;
-        this._aLvl = alvl;
-        this._size = _size;
-        this.gfxId = _gfxid;
-        this.stats = new Stats(stats, true, this);
-        this.changeName = false;
-        _sorts = new HashMap<>();
-        _sortsPlaces = new HashMap<>();
-        this.set_isClone(true);
-
-        for (String item : stuff.split("\\|")) {
-            if (item.equals(""))
-                continue;
-            String[] infos = item.split(":");
-            int guid = Integer.parseInt(infos[0]);
-            GameObject obj = World.world.getGameObject(guid);
-            if (obj == null || obj.getPosition() == -1)
-                continue;
-            GameObject newObj = obj.getClone(obj.getQuantity(), false);
-            objects.put(newObj.getGuid(), newObj);
-        }
-        this.maxPdv = (this.level - 1) * 5 + 50 + getStats().getEffect(Constant.STATS_ADD_VITA);
-        this.curPdv = (this.maxPdv * pdvPer) / 100;
-        this.alignment = alignement;
-        this._showWings = this.getAlignment() != 0 && seeAlign == 1;
-        if (mount != -1)
-            this._mount = World.world.getMountById(mount);
-    }
-
     public static Player create(String name, int sexe, int classe, int color1, int color2, int color3, Account compte) {
         String z = "";
         if (Config.allZaap) {
@@ -561,7 +517,7 @@ public class Player implements Scripted<SPlayer>, Actor {
         int startMapID = Config.startMap > 0 ? (short) Config.startMap : Constant.getStartMap(classe);
         int startCellID = Config.startCell > 0 ? (short) Config.startCell : Constant.getStartCell(classe);
 
-        Player player = new Player(-1, name, -1, sexe, classe, color1, color2, color3, Config.startKamas, ((Config.startLevel - 1)), ((Config.startLevel - 1) * 5), 10000, Config.startLevel,
+        Player player = new Player(-1, name, -1, sexe, classe, color1, color2, color3, Config.startKamas, ((Config.startLevel - 1)), ((Config.startLevel - 1) * 5), Player.maxEnergy, Config.startLevel,
                 World.world.getExperiences().players.minXpAt(Config.startLevel), 100, Integer.parseInt(classe
                 + "" + sexe), (byte) 0, compte.getId(), new HashMap<>(), (byte) 1, (byte) 0, (byte) 0, "*#%!pi$:?",
                 (short)startMapID,
@@ -575,7 +531,7 @@ public class Player implements Scripted<SPlayer>, Actor {
         for (int a = 1; a <= player.getLevel(); a++)
             Constant.onLevelUpSpells(player, a);
 
-        if (!((PlayerData) DatabaseManager.get(PlayerData.class)).insert(player))
+        if (!DatabaseManager.get(PlayerData.class).insert(player))
             return null;
 
         SocketManager.GAME_SEND_WELCOME(player);
@@ -590,45 +546,6 @@ public class Player implements Scripted<SPlayer>, Actor {
         int i2 = 0;
         for (Integer b : i) i2 += (2 << (b - 2));
         return i2 + "|0";
-    }
-
-    //CLONAGE
-    public static Player ClonePerso(Player P, int id, int pdv) {
-        HashMap<Integer, Integer> stats = new HashMap<>();
-        stats.put(Constant.STATS_ADD_VITA, pdv);
-        stats.put(Constant.STATS_ADD_FORC, P.getStats().getEffect(Constant.STATS_ADD_FORC));
-        stats.put(Constant.STATS_ADD_SAGE, P.getStats().getEffect(Constant.STATS_ADD_SAGE));
-        stats.put(Constant.STATS_ADD_INTE, P.getStats().getEffect(Constant.STATS_ADD_INTE));
-        stats.put(Constant.STATS_ADD_CHAN, P.getStats().getEffect(Constant.STATS_ADD_CHAN));
-        stats.put(Constant.STATS_ADD_AGIL, P.getStats().getEffect(Constant.STATS_ADD_AGIL));
-        stats.put(Constant.STATS_ADD_PA, P.getStats().getEffect(Constant.STATS_ADD_PA));
-        stats.put(Constant.STATS_ADD_PM, P.getStats().getEffect(Constant.STATS_ADD_PM));
-        stats.put(Constant.STATS_ADD_RP_NEU, P.getStats().getEffect(Constant.STATS_ADD_RP_NEU));
-        stats.put(Constant.STATS_ADD_RP_TER, P.getStats().getEffect(Constant.STATS_ADD_RP_TER));
-        stats.put(Constant.STATS_ADD_RP_FEU, P.getStats().getEffect(Constant.STATS_ADD_RP_FEU));
-        stats.put(Constant.STATS_ADD_RP_EAU, P.getStats().getEffect(Constant.STATS_ADD_RP_EAU));
-        stats.put(Constant.STATS_ADD_RP_AIR, P.getStats().getEffect(Constant.STATS_ADD_RP_AIR));
-        stats.put(Constant.STATS_ADD_ADODGE, P.getStats().getEffect(Constant.STATS_ADD_ADODGE));
-        stats.put(Constant.STATS_ADD_MDODGE, P.getStats().getEffect(Constant.STATS_ADD_MDODGE));
-
-        byte showWings = 0;
-        int alvl = 0;
-        if (P.getAlignment() != 0 && P._showWings) {
-            showWings = 1;
-            alvl = P.getGrade();
-        }
-        int mountID = -1;
-        if (P.getMount() != null) {
-            mountID = P.getMount().getId();
-        }
-
-        Player Clone = new Player(id, P.getName(), (P.getGroup() != null) ? P.getGroup().getId() : -1, P.getSexe(), P.getClasse(), P.getColor1(), P.getColor2(), P.getColor3(), P.getLevel(), 100, P.getGfxId(), stats, "", 100, showWings, mountID, alvl, P.getAlignment());
-        Clone.objects.putAll(P.objects);
-        Clone.set_isClone(true);
-        if (P._onMount) {
-            Clone._onMount = true;
-        }
-        return Clone;
     }
 
     public int getId() {
@@ -647,9 +564,9 @@ public class Player implements Scripted<SPlayer>, Actor {
         this.name = name;
         this.changeName = false;
 
-        ((PlayerData) DatabaseManager.get(PlayerData.class)).updateInfos(this);
+        DatabaseManager.get(PlayerData.class).updateInfos(this);
         if (this.getGuildMember() != null)
-            ((GuildMemberData) DatabaseManager.get(GuildMemberData.class)).update(this);
+            DatabaseManager.get(GuildMemberData.class).update(this);
     }
 
 
@@ -657,7 +574,7 @@ public class Player implements Scripted<SPlayer>, Actor {
         this.color1 = i;
         this.color2 = i1;
         this.color3 = i2;
-        ((PlayerData) DatabaseManager.get(PlayerData.class)).updateInfos(this);
+        DatabaseManager.get(PlayerData.class).updateInfos(this);
     }
 
     public Group getGroup() {
@@ -667,7 +584,7 @@ public class Player implements Scripted<SPlayer>, Actor {
     public void setGroupe(int groupId, boolean reload) {
         this.groupId = groupId;
         if (reload)
-            ((PlayerData) DatabaseManager.get(PlayerData.class)).updateGroupe(this);
+            DatabaseManager.get(PlayerData.class).updateGroupe(this);
     }
 
     public boolean isInvisible() {
@@ -739,7 +656,7 @@ public class Player implements Scripted<SPlayer>, Actor {
     }
 
     public void setEnergy(int energy) {
-        this.energy = energy;
+        this.energy = energy > Player.maxEnergy ? Player.maxEnergy : energy;
     }
 
     public long getExp() {
@@ -827,7 +744,7 @@ public class Player implements Scripted<SPlayer>, Actor {
         SocketManager.GAME_SEND_ALTER_GM_PACKET(this.getCurMap(), this);
         SocketManager.GAME_SEND_Ow_PACKET(this);
         SocketManager.GAME_SEND_STATS_PACKET(this);
-        ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this);
+        DatabaseManager.get(PlayerData.class).update(this);
     }
 
     public void setBenediction(int id) {
@@ -856,7 +773,7 @@ public class Player implements Scripted<SPlayer>, Actor {
         SocketManager.GAME_SEND_ALTER_GM_PACKET(this.getCurMap(), this);
         SocketManager.GAME_SEND_Ow_PACKET(this);
         SocketManager.GAME_SEND_STATS_PACKET(this);
-        ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this);
+        DatabaseManager.get(PlayerData.class).update(this);
     }
 
     public void setMalediction(int id) {
@@ -885,7 +802,7 @@ public class Player implements Scripted<SPlayer>, Actor {
             SocketManager.GAME_SEND_ALTER_GM_PACKET(this.getCurMap(), this);
             SocketManager.GAME_SEND_Ow_PACKET(this);
             SocketManager.GAME_SEND_STATS_PACKET(this);
-            ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this);
+            DatabaseManager.get(PlayerData.class).update(this);
         }
     }
 
@@ -908,7 +825,7 @@ public class Player implements Scripted<SPlayer>, Actor {
         SocketManager.GAME_SEND_ALTER_GM_PACKET(this.getCurMap(), this);
         SocketManager.GAME_SEND_Ow_PACKET(this);
         SocketManager.GAME_SEND_STATS_PACKET(this);
-        ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this);
+        DatabaseManager.get(PlayerData.class).update(this);
     }
 
     public void setCandy(int id) {
@@ -942,7 +859,7 @@ public class Player implements Scripted<SPlayer>, Actor {
         World.world.addGameObject(obj);
         SocketManager.GAME_SEND_Ow_PACKET(this);
         SocketManager.GAME_SEND_STATS_PACKET(this);
-        ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this);
+        DatabaseManager.get(PlayerData.class).update(this);
     }
 
     public void calculTurnCandy() {
@@ -955,7 +872,7 @@ public class Player implements Scripted<SPlayer>, Actor {
             } else {
                 SocketManager.GAME_SEND_UPDATE_ITEM(this, obj);
             }
-            ((ObjectData) DatabaseManager.get(ObjectData.class)).update(obj);
+            DatabaseManager.get(ObjectData.class).update(obj);
         }
         obj = getObjetByPos(Constant.ITEM_POS_PNJ_SUIVEUR);
         if (obj != null) {
@@ -966,7 +883,7 @@ public class Player implements Scripted<SPlayer>, Actor {
             } else {
                 SocketManager.GAME_SEND_UPDATE_ITEM(this, obj);
             }
-            ((ObjectData) DatabaseManager.get(ObjectData.class)).update(obj);
+            DatabaseManager.get(ObjectData.class).update(obj);
         }
         obj = getObjetByPos(Constant.ITEM_POS_BENEDICTION);
         if (obj != null) {
@@ -977,7 +894,7 @@ public class Player implements Scripted<SPlayer>, Actor {
             } else {
                 SocketManager.GAME_SEND_UPDATE_ITEM(this, obj);
             }
-            ((ObjectData) DatabaseManager.get(ObjectData.class)).update(obj);
+            DatabaseManager.get(ObjectData.class).update(obj);
         }
         obj = getObjetByPos(Constant.ITEM_POS_MALEDICTION);
         if (obj != null) {
@@ -998,7 +915,7 @@ public class Player implements Scripted<SPlayer>, Actor {
             } else {
                 SocketManager.GAME_SEND_UPDATE_ITEM(this, obj);
             }
-            ((ObjectData) DatabaseManager.get(ObjectData.class)).update(obj);
+            DatabaseManager.get(ObjectData.class).update(obj);
         }
         obj = getObjetByPos(Constant.ITEM_POS_ROLEPLAY_BUFF);
         if (obj != null) {
@@ -1011,7 +928,7 @@ public class Player implements Scripted<SPlayer>, Actor {
             } else {
                 SocketManager.GAME_SEND_UPDATE_ITEM(this, obj);
             }
-            ((ObjectData) DatabaseManager.get(ObjectData.class)).update(obj);
+            DatabaseManager.get(ObjectData.class).update(obj);
         }
     }
 
@@ -1028,7 +945,7 @@ public class Player implements Scripted<SPlayer>, Actor {
     }
 
     public String getAllTitle() {
-        _allTitle = ((PlayerData) DatabaseManager.get(PlayerData.class)).loadTitles(this.getId());
+        _allTitle = DatabaseManager.get(PlayerData.class).loadTitles(this.getId());
         return _allTitle;
     }
 
@@ -1045,7 +962,7 @@ public class Player implements Scripted<SPlayer>, Actor {
             _allTitle = title;
         else if (!erreur)
             _allTitle += "," + title;
-        ((PlayerData) DatabaseManager.get(PlayerData.class)).updateTitles(this.getId(), _allTitle);
+        DatabaseManager.get(PlayerData.class).updateTitles(this.getId(), _allTitle);
     }
 
     public void teleportOldMap() {
@@ -1555,7 +1472,7 @@ public class Player implements Scripted<SPlayer>, Actor {
                 SocketManager.GAME_SEND_Im_PACKET(this, "03;" + spellID);
             }
             if (save)
-                ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this);
+                DatabaseManager.get(PlayerData.class).update(this);
             return true;
         }
     }
@@ -1570,7 +1487,7 @@ public class Player implements Scripted<SPlayer>, Actor {
         this._sortsPlaces.remove(spell);
         SocketManager.GAME_SEND_SPELL_LIST(this);
         SocketManager.GAME_SEND_STATS_PACKET(this);
-        ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this);
+        DatabaseManager.get(PlayerData.class).update(this);
         return true;
     }
 
@@ -1602,7 +1519,7 @@ public class Player implements Scripted<SPlayer>, Actor {
             SocketManager.GAME_SEND_STATS_PACKET(perso);
         }
         if (save)
-            ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this);
+            DatabaseManager.get(PlayerData.class).update(this);
         return true;
     }
 
@@ -1615,7 +1532,7 @@ public class Player implements Scripted<SPlayer>, Actor {
         if (_spellPts >= AncLevel && World.world.getSort(spellID).getStatsByLevel(AncLevel + 1).getReqLevel() <= this.getLevel()) {
             if (learnSpell(spellID, AncLevel + 1, true, false, false)) {
                 _spellPts -= AncLevel;
-                ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this);
+                DatabaseManager.get(PlayerData.class).update(this);
                 return true;
             } else {
                 return false;
@@ -1635,7 +1552,7 @@ public class Player implements Scripted<SPlayer>, Actor {
             if (getSortStatBySortIfHas(i.getValue().getSpell().getId()) == null)
                 continue;
             if (learnSpell(i.getValue().getSpell().getId(), i.getValue().getLevel() + 1, true, false, false))
-                ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this);
+                DatabaseManager.get(PlayerData.class).update(this);
         }
     }
 
@@ -1649,7 +1566,7 @@ public class Player implements Scripted<SPlayer>, Actor {
 
         if (learnSpell(spellID, 1, true, false, false)) {
             _spellPts += Formulas.spellCost(AncLevel);
-            ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this);
+            DatabaseManager.get(PlayerData.class).update(this);
             return true;
         } else {
             return false;
@@ -1748,7 +1665,7 @@ public class Player implements Scripted<SPlayer>, Actor {
 
         if (this.fight == null) SocketManager.GAME_SEND_STATS_PACKET(this);
         if (!join)
-            ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this);
+            DatabaseManager.get(PlayerData.class).update(this);
     }
 
     public boolean isMorph() {
@@ -1762,7 +1679,7 @@ public class Player implements Scripted<SPlayer>, Actor {
     public void unsetMorph() {
         this.setGfxId(this.getClasse() * 10 + this.getSexe());
         SocketManager.GAME_SEND_ALTER_GM_PACKET(this.curMap, this);
-        ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this);
+        DatabaseManager.get(PlayerData.class).update(this);
     }
 
     public void unsetFullMorph() {
@@ -1789,7 +1706,7 @@ public class Player implements Scripted<SPlayer>, Actor {
             SocketManager.GAME_SEND_STATS_PACKET(this);
             SocketManager.GAME_SEND_ALTER_GM_PACKET(this.curMap, this);
         }
-        ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this);
+        DatabaseManager.get(PlayerData.class).update(this);
     }
 
     public String encodeSpellListForSL() {
@@ -1808,7 +1725,7 @@ public class Player implements Scripted<SPlayer>, Actor {
         removeSpellShortcutAtPosition(position);
         _sortsPlaces.remove(spellId);
         if(position <= 30) _sortsPlaces.put(spellId, position);
-        ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this);
+        DatabaseManager.get(PlayerData.class).update(this);
     }
 
     public void removeSpellShortcutAtPosition(int position) {
@@ -1857,11 +1774,10 @@ public class Player implements Scripted<SPlayer>, Actor {
     }
 
     public void remove() {
-        ((PlayerData) DatabaseManager.get(PlayerData.class)).delete(this);
+        DatabaseManager.get(PlayerData.class).delete(this);
     }
 
     public void OnJoinGame() {
-        this._isClone = false;
         getAccount().setCurrentPlayer(this);
         this.setOnline(true);
 
@@ -1875,13 +1791,12 @@ public class Player implements Scripted<SPlayer>, Actor {
             Optional<Player> p = new ArrayList<>(World.world.getOnlinePlayers()).stream().filter(p1 -> p1 != null && p1.getAlignment() > 0
                     && p1.getAccount() != null && p1.getAccount().getCurrentIp().equalsIgnoreCase(getAccount().getCurrentIp()))
                     .findFirst();
-            if(p != null) {
-                p.ifPresent(player -> {
-                    this.alignment = player.alignment;
-                    if(this.alignment == Constant.ALIGNEMENT_BONTARIEN) Main.angels++;
-                    else if(player.getAlignment() == Constant.ALIGNEMENT_BRAKMARIEN) Main.demons++;
-                });
-            }
+            p.ifPresent(player -> {
+                this.alignment = player.alignment;
+                if(this.alignment == Constant.ALIGNEMENT_BONTARIEN) Main.angels++;
+                else if(player.getAlignment() == Constant.ALIGNEMENT_BRAKMARIEN) Main.demons++;
+            });
+
             if(this.alignment <= 0) {
                 if (Main.angels > Main.demons) {
                     this.alignment = Constant.ALIGNEMENT_BRAKMARIEN;
@@ -1966,7 +1881,7 @@ public class Player implements Scripted<SPlayer>, Actor {
         //Affichage des prismes
         World.world.showPrismes(this);
         //Actualisation dans la DB
-        ((AccountData) DatabaseManager.get(AccountData.class)).updateLastConnection(getAccount());
+        DatabaseManager.get(AccountData.class).updateLastConnection(getAccount());
         SocketManager.GAME_SEND_MESSAGE(this, Config.startMessage.isEmpty() ? this.getLang().trans("client.player.onjoingame.startmessage") : Config.startMessage);
         for (GameObject object : this.objects.values()) {
             if (object.getTemplate().getType() == Constant.ITEM_TYPE_FAMILIER) {
@@ -2211,7 +2126,7 @@ public class Player implements Scripted<SPlayer>, Actor {
         Stats stats = this.getStats(), sutffStats = this.getStuffStats(), donStats = this.getDonsStats(), buffStats = this.getBuffsStats(), totalStats = this.getTotalStats(false);
 
         ASData.append(pdv).append(",").append(pdvMax).append("|");
-        ASData.append(this.getEnergy()).append(",10000|");
+        ASData.append(this.getEnergy()).append(","+Player.maxEnergy+"|");
         ASData.append(getInitiative()).append("|");
         ASData.append(stats.getEffect(Constant.STATS_ADD_PROS) + sutffStats.getEffect(Constant.STATS_ADD_PROS) + ((int) Math.ceil(totalStats.getEffect(Constant.STATS_ADD_CHAN) / 10)) + buffStats.getEffect(Constant.STATS_ADD_PROS) + ((int) Math.ceil(buffStats.getEffect(Constant.STATS_ADD_CHAN) / 10))).append("|");
         ASData.append(stats.getEffect(Constant.STATS_ADD_PA)).append(",").append(sutffStats.getEffect(Constant.STATS_ADD_PA)).append(",").append(donStats.getEffect(Constant.STATS_ADD_PA)).append(",").append(buffStats.getEffect(Constant.STATS_ADD_PA)).append(",").append(totalStats.getEffect(Constant.STATS_ADD_PA)).append("|");
@@ -2439,8 +2354,6 @@ public class Player implements Scripted<SPlayer>, Actor {
     }
 
     public void refreshLife(boolean refresh) {
-        if (get_isClone())
-            return;
         long time = (System.currentTimeMillis() - regenTime);
         regenTime = System.currentTimeMillis();
         if (fight != null)
@@ -2540,7 +2453,7 @@ public class Player implements Scripted<SPlayer>, Actor {
             }
             _capital -= cout;
             SocketManager.GAME_SEND_STATS_PACKET(this);
-            ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this);
+            DatabaseManager.get(PlayerData.class).update(this);
         }
     }
 
@@ -2592,7 +2505,7 @@ public class Player implements Scripted<SPlayer>, Actor {
             }
         }
         SocketManager.GAME_SEND_STATS_PACKET(this);
-        ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this);
+        DatabaseManager.get(PlayerData.class).update(this);
     }
 
     public boolean isMuted() {
@@ -2727,7 +2640,7 @@ public class Player implements Scripted<SPlayer>, Actor {
         int newQua = object.getQuantity() - qua;
 
         if (newQua <= 0) {
-            ((ObjectData) DatabaseManager.get(ObjectData.class)).delete(object);
+            DatabaseManager.get(ObjectData.class).delete(object);
             objects.remove(guid);
             World.world.removeGameObject(guid);
             SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(this, guid);
@@ -3181,7 +3094,7 @@ public class Player implements Scripted<SPlayer>, Actor {
         if (this.getFight() != null) return;
         this.curMap = World.world.getMap(newMapID);
         this.curCell = World.world.getMap(newMapID).getCase(newCellID);
-        ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this);
+        DatabaseManager.get(PlayerData.class).update(this);
     }
 
     public void teleportLaby(short newMapID, int newCellID) {
@@ -3401,8 +3314,7 @@ public class Player implements Scripted<SPlayer>, Actor {
         if (getParty() != null)
             getParty().leave(this);
         resetVars();
-        ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this);
-        set_isClone(true);
+        DatabaseManager.get(PlayerData.class).update(this);
         World.world.unloadPerso(this.getId());
     }
 
@@ -3431,7 +3343,7 @@ public class Player implements Scripted<SPlayer>, Actor {
         }
 
         final int cost = this.getBankCost();
-        ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this);
+        DatabaseManager.get(PlayerData.class).update(this);
         if (cost > 0) {
 
             final long kamas = this.getKamas();
@@ -3502,7 +3414,7 @@ public class Player implements Scripted<SPlayer>, Actor {
     public void setBankKamas(long i) {
         Account account = getAccount();
         account.setBankKamas(i);
-        ((BankData) DatabaseManager.get(BankData.class)).update(account);
+        DatabaseManager.get(BankData.class).update(account);
     }
 
     public String parseBankPacket() {
@@ -3597,8 +3509,8 @@ public class Player implements Scripted<SPlayer>, Actor {
             }
         }
         SocketManager.GAME_SEND_Ow_PACKET(this);
-        ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this);
-        ((BankData) DatabaseManager.get(BankData.class)).update(getAccount());
+        DatabaseManager.get(PlayerData.class).update(this);
+        DatabaseManager.get(BankData.class).update(getAccount());
     }
 
     private GameObject getSimilarBankItem(GameObject exGameObject) {
@@ -3694,8 +3606,8 @@ public class Player implements Scripted<SPlayer>, Actor {
 
         SocketManager.GAME_SEND_Ow_PACKET(this);
 
-        ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this);
-        ((BankData) DatabaseManager.get(BankData.class)).update(getAccount());
+        DatabaseManager.get(PlayerData.class).update(this);
+        DatabaseManager.get(BankData.class).update(getAccount());
     }
 
     /**
@@ -4079,7 +3991,6 @@ public class Player implements Scripted<SPlayer>, Actor {
         _inviting = 0;
         sitted = false;
         _onMount = false;
-        _isClone = false;
         _isAbsent = false;
         _isInvisible = false;
         follower.clear();
@@ -4155,13 +4066,13 @@ public class Player implements Scripted<SPlayer>, Actor {
             case '+':
                 this.setShowWings(true);
                 SocketManager.GAME_SEND_ALTER_GM_PACKET(this.curMap, this);
-                ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this);
+                DatabaseManager.get(PlayerData.class).update(this);
                 break;
             case '-':
                 this.setShowWings(false);
                 this._honor -= loose;
                 SocketManager.GAME_SEND_ALTER_GM_PACKET(this.curMap, this);
-                ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this);
+                DatabaseManager.get(PlayerData.class).update(this);
                 break;
         }
         SocketManager.GAME_SEND_STATS_PACKET(this);
@@ -4285,7 +4196,7 @@ public class Player implements Scripted<SPlayer>, Actor {
         if (!_zaaps.contains(mapId)) {
             _zaaps.add(mapId);
             SocketManager.GAME_SEND_Im_PACKET(this, "024");
-            ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this);
+            DatabaseManager.get(PlayerData.class).update(this);
         }
     }
 
@@ -4505,14 +4416,6 @@ public class Player implements Scripted<SPlayer>, Actor {
 
     }
 
-    public boolean get_isClone() {
-        return _isClone;
-    }
-
-    public void set_isClone(boolean isClone) {
-        _isClone = isClone;
-    }
-
     public byte getCurrentTitle() {
         return currentTitle;
     }
@@ -4655,7 +4558,7 @@ public class Player implements Scripted<SPlayer>, Actor {
 
     public void setWife(int id) {
         this.wife = id;
-        ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this);
+        DatabaseManager.get(PlayerData.class).update(this);
     }
 
     public String get_wife_friendlist() {
@@ -4731,7 +4634,7 @@ public class Player implements Scripted<SPlayer>, Actor {
                     + World.world.getPlayer(wife).getName());
 
         wife = 0;
-        ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this);
+        DatabaseManager.get(PlayerData.class).update(this);
     }
 
     public int getWife() {
@@ -4805,7 +4708,7 @@ public class Player implements Scripted<SPlayer>, Actor {
     }
 
     public void revive() {
-        int revive = ((PlayerData) DatabaseManager.get(PlayerData.class)).canRevive(this);
+        int revive = DatabaseManager.get(PlayerData.class).canRevive(this);
 
         if(revive == 1) {
             this.curMap = World.world.getMap( 7411);
@@ -4850,13 +4753,13 @@ public class Player implements Scripted<SPlayer>, Actor {
 
         this.isGhost = false;
         this.dead = 0;
-        this.setEnergy(10000);
+        this.setEnergy(Player.maxEnergy);
         this.setGfxId(Integer.parseInt(this.getClasse() + "" + this.getSexe()));
         this.setCanAggro(true);
         this.setAway(false);
         this.setSpeed(0);
 
-        ((PlayerData) DatabaseManager.get(PlayerData.class)).setRevive(this);
+        DatabaseManager.get(PlayerData.class).setRevive(this);
     }
     /** End heroic **/
 
@@ -5090,7 +4993,7 @@ public class Player implements Scripted<SPlayer>, Actor {
             }
         }
         SocketManager.GAME_SEND_Ow_PACKET(this);
-        ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this);
+        DatabaseManager.get(PlayerData.class).update(this);
     }
 
     private GameObject getSimilarStoreItem(GameObject exGameObject) {
@@ -5141,7 +5044,7 @@ public class Player implements Scripted<SPlayer>, Actor {
             }
         }
         SocketManager.GAME_SEND_Ow_PACKET(this);
-        ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this);
+        DatabaseManager.get(PlayerData.class).update(this);
     }
 
     public void removeStoreItem(int guid) {
@@ -5307,7 +5210,7 @@ public class Player implements Scripted<SPlayer>, Actor {
                 }
                 break;
         }
-        ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this);
+        DatabaseManager.get(PlayerData.class).update(this);
     }
 
     public void leaveEnnemyFactionAndPay(Player perso) {
@@ -5497,7 +5400,7 @@ public class Player implements Scripted<SPlayer>, Actor {
                 }
                 break;
         }
-        ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this);
+        DatabaseManager.get(PlayerData.class).update(this);
         SocketManager.GAME_SEND_STATS_PACKET(perso);
     }
 
@@ -5607,7 +5510,7 @@ public class Player implements Scripted<SPlayer>, Actor {
             setSpeed(-40);
         }
         teleportWithoutBlocked(mapID, cellID);
-        ((PlayerData) DatabaseManager.get(PlayerData.class)).update(this);
+        DatabaseManager.get(PlayerData.class).update(this);
     }
 
     public String encodeColorsForMount() {
@@ -5718,9 +5621,9 @@ public class Player implements Scripted<SPlayer>, Actor {
                 getCurMap().RemoveNpc(collector.getId());
                 SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(getCurMap(), collector.getId());
                 collector.delCollector(collector.getId());
-                ((CollectorData) DatabaseManager.get(CollectorData.class)).delete(collector);
+                DatabaseManager.get(CollectorData.class).delete(collector);
             }
-            ((PlayerData) DatabaseManager.get(PlayerData.class)).update(getAccount().getCurrentPlayer());
+            DatabaseManager.get(PlayerData.class).update(getAccount().getCurrentPlayer());
             SocketManager.GAME_SEND_EV_PACKET(getGameClient());
             setAway(false);
         }, 5, TimeUnit.MINUTES);
@@ -5732,7 +5635,7 @@ public class Player implements Scripted<SPlayer>, Actor {
 
     public void setTimeTaverne(long timeTaverne) {
         this.timeTaverne = timeTaverne;
-        ((PlayerData) DatabaseManager.get(PlayerData.class)).updateTimeTaverne(this);
+        DatabaseManager.get(PlayerData.class).updateTimeTaverne(this);
     }
 
     public GameAction getGameAction() {

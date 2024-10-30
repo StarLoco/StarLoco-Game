@@ -1,5 +1,6 @@
 package org.starloco.locos.script.proxy;
 
+import io.jsonwebtoken.lang.Maps;
 import org.classdump.luna.Table;
 import org.classdump.luna.impl.DefaultTable;
 import org.classdump.luna.impl.DefaultUserdata;
@@ -117,6 +118,17 @@ public class SMap extends DefaultUserdata<GameMap> {
         if(actionID != -1) actionIDStr = String.valueOf(actionID);
 
         SocketManager.GAME_SEND_GA_PACKET_TO_MAP(m, actionIDStr, actionType, p.getId(), actionValue);
+    }
+
+    @SuppressWarnings("unused")
+    private static void setCellData(GameMap m, ArgumentIterator args) {
+        int cellID = args.nextInt();
+        String field = args.nextString().toString();
+        int val = args.nextInt();
+
+        if(m.cellsData.applyOverrides(cellID, Maps.of(field, val).build())) {
+            SocketManager.GAME_SEND_GDC_PACKET_TO_MAP(m, cellID, true);
+        }
     }
 
 }

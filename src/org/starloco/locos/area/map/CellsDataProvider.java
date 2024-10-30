@@ -2,7 +2,6 @@ package org.starloco.locos.area.map;
 
 import org.starloco.locos.common.CryptManager;
 import org.starloco.locos.game.world.World;
-import org.starloco.locos.util.Pair;
 
 import java.security.InvalidParameterException;
 import java.util.*;
@@ -264,9 +263,42 @@ public interface CellsDataProvider {
 
             if(movementRaw(ov[0]) == val) return false;
 
-            apply(ov, (val & 0xF) << 2, 0x000000000000001CL);
+            apply(ov, (val & 0x7) << 2, 0x000000000000001CL);
 
             // TODO Optimize: Detect when changing value to base value
+
+            overrides.put(cellId, ov);
+            return true;
+        }
+
+        private boolean setGroundNum(int cellId, int val) {
+            long[] ov = overrides.computeIfAbsent(cellId, (k) -> new long[2]);
+
+            if(groundNumRaw(ov[0]) == val) return false;
+
+            apply(ov, (val & 0xF) << 13, 0x000000000003E000L);
+
+            overrides.put(cellId, ov);
+            return true;
+        }
+
+        private boolean setObject1Num(int cellId, int val) {
+            long[] ov = overrides.computeIfAbsent(cellId, (k) -> new long[2]);
+
+            if(object1NumRaw(ov[0]) == val) return false;
+
+            apply(ov, (long) (val & 0x3FFF) << 27, 0x00003FFF80000000L);
+
+            overrides.put(cellId, ov);
+            return true;
+        }
+
+        private boolean setObject2Num(int cellId, int val) {
+            long[] ov = overrides.computeIfAbsent(cellId, (k) -> new long[2]);
+
+            if(object2NumRaw(ov[0]) == val) return false;
+
+            apply(ov, (long) (val & 0x3FFF) << 44, 0x3FFF800000000000L);
 
             overrides.put(cellId, ov);
             return true;
@@ -299,6 +331,15 @@ public interface CellsDataProvider {
                     case "movement":
                         changed = setMovement(cellId, e.getValue());
                         break;
+                    case "groundnum":
+                        changed = setGroundNum(cellId, e.getValue());
+                        break;
+                    case "o1num":
+                        changed = setObject1Num(cellId, e.getValue());
+                        break;
+                    case "o2num":
+                        changed = setObject2Num(cellId, e.getValue());
+                        break;
                     default:
                         World.world.logger.warn("ignoring unknown cell override '{}'", e.getKey());
                 }
@@ -320,6 +361,18 @@ public interface CellsDataProvider {
                         break;
                     case "movement":
                         changed = setMovement(cellId, 0);
+                        break;
+                    case "interactive":
+                        changed = setInteractive(cellId, 0);
+                        break;
+                    case "groundnum":
+                        changed = setGroundNum(cellId, 0);
+                        break;
+                    case "o1num":
+                        changed = setObject1Num(cellId, 0);
+                        break;
+                    case "o2num":
+                        changed = setObject2Num(cellId, 0);
                         break;
                     default:
                         World.world.logger.warn("ignoring unknown cell override '{}'", key);

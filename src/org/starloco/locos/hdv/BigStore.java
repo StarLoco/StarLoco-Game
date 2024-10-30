@@ -45,7 +45,7 @@ public class BigStore {
         }
     }
 
-    private static final Comparator<BigStoreListing> priceASC = (o1, o2) -> o1.getPrice() - o2.getPrice();
+    private static final Comparator<BigStoreListing> priceASC = Comparator.comparingInt(BigStoreListing::getPrice);
     private static final DecimalFormat pattern = new DecimalFormat("0.0");
     // defaultCategoryFilter returns true if categoryId == template.type
     private static final CategoryFilter defaultCategoryFilter = (c, e) -> c == e.getGameObject().getTemplate().getType();
@@ -104,31 +104,29 @@ public class BigStore {
     public List<CheapestListings> linesForTemplate(int category, int templateId) {
         synchronized (listingsLock) {
             return getEntriesByTemplate(category, templateId).collect(Collectors.groupingBy(BigStoreListing::getLineId)).entrySet().stream()
-                    .map(lineEntries -> {
-                        Pair<Integer, String> desc = lineIDToItemDesc.get(lineEntries.getKey());
+                .map(lineEntries -> {
+                    Pair<Integer, String> desc = lineIDToItemDesc.get(lineEntries.getKey());
 
-                        Map<Byte, Optional<BigStoreListing>> cheapestByQuantity = lineEntries.getValue().stream()
-                                .collect(Collectors.groupingBy(BigStoreListing::getAmount, Collectors.minBy(priceASC)));
+                    Map<BigStoreListingLotSize, Optional<BigStoreListing>> cheapestByQuantity = lineEntries.getValue().stream()
+                            .collect(Collectors.groupingBy(BigStoreListing::getLotSize, Collectors.minBy(priceASC)));
 
-                        int[] cheapest = new int[]{
-                                Optional.ofNullable(cheapestByQuantity.get((byte) 0)).flatMap(Function.identity()).map(BigStoreListing::getPrice).orElse(0),
-                                Optional.ofNullable(cheapestByQuantity.get((byte) 1)).flatMap(Function.identity()).map(BigStoreListing::getPrice).orElse(0),
-                                Optional.ofNullable(cheapestByQuantity.get((byte) 2)).flatMap(Function.identity()).map(BigStoreListing::getPrice).orElse(0),
-                        };
+                    int[] cheapest = Arrays.stream(BigStoreListingLotSize.values())
+                            .mapToInt(size -> cheapestByQuantity.getOrDefault(size, Optional.empty()).map(BigStoreListing::getPrice).orElse(0))
+                            .toArray();
 
-                        return new CheapestListings(lineEntries.getKey(), desc.first, desc.second, cheapest);
-                    }).collect(Collectors.toList());
+                    return new CheapestListings(lineEntries.getKey(), desc.first, desc.second, cheapest);
+                }).collect(Collectors.toList());
         }
     }
 
-    private Optional<BigStoreListing> cheapestListing(int category, int templateId, int ligneId, int amount) {
+    private Optional<BigStoreListing> cheapestListing(int category, int templateId, int ligneId, BigStoreListingLotSize amount) {
         return getEntriesByTemplate(category, templateId)
             .filter(e -> e.getLineId() == ligneId)
-            .filter(e -> e.getAmount() == amount)
+            .filter(e -> e.getLotSize() == amount)
             .min(priceASC);
     }
 
-    protected CategoryFilter categoryFilters(int category) {
+    private CategoryFilter categoryFilters(int category) {
         switch (category) {
             // Normal soul stone: List if it contains at least one monster that is not a boss nor an ArchMonster
             case 85:
@@ -170,7 +168,7 @@ public class BigStore {
         synchronized (listingsLock) {
             // If it doesn't have a guid yet, save it and get one
             if(toAdd.getId() == -1) {
-                boolean saved = ((BigStoreListingData) DatabaseManager.get(BigStoreListingData.class)).insert(toAdd);
+                boolean saved = DatabaseManager.get(BigStoreListingData.class).insert(toAdd);
                 if(!saved) {
                     // We failed to save, the listing didn't get a guid.
                     return false;
@@ -195,7 +193,7 @@ public class BigStore {
     public boolean removeListing(Account account, int listingId) {
         Player player = account.getCurrentPlayer();
         List<BigStoreListing> accountListings = account.getHdvEntries(this.hdvId);
-        if(accountListings.size() == 0) return false;
+        if(accountListings.isEmpty()) return false;
         if(player == null) return false;
         
         synchronized (listingsLock) {
@@ -212,7 +210,7 @@ public class BigStore {
                 account.getCurrentPlayer().addItem(obj, true);
             }
 
-            ((PlayerData) DatabaseManager.get(PlayerData.class)).update(player);
+            DatabaseManager.get(PlayerData.class).update(player);
             return true;
         }
     }
@@ -221,7 +219,7 @@ public class BigStore {
         if(!this.listings.remove(listing)) return false;
 
         World.world.removeHdvItem(listing.getOwner(), listing.getHdvId(), listing);
-        ((BigStoreListingData) DatabaseManager.get(BigStoreListingData.class)).delete(listing);
+        DatabaseManager.get(BigStoreListingData.class).delete(listing);
         return true;
     }
 
@@ -229,7 +227,7 @@ public class BigStore {
         return linesForTemplate(categoryId, templateId).stream().filter(c -> c.lineId == lineId).findFirst();
     }
 
-    public Optional<BigStoreListing> buyItem(int category, int templateId, int lineID, int amount, int price, Player newOwner) {
+    public Optional<BigStoreListing> buyItem(int category, int templateId, int lineID, BigStoreListingLotSize amount, int price, Player newOwner) {
         synchronized (listingsLock) {
             return cheapestListing(category, templateId, lineID, amount)
                 .filter(e -> e.getGameObject() != null)
@@ -245,7 +243,7 @@ public class BigStore {
                     GameObject obj = e.getGameObject();
                     newOwner.addItem(obj, true, false);
                     obj.setPosition(Constant.ITEM_POS_NO_EQUIPED);
-                    obj.getTemplate().newSold(e.getAmountExp(), price);
+                    obj.getTemplate().newSold(e.getLotSize().amount, price);
 
                     deleteListing(e);
                     return e;

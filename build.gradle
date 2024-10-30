@@ -1,6 +1,4 @@
 apply plugin: 'java'
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
 
 group 'org.starloco.locos'
 // Get version from git tag, fallback to git commit hash
@@ -16,6 +14,12 @@ tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
 }
 
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
 sourceSets {
     main {
         java {
@@ -27,7 +31,12 @@ sourceSets {
     }
 }
 
+repositories {
+    mavenCentral()
+}
+
 dependencies {
+    implementation 'redis.clients:jedis:5.1.2'
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 }
 

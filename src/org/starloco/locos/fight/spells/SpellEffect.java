@@ -1271,7 +1271,7 @@ public class SpellEffect implements Cloneable {
 				if ((caster.getPdv() + heal) > caster.getPdvMax())
 					heal = caster.getPdvMax() - caster.getPdv();
 				caster.removePdv(caster, -heal);
-				SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 100, target.getId() + "", caster.getId() + "," + heal);
+				SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 108, target.getId() + "", caster.getId() + "," + heal);
 
 				if (target.getPdv() <= 0) {
 					fight.onFighterDie(target, target);

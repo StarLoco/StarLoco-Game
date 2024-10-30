@@ -513,15 +513,14 @@ public class GameMap {
         SocketManager.GAME_SEND_ADD_PLAYER_TO_MAP(this, perso);	
         perso.getCurCell().addPlayer(perso);
         if (perso.getEnergy() > 0) {
-            if (perso.getEnergy() >= 10000)
+            if (perso.getEnergy() >= Player.maxEnergy)
                 return;
             if (Constant.isTaverne(this) && perso.getTimeTaverne() == 0) {
                 perso.setTimeTaverne(System.currentTimeMillis());
             } else if (perso.getTimeTaverne() != 0) {
                 int gain = (int) ((System.currentTimeMillis() - perso.getTimeTaverne()) / 1000);
-                if(gain >= 10000) gain = 10000 - perso.getEnergy();
+                if(gain >= Player.maxEnergy) gain = Player.maxEnergy - perso.getEnergy();
                 perso.setEnergy(perso.getEnergy() + gain);
-                if (perso.getEnergy() >= 10000) perso.setEnergy(10000);
                 SocketManager.GAME_SEND_Im_PACKET(perso, "092;" + gain);
                 SocketManager.GAME_SEND_STATS_PACKET(perso);
                 perso.setTimeTaverne(0);

@@ -154,12 +154,10 @@ public class ObjectAction {
                                     sureIsOk = true;
                                     break;
                                 case 139://Energie.
-                                    if (player.getEnergy() == 10000) {
+                                    if (player.getEnergy() == Player.maxEnergy) {
                                         isOk2 = false;
                                         continue;
                                     }
-                                    if (player.getEnergy() + val > 10000)
-                                        val = 10000 - player.getEnergy();
                                     player.setEnergy(player.getEnergy() + val);
                                     SocketManager.GAME_SEND_STATS_PACKET(player);
                                     SocketManager.GAME_SEND_Im_PACKET(player, "07;" + val);
@@ -169,6 +167,7 @@ public class ObjectAction {
                                     player.addXp((long) (val * Config.rateXp));
                                     SocketManager.GAME_SEND_STATS_PACKET(player);
                                     SocketManager.GAME_SEND_Im_PACKET(player, "08;" + val);
+                                    sureIsOk = true;
                                     break;
                                 case 614://Exp�rience m�tier.
                                     JobStat job = player.getMetierByID(Integer.parseInt(arg0.split(";")[1]));
@@ -187,10 +186,10 @@ public class ObjectAction {
                                     break;
                             }
                         }
-                        if (arg.split(",").length == 1)
-                            if (!isOk1 || !isOk2)
+                        if (arg.split(",").length <= 2)
+                            if (!isOk1 && !isOk2)
                                 isOk = false;
-                            else if (!isOk1 && !isOk2)
+                            else if (isOk1  || isOk2)
                                 isOk = false;
                         send = false;
                         break;

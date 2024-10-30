@@ -18,6 +18,7 @@ import org.starloco.locos.game.action.type.DocumentActionData;
 import org.starloco.locos.game.action.type.NpcDialogActionData;
 import org.starloco.locos.game.action.type.ScenarioActionData;
 import org.starloco.locos.hdv.BigStore;
+import org.starloco.locos.hdv.BigStoreListingLotSize;
 import org.starloco.locos.script.DataScriptVM;
 import org.starloco.locos.util.Pair;
 import org.apache.mina.core.session.IoSession;
@@ -1621,8 +1622,9 @@ public class GameClient {
                 int amount = Integer.parseInt(info[1]);
                 int price = Integer.parseInt(info[2]);
 
-                // Client amount is [1,3], we want [0,2]
-                BigStoreListing entry = bigStore.buyItem(exchangeAction.getCategoryId(), exchangeAction.getTemplateId(), ligneID, amount-1, price, this.player).orElse(null);
+                // Client amount is [1,3], our enum is 0-2
+                BigStoreListingLotSize lotSize = BigStoreListingLotSize.fromValue(amount-1);
+                BigStoreListing entry = bigStore.buyItem(exchangeAction.getCategoryId(), exchangeAction.getTemplateId(), ligneID, lotSize, price, this.player).orElse(null);
 
                 if (entry == null) {
                     SocketManager.GAME_SEND_Im_PACKET(this.player, "172");//Envoie un message d'erreur d'achat
@@ -5798,6 +5800,9 @@ public class GameClient {
             }
             /* End feed mount **/
 
+            // Pour equiper un item apres avoir desequiper l item a la meme position
+            boolean equipBack = false;
+
             /* Feed pet **/
             if (position == Constant.ITEM_POS_FAMILIER && object.getTemplate().getType() != Constant.ITEM_TYPE_FAMILIER && this.player.getObjetByPos(position) != null) {
                 GameObject pets = this.player.getObjetByPos(position);
@@ -5885,8 +5890,8 @@ public class GameClient {
                     return;
 
 
-                if (!object.getTemplate().getConditions().contains("PP") && !object.getTemplate().getConditions().equalsIgnoreCase("") && !World.world.getConditionManager().validConditions(this.player, object.getTemplate().getConditions())) {
-                    SocketManager.GAME_SEND_Im_PACKET(this.player, "119|44"); // si le this.player ne v?rifie pas les conditions diverses
+                if (!World.world.getConditionManager().validConditions(this.player, object.getTemplate().getConditions())) {
+                    SocketManager.GAME_SEND_Im_PACKET(this.player, "119|44;"+object.getTemplate().getId()); // si le this.player ne v?rifie pas les conditions diverses
                     return;
                 }
                 GameObject shield = null, weapon = null;
@@ -5962,9 +5967,9 @@ public class GameClient {
                     DatabaseManager.get(PlayerData.class).update(this.player);
                     return; // on s'arr?te l? pour l'obvi
                 } // FIN DU CODE OBVI
-
                 if (exObj != null)//S'il y avait d?ja un objet sur cette place on d?s?quipe
                 {
+                    equipBack = exObj.getGuid() != object.getGuid();
                     GameObject obj2;
                     ObjectTemplate exObjTpl = exObj.getTemplate();
                     int idSetExObj = exObj.getTemplate().getPanoId();
@@ -6188,6 +6193,8 @@ public class GameClient {
 
             this.player.verifEquiped();
             DatabaseManager.get(PlayerData.class).update(this.player);
+            if(equipBack)
+                this.movementObject(packet);
         } catch (Exception e) {
             e.printStackTrace();
             SocketManager.GAME_SEND_DELETE_OBJECT_FAILED_PACKET(this);

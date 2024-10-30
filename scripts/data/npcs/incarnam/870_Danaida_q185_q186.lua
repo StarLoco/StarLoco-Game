@@ -1,53 +1,50 @@
 local npc = Npc(870, 9044)
 
-local questID = 185
-local talkQuestID = 186
+local waterQuestID = 185
 
 npc.gender = 1
 
-npc.quests = {questID}
+npc.quests = {waterQuestID} -- On définit la quête pour ce PNJ
 
 ---@param p Player
 ---@param answer number
 function npc:onTalk(p, answer)
-    local quest = QUESTS[questID]
-    local talkQuest = QUESTS[talkQuestID]
+    local waterQuest = QUESTS[waterQuestID]
 
-    if quest:availableTo(p) then
+    -- Si la quête "waterQuest" est disponible pour le joueur
+    if waterQuest:availableTo(p) then
         if answer == 0 then
-            p:ask(3718, {3258, 3257})
+            p:ask(3718, {3258, 3257}) -- debut du dialogue avec deux réponses possible
+        elseif answer == 3257 then
+            p:endDialog() -- Fermer le dialogue et refuse la quête
         elseif answer == 3258 then
-            quest:startFor(p, self.id)
+            waterQuest:startFor(p, self.id) -- Démarrer la quête si le joueur accepte
             p:endDialog()
         end
         return
     end
 
-    if quest:ongoingFor(p) then
-        if quest:tryCompleteBringItemObjectives(p, self.id) then
-            p:ask(3719)
-        end
-        
-        p:ask(3720)
-        return
-    end
-
-    if talkQuest:ongoingFor(p) then
-        if talkQuest:canCompleteObjective(p, 759) then
-            p:ask(3730, {3276, 3275})
-            talkQuest:completeObjective(p, 759)
-        elseif answer == 3276 or answer == 3275 then p:endDialog()
-        end
-        return
-    end
-
-    if quest:finishedBy(p) and talkQuest:finishedBy(p) then
-        p:ask(3721)
+    -- Si la quête "waterQuest" est en cours
+    if waterQuest:ongoingFor(p) then
+        if waterQuest:tryCompleteBringItemObjectives(p, self.id) then
+            p:ask(3719, {3259})
         else
-        p:ask(3719)         
+            p:ask(3720) -- Si les objets manquent, donne une indication ou les trouver
+        end
         return
     end
 
+    -- Gérer la réponse après que le joueur a cliqué sur 3259
+    if answer == 3259 then
+        p:endDialog() -- Fermer le dialogue et terminer la quête
+        return
+    end
+
+    -- Si la deux quête est terminée
+    if waterQuest:finishedBy(p) then
+        p:ask(3721) -- Dialogue final une fois que la quête est terminée
+        return
+    end
 end
 
 RegisterNPCDef(npc)

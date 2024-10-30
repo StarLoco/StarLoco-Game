@@ -23,14 +23,14 @@ function npc:onTalk(p, answer)
             elseif p:breed() == OsamodasBreed then p:ask(3545, {3140, 3129})
             elseif p:breed() == EnutrofBreed then p:ask(3538, {3133, 3122})
             elseif p:breed() == SramBreed then p:ask(3547, {3142, 3131})
-            elseif p:breed() == XelorBreed then p:ask(3542, {3137, 3126})
+            elseif p:breed() == XelorBreed then p:ask(3542, {3126, 3137})
             elseif p:breed() == EcaflipBreed then p:ask(3541, {3136, 3125})
-            elseif p:breed() == EniripsaBreed then p:ask(3537, {3132, 3121})
-            elseif p:breed() == IopBreed then p:ask(3540, {3135, 3124})
+            elseif p:breed() == EniripsaBreed then p:ask(3537, {3121, 3132})
+            elseif p:breed() == IopBreed then p:ask(3540, {3124, 3135})
             elseif p:breed() == CraBreed then p:ask(3536, {3118, 3119})
             elseif p:breed() == SacrierBreed then p:ask(3546, {3141, 3130})
-            elseif p:breed() == PandawaBreed then p:ask(3543, {3138, 3127}) --NOOK
-            elseif p:breed() == SadidaBreed then p:ask(3544, {3139, 3128})
+            elseif p:breed() == PandawaBreed then p:ask(3543, {3127, 3138})
+            elseif p:breed() == SadidaBreed then p:ask(3544, {3128, 3139})
             end
         elseif  answer == 3123 or answer == 3129 or answer == 3122 or answer == 3131 or answer == 3126 or
                 answer == 3125 or answer == 3121 or answer == 3124 or answer == 3119 or answer == 3130 or

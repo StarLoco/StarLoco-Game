@@ -55,7 +55,7 @@ public class BigStoreListingData extends FunctionDAO<BigStoreListing> {
             p.setInt(1, entity.getHdvId());
             p.setInt(2, entity.getOwner());
             p.setInt(3, entity.getPrice());
-            p.setInt(4, entity.getAmount());
+            p.setInt(4, entity.getLotSize().value);
             p.setInt(5, entity.getGameObject().getGuid());
 
             int affectedRows = p.executeUpdate();
@@ -71,7 +71,7 @@ public class BigStoreListingData extends FunctionDAO<BigStoreListing> {
                     }
                 }
             }
-            ((ObjectTemplateData) DatabaseManager.get(ObjectTemplateData.class)).update(entity.getGameObject().getTemplate());
+            DatabaseManager.get(ObjectTemplateData.class).update(entity.getGameObject().getTemplate());
         } catch (SQLException e) {
             ok = false;
             super.sendError(e);

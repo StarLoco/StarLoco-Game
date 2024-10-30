@@ -64,13 +64,13 @@ local group7 = {
 }
 
 local mapInfos = {
-    [11067] = {groupCell = 294, group = group1, winDest = {11068, 294}},
+    [11067] = {groupCell = 294, group = group1, winDest = {11068, 62}},
     [11068] = {groupCell = 334, group = group2, winDest = {11074, 208}},
     [11074] = {groupCell = 258, group = group3, winDest = {11071, 191}},
     [11071] = {groupCell = 297, group = group4, winDest = {11072, 196}},
     [11072] = {groupCell = 281, group = group5, winDest = {11073, 427}},
     [11073] = {groupCell = 124, group = group6, winDest = {11235, 170}},
-    [11235] = {groupCell = 383, group = group7, winDest = {11069, 453}}
+    [11235] = {groupCell = 383, group = group7, winDest = {11069, 413}}
 }
 
 for k, v in pairs(mapInfos) do
