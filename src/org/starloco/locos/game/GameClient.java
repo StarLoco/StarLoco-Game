@@ -10,6 +10,8 @@ import java.util.regex.Pattern;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.slf4j.LoggerFactory;
+import org.starloco.locos.api.AbstractDofusMessage;
 import org.starloco.locos.common.CryptManager;
 import org.starloco.locos.entity.exchange.NpcExchange;
 import org.starloco.locos.entity.map.*;
@@ -7182,6 +7184,14 @@ public class GameClient {
         } catch(Exception e) {
             Logging.getInstance().write("Error", "Send fail : " + packet);
             e.printStackTrace();
+        }
+    }
+    
+    public void send(AbstractDofusMessage abstractDofusMessage) {
+        if(getSession() != null && !getSession().isClosing() && getSession().isConnected()) {
+            abstractDofusMessage.serialize();
+            LoggerFactory.getLogger(GameClient.class).debug("Send : " + abstractDofusMessage.toString());
+            send(abstractDofusMessage.getOutput().toString());
         }
     }
 }

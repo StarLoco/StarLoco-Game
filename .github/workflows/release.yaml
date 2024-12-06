@@ -28,11 +28,9 @@ jobs:
           java-version: '21'
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
-        with:
-          gradle-version: 8.8
+        uses: gradle/actions/setup-gradle@v4
       - name: Build with Gradle
-        run: ./gradlew jar
+        run: ls -la && gradle jar
 
       - name: Upload JAR artifact
         uses: actions/upload-artifact@v2
@@ -57,7 +55,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: .
-          file: ./Dockerfile
+          file: ./docker/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

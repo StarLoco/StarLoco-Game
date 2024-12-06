@@ -74,6 +74,9 @@ public class SPlayer extends DefaultUserdata<Player> {
     }
 
     @SuppressWarnings("unused")
+    private static SAccount account(Player p) { return p.getAccount().scripted(); }
+
+    @SuppressWarnings("unused")
     private static void savePosition(Player p, ArgumentIterator args) {
         int mapId = args.nextInt();
         int cellId = args.nextInt();

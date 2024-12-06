@@ -59,8 +59,13 @@ function npc:onTalk(p, answer)
         return
     end
 
-    -- Vérifie si recipeQuest est terminé et si zaapQuest peut être lancé
-    if recipeQuest:finishedBy(p) and not zaapQuest:ongoingFor(p) then
+    -- Cette section vérifie si la quête zaapQuest est déjà terminée
+    if zaapQuest:finishedBy(p) then
+        p:ask(3654)  -- Le PNJ répond "3654" si la quête est déjà terminée
+        return
+    end
+
+    if recipeQuest:finishedBy(p) then
         if answer == 0 then
             p:ask(3660, {3228, 3227})
         elseif answer == 3228 then
@@ -90,6 +95,10 @@ function npc:onTalk(p, answer)
     if answer == 0 then
         p:ask(3654)
     end
+
+    if answer == 0 then p:ask(3654)
+    end
+
 end
 
 RegisterNPCDef(npc)

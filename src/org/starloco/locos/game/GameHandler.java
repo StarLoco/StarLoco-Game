@@ -3,12 +3,17 @@ package org.starloco.locos.game;
 import org.apache.mina.core.service.IoHandler;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.starloco.locos.api.AbstractDofusMessage;
+import org.starloco.locos.factory.DofusMessageFactory;
+import org.starloco.locos.factory.EventDispatcherFactory;
 import org.starloco.locos.game.filter.PacketFilter;
 import org.starloco.locos.game.world.World;
 import org.starloco.locos.kernel.Config;
 
 public class GameHandler implements IoHandler {
-
+    private final static Logger logger = LoggerFactory.getLogger(GameHandler.class);
     private final static PacketFilter filter = new PacketFilter().activeSafeMode();
 
     @Override
@@ -41,6 +46,17 @@ public class GameHandler implements IoHandler {
                     p = p.split("ù")[2];
                 }
                 try {
+                    if(p.length() > 1) {
+                        AbstractDofusMessage abstractDofusMessage = DofusMessageFactory.getMessage(p.substring(0, 2));
+                        if (abstractDofusMessage != null) {
+                            abstractDofusMessage.setInput(new StringBuilder(p.substring(2)));
+                            abstractDofusMessage.deserialize();
+                            abstractDofusMessage.setClient(client);
+                            logger.info("Receive message: {} with header: {}", abstractDofusMessage.getClass().getName(), p.substring(0, 2));
+                            EventDispatcherFactory.dispatch(abstractDofusMessage);
+                            return;
+                        }
+                    }
                     client.parsePacket(p);
                 } catch(Exception e) {
                     throw new Exception("Cannot process packet: "+p, e);

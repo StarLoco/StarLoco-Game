@@ -82,6 +82,8 @@ end
 ---@param id number
 ---@return boolean
 function Quest:hasCompletedObjective(p, id)
+    -- Currently, this would crash when called with a finished quest (there are no more objectives)
+    -- Should we just return true when the quest is finished ?
     return table.contains(p:_completedObjectives(self.id), id)
 end
 
@@ -89,6 +91,8 @@ end
 ---@param ids number[]
 ---@return boolean
 function Quest:hasCompletedObjectives(p, ids)
+    -- Currently, this would crash when called with a finished quest (there are no more objectives)
+    -- Should we just return true when the quest is finished ?
     local completed = p:_completedObjectives(self.id)
 
     for _, o in pairs(ids) do
