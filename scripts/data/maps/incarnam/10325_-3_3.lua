@@ -20,8 +20,8 @@ map.npcs = {
 -- '0;0;0;0;0;0;0' forbiddens -> capabilities ? Or script ?
 
 map.onMovementEnd = {
+	[334] = moveEndTeleport(10289, 419),
 	[434] = moveEndTeleport(10273, 276),
-	[434] = moveEndTeleport(10289, 419),
 }
 
 
